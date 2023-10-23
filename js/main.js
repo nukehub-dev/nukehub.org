@@ -321,7 +321,7 @@ function runParticleJS(particleColor) {
         type: "circle",
         stroke: { width: 0, color: "#000000" },
         polygon: { nb_sides: 12 },
-        image: { src: "assests/images/nrms.svg", width: 100, height: 100 },
+        image: { src: "assets/images/nrms.svg", width: 100, height: 100 },
       },
       opacity: {
         value: 0.03,
