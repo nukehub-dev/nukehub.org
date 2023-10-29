@@ -186,7 +186,7 @@ ul {
   align-items: center;
   justify-content: center;
 }
-.load_tahmid {
+.load_nukehub {
   width: 40%;
   max-height: 40%;
   fill: var(--svg-fill);
@@ -376,19 +376,19 @@ ul {
 .home_social-icon:hover {
   color: var(--color-alt);
 }
-.home_tahmid {
+.home_nukehub {
   fill: var(--svg-fill);
 }
-.home_tahmid-circle-light {
+.home_nukehub-circle-light {
   fill: var(--color);
 }
-.home_tahmid-circle {
+.home_nukehub-circle {
   fill: var(--color-alt);
 }
-.home_tahmid:hover {
+.home_nukehub:hover {
   animation: shake 0.5s;
 }
-.home_tahmid:active {
+.home_nukehub:active {
   animation: shake 0.5s;
   animation-iteration-count: infinite;
 }
@@ -974,7 +974,7 @@ button {
     brightness(111%) contrast(99%);
   opacity: 0.2;
   padding-bottom: 1rem;
-  display:none;
+  display: none;
   transition: 0.3s;
 }
 .project_img:hover {
@@ -1843,7 +1843,7 @@ textarea {
   .home_data {
     grid-column: initial;
   }
-  .home_tahmid {
+  .home_nukehub {
     width: 320px;
     transform: translateX(0);
   }
@@ -1863,8 +1863,8 @@ textarea {
     grid-template-columns: 0.6fr;
     justify-content: center;
   }
-  .project_img{
-    display:block;
+  .project_img {
+    display: block;
   }
 }
 
@@ -1917,7 +1917,7 @@ textarea {
     padding-top: 5.5rem;
     column-gap: 2rem;
   }
-  .home_tahmid {
+  .home_nukehub {
     width: 360px;
   }
   .home_scroll {
@@ -2030,7 +2030,7 @@ textarea {
   .footer_container {
     padding: 0;
   }
-  .home_tahmid {
+  .home_nukehub {
     width: 390px;
   }
   .home_social {

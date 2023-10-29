@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" oncontextmenu="return false">
+
+<head>
+  <title>{{ site.title }} {% if page.title %}| {{ page.title }}{% endif %}</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="A pioneering platform dedicated to the exploration and advancement of nuclear technology. Our mission is to foster a community of innovators, enthusiasts, and professionals who are passionate about nuclear technology." />
+  <link rel="icon" href="assets/images/nukehub.svg" />
+  <!--========== UNICONS ==========-->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+  <!--========== CSS ==========-->
+  <link rel="stylesheet" href="css/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="css/nukehub.min.css" />
+  <!--========== JS ==========-->
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <script src="js/index.var.js"></script>
+</head>
+
+<body onload="PreLoad()" id="body">
+  <!--========== Preloader ==========-->
+  <div id="loading">
+    {% include svg.html  class="load_nukehub" %}
+  </div>
+  {% include header.html %}
+  <!--========== Main ==========-->
+  <main class="main">
+    {{ content }}
+  </main>
+  <!--========== Footer ==========-->
+  <footer class="footer">
+    <div class="footer_bg">
+      <div class="footer_container container grid">
+        <div>
+          <h1 class="footer_title">
+            <i class="nuke-nukehub"></i>
+            NukeHub
+          </h1>
+          <span class="footer_subtitle">Empowering Nuclear Innovation</span>
+        </div>
+      </div>
+      <p class="footer_copy">&#169; 2023 NukeHub. All right reserved</p>
+    </div>
+  </footer>
+  <div id="particles-js"></div>
+  <!--========== Scroll Up ==========-->
+  <a href="#" class="scroll_up" id="scroll-up">
+    <i class="uil uil-arrow-up scroll_up-icon"></i>
+  </a>
+  <!--========== Model ==========-->
+  <div class="modal_img">
+    <img src="" alt="model" class="full_img" />
+    <p class="modal_caption"></p>
+  </div>
+  <!--========== JS ==========-->
+  <script src="js/scrollreveal.min.js"></script>
+  <script src="js/swiper-bundle.min.js"></script>
+  <script src="js/particles.min.js"></script>
+  <script src="js/jquery.contextMenu.min.js"></script>
+  <script src="js/jquery.ui.position.min.js"></script>
+  <script src="js/main.min.js"></script>
+</body>
+
+</html>
