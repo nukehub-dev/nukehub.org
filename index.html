@@ -8,14 +8,14 @@ permalink: /
 <section class="home section" id="home">
   <div class="home_container container grid">
     <div class="home_content grid">
-      <div class="home_social">
+      <div class="home_social home_social-icon">
         <a href="https://github.com/nukehub-dev" target="_blank" class="home_social-icon">
           <i class="nuke-github-1"></i>
         </a>
         <div class="home_social-icon">
           <i class="nuke-share"></i>
           <script>
-            document.querySelector('.nuke-share').addEventListener('click', function() {
+            document.querySelector('.nuke-share').addEventListener('click', function () {
               if (navigator.share) {
                 navigator.share({
                   title: document.title,
