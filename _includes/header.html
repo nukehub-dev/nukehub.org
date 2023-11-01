@@ -8,24 +8,15 @@
         </a>
         <div class="nav_menu" id="nav-menu">
             <ul class="nav_list grid">
+                {% for obj in layout.nav %}
                 <li class="nav_item">
-                    <a href="#home" class="nav_link active-link">
-                        <i class="uil uil-estate nav_icon"></i>
-                        Home
+                    <a href="{{ obj.url }}" class="nav_link"
+                        {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
+                        <i class="{{ obj.icon }} nav_icon"></i>
+                        {{ obj.title }}
                     </a>
                 </li>
-                <li class="nav_item">
-                    <a href="#projects" class="nav_link">
-                        <i class="uil uil-scenery nav_icon"></i>
-                        Projects
-                    </a>
-                </li>
-                <li class="nav_item">
-                    <a href="#join" class="nav_link">
-                        <i class="uil uil-message nav_icon"></i>
-                        Join
-                    </a>
-                </li>
+                {% endfor %}
                 <li class="nav_item theme-colors grid_span">
                     <div class="color" style="background: hsl(5, 69%, 61%)" hue-color="5" red="224" green="98" blue="87"
                         particle-color="#e06257,#cb4e43,#fcbbb6"
@@ -49,13 +40,13 @@
                     </div>
                 </li>
             </ul>
-            <i class="uil uil-times nav_close" id="nav-close"></i>
+            <i class="nuke-error nav_close" id="nav-close"></i>
         </div>
         <div class="nav_btns">
-            <i class="uil uil-moon change-theme" id="theme-button"></i>
+            <i class="nuke-moon change-theme" id="theme-button"></i>
 
             <div class="nav_toggle" id="nav-toggle">
-                <i class="uil uil-apps"></i>
+                <i class="nuke-dashboard-1"></i>
             </div>
         </div>
     </nav>

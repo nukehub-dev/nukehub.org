@@ -100,7 +100,7 @@ window.addEventListener("scroll", scrollTop);
 /*TODO  Change Theme */
 const themeButton = document.getElementById("theme-button");
 const darkTheme = "dark-theme";
-const iconTheme = "uil-sun";
+const iconTheme = "nuke-sun";
 
 const selectedTheme = localStorage.getItem("selected-theme");
 const selectedIcon = localStorage.getItem("selected-icon");
@@ -116,13 +116,13 @@ document.querySelector(":root").style.setProperty("--color-svg", SVGColor);
 const getCurrentTheme = () =>
   document.body.classList.contains(darkTheme) ? "dark" : "light";
 const getCurrentIcon = () =>
-  themeButton.classList.contains(iconTheme) ? "uil-moon" : "uil-sun";
+  themeButton.classList.contains(iconTheme) ? "nuke-moon" : "nuke-sun";
 
 if (selectedTheme) {
   document.body.classList[selectedTheme === "dark" ? "add" : "remove"](
     darkTheme
   );
-  themeButton.classList[selectedIcon === "uil-moon" ? "add" : "remove"](
+  themeButton.classList[selectedIcon === "nuke-moon" ? "add" : "remove"](
     iconTheme
   );
 }
@@ -191,7 +191,7 @@ sr.reveal(`.home_title, .home_subtitle, .home_description`, {
   delay: 400,
   interval: 200,
 });
-sr.reveal(`.home_button,.home_social-icon`, {
+sr.reveal(`.home_social-icon`, {
   delay: 700,
   origin: "left",
   interval: 200,
@@ -207,18 +207,6 @@ sr.reveal(`.about_img`, {
 sr.reveal(`.about_description,.about_info,.about_buttons`, {
   origin: "right",
   interval: 50,
-});
-sr.reveal(`.project_bg`, {
-  distance: "100px",
-});
-sr.reveal(`.project_title`, {
-  origin: "top",
-});
-sr.reveal(`.project_description`, {
-  interval: 50,
-});
-sr.reveal(`.project_img-reveal`, {
-  origin: "right",
 });
 sr.reveal(`.join_information`, {
   interval: 50,
@@ -282,11 +270,11 @@ let globalOptions = {
   },
   icons: {
     enabled: true,
-    prefix: "<i class='uil ",
+    prefix: "<i class='",
     suffix: "'></i>",
-    warNukeHubg: "uil-exclamation-triangle",
-    success: "uil-check-circle",
-    error: "uil-times-circle",
+    warning: "nuke-info-3",
+    success: "nuke-success-1",
+    error: "nuke-error-1",
   },
 };
 let notifier = new AWN(globalOptions);

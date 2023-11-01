@@ -261,7 +261,7 @@ ul {
 .section_subtitle {
   display: block;
   font-size: var(--small-font);
-  margin-bottom: var(--mb-3);
+  margin-bottom: var(--mb-2);
 }
 .section_title,
 .section_subtitle {
@@ -428,7 +428,7 @@ ul {
   position: absolute;
   right: 1.3rem;
   bottom: 0.5rem;
-  font-size: 1.5rem;
+  font-size: 2rem;
   cursor: pointer;
   color: var(--color);
 }
@@ -697,8 +697,18 @@ button {
   color: var(--color-lighter);
 }
 .box_button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
   cursor: pointer;
   font-size: var(--small-font);
+  background-color: var(--color);
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.25rem 0;
+  color: #fff;
+}
+.box_button:hover {
+  color: #fff;
 }
 .button--small {
   padding: 0.75rem 1rem;
@@ -2213,13 +2223,14 @@ textarea {
   font-size: var(--small-font);
 }
 .footer_link_title{
-  font-size: var(--h3-font);
+  font-size: var(--h4-font);
   margin-bottom: var(--mb-0-25);
 }
 .footer_links {
   display: flex;
   flex-direction: column;
-  row-gap: 0.5rem;
+  row-gap: 0.25rem;
+  font-size: var(--smallest-font);
 }
 .footer_link:hover {
   color: var(--color-lighter);
@@ -2254,8 +2265,7 @@ textarea {
     font-size: var(--normal-font);
   }
 
-  .box_container,
-  .popup_box {
+  .box_container {
     justify-content: center;
     gap: 0.5rem;
   }
@@ -2318,9 +2328,6 @@ textarea {
   .section {
     padding: 1.5% 0 1.5%;
   }
-  .section_subtitle {
-    margin-bottom: 4rem;
-  }
   .header {
     top: 0;
     bottom: initial;
@@ -2370,7 +2377,7 @@ textarea {
   }
   .box_container,
   .box_content-container {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     display: grid;
     justify-content: left;
     grid-gap: var(--mb-1);
@@ -2578,7 +2585,7 @@ textarea {
   width: 100%;
   height: 100%;
   position: fixed;
-  z-index: -1;
+  z-index: -100;
   background-color: var(--body-color);
   background-image: url("");
   background-repeat: no-repeat;
