@@ -1,3 +1,36 @@
+---
+nav:
+  - title: Home
+    url: /
+  - title: Projects
+    url: #projects
+  - title: Get Involved
+    url: /community
+  - title: Security
+    url: /security
+  - title: About
+    url: /about
+projects:
+  - title: NRMS
+    url: https://nrms.nukehub.org
+    newpage: true
+  - title: NukeAnalytics
+    url: https://analytics.nukehub.org
+    newpage: true
+  - title: NukeLab
+    url: https://lab.nukehub.org
+    newpage: true
+  - title: NukeBox
+    url: https://nukebox.readthedocs.io/
+    newpage: true
+social:
+  - title: GitHub
+    url: https://github.com/nukehub-dev/
+  - title: NukeTalk
+    url: https://talk.nukehub.org
+---
+
+
 <!DOCTYPE html>
 <html lang="en" oncontextmenu="return false">
 
@@ -28,21 +61,7 @@
   <main class="main">
     {{ content }}
   </main>
-  <!--========== Footer ==========-->
-  <footer class="footer">
-    <div class="footer_bg">
-      <div class="footer_container container grid">
-        <div>
-          <h1 class="footer_title">
-            <i class="nuke-nukehub"></i>
-            NukeHub
-          </h1>
-          <span class="footer_subtitle">Empowering Nuclear Innovation</span>
-        </div>
-      </div>
-      <p class="footer_copy">&#169; 2023 NukeHub. All right reserved</p>
-    </div>
-  </footer>
+  {% include footer.html %}
   <div id="particles-js"></div>
   <!--========== Scroll Up ==========-->
   <a href="#" class="scroll_up" id="scroll-up">

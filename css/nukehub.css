@@ -2196,7 +2196,10 @@ textarea {
   padding-top: 2rem;
 }
 .footer_container {
-  row-gap: 3.5rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+.footer_logo{
+  grid-area: auto / span 2;
 }
 .footer_bg {
   background-color: var(--color);
@@ -2209,19 +2212,16 @@ textarea {
 .footer_subtitle {
   font-size: var(--small-font);
 }
+.footer_link_title{
+  font-size: var(--h3-font);
+  margin-bottom: var(--mb-0-25);
+}
 .footer_links {
   display: flex;
   flex-direction: column;
-  row-gap: 1.5rem;
+  row-gap: 0.5rem;
 }
 .footer_link:hover {
-  color: var(--color-lighter);
-}
-.footer_social {
-  font-size: 1.5rem;
-  margin-right: var(--mb-1-5);
-}
-.footer_social:hover {
   color: var(--color-lighter);
 }
 .footer_copy {
@@ -2232,6 +2232,7 @@ textarea {
 }
 .footer_title,
 .footer_subtitle,
+.footer_link_title,
 .footer_link,
 .footer_social {
   color: #fff;
@@ -2292,12 +2293,17 @@ textarea {
     backdrop-filter: blur(15px);
   }
   .about_container,
-  .join_container,
-  .footer_container {
+  .join_container {
     grid-template-columns: repeat(2, 1fr);
   }
   .box_container {
     gap: 1rem;
+  }
+  .footer_container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .footer_logo{
+    grid-area: auto / span 3;
   }
 }
 
@@ -2481,25 +2487,11 @@ textarea {
   .about_buttons {
     justify-content: initial;
   }
-  .footer_container {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .footer_bg {
     padding: 3rem 0 1.5rem;
   }
-  .footer_links {
-    flex-direction: row;
-    column-gap: 2rem;
-  }
-  .footer_socials {
-    justify-self: flex-end;
-  }
   .footer_copy {
     margin-top: 4.5rem;
-  }
-  .footer_social {
-    font-size: 1.2rem;
-    margin-right: var(--mb-1);
   }
 }
 

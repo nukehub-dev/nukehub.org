@@ -1,0 +1,54 @@
+<!--========== Footer ==========-->
+<footer class="footer">
+    <div class="footer_bg">
+        <div class="footer_container container grid">
+            <div class="footer_logo">
+                <h1 class="footer_title">
+                    <i class="nuke-nukehub"></i>
+                    NukeHub
+                </h1>
+                <span class="footer_subtitle">Empowering Nuclear Innovation</span>
+            </div>
+            <div>
+                <h3 class="footer_link_title">Navigation</h3>
+                <ul class="footer_links">
+                    {% for obj in layout.nav %}
+                    <li>
+                        <a href="{{ obj.url }}" class="footer_link"
+                            {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
+                            {{ obj.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h3 class="footer_link_title">Sub Projects</h3>
+                <ul class="footer_links">
+                    {% for obj in layout.projects %}
+                    <li>
+                        <a href="{{ obj.url }}" class="footer_link"
+                            {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
+                            {{ obj.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h3 class="footer_link_title">Connect Us</h3>
+                <ul class="footer_links">
+                    {% for obj in layout.social %}
+                    <li>
+                        <a href="{{ obj.url }}" class="footer_link"
+                            {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
+                            {{ obj.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <p class="footer_copy">&#169; {{site.time | date: '%Y' }} NukeHub. All right reserved</p>
+    </div>
+</footer>
