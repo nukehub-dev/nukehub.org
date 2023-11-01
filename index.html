@@ -7,7 +7,31 @@ permalink: /
 <!--========== Home ==========-->
 <section class="home section" id="home">
   <div class="home_container container grid">
-    <div class="home_content">
+    <div class="home_content grid">
+      <div class="home_social">
+        <a href="https://github.com/nukehub-dev" target="_blank" class="home_social-icon">
+          <i class="nuke-github-1"></i>
+        </a>
+        <a href="https://talk.nukehub.org" target="_blank" class="home_social-icon">
+          <i class="nuke-send-1"></i>
+        </a>
+        <div class="home_social-icon">
+          <i class="nuke-share"></i>
+          <script>
+            document.querySelector('.nuke-share').addEventListener('click', function() {
+              if (navigator.share) {
+                navigator.share({
+                  title: document.title,
+                  url: window.location.href
+                }).then(() => console.log('Successful share'))
+                  .catch((error) => console.log('Error sharing', error));
+              } else {
+                console.log('Web Share API is not supported in your browser.');
+              }
+            });            
+          </script>
+        </div>
+      </div>
       <div class="home_img">
         {% include svg.html class="home_nukehub" %}
       </div>
@@ -20,13 +44,6 @@ permalink: /
           enthusiasts, and professionals who are passionate about nuclear technology.
         </p>
       </div>
-    </div>
-    <div class="home_scroll">
-      <a href="#projects" class="home_scroll-button button--flex">
-        <i class="uil uil-mouse-alt home_scroll-mouse"></i>
-        <span class="home_scroll-name">Scroll down</span>
-        <i class="uil uil-arrow-down home_scroll-arrow"></i>
-      </a>
     </div>
   </div>
 </section>
