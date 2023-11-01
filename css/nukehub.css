@@ -658,6 +658,7 @@ button {
 }
 .box_subtitle {
   margin-bottom: var(--mb-1);
+  font-size: var(--small-font);
 }
 .box_subtitle_value {
   background-color: var(--color);
