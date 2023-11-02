@@ -168,16 +168,6 @@ const sr = ScrollReveal({
   delay: 0,
   reset: false,
 });
-if (window.innerWidth > 768) {
-  sr.reveal(`.nav_item, .change-theme`, {
-    interval: 100,
-    distance: "20px",
-  });
-}
-sr.reveal(`.nav_logo`, {
-  origin: "left",
-  interval: 50,
-});
 sr.reveal(`.section_title, .section_subtitle`, {
   interval: 50,
 });

@@ -253,7 +253,7 @@ ul {
 
 /* TODO: REUSABLE CSS CLASSES */
 .section {
-  padding: 8% 0 2%;
+  padding: 2rem 0 4rem;
 }
 .section_title {
   font-size: var(--h1-font);
@@ -2328,7 +2328,7 @@ textarea {
     margin: 0;
   }
   .section {
-    padding: 1.5% 0 1.5%;
+    padding: 5rem 0 2rem;
   }
   .header {
     top: 0;
