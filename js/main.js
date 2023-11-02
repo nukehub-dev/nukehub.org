@@ -191,7 +191,7 @@ sr.reveal(`.box_content`, {
   origin: "left",
   delay: 100,
 });
-sr.reveal(`.about_description,.about_info,.about_buttons`, {
+sr.reveal(`.join_description,.join_info,.join_buttons`, {
   origin: "right",
   interval: 50,
 });
