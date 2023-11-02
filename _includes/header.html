@@ -10,8 +10,8 @@
             <ul class="nav_list grid">
                 {% for obj in layout.nav %}
                 <li class="nav_item">
-                    <a href="{{ obj.url }}" class="nav_link"
-                        {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
+                    <a href="{{ obj.url }}" class="nav_link" {% if obj.newpage %} target="_blank"
+                        rel="noopener noreferrer" {% endif %}>
                         <i class="{{ obj.icon }} nav_icon"></i>
                         {{ obj.title }}
                     </a>
@@ -50,4 +50,33 @@
             </div>
         </div>
     </nav>
+    <script src="js/jquery.contextMenu.min.js"></script>
+    <script src="js/jquery.ui.position.min.js"></script>
+    <script>
+        $(function () {
+            $.contextMenu({
+              selector: "main",
+              callback: function (key, options) {
+                var m = "clicked: " + key;
+              },
+              animation: {
+                duration: 200,
+                show: "fadeIn",
+                hide: "fadeOut",
+              },
+              zIndex: 1000,
+              items: {
+                {% for obj in layout.nav %}
+                {{obj.title}}: {
+                  name: "<i class='{{ obj.icon }} context_menu-icon'></i> {{ obj.title }}",
+                  isHtmlName: true,
+                  callback: function(key, options){
+                    window.location.href = "{{ obj.url }}";
+                  },
+                },
+                {% endfor %}
+              },
+            });
+          });
+    </script>
 </header>

@@ -1415,6 +1415,7 @@ button {
 }
 .context_menu-icon {
   margin-right: 0.25rem;
+  font-weight: 600;
 }
 
 .context-menu-separator {
