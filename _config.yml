@@ -1,0 +1,16 @@
+title: NukeHub
+email: talk@nukehub.org
+description: >- # this means to ignore newlines until "baseurl:"
+  A pioneering platform dedicated to the exploration and 
+  advancement of nuclear technology. Our mission is to foster 
+  a community of innovators, enthusiasts, and professionals 
+  who are passionate about nuclear technology.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+github_username:  nukehub-dev
+
+# Build settings
+plugins:
+  - jekyll-sitemap
+  - jekyll-redirect-from
+  - jekyll-scholar
