@@ -1739,7 +1739,7 @@ textarea {
 .footer_copy {
   font-size: var(--smaller-font);
   text-align: center;
-  color: var(--color-lighter);
+  color: #fff;
   margin-top: var(--mb-3);
 }
 .footer_title,
