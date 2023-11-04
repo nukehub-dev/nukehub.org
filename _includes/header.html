@@ -1,0 +1,82 @@
+<!--========== Header ==========-->
+<header class="header" id="header">
+    <div class="header_bg" id="header-bg"></div>
+    <nav class="nav container">
+        <a href="/" class="nav_logo">
+            <i class="nuke-nukehub"></i>
+            NukeHub
+        </a>
+        <div class="nav_menu" id="nav-menu">
+            <ul class="nav_list grid">
+                {% for obj in layout.nav %}
+                <li class="nav_item">
+                    <a href="{{ obj.url }}" class="nav_link" {% if obj.newpage %} target="_blank"
+                        rel="noopener noreferrer" {% endif %}>
+                        <i class="{{ obj.icon }} nav_icon"></i>
+                        {{ obj.title }}
+                    </a>
+                </li>
+                {% endfor %}
+                <li class="nav_item theme-colors grid_span">
+                    <div class="color" style="background: hsl(5, 69%, 61%)" hue-color="5" red="224" green="98" blue="87"
+                        particle-color="#e06257,#cb4e43,#fcbbb6"
+                        svg-color="invert(79%) sepia(60%) saturate(7217%) hue-rotate(328deg) brightness(96%) contrast(82%)">
+                    </div>
+                    <div class="color" style="background: hsl(25, 69%, 61%)" hue-color="25" red="224" green="144"
+                        blue="87" particle-color="#e09057,#cb7c43,#fcd3b6"
+                        svg-color="invert(63%) sepia(49%) saturate(492%) hue-rotate(341deg) brightness(90%) contrast(94%)">
+                    </div>
+                    <div class="color" style="background: hsl(140, 69%, 61%)" hue-color="140" red="87" green="224"
+                        blue="133" particle-color="#57e085,#43cb70,#b6fccd"
+                        svg-color="invert(73%) sepia(33%) saturate(713%) hue-rotate(86deg) brightness(99%) contrast(88%)">
+                    </div>
+                    <div class="color" style="background: hsl(190, 69%, 61%)" hue-color="200" red="87" green="201"
+                        blue="224" particle-color="#57c9e0,#439ecb,#b6f0fc"
+                        svg-color="invert(72%) sepia(54%) saturate(429%) hue-rotate(146deg) brightness(90%) contrast(95%)">
+                    </div>
+                    <div class="color" style="background: hsl(255, 69%, 61%)" hue-color="255" red="121" green="87"
+                        blue="224" particle-color="#7957e0,#6543cb,#c7b6fc"
+                        svg-color="invert(55%) sepia(97%) saturate(5013%) hue-rotate(236deg) brightness(91%) contrast(93%)">
+                    </div>
+                </li>
+            </ul>
+            <i class="nuke-error nav_close" id="nav-close"></i>
+        </div>
+        <div class="nav_btns">
+            <i class="nuke-moon change-theme" id="theme-button"></i>
+
+            <div class="nav_toggle" id="nav-toggle">
+                <i class="nuke-dashboard-1"></i>
+            </div>
+        </div>
+    </nav>
+    <script src="js/jquery.contextMenu.min.js"></script>
+    <script src="js/jquery.ui.position.min.js"></script>
+    <script>
+        $(function () {
+            $.contextMenu({
+              selector: "main",
+              callback: function (key, options) {
+                var m = "clicked: " + key;
+              },
+              animation: {
+                duration: 200,
+                show: "fadeIn",
+                hide: "fadeOut",
+              },
+              zIndex: 1000,
+              items: {
+                {% for obj in layout.nav %}
+                {{obj.title}}: {
+                  name: "<i class='{{ obj.icon }} context_menu-icon'></i> {{ obj.title }}",
+                  isHtmlName: true,
+                  callback: function(key, options){
+                    window.location.href = "{{ obj.url }}";
+                  },
+                },
+                {% endfor %}
+              },
+            });
+          });
+    </script>
+</header>

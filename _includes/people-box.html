@@ -1,0 +1,17 @@
+<!--========== Box ==========-->
+<div class="box_container container grid">
+    {% for obj in site.data.people %}
+    <a target="_blank" href="{{ obj.url }}" class="box_content">
+        <div class="box_bg"></div>
+        <div>
+            <div class="box_header">
+                <h3 class="box_title">{{ obj.title }}</h3>
+            </div>
+            <p class="box_subtitle">{{ obj.description }}</p>
+            <div  class="box_button button--flex">
+                Try <i class="nuke-arrow-ios-forward button_icon"></i>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>

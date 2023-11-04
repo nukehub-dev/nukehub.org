@@ -100,7 +100,7 @@ window.addEventListener("scroll", scrollTop);
 /*TODO  Change Theme */
 const themeButton = document.getElementById("theme-button");
 const darkTheme = "dark-theme";
-const iconTheme = "uil-sun";
+const iconTheme = "nuke-sun";
 
 const selectedTheme = localStorage.getItem("selected-theme");
 const selectedIcon = localStorage.getItem("selected-icon");
@@ -116,13 +116,13 @@ document.querySelector(":root").style.setProperty("--color-svg", SVGColor);
 const getCurrentTheme = () =>
   document.body.classList.contains(darkTheme) ? "dark" : "light";
 const getCurrentIcon = () =>
-  themeButton.classList.contains(iconTheme) ? "uil-moon" : "uil-sun";
+  themeButton.classList.contains(iconTheme) ? "nuke-moon" : "nuke-sun";
 
 if (selectedTheme) {
   document.body.classList[selectedTheme === "dark" ? "add" : "remove"](
     darkTheme
   );
-  themeButton.classList[selectedIcon === "uil-moon" ? "add" : "remove"](
+  themeButton.classList[selectedIcon === "nuke-moon" ? "add" : "remove"](
     iconTheme
   );
 }
@@ -168,16 +168,6 @@ const sr = ScrollReveal({
   delay: 0,
   reset: false,
 });
-if (window.innerWidth > 768) {
-  sr.reveal(`.nav_item, .change-theme`, {
-    interval: 100,
-    distance: "20px",
-  });
-}
-sr.reveal(`.nav_logo`, {
-  origin: "left",
-  interval: 50,
-});
 sr.reveal(`.section_title, .section_subtitle`, {
   interval: 50,
 });
@@ -191,34 +181,19 @@ sr.reveal(`.home_title, .home_subtitle, .home_description`, {
   delay: 400,
   interval: 200,
 });
-sr.reveal(`.home_button,.home_social-icon`, {
+sr.reveal(`.home_social-icon`, {
   delay: 700,
   origin: "left",
   interval: 200,
   distance: "100px",
 });
-sr.reveal(`.home_scroll`, {
-  delay: 2000,
-});
-sr.reveal(`.about_img`, {
+sr.reveal(`.box_content`, {
   origin: "left",
   delay: 100,
 });
-sr.reveal(`.about_description,.about_info,.about_buttons`, {
+sr.reveal(`.join_description,.join_info,.join_buttons`, {
   origin: "right",
   interval: 50,
-});
-sr.reveal(`.project_bg`, {
-  distance: "100px",
-});
-sr.reveal(`.project_title`, {
-  origin: "top",
-});
-sr.reveal(`.project_description`, {
-  interval: 50,
-});
-sr.reveal(`.project_img-reveal`, {
-  origin: "right",
 });
 sr.reveal(`.join_information`, {
   interval: 50,
@@ -229,49 +204,12 @@ sr.reveal(`.join_content,.join_button`, {
   origin: "right",
 });
 sr.reveal(
-  `.footer_bg,.footer_title,.footer_subtitle,.footer_copy`,
+  `.footer_bg,.footer_title,.footer_subtitle,.footer_copy,footer_link_title,.footer_links`,
   {
     interval: 50,
   }
 );
-/*TODO  Context Menu */
-$(function () {
-  $.contextMenu({
-    selector: "main",
-    callback: function (key, options) {
-      var m = "clicked: " + key;
-    },
-    animation: {
-      duration: 200,
-      show: "fadeIn",
-      hide: "fadeOut",
-    },
-    zIndex: 10000,
-    items: {
-      firstCommand: {
-        name: "<i class='uil uil-estate context_menu-icon'></i> Home",
-        isHtmlName: true,
-        callback: function (key, opt) {
-          window.location.href = "#home";
-        },
-      },
-      secondCommand: {
-        name: "<i class='uil uil-file-alt context_menu-icon'></i> Projects",
-        isHtmlName: true,
-        callback: function (key, opt) {
-          window.location.href = "#projects";
-        },
-      },
-      thirdCommand: {
-        name: "<i class='uil uil-comment-plus context_menu-icon'></i> join",
-        isHtmlName: true,
-        callback: function (key, opt) {
-          window.location.href = "#join";
-        },
-      },
-    },
-  });
-});
+
 /*TODO  Notification */
 let globalOptions = {
   position: "top-right",
@@ -282,11 +220,11 @@ let globalOptions = {
   },
   icons: {
     enabled: true,
-    prefix: "<i class='uil ",
+    prefix: "<i class='",
     suffix: "'></i>",
-    warNukeHubg: "uil-exclamation-triangle",
-    success: "uil-check-circle",
-    error: "uil-times-circle",
+    warning: "nuke-info-3",
+    success: "nuke-success-1",
+    error: "nuke-error-1",
   },
 };
 let notifier = new AWN(globalOptions);
@@ -321,7 +259,7 @@ function runParticleJS(particleColor) {
         type: "circle",
         stroke: { width: 0, color: "#000000" },
         polygon: { nb_sides: 12 },
-        image: { src: "assests/images/nrms.svg", width: 100, height: 100 },
+        image: { src: "assets/images/nrms.svg", width: 100, height: 100 },
       },
       opacity: {
         value: 0.03,
