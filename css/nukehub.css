@@ -470,14 +470,7 @@ button {
   height: 1.1rem;
   animation: spin 2s linear infinite;
 }
-.loader_go {
-  border: 2px solid var(--opacity-color-20);
-  border-top: 10px solid #fff;
-  border-radius: 50%;
-  width: calc(var(--normal-font) * 9);
-  height: calc(var(--normal-font) * 9);
-  animation: spin 2s linear infinite;
-}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -493,20 +486,6 @@ button {
   padding: 1rem;
   border-radius: 0.5rem;
   font-weight: var(--font-medium);
-  transition: 0.3s;
-}
-.button_go {
-  display: inline-block;
-  background-color: rgba(55, 255, 200, 0.8);
-  color: #fff;
-  padding: 1rem;
-  border-radius: 1rem;
-  font-weight: var(--font-medium);
-  font-size: calc(var(--normal-font) * 7.5);
-  transition: 0.3s;
-}
-.button_go:hover {
-  background-color: rgba(55, 255, 200, 0.7);
   transition: 0.3s;
 }
 .button:hover {
@@ -623,11 +602,7 @@ button {
   padding: 0.2rem 0rem;
   text-align: center;
 }
-.box_header-benchmark {
-  margin-bottom: 0.5rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
+
 .box_title {
   font-size: var(--h3-font);
   font-weight: var(--font-medium);
@@ -1749,6 +1724,41 @@ textarea {
 .footer_social {
   color: #fff;
 }
+
+/*TODO: Page */
+.page {
+  text-align: justify;
+  line-height: 1.5;
+}
+.page h1{
+  font-size: var(--h1-font);
+  margin-block-end: var(--mb-0-1);
+  text-align: center;
+}
+.page h2{
+  font-size: var(--h2-font);
+  margin-block-start: var(--mb-1);
+  margin-block-end: var(--mb-0-1);
+}
+.page h3{
+  font-size: var(--h3-font);
+  margin-block-start: var(--mb-0-75);
+  margin-block-end: var(--mb-0-75);
+}
+.page h4{
+  font-size: var(--h4-font);
+  margin-block-start: var(--mb-0-75);
+  margin-block-end: var(--mb-0-75);
+}
+.page p{
+  margin-block-start: var(--mb-0-5);
+  margin-block-end: var(--mb-0-5);
+}    
+.page ul {
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
 /* TODO: Responsive */
 @media screen and (max-width: 410px) {
   .container {
