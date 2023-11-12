@@ -1,0 +1,48 @@
+- title: Home
+  icon: nuke-news
+  url: /
+
+- title: Projects
+  icon: nuke-nuclear-equipment
+  children:
+    - title: NRMS
+      icon: nuke-nrms
+      url: /nrms
+    - title: NukeAnalytics
+      icon: nuke-analytics
+      url: /nuke-analytics
+    - title: NukeLab
+      icon: nuke-lab
+      url: /nuke-lab
+    - title: NukeBox
+      icon: nuke-box
+      url: /nuke-box
+
+- title: Manual
+  icon: nuke-document
+  children:
+    - title: About
+      icon: nuke-document
+      url: /about
+    - title: Code of Conduct
+      icon: nuke-document
+      url: /code-of-conduct
+
+- title: Community
+  icon: nuke-profile
+  children:
+    - title: People
+      icon: nuke-profile
+      url: /people
+    - title: Events
+      icon: nuke-calendar
+      url: /events
+    - title: NukeTalk
+      icon: nuke-talk
+      url: https://talk.nukehub.org
+      newpage: true
+    - title: GitHub
+      icon: nuke-github
+      url: https://github.com/nukehub-dev
+      newpage: true
+

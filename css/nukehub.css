@@ -404,6 +404,9 @@ ul {
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
+.nav_item {
+  cursor: pointer;
+}
 .grid_span {
   text-align: center;
   margin-left: auto;
@@ -438,7 +441,45 @@ ul {
 .show_menu {
   bottom: 0;
 }
-
+.nav_icon_droupdown {
+  position: absolute;
+  font-size: var(--font-medium);
+  font-weight: 600;
+  margin-left: 0.2rem;
+  transition: 0.3s;
+}
+.nav_icon_droupdown.rotate{
+  transform: rotate(180deg);
+  transition: 0.3s;
+}
+.dropdown {
+  display: none;
+}
+.no_dropdown {
+  display: block;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: var(--body-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  z-index: 1;
+  overflow: hidden;
+  margin-top: 1rem;
+  transition: 0.3s;
+}
+.dropdown-toggle{
+  display: block;
+}
+.dropdown-link {
+  display: block;
+  padding: 0.5rem;
+  font-size: var(--small-font);
+}
+.dropdown-link:hover {
+  background-color: var(--opacity-color-10);
+}
 .active-link {
   color: var(--color);
 }
@@ -1684,7 +1725,7 @@ textarea {
 .footer_container {
   grid-template-columns: repeat(2, 1fr);
 }
-.footer_logo{
+.footer_logo {
   grid-area: auto / span 2;
 }
 .footer_bg {
@@ -1698,7 +1739,7 @@ textarea {
 .footer_subtitle {
   font-size: var(--small-font);
 }
-.footer_link_title{
+.footer_link_title {
   font-size: var(--h4-font);
   margin-bottom: var(--mb-0-25);
 }
@@ -1730,30 +1771,30 @@ textarea {
   text-align: justify;
   line-height: 1.5;
 }
-.page h1{
+.page h1 {
   font-size: var(--h1-font);
   margin-block-end: var(--mb-0-1);
   text-align: center;
 }
-.page h2{
+.page h2 {
   font-size: var(--h2-font);
   margin-block-start: var(--mb-1);
   margin-block-end: var(--mb-0-1);
 }
-.page h3{
+.page h3 {
   font-size: var(--h3-font);
   margin-block-start: var(--mb-0-75);
   margin-block-end: var(--mb-0-75);
 }
-.page h4{
+.page h4 {
   font-size: var(--h4-font);
   margin-block-start: var(--mb-0-75);
   margin-block-end: var(--mb-0-75);
 }
-.page p{
+.page p {
   margin-block-start: var(--mb-0-5);
   margin-block-end: var(--mb-0-5);
-}    
+}
 .page ul {
   padding-left: 1.5rem;
   list-style-type: disc;
@@ -1823,7 +1864,7 @@ textarea {
   .footer_container {
     grid-template-columns: repeat(3, 1fr);
   }
-  .footer_logo{
+  .footer_logo {
     grid-area: auto / span 3;
   }
 }
@@ -1863,6 +1904,12 @@ textarea {
   }
   .nav_menu {
     margin-left: auto;
+  }
+  .dropdown {
+    display: block;
+  }
+  .no_dropdown {
+    display: none;
   }
   .show-scroll {
     bottom: 2rem;

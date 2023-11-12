@@ -23,7 +23,7 @@ We believe that the future of nuclear technology lies in collaboration, knowledg
 sharing, and innovation, and NukeHub is the place where these aspirations can thrive.
 
 NukeHub operates under the
-<a target="_blank" href="https://opensource.org/licenses/BSD-3-Clause">
-  BSD-3-Clause license</a>, ensuring an open and collaborative
+<a target="_blank" href="https://opensource.org/licenses/BSD-2-Clause">
+  BSD-2-Clause license</a>, ensuring an open and collaborative
 environment for everyone. We encourage contributions, knowledge sharing, and
 innovation within the boundaries of this license.

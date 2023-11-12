@@ -33,39 +33,54 @@ if (navClose) {
   });
 }
 
+// Close dropdown when clicking outside
+$(document).on('click', function (e) {
+  if (!$(e.target).closest('.nav_item.dropdown').length) {
+    $('.dropdown-menu').hide();
+    $('.nav_icon_droupdown').removeClass('rotate');
+  }
+});
+
+// Toggle dropdown on click
+$('.nav_item.dropdown').on('click', function () {
+  // Calculate and set the position of the dropdown-menu
+  var dropdownMenu = $(this).find('.dropdown-menu');
+    dropdownMenu.css({
+      display: 'block',
+      left: $(this).offset().left,
+      bottom: 'auto'
+    });
+    $(this).find('.nav_icon_droupdown').addClass('rotate');
+  // Hide other dropdowns
+  $('.dropdown-menu').not(dropdownMenu).hide();
+  $('.nav_item.dropdown').not(this).find('.nav_icon_droupdown').removeClass('rotate');
+});
+
 /*========== Remove Menu Mobile ==========*/
 const navLink = document.querySelectorAll(".nav_link");
 
 function linkAction() {
   const navMenu = document.getElementById("nav-menu");
 
-  navMenu.classList.remove("show_menu");
+  //navMenu.classList.remove("show_menu");
 }
 navLink.forEach((n) => n.addEventListener("click", linkAction));
 
 /*TODO  Scroll Active Link */
-const sections = document.querySelectorAll("section[id]");
-
-function scrollActive() {
-  const scrollY = window.pageYOffset;
-
-  sections.forEach((current) => {
-    const sectionHeight = current.offsetHeight;
-    const sectionTop = current.offsetTop - 100;
-    sectionId = current.getAttribute("id");
+$(window).on('scroll', function() {
+  const scrollY = $(window).scrollTop();
+  $("section[id]").each(function() {
+    const sectionHeight = $(this).outerHeight();
+    const sectionTop = $(this).offset().top - 100;
+    const sectionId = $(this).attr('id');
 
     if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-      document
-        .querySelector(".nav_menu a[href*=" + sectionId + "]")
-        .classList.add("active-link");
+      $(".nav_menu a[href*=" + sectionId + "]").addClass("active-link");
     } else {
-      document
-        .querySelector(".nav_menu a[href*=" + sectionId + "]")
-        .classList.remove("active-link");
+      $(".nav_menu a[href*=" + sectionId + "]").removeClass("active-link");
     }
   });
-}
-window.addEventListener("scroll", scrollActive);
+});
 
 /*TODO  Change Background Header */
 const nav = document.getElementById("header-bg");
@@ -200,6 +215,22 @@ sr.reveal(`.join_information`, {
   origin: "left",
 });
 sr.reveal(`.join_content,.join_button`, {
+  interval: 50,
+  origin: "right",
+});
+sr.reveal(`.container > p`, {
+  interval: 50,
+  origin: "right",
+});
+sr.reveal(`.container > h1`, {
+  interval: 50,
+  origin: "top",
+});
+sr.reveal(`.container > h2,.container > h3,.container > h4`, {
+  interval: 50,
+  origin: "left",
+});
+sr.reveal(`.container > ul li`, {
   interval: 50,
   origin: "right",
 });
