@@ -8,7 +8,33 @@
         </a>
         <div class="nav_menu" id="nav-menu">
             <ul class="nav_list grid">
-                {% for obj in layout.nav %}
+                {% for obj in site.data.nav %}
+                {% if obj.children %}
+                <li class="nav_item dropdown">
+                    <div class="nav_link dropdown-toggle">
+                        {{ obj.title }} <i class="nuke-arrow-ios-upward nav_icon_droupdown"></i>
+                    </div>
+                    <ul class="dropdown-menu">
+                        {% for child in obj.children %}
+                        <li class="dropdown-item">
+                            <a href="{{ child.url }}" class="dropdown-link" {% if child.newpage %} target="_blank"
+                                rel="noopener noreferrer" {% endif %}>
+                                {{ child.title }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% for child in obj.children %}
+                <li class="nav_item no_dropdown">
+                    <a href="{{ child.url }}" class="nav_link" {% if child.newpage %} target="_blank"
+                        rel="noopener noreferrer" {% endif %}>
+                        <i class="{{ child.icon }} nav_icon"></i>
+                        {{ child.title }}
+                    </a>
+                </li>
+                {% endfor %}
+                {% else %}
                 <li class="nav_item">
                     <a href="{{ obj.url }}" class="nav_link" {% if obj.newpage %} target="_blank"
                         rel="noopener noreferrer" {% endif %}>
@@ -16,7 +42,7 @@
                         {{ obj.title }}
                     </a>
                 </li>
-                {% endfor %}
+                {% endif %}{% endfor %}
                 <li class="nav_item theme-colors grid_span">
                     <div class="color" style="background: hsl(5, 69%, 61%)" hue-color="5" red="224" green="98" blue="87"
                         particle-color="#e06257,#cb4e43,#fcbbb6"
@@ -55,28 +81,42 @@
     <script>
         $(function () {
             $.contextMenu({
-              selector: "main",
-              callback: function (key, options) {
-                var m = "clicked: " + key;
-              },
-              animation: {
-                duration: 200,
-                show: "fadeIn",
-                hide: "fadeOut",
-              },
-              zIndex: 1000,
-              items: {
-                {% for obj in layout.nav %}
-                {{obj.title}}: {
-                  name: "<i class='{{ obj.icon }} context_menu-icon'></i> {{ obj.title }}",
-                  isHtmlName: true,
-                  callback: function(key, options){
-                    window.location.href = "{{ obj.url }}";
-                  },
+                selector: "main",
+                callback: function (key, options) {
+                    var m = "clicked: " + key;
                 },
-                {% endfor %}
-              },
+                animation: {
+                    duration: 200,
+                    show: "fadeIn",
+                    hide: "fadeOut",
+                },
+                zIndex: 1000,
+                items: {
+                    //{% for obj in site.data.nav %}
+                    "{{obj.title}}": {
+                        name: "<i class='{{ obj.icon }} context_menu-icon'></i> {{ obj.title }}",
+                        isHtmlName: true,
+                        //{% if obj.children %}
+                        items: {
+                            // {% for child in obj.children %}
+                            "{{ child.title }}": {
+                                name: "<i class='{{ child.icon }} context_menu-icon'></i> {{ child.title }}",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "{{ child.url }}";
+                                },
+                            },
+                            // {% endfor %}
+                        },
+                        //{% else %}
+                        callback: function (key, options) {
+                            window.location.href = "{{ obj.url }}";
+                        },
+                        //{% endif %}
+                    },
+                    //{% endfor %}
+                },
             });
-          });
+        });
     </script>
 </header>
