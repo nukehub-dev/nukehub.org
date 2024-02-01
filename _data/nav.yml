@@ -3,20 +3,21 @@
   url: /
 
 - title: Projects
-  icon: nuke-nuclear-equipment
+  icon: nuke-application
   children:
     - title: NRMS
-      icon: nuke-nrms
+      icon: nuke-power-plant-1
       url: /nrms
     - title: NukeAnalytics
-      icon: nuke-analytics
+      icon: nuke-chart-1
       url: /nuke-analytics
     - title: NukeLab
-      icon: nuke-lab
+      icon: nuke-atom
       url: /nuke-lab
     - title: NukeBox
-      icon: nuke-box
-      url: /nuke-box
+      icon: nuke-nuclear-equipment
+      url: https://nukebox.readthedocs.io/
+      newpage: true
 
 - title: Manual
   icon: nuke-document
@@ -35,10 +36,10 @@
       icon: nuke-profile
       url: /people
     - title: Events
-      icon: nuke-calendar
+      icon: nuke-target
       url: /events
     - title: NukeTalk
-      icon: nuke-talk
+      icon: nuke-chat-2
       url: https://talk.nukehub.org
       newpage: true
     - title: GitHub
