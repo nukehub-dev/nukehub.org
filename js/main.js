@@ -234,6 +234,10 @@ sr.reveal(`.container > ul li`, {
   interval: 50,
   origin: "right",
 });
+sr.reveal(`.container > center img`, {
+  interval: 50,
+  origin: "left",
+});
 sr.reveal(
   `.footer_bg,.footer_title,.footer_subtitle,.footer_copy,footer_link_title,.footer_links`,
   {
