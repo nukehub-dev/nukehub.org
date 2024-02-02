@@ -1,5 +1,5 @@
 - title: Home
-  icon: nuke-news
+  icon: nuke-home
   url: /
 
 - title: Projects
@@ -20,23 +20,23 @@
       newpage: true
 
 - title: Manual
-  icon: nuke-document
+  icon: nuke-news
   children:
     - title: About
-      icon: nuke-document
+      icon: nuke-alert
       url: /about
     - title: Code of Conduct
-      icon: nuke-document
+      icon: nuke-law
       url: /code-of-conduct
 
 - title: Community
-  icon: nuke-profile
+  icon: nuke-group
   children:
     - title: People
       icon: nuke-profile
       url: /people
     - title: Events
-      icon: nuke-target
+      icon: nuke-calender
       url: /events
     - title: NukeTalk
       icon: nuke-chat-2
