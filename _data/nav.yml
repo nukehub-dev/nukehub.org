@@ -12,10 +12,10 @@
       icon: nuke-chart-1
       url: /nuke-analytics
     - title: NukeLab
-      icon: nuke-atom
+      icon: nuke-research-platform
       url: /nuke-lab
     - title: NukeBox
-      icon: nuke-nuclear-equipment
+      icon: nuke-box
       url: https://nukebox.readthedocs.io/
       newpage: true
 
@@ -36,7 +36,7 @@
       icon: nuke-profile
       url: /people
     - title: Events
-      icon: nuke-calender
+      icon: nuke-calender-alt
       url: /events
     - title: NukeTalk
       icon: nuke-chat-2
