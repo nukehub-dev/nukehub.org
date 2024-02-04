@@ -1,16 +1,21 @@
+# To add a new link to the footer, follow these steps:
+# 1. Identify the section where you want to add the link.
+# 2. Under the children of the identified section, add a new entry.
+# 3. Each entry should have the following fields:
+#    - title: The name of the entry.
+#    - url: The URL that the entry should link to.
+#    - newpage: If the entry should open in a new page, set this to true.
+# 4. You can create new sections if needed. For this you may need to specify a title and children array.
+
 - title: Navigation
   children:
     - title: Home
-      icon: nuke-news
       url: /#home
     - title: Projects
-      icon: nuke-nuclear-equipment
       url: /#projects
     - title: Join
-      icon: nuke-profile
       url: /#join
     - title: About
-      icon: nuke-document
       url: /about
 
 - title: Projects
