@@ -21,13 +21,13 @@
 - title: Projects
   children:
     - title: NRMS
-      url: https://nrms.nukehub.org
+      url: /nrms
       newpage: true
     - title: NukeAnalytics
-      url: https://analytics.nukehub.org
+      url: /nuke-analytics
       newpage: true
     - title: NukeLab
-      url: https://lab.nukehub.org
+      url: /nuke-lab
       newpage: true
     - title: NukeBox
       url: https://nukebox.readthedocs.io/
