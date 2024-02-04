@@ -1,3 +1,14 @@
+# To add a new link to the navigation, follow these steps:
+# 1. Identify the section where you want to add the entry.
+# 2. Under the `children` of the identified section, add a new entry.
+# 3. Each entry should have the following fields:
+#    - title: The name of the entry.
+#    - icon: The icon for the entry. Check css/style.css for available icons.
+#    - url: The URL that the entry should link to.
+#    - newpage: If the entry should open in a new page, set this to true.
+# 4. You can create new sections if needed. For this you may need to specify a title.
+# 5. You can create new sections with or without children.
+
 - title: Home
   icon: nuke-home
   url: /
