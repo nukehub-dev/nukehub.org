@@ -1,0 +1,31 @@
+# This YAML block represents all event entries. Each field contains specific details about the event.
+
+# Fields:
+# title (required): The title of the event.
+# description (optional): A description of the event.
+# start (required): The start time of the event in ISO 8601 format. The time zone is assumed to be UTC.
+# end (optional): The end time of the event in ISO 8601 format.
+# venue (required if physical event): The location of the event. For virtual events, this is set to 'Virtual Event'.
+# organizer (optional): Details about the event organizer, including name and email.
+# speakers (optional): Details about the event speakers, including name and email.
+# url (optional): The URL of the event.
+# customization (optional): Customization options for visual elements, including background and text color (default: blue and white respectively).
+
+# Example Event Entry:
+
+#- title: Title of Event
+#  description: Description of the event
+#  start: '2024-02-01T01:00'
+#  end: '2024-02-01T02:00'
+#  venue: Venue Name
+#  organizer:
+#    - name: Organizer Name
+#      email: organizer@email.com
+#  speakers:
+#    - name: Speaker Name
+#      email: speaker@email.com
+#  url: https://www.example.com
+#  customization:
+#    - background: red
+#      text: white
+
