@@ -1,0 +1,43 @@
+
+
+
+<div class="box_container container grid team">
+    {% for obj in include.data %}
+    <div class="box_content" style="padding: 0">
+        <div class="box_bg"></div>
+        <div class="our-team">
+            <div class="picture">
+                <img class="img-fluid" src="{{ obj.image }}" alt="{{ obj.name }}">
+            </div>
+            <div class="team-content">
+                <p class="box_title">{{ obj.name }}</p>
+                {% if obj.role %}
+                <p style="font-size: var(--smaller-font)">{{ obj.role }}</p>
+                {% endif %}
+                {% if obj.organization %}
+                <p style="font-size: var(--small-font)">{{ obj.organization }}</p>
+                {% endif %}
+                {% if obj.location %}
+                <p style="font-size: var(--smaller-font)">{{ obj.location }}</p>
+                {% endif %}
+            </div>
+            <ul class="social">
+                {% if obj.phone %}
+                <li>
+                    <a href="tel:{{ obj.phone }}" aria-hidden="true">
+                        <i class="nuke-phone-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.email %}
+                <li>
+                    <a href="mailto:{{ obj.email }}" aria-hidden="true">
+                        <i class="nuke-mail-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
