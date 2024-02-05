@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'NukeHub';
-  src:  url('fonts/NukeHub.eot?8931lj');
-  src:  url('fonts/NukeHub.eot?8931lj#iefix') format('embedded-opentype'),
-    url('fonts/NukeHub.ttf?8931lj') format('truetype'),
-    url('fonts/NukeHub.woff?8931lj') format('woff'),
-    url('fonts/NukeHub.svg?8931lj#NukeHub') format('svg');
+  src:  url('fonts/NukeHub.eot?vqsam6');
+  src:  url('fonts/NukeHub.eot?vqsam6#iefix') format('embedded-opentype'),
+    url('fonts/NukeHub.ttf?vqsam6') format('truetype'),
+    url('fonts/NukeHub.woff?vqsam6') format('woff'),
+    url('fonts/NukeHub.svg?vqsam6#NukeHub') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -392,7 +392,7 @@ i, .icomoon-liga {
 .nuke-iaea:before {
   content: "\e9a7";
 }
-.nuke-iaea1:before {
+.nuke-iaea-alt:before {
   content: "\e9a8";
 }
 .nuke-idea:before {
@@ -440,10 +440,10 @@ i, .icomoon-liga {
 .nuke-law-solid:before {
   content: "\e9ea";
 }
-.nuke-linkedin:before {
+.nuke-linkedin-solid:before {
   content: "\e9d7";
 }
-.nuke-linkedin-alt:before {
+.nuke-linkedin-solid-alt:before {
   content: "\e9d8";
 }
 .nuke-loading-1:before {
@@ -479,7 +479,7 @@ i, .icomoon-liga {
 .nuke-love-solid:before {
   content: "\e970";
 }
-.nuke-machine-learning:before {
+.nuke-machine-learning-solid:before {
   content: "\e9c2";
 }
 .nuke-mail:before {
@@ -686,7 +686,7 @@ i, .icomoon-liga {
 .nuke-solit-cells:before {
   content: "\e9a2";
 }
-.nuke-stack-overflow:before {
+.nuke-stack-overflow-solid:before {
   content: "\e9c5";
 }
 .nuke-success:before {

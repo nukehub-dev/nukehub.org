@@ -448,7 +448,7 @@ ul {
   margin-left: 0.2rem;
   transition: 0.3s;
 }
-.nav_icon_droupdown.rotate{
+.nav_icon_droupdown.rotate {
   transform: rotate(180deg);
   transition: 0.3s;
 }
@@ -469,7 +469,7 @@ ul {
   margin-top: 1rem;
   transition: 0.3s;
 }
-.dropdown-toggle{
+.dropdown-toggle {
   display: block;
 }
 .dropdown-link {
@@ -1646,12 +1646,13 @@ textarea {
 }
 
 /*TODO: Team */
-.team{
+.team {
   margin-top: var(--mb-1);
   margin-bottom: var(--mb-1-5);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
 }
 .our-team {
-  padding: 1.5rem 0 2rem;
+  padding: 1.5rem 0.25rem 2rem 0.25rem;
   background-color: transparent;
   text-align: center;
   overflow: hidden;
@@ -1811,9 +1812,6 @@ textarea {
   .box_container {
     gap: 1rem;
   }
-  .box_container.team {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .footer_container {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1884,9 +1882,6 @@ textarea {
     display: grid;
     justify-content: left;
     grid-gap: var(--mb-1);
-  }
-  .box_container.team {
-    grid-template-columns: repeat(3, 1fr);
   }
   .box_fullscreen {
     bottom: 1%;

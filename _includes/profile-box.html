@@ -1,6 +1,3 @@
-
-
-
 <div class="box_container container grid team">
     {% for obj in include.data %}
     <div class="box_content" style="padding: 0">
@@ -24,15 +21,113 @@
             <ul class="social">
                 {% if obj.phone %}
                 <li>
-                    <a href="tel:{{ obj.phone }}" aria-hidden="true">
+                    <a href="tel:{{ obj.phone }}" aria-hidden="true" target="_blank">
                         <i class="nuke-phone-solid"></i>
                     </a>
                 </li>
                 {% endif %}
                 {% if obj.email %}
                 <li>
-                    <a href="mailto:{{ obj.email }}" aria-hidden="true">
+                    <a href="mailto:{{ obj.email }}" aria-hidden="true" target="_blank">
                         <i class="nuke-mail-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.url %}
+                <li>
+                    <a href="{{ obj.url }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-earth"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.github %}
+                <li>
+                    <a href="https://github.com/{{ obj.github }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-github-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.gitlab %}
+                <li>
+                    <a href="https://gitlab.com/{{ obj.gitlab }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-gitlab-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.bitbucket %}
+                <li>
+                    <a href="https://bitbucket.org/{{ obj.bitbucket }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-bitbucket-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.stackoverflow %}
+                <li>
+                    <a href="https://stackoverflow.com/users/{{ obj.stackoverflow }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-stack-overflow-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.whatsapp %}
+                <li>
+                    <a href="https://wa.me/{{ obj.whatsapp }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-whatsapp-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.facebook %}
+                <li>
+                    <a href="https://facebook.com/{{ obj.facebook }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-facebook-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.instagram %}
+                <li>
+                    <a href="https://instagram.com/{{ obj.instagram }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-instagram-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.twitter %}
+                <li>
+                    <a href="https://twitter.com/{{ obj.twitter }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-twitter-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.youtube %}
+                <li>
+                    <a href="https://youtube.com/{{ obj.youtube }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-youtube-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.linkedin %}
+                <li>
+                    <a href="https://linkedin.com/in/{{ obj.linkedin }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-linkedin-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.scholar %}
+                <li>
+                    <a href="https://scholar.google.com/citations?user={{ obj.scholar }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-education-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.orcid %}
+                <li>
+                    <a href="https://orcid.org/{{ obj.orcid }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-orcid-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.researchgate %}
+                <li>
+                    <a href="https://www.researchgate.net/profile/{{ obj.researchgate }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-researchgate-solid"></i>
                     </a>
                 </li>
                 {% endif %}
