@@ -1,11 +1,12 @@
-# To add a new entry to the projects, follow these steps:
-# 1. Add a new entry under the existing ones.
-# 2. Each entry should have the following fields:
-#    - title: The name of the entry.
-#    - description: A brief description about the project.
-#    - url: The URL where the project can be accessed.
-#    - github: The URL of the GitHub repository of the project.
-#    - newpage: If the entry should open in a new page, set this to true.
+# This YAML structure defines categories for project entries,
+# each containing details such as title, description, and URL.
+
+# Fields:
+# title (required): The title of the category.
+# description (required): A description of the category.
+# url (required): The URL of the project.
+# github (required): The URL of the project's GitHub repository.
+# newpage (optional): Whether to open the URL in a new page.
 
 - title: NRMS
   description: >

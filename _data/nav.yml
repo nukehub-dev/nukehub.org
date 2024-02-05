@@ -1,13 +1,15 @@
-# To add a new link to the navigation, follow these steps:
-# 1. Identify the section where you want to add the entry.
-# 2. Under the `children` of the identified section, add a new entry.
-# 3. Each entry should have the following fields:
-#    - title: The name of the entry.
-#    - icon: The icon for the entry. Check css/style.css for available icons.
-#    - url: The URL that the entry should link to.
-#    - newpage: If the entry should open in a new page, set this to true.
-# 4. You can create new sections if needed. For this you may need to specify a title.
-# 5. You can create new sections with or without children.
+# This YAML structure defines categories for navigation entries.
+# Each containing details such as title, icon, and URL.
+
+# Fields:
+# title (required): The title of the category.
+# icon (required): The icon of the category.
+# url (required/optional): The URL of the category.
+# children (required/optional): An array of sub-categories.
+#   title (required): The title of the sub-category.
+#   icon (required): The icon of the sub-category.
+#   url (required): The URL of the sub-category.
+#   newpage (optional): Whether to open the URL in a new page.
 
 - title: Home
   icon: nuke-home
