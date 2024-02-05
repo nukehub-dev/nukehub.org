@@ -1,4 +1,5 @@
-# This YAML block represents all event entries. Each field contains specific details about the event.
+# This YAML block represents all event entries.
+# Each field contains specific details about the event.
 
 # Fields:
 # title (required): The title of the event.

@@ -1,9 +1,56 @@
-- name: Ahnaf Tahmid Chowdhury
-  org: Military Institute of Science and Technology (MIST)
-  position: Research Assistant
-  email: tahmid@nse.mist.ac.bd
-  url: https://tahmid.pages.dev/
-  image: https://github.com/ahnaf-tahmid-chowdhury.png
-  github: ahnaf-tahmid-chowdhury
-  linkedin: ahnaf-tahmid-
-  scholar: https://scholar.google.com/citations?hl=en&user=U0TLOGQAAAAJ
+# This YAML structure defines categories for person entries.
+# Each containing details such as name, image, organization, role, location, contact information, and various online profiles.
+
+# Fields:
+# title (required): The title of the category.
+# description (required): A description of the category.
+# children (required): An array of sub-categories.
+#   name (required): The name of the person.
+#   image (required): The URL of the person's image.
+#   organization (optional): The organization of the person.
+#   role (optional): The role of the person in the organization.
+#   location (optional): The location of the person.
+#   email (required): The email address of the person.
+#   phone (optional): The phone number of the person.
+#   url (optional): The URL of the person's website.
+#   github (optional): The GitHub username of the person.
+#   gitlab (optional): The GitLab username of the person.
+#   bitbucket (optional): The Bitbucket username of the person.
+#   stackoverflow (optional): The StackOverflow ID of the person.
+#   whatsapp (optional): The WhatsApp number of the person.
+#   facebook (optional): The Facebook username of the person.
+#   instagram (optional): The Instagram username of the person.
+#   twitter (optional): The Twitter username of the person.
+#   youtube (optional): The URL of the person's YouTube channel.
+#   linkedin (optional): The LinkedIn username of the person.
+#   scholar (optional): The Google Scholar ID of the person.
+#   orcid (optional): The ORCID ID of the person.
+#   researchgate (optional): The ResearchGate username of the person.
+
+- title: Executive Council Members
+  description: >
+    The Executive Council (EC) at NukeHub serves as the guiding 
+    force overseeing all facets of the organization's mission in 
+    nuclear technology exploration and advancement. Comprising 
+    experts in nuclear science, engineering, and technology, 
+    the EC plays a pivotal role in strategic decision-making and 
+    the effective management of all initiatives. The EC actively 
+    upholds NukeHub's values, ensuring collaborative efforts with 
+    stakeholders, professionals, and enthusiasts. Delegating 
+    responsibilities to various subcommittees and working groups, 
+    the EC fosters a cohesive approach to achieving NukeHub's goals, 
+    with a commitment to excellence in nuclear science and engineering.
+  children:
+    - name: Ahnaf Tahmid Chowdhury
+      image: https://github.com/ahnaf-tahmid-chowdhury.png
+      organization: Military Institute of Science and Technology (MIST)
+      location: Dhaka, Bangladesh
+      email: tahmid@nse.mist.ac.bd
+      url: https://tahmid.pages.dev/
+      twitter: tahmid__
+      github: ahnaf-tahmid-chowdhury
+      bitbucket: ahnaf-tahmid-chowdhury
+      linkedin: ahnaf-tahmid-
+      scholar: U0TLOGQAAAAJ
+      orcid: 0000-0003-1070-5576
+      researchgate: ahnaf-tahmid-chowdhury
