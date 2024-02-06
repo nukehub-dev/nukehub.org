@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'NukeHub';
-  src:  url('fonts/NukeHub.eot?td963s');
-  src:  url('fonts/NukeHub.eot?td963s#iefix') format('embedded-opentype'),
-    url('fonts/NukeHub.ttf?td963s') format('truetype'),
-    url('fonts/NukeHub.woff?td963s') format('woff'),
-    url('fonts/NukeHub.svg?td963s#NukeHub') format('svg');
+  src:  url('fonts/NukeHub.eot?l7xwi0');
+  src:  url('fonts/NukeHub.eot?l7xwi0#iefix') format('embedded-opentype'),
+    url('fonts/NukeHub.ttf?l7xwi0') format('truetype'),
+    url('fonts/NukeHub.woff?l7xwi0') format('woff'),
+    url('fonts/NukeHub.svg?l7xwi0#NukeHub') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -35,6 +35,36 @@ i, .icomoon-liga {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.nuke-about-alt:before {
+  content: "\e963";
+}
+.nuke-about:before {
+  content: "\e9f5";
+}
+.nuke-code-solid:before {
+  content: "\e9f6";
+}
+.nuke-security:before {
+  content: "\e9f7";
+}
+.nuke-security-alt:before {
+  content: "\e9f8";
+}
+.nuke-terms:before {
+  content: "\e9f9";
+}
+.nuke-privacy-alt:before {
+  content: "\e9fa";
+}
+.nuke-privacy:before {
+  content: "\e9fb";
+}
+.nuke-lock-alt:before {
+  content: "\e9fc";
+}
+.nuke-lock:before {
+  content: "\e9fd";
+}
 .nuke-active:before {
   content: "\e91a";
 }
