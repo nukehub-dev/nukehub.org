@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'NukeHub';
-  src:  url('fonts/NukeHub.eot?69h7nt');
-  src:  url('fonts/NukeHub.eot?69h7nt#iefix') format('embedded-opentype'),
-    url('fonts/NukeHub.ttf?69h7nt') format('truetype'),
-    url('fonts/NukeHub.woff?69h7nt') format('woff'),
-    url('fonts/NukeHub.svg?69h7nt#NukeHub') format('svg');
+  src:  url('fonts/NukeHub.eot?l7xwi0');
+  src:  url('fonts/NukeHub.eot?l7xwi0#iefix') format('embedded-opentype'),
+    url('fonts/NukeHub.ttf?l7xwi0') format('truetype'),
+    url('fonts/NukeHub.woff?l7xwi0') format('woff'),
+    url('fonts/NukeHub.svg?l7xwi0#NukeHub') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -35,190 +35,40 @@ i, .icomoon-liga {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.nuke-nukehub:before {
-  content: "\e9b6";
+.nuke-about-alt:before {
+  content: "\e963";
 }
-.nuke-zoom:before {
-  content: "\e9b7";
+.nuke-about:before {
+  content: "\e9f5";
 }
-.nuke-book-3:before {
-  content: "\e9ae";
+.nuke-code-solid:before {
+  content: "\e9f6";
 }
-.nuke-book-2:before {
-  content: "\e9af";
+.nuke-security:before {
+  content: "\e9f7";
 }
-.nuke-book-1 .path1:before {
-  content: "\e9b0";
-  color: rgb(0, 0, 0);
+.nuke-security-alt:before {
+  content: "\e9f8";
 }
-.nuke-book-1 .path2:before {
-  content: "\e9b1";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
+.nuke-terms:before {
+  content: "\e9f9";
 }
-.nuke-help-4:before {
-  content: "\e9b2";
+.nuke-privacy-alt:before {
+  content: "\e9fa";
 }
-.nuke-help-3:before {
-  content: "\e9b3";
+.nuke-privacy:before {
+  content: "\e9fb";
 }
-.nuke-help-2:before {
-  content: "\e9b4";
+.nuke-lock-alt:before {
+  content: "\e9fc";
 }
-.nuke-help-1:before {
-  content: "\e9b5";
-}
-.nuke-nuclear-power-plant-2-remove:before {
-  content: "\e9ac";
-}
-.nuke-nuclear-power-plant-add:before {
-  content: "\e9ad";
-}
-.nuke-clock-2:before {
-  content: "\e9aa";
-}
-.nuke-bell-1:before {
-  content: "\e9ab";
-}
-.nuke-edit-node:before {
-  content: "\e900";
-}
-.nuke-edit-profile:before {
-  content: "\e901";
-}
-.nuke-profile-1:before {
-  content: "\e902";
-}
-.nuke-settings-1:before {
-  content: "\e903";
-}
-.nuke-settings-2:before {
-  content: "\e904";
-}
-.nuke-settings-3:before {
-  content: "\e905";
-}
-.nuke-application:before {
-  content: "\e92b";
-}
-.nuke-break:before {
-  content: "\e92c";
-}
-.nuke-construction1:before {
-  content: "\e92d";
-}
-.nuke-construction-traffic-monochrome:before {
-  content: "\e93d";
-}
-.nuke-device-search:before {
-  content: "\e93e";
-}
-.nuke-fail:before {
-  content: "\e93f";
-}
-.nuke-filter-1:before {
-  content: "\e969";
-}
-.nuke-filter-2:before {
-  content: "\e96a";
-}
-.nuke-group:before {
-  content: "\e96b";
-}
-.nuke-login-1:before {
-  content: "\e96c";
-}
-.nuke-logout-1:before {
-  content: "\e99f";
-}
-.nuke-merge-cells:before {
-  content: "\e9a0";
-}
-.nuke-power-plant-3:before {
-  content: "\e9a1";
-}
-.nuke-solit-cells:before {
-  content: "\e9a2";
-}
-.nuke-ungroup:before {
-  content: "\e9a3";
-}
-.nuke-signup:before {
-  content: "\e920";
-}
-.nuke-update-1:before {
-  content: "\e921";
-}
-.nuke-update:before {
-  content: "\e922";
-}
-.nuke-map:before {
-  content: "\e92a";
-}
-.nuke-arrow-circle-right-ou:before {
-  content: "\e906";
-}
-.nuke-dashboard-1:before {
-  content: "\e907";
-}
-.nuke-arrow-circle-up-ou:before {
-  content: "\e908";
-}
-.nuke-arrow-ios-back:before {
-  content: "\e909";
-}
-.nuke-arrow-ios-downward:before {
-  content: "\e90a";
-}
-.nuke-arrow-ios-upward:before {
-  content: "\e90b";
-}
-.nuke-arrow-ios-forward:before {
-  content: "\e90c";
-}
-.nuke-expand:before {
-  content: "\e90d";
-}
-.nuke-collapse:before {
-  content: "\e90e";
-}
-.nuke-move:before {
-  content: "\e90f";
-}
-.nuke-arrow-circle-down-ou:before {
-  content: "\e910";
-}
-.nuke-arrow-circle-left-ou:before {
-  content: "\e911";
-}
-.nuke-arrow-back:before {
-  content: "\e912";
-}
-.nuke-arrow-forward:before {
-  content: "\e913";
-}
-.nuke-shield-success:before {
-  content: "\e914";
-}
-.nuke-shield-error:before {
-  content: "\e915";
-}
-.nuke-share-1:before {
-  content: "\e916";
-}
-.nuke-share:before {
-  content: "\e917";
-}
-.nuke-log:before {
-  content: "\e918";
-}
-.nuke-dashboard:before {
-  content: "\e919";
+.nuke-lock:before {
+  content: "\e9fd";
 }
 .nuke-active:before {
   content: "\e91a";
 }
-.nuke-active--1:before {
+.nuke-active-1:before {
   content: "\e91b";
 }
 .nuke-add:before {
@@ -236,6 +86,57 @@ i, .icomoon-liga {
 .nuke-alert-2:before {
   content: "\e923";
 }
+.nuke-application:before {
+  content: "\e92b";
+}
+.nuke-arrow-back:before {
+  content: "\e912";
+}
+.nuke-arrow-circle-down-ou:before {
+  content: "\e910";
+}
+.nuke-arrow-circle-left-ou:before {
+  content: "\e911";
+}
+.nuke-arrow-circle-right-ou:before {
+  content: "\e906";
+}
+.nuke-arrow-circle-up-ou:before {
+  content: "\e908";
+}
+.nuke-arrow-down-2:before {
+  content: "\ea3e";
+}
+.nuke-arrow-down-left-2:before {
+  content: "\ea3f";
+}
+.nuke-arrow-down-right-2:before {
+  content: "\ea3d";
+}
+.nuke-arrow-forward:before {
+  content: "\e913";
+}
+.nuke-arrow-ios-back:before {
+  content: "\e909";
+}
+.nuke-arrow-ios-downward:before {
+  content: "\e90a";
+}
+.nuke-arrow-ios-forward:before {
+  content: "\e90c";
+}
+.nuke-arrow-ios-upward:before {
+  content: "\e90b";
+}
+.nuke-arrow-up-2:before {
+  content: "\ea3a";
+}
+.nuke-arrow-up-left-2:before {
+  content: "\ea39";
+}
+.nuke-arrow-up-right-2:before {
+  content: "\ea3b";
+}
 .nuke-atom:before {
   content: "\e924";
 }
@@ -245,11 +146,20 @@ i, .icomoon-liga {
 .nuke-atom-2:before {
   content: "\e926";
 }
-.nuke-atomic-nuclear-radiation:before {
-  content: "\e927";
+.nuke-atom-alt:before {
+  content: "\e9da";
 }
 .nuke-bell:before {
   content: "\e928";
+}
+.nuke-bell-1:before {
+  content: "\e9ab";
+}
+.nuke-bitbucket:before {
+  content: "\e9d2";
+}
+.nuke-bitbucket-solid:before {
+  content: "\e9d1";
 }
 .nuke-bomb:before {
   content: "\e929";
@@ -260,6 +170,12 @@ i, .icomoon-liga {
 .nuke-bomb-grenade:before {
   content: "\e92f";
 }
+.nuke-book-1:before {
+  content: "\e9b0";
+}
+.nuke-book-2:before {
+  content: "\e9af";
+}
 .nuke-bookmark:before {
   content: "\e930";
 }
@@ -269,20 +185,32 @@ i, .icomoon-liga {
 .nuke-bookmark-3:before {
   content: "\e932";
 }
+.nuke-box:before {
+  content: "\e9db";
+}
+.nuke-break:before {
+  content: "\e92c";
+}
 .nuke-bug:before {
   content: "\e933";
 }
 .nuke-bug-1:before {
   content: "\e934";
 }
-.nuke-call:before {
-  content: "\e935";
+.nuke-calender:before {
+  content: "\e9e6";
 }
-.nuke-call-1:before {
-  content: "\e936";
+.nuke-calender-alt:before {
+  content: "\e9e7";
 }
 .nuke-cell-tower:before {
   content: "\e937";
+}
+.nuke-certificate:before {
+  content: "\e9de";
+}
+.nuke-certificate-file:before {
+  content: "\e9df";
 }
 .nuke-chart-1:before {
   content: "\e938";
@@ -305,14 +233,20 @@ i, .icomoon-liga {
 .nuke-clock-1:before {
   content: "\e941";
 }
+.nuke-clock-2:before {
+  content: "\e9aa";
+}
 .nuke-code:before {
   content: "\e942";
+}
+.nuke-collapse:before {
+  content: "\e90e";
 }
 .nuke-compass:before {
   content: "\e943";
 }
 .nuke-construction:before {
-  content: "\e944";
+  content: "\e92d";
 }
 .nuke-construction-1:before {
   content: "\e945";
@@ -323,11 +257,23 @@ i, .icomoon-liga {
 .nuke-construction-3:before {
   content: "\e947";
 }
+.nuke-construction-traffic-monochrome:before {
+  content: "\e93d";
+}
+.nuke-construction1:before {
+  content: "\e944";
+}
 .nuke-contacts:before {
   content: "\e948";
 }
 .nuke-cpu:before {
   content: "\e949";
+}
+.nuke-dashboard:before {
+  content: "\e919";
+}
+.nuke-dashboard-1:before {
+  content: "\e907";
 }
 .nuke-database:before {
   content: "\e94a";
@@ -338,14 +284,50 @@ i, .icomoon-liga {
 .nuke-database-2:before {
   content: "\e94c";
 }
+.nuke-design:before {
+  content: "\e9c4";
+}
+.nuke-develop-programming:before {
+  content: "\e959";
+}
+.nuke-device-search:before {
+  content: "\e93e";
+}
 .nuke-document:before {
   content: "\e94d";
+}
+.nuke-document-ready:before {
+  content: "\e9cd";
 }
 .nuke-download-1:before {
   content: "\e94e";
 }
+.nuke-earth:before {
+  content: "\e9bc";
+}
 .nuke-edit:before {
   content: "\e94f";
+}
+.nuke-edit-node:before {
+  content: "\e900";
+}
+.nuke-edit-profile:before {
+  content: "\e901";
+}
+.nuke-education:before {
+  content: "\e9eb";
+}
+.nuke-education-alt:before {
+  content: "\e9ec";
+}
+.nuke-education-book:before {
+  content: "\e972";
+}
+.nuke-education-solid:before {
+  content: "\e9c7";
+}
+.nuke-education-solid-alt:before {
+  content: "\e9c8";
 }
 .nuke-electric-tower:before {
   content: "\e950";
@@ -356,14 +338,26 @@ i, .icomoon-liga {
 .nuke-error-1:before {
   content: "\e952";
 }
+.nuke-expand:before {
+  content: "\e90d";
+}
 .nuke-eye:before {
   content: "\e953";
 }
+.nuke-facebook-solid:before {
+  content: "\e9d9";
+}
+.nuke-fail:before {
+  content: "\e93f";
+}
+.nuke-filter-1:before {
+  content: "\e969";
+}
+.nuke-filter-2:before {
+  content: "\e96a";
+}
 .nuke-gallery:before {
   content: "\e954";
-}
-.nuke-gallery-1:before {
-  content: "\e955";
 }
 .nuke-gauge:before {
   content: "\e956";
@@ -374,41 +368,122 @@ i, .icomoon-liga {
 .nuke-gear:before {
   content: "\e958";
 }
-.nuke-gear-1:before {
-  content: "\e959";
-}
 .nuke-gear-2:before {
   content: "\e95a";
 }
 .nuke-gear-3:before {
   content: "\e95b";
 }
-.nuke-settings-4:before {
-  content: "\e95c";
-}
 .nuke-github:before {
   content: "\e95d";
 }
-.nuke-github-1:before {
+.nuke-github-alt:before {
   content: "\e95e";
+}
+.nuke-github-solid:before {
+  content: "\e9c6";
+}
+.nuke-gitlab:before {
+  content: "\e9ce";
+}
+.nuke-gitlab-alt:before {
+  content: "\e9d0";
+}
+.nuke-gitlab-solid:before {
+  content: "\e9cb";
+}
+.nuke-grab-machine:before {
+  content: "\e9c3";
+}
+.nuke-group:before {
+  content: "\e9e2";
+}
+.nuke-group-1:before {
+  content: "\e96b";
+}
+.nuke-group-alt:before {
+  content: "\e9e3";
+}
+.nuke-health:before {
+  content: "\e9dc";
+}
+.nuke-help-1:before {
+  content: "\e9b5";
+}
+.nuke-help-2:before {
+  content: "\e9b4";
+}
+.nuke-help-3:before {
+  content: "\e9b3";
+}
+.nuke-help-4:before {
+  content: "\e9b2";
+}
+.nuke-home:before {
+  content: "\e9cc";
+}
+.nuke-home-alt:before {
+  content: "\e9e0";
+}
+.nuke-iaea:before {
+  content: "\e9a7";
+}
+.nuke-iaea-alt:before {
+  content: "\e9a8";
 }
 .nuke-idea:before {
   content: "\e95f";
 }
-.nuke-idea-1:before {
+.nuke-idea-alt:before {
   content: "\e960";
 }
 .nuke-info-3:before {
   content: "\e961";
 }
-.nuke-internet:before {
-  content: "\e962";
+.nuke-instagram:before {
+  content: "\e9d6";
 }
-.nuke-internet-1:before {
-  content: "\e963";
+.nuke-instagram-solid:before {
+  content: "\e9ca";
+}
+.nuke-internet:before {
+  content: "\e936";
 }
 .nuke-internet-2:before {
   content: "\e964";
+}
+.nuke-internet-3:before {
+  content: "\e962";
+}
+.nuke-internet-solid:before {
+  content: "\e9bb";
+}
+.nuke-invoice:before {
+  content: "\e955";
+}
+.nuke-kaggle-solid:before {
+  content: "\e9d5";
+}
+.nuke-lab-flask:before {
+  content: "\e9e4";
+}
+.nuke-lab-flask-alt:before {
+  content: "\e9e5";
+}
+.nuke-laboratory-department:before {
+  content: "\e9e1";
+}
+.nuke-law:before {
+  content: "\e9e9";
+}
+.nuke-law-solid:before {
+  content: "\e9ea";
+}
+.nuke-linkedin-solid:before {
+  content: "\e9d7";
+}
+.nuke-linkedin-solid-alt:before {
+  content: "\e9d8";
 }
 .nuke-loading-1:before {
   content: "\e965";
@@ -422,8 +497,17 @@ i, .icomoon-liga {
 .nuke-location-2:before {
   content: "\e968";
 }
+.nuke-log:before {
+  content: "\e918";
+}
 .nuke-login:before {
   content: "\e96d";
+}
+.nuke-login-1:before {
+  content: "\e96c";
+}
+.nuke-logout-1:before {
+  content: "\e99f";
 }
 .nuke-loguot:before {
   content: "\e96e";
@@ -434,11 +518,20 @@ i, .icomoon-liga {
 .nuke-love-solid:before {
   content: "\e970";
 }
-.nuke-mail-1:before {
-  content: "\e971";
+.nuke-machine-learning-solid:before {
+  content: "\e9c2";
 }
-.nuke-map-1:before {
-  content: "\e972";
+.nuke-mail:before {
+  content: "\e9bd";
+}
+.nuke-mail-alt:before {
+  content: "\e9be";
+}
+.nuke-mail-solid:before {
+  content: "\e9bf";
+}
+.nuke-map:before {
+  content: "\e92a";
 }
 .nuke-map-2:before {
   content: "\e973";
@@ -449,8 +542,17 @@ i, .icomoon-liga {
 .nuke-map-4:before {
   content: "\e975";
 }
+.nuke-merge-cells:before {
+  content: "\e9a0";
+}
+.nuke-mobile:before {
+  content: "\e9ae";
+}
 .nuke-moon:before {
   content: "\e976";
+}
+.nuke-move:before {
+  content: "\e90f";
 }
 .nuke-news:before {
   content: "\e977";
@@ -464,17 +566,29 @@ i, .icomoon-liga {
 .nuke-nuclear-equipment-1:before {
   content: "\e97a";
 }
-.nuke-power-plant-1:before {
-  content: "\e97b";
+.nuke-nuclear-power-plant-2-remove:before {
+  content: "\e9ac";
 }
-.nuke-power-plant-2:before {
-  content: "\e97c";
+.nuke-nuclear-power-plant-add:before {
+  content: "\e9ad";
+}
+.nuke-nuclear-radiation:before {
+  content: "\e9a9";
 }
 .nuke-nuclear-symbol:before {
   content: "\e97d";
 }
+.nuke-nukehub:before {
+  content: "\e9b6";
+}
 .nuke-oil-tower:before {
   content: "\e97e";
+}
+.nuke-orcid:before {
+  content: "\e9f0";
+}
+.nuke-orcid-solid:before {
+  content: "\e9c9";
 }
 .nuke-paper-plane:before {
   content: "\e97f";
@@ -484,6 +598,12 @@ i, .icomoon-liga {
 }
 .nuke-pen:before {
   content: "\e981";
+}
+.nuke-phone:before {
+  content: "\e9b1";
+}
+.nuke-phone-solid:before {
+  content: "\e9b8";
 }
 .nuke-pie-chart:before {
   content: "\e982";
@@ -506,6 +626,15 @@ i, .icomoon-liga {
 .nuke-power-2:before {
   content: "\e988";
 }
+.nuke-power-plant-1:before {
+  content: "\e97b";
+}
+.nuke-power-plant-2:before {
+  content: "\e97c";
+}
+.nuke-power-plant-3:before {
+  content: "\e9a1";
+}
 .nuke-power-unit:before {
   content: "\e989";
 }
@@ -518,6 +647,9 @@ i, .icomoon-liga {
 .nuke-profile:before {
   content: "\e98c";
 }
+.nuke-profile-1:before {
+  content: "\e902";
+}
 .nuke-qr-code:before {
   content: "\e98d";
 }
@@ -527,17 +659,44 @@ i, .icomoon-liga {
 .nuke-reload:before {
   content: "\e98f";
 }
-.nuke-researchgate:before {
-  content: "\e990";
+.nuke-research-box:before {
+  content: "\e9cf";
 }
-.nuke-researchgate-2:before {
-  content: "\e991";
+.nuke-research-platform:before {
+  content: "\e971";
 }
-.nuke-send-1:before {
-  content: "\e992";
+.nuke-researchgate-solid:before {
+  content: "\e9e8";
+}
+.nuke-security-ok:before {
+  content: "\e9dd";
 }
 .nuke-send-2:before {
   content: "\e993";
+}
+.nuke-service:before {
+  content: "\e9b9";
+}
+.nuke-service-solid:before {
+  content: "\e9ba";
+}
+.nuke-settings-1:before {
+  content: "\e903";
+}
+.nuke-settings-2:before {
+  content: "\e904";
+}
+.nuke-settings-3:before {
+  content: "\e905";
+}
+.nuke-settings-4:before {
+  content: "\e95c";
+}
+.nuke-share:before {
+  content: "\e917";
+}
+.nuke-share-1:before {
+  content: "\e916";
 }
 .nuke-shield:before {
   content: "\e994";
@@ -545,11 +704,41 @@ i, .icomoon-liga {
 .nuke-shield-1:before {
   content: "\e995";
 }
+.nuke-shield-error:before {
+  content: "\e915";
+}
+.nuke-shield-success:before {
+  content: "\e914";
+}
 .nuke-shop:before {
   content: "\e996";
 }
+.nuke-signup:before {
+  content: "\e920";
+}
+.nuke-skype:before {
+  content: "\e9f2";
+}
+.nuke-skype-alt:before {
+  content: "\e9f4";
+}
+.nuke-skype-solid:before {
+  content: "\e9f1";
+}
+.nuke-slack:before {
+  content: "\e927";
+}
+.nuke-slack-solid:before {
+  content: "\e935";
+}
 .nuke-sleep:before {
   content: "\e997";
+}
+.nuke-solit-cells:before {
+  content: "\e9a2";
+}
+.nuke-stack-overflow-solid:before {
+  content: "\e9c5";
 }
 .nuke-success:before {
   content: "\e998";
@@ -566,6 +755,9 @@ i, .icomoon-liga {
 .nuke-target:before {
   content: "\e99c";
 }
+.nuke-telegram-solid:before {
+  content: "\e992";
+}
 .nuke-thermometer:before {
   content: "\e99d";
 }
@@ -578,33 +770,48 @@ i, .icomoon-liga {
 .nuke-trash-1:before {
   content: "\e9a5";
 }
+.nuke-twitter:before {
+  content: "\e9d3";
+}
+.nuke-twitter-solid:before {
+  content: "\e9d4";
+}
+.nuke-ungroup:before {
+  content: "\e9a3";
+}
+.nuke-update:before {
+  content: "\e922";
+}
+.nuke-update-1:before {
+  content: "\e921";
+}
 .nuke-variable-power-plant:before {
   content: "\e9a6";
 }
-.nuke-iaea:before {
-  content: "\e9a7";
+.nuke-web-bold:before {
+  content: "\e9f3";
 }
-.nuke-iaea1:before {
-  content: "\e9a8";
+.nuke-whatsapp:before {
+  content: "\e990";
 }
-.nuke-nuclear-radiation:before {
-  content: "\e9a9";
+.nuke-whatsapp-solid:before {
+  content: "\e991";
 }
-.nuke-arrow-up-left-2:before {
-  content: "\ea39";
+.nuke-youtube:before {
+  content: "\e9c1";
 }
-.nuke-arrow-up-2:before {
-  content: "\ea3a";
+.nuke-youtube-alt:before {
+  content: "\e9c0";
 }
-.nuke-arrow-up-right-2:before {
-  content: "\ea3b";
+.nuke-youtube1:before {
+  content: "\e9ed";
 }
-.nuke-arrow-down-right-2:before {
-  content: "\ea3d";
+.nuke-zoom:before {
+  content: "\e9b7";
 }
-.nuke-arrow-down-2:before {
-  content: "\ea3e";
+.nuke-zotero:before {
+  content: "\e9ee";
 }
-.nuke-arrow-down-left-2:before {
-  content: "\ea3f";
+.nuke-zotero-solid:before {
+  content: "\e9ef";
 }

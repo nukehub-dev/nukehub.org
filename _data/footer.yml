@@ -1,0 +1,42 @@
+# This YAML structure defines categories for footer entries.
+# Each containing details such as title and URL.
+
+# Fields:
+# title (required): The title of the category.
+# children (required): An array of sub-categories.
+#   title (required): The title of the sub-category.
+#   url (required): The URL of the sub-category.
+#   newpage (optional): Whether to open the URL in a new page.
+
+- title: Navigation
+  children:
+    - title: Home
+      url: /#home
+    - title: Projects
+      url: /#projects
+    - title: About Us
+      url: /about
+
+- title: Projects
+  children:
+    - title: NRMS
+      url: /nrms
+      newpage: true
+    - title: NukeAnalytics
+      url: /nuke-analytics
+      newpage: true
+    - title: NukeLab
+      url: /nuke-lab
+      newpage: true
+    - title: NukeBox
+      url: https://nukebox.readthedocs.io/
+      newpage: true
+
+- title: Connect Us
+  children:
+    - title: GitHub
+      url: https://github.com/nukehub-dev/
+      newpage: true
+    - title: NukeTalk
+      url: https://talk.nukehub.org
+      newpage: true

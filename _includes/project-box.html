@@ -1,7 +1,7 @@
 <!--========== Box ==========-->
 <div class="box_container container grid">
-    {% for obj in layout.projects %}
-    <a target="_blank" href="{{ obj.url }}" class="box_content">
+    {% for obj in site.data.projects %}
+    <a target="_blank" href="{{ obj.url }}" class="box_content" id="project{{ forloop.index }}">
         <div class="box_bg"></div>
         <div>
             <div class="box_header">
@@ -12,6 +12,38 @@
                 Try <i class="nuke-arrow-ios-forward button_icon"></i>
             </div>
         </div>
+        <script>
+            $(function () {
+                $.contextMenu({
+                    selector: "#project{{ forloop.index }}",
+                    callback: function (key, options) {
+                        var m = "clicked: " + key;
+                    },
+                    animation: {
+                        duration: 200,
+                        show: "fadeIn",
+                        hide: "fadeOut",
+                    },
+                    zIndex: 10000,
+                    items: {
+                        "url": {
+                            name: "Try {{obj.title}}",
+                            isHtmlName: true,
+                            callback: function (key, options) {
+                                window.location.href = "tel:{{ obj.url }}";
+                            },
+                        },
+                        "source": {
+                            name: "Source Code",
+                            isHtmlName: true,
+                            callback: function (key, options) {
+                                window.location.href = "{{ obj.source }}";
+                            }
+                        },
+                    },
+                });
+            });
+        </script>
     </a>
     {% endfor %}
 </div>

@@ -1,0 +1,67 @@
+# This YAML structure defines categories for navigation entries.
+# Each containing details such as title, icon, and URL.
+
+# Fields:
+# title (required): The title of the category.
+# icon (required): The icon of the category.
+# url (required/optional): The URL of the category.
+# children (required/optional): An array of sub-categories.
+#   title (required): The title of the sub-category.
+#   icon (required): The icon of the sub-category.
+#   url (required): The URL of the sub-category.
+#   newpage (optional): Whether to open the URL in a new page.
+
+- title: Home
+  icon: nuke-home
+  url: /
+
+- title: Projects
+  icon: nuke-application
+  children:
+    - title: NRMS
+      icon: nuke-power-plant-1
+      url: /nrms
+    - title: NukeAnalytics
+      icon: nuke-chart-1
+      url: /nuke-analytics
+    - title: NukeLab
+      icon: nuke-research-platform
+      url: /nuke-lab
+    - title: NukeBox
+      icon: nuke-box
+      url: https://nukebox.readthedocs.io/
+      newpage: true
+
+- title: Manual
+  icon: nuke-news
+  children:
+    - title: About Us
+      icon: nuke-about
+      url: /about
+    - title: Privacy Policy
+      icon: nuke-lock
+      url: /privacy-policy
+    - title: Terms of Service
+      icon: nuke-document-ready
+      url: /terms-of-service
+    - title: Code of Conduct
+      icon: nuke-law
+      url: /code-of-conduct
+
+- title: Community
+  icon: nuke-group
+  children:
+    - title: People
+      icon: nuke-profile
+      url: /people
+    - title: Events
+      icon: nuke-calender-alt
+      url: /events
+    - title: NukeTalk
+      icon: nuke-chat-2
+      url: https://talk.nukehub.org
+      newpage: true
+    - title: GitHub
+      icon: nuke-github
+      url: https://github.com/nukehub-dev
+      newpage: true

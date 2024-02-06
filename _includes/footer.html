@@ -9,45 +9,21 @@
                 </h1>
                 <span class="footer_subtitle">Empowering Nuclear Innovation</span>
             </div>
+            {% for obj in site.data.footer %}
             <div>
-                <h3 class="footer_link_title">Navigation</h3>
+                <h3 class="footer_link_title">{{ obj.title }}</h3>
                 <ul class="footer_links">
-                    {% for obj in layout.nav %}
+                    {% for child in obj.children %}
                     <li>
-                        <a href="{{ obj.url }}" class="footer_link"
+                        <a href="{{ child.url }}" class="footer_link"
                             {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
-                            {{ obj.title }}
+                            {{ child.title }}
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
-            <div>
-                <h3 class="footer_link_title">Sub Projects</h3>
-                <ul class="footer_links">
-                    {% for obj in layout.projects %}
-                    <li>
-                        <a href="{{ obj.url }}" class="footer_link"
-                            {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
-                            {{ obj.title }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer_link_title">Connect Us</h4>
-                <ul class="footer_links">
-                    {% for obj in layout.social %}
-                    <li>
-                        <a href="{{ obj.url }}" class="footer_link"
-                            {% if obj.newpage %} target="_blank" rel="noopener noreferrer" {% endif %}>
-                            {{ obj.title }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% endfor %}
         </div>
         <p class="footer_copy">&#169; {{site.time | date: '%Y' }} NukeHub. All right reserved</p>
     </div>
