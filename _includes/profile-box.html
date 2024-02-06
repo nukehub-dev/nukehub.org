@@ -1,0 +1,332 @@
+<div class="box_container container grid team">
+    {% for obj in include.data %}
+    <div class="box_content" id="profile{{ forloop.index }}" style="padding: 0">
+        <div class="box_bg"></div>
+        <div class="our-team">
+            <div class="picture">
+                <img class="img-fluid" src="{{ obj.image }}" alt="{{ obj.name }}">
+            </div>
+            <div class="team-content">
+                <p class="box_title">{{ obj.name }}</p>
+                {% if obj.role %}
+                <p style="font-size: var(--smaller-font)">{{ obj.role }}</p>
+                {% endif %}
+                {% if obj.organization %}
+                <p style="font-size: var(--small-font)">{{ obj.organization }}</p>
+                {% endif %}
+                {% if obj.location %}
+                <p style="font-size: var(--smaller-font)">{{ obj.location }}</p>
+                {% endif %}
+            </div>
+            <ul class="social">
+                {% if obj.phone %}
+                <li>
+                    <a href="tel:{{ obj.phone }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-phone-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.email %}
+                <li>
+                    <a href="mailto:{{ obj.email }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-mail-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.url %}
+                <li>
+                    <a href="{{ obj.url }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-internet-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.whatsapp %}
+                <li>
+                    <a href="https://wa.me/{{ obj.whatsapp }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-whatsapp-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.skype %}
+                <li>
+                    <a href="skype:{{ obj.skype }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-skype-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.linkedin %}
+                <li>
+                    <a href="https://linkedin.com/in/{{ obj.linkedin }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-linkedin-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.twitter %}
+                <li>
+                    <a href="https://twitter.com/{{ obj.twitter }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-twitter-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.facebook %}
+                <li>
+                    <a href="https://facebook.com/{{ obj.facebook }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-facebook-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.instagram %}
+                <li>
+                    <a href="https://instagram.com/{{ obj.instagram }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-instagram-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.github %}
+                <li>
+                    <a href="https://github.com/{{ obj.github }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-github-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.gitlab %}
+                <li>
+                    <a href="https://gitlab.com/{{ obj.gitlab }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-gitlab-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.bitbucket %}
+                <li>
+                    <a href="https://bitbucket.org/{{ obj.bitbucket }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-bitbucket-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.stackoverflow %}
+                <li>
+                    <a href="https://stackoverflow.com/users/{{ obj.stackoverflow }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-stack-overflow-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.scholar %}
+                <li>
+                    <a href="https://scholar.google.com/citations?user={{ obj.scholar }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-education-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.orcid %}
+                <li>
+                    <a href="https://orcid.org/{{ obj.orcid }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-orcid-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.researchgate %}
+                <li>
+                    <a href="https://www.researchgate.net/profile/{{ obj.researchgate }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-researchgate-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.zotero %}
+                <li>
+                    <a href="https://www.zotero.org/{{ obj.zotero }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-zotero-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if obj.youtube %}
+                <li>
+                    <a href="https://youtube.com/channel/{{ obj.youtube }}" aria-hidden="true" target="_blank">
+                        <i class="nuke-youtube-solid"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            <script>
+                $(function () {
+                    $.contextMenu({
+                        selector: "#profile{{ forloop.index }}",
+                        callback: function (key, options) {
+                            var m = "clicked: " + key;
+                        },
+                        animation: {
+                            duration: 200,
+                            show: "fadeIn",
+                            hide: "fadeOut",
+                        },
+                        zIndex: 10000,
+                        items: {
+                            //{% if obj.phone %}
+                            "phone": {
+                                name: "<i class='nuke-phone context_menu-icon'></i> Phone",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "tel:{{ obj.phone }}";
+                                },
+                            },
+                            // {% endif %}
+                            // {% if obj.email %}
+                            "email": {
+                                name: "<i class='nuke-mail context_menu-icon'></i> Email",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "mailto:{{ obj.email }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.url %}
+                            "url": {
+                                name: "<i class='nuke-internet context_menu-icon'></i> Portfolio",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "{{ obj.url }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.whatsapp %}
+                            "whatsapp": {
+                                name: "<i class='nuke-whatsapp context_menu-icon'></i> Whatsapp",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://wa.me/{{ obj.whatsapp }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.skype %}
+                            "skype": {
+                                name: "<i class='nuke-skype context_menu-icon'></i> Skype",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "skype:{{ obj.skype }}?call";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.linkedin %}
+                            "linkedin": {
+                                name: "<i class='nuke-linkedin-solid context_menu-icon'></i> Linkedin",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://linkedin.com/in/{{ obj.linkedin }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.twitter %}
+                            "twitter": {
+                                name: "<i class='nuke-twitter context_menu-icon'></i> Twitter",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://twitter.com/{{ obj.twitter }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.facebook %}
+                            "facebook": {
+                                name: "<i class='nuke-facebook-solid context_menu-icon'></i> Facebook",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://facebook.com/{{ obj.facebook }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.instagram %}
+                            "instagram": {
+                                name: "<i class='nuke-instagram context_menu-icon'></i> Instagram",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://instagram.com/{{ obj.instagram }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.github %}
+                            "github": {
+                                name: "<i class='nuke-github context_menu-icon'></i> Github",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://github.com/{{ obj.github }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.gitlab %}
+                            "gitlab": {
+                                name: "<i class='nuke-gitlab context_menu-icon'></i> Gitlab",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://gitlab.com/{{ obj.gitlab }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.bitbucket %}
+                            "bitbucket": {
+                                name: "<i class='nuke-bitbucket context_menu-icon'></i> Bitbucket",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://bitbucket.org/{{ obj.bitbucket }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.stackoverflow %}
+                            "stackoverflow": {
+                                name: "<i class='nuke-stack-overflow-solid context_menu-icon'></i> Stackoverflow",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://stackoverflow.com/users/{{ obj.stackoverflow }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.scholar %}
+                            "scholar": {
+                                name: "<i class='nuke-education context_menu-icon'></i> Google Scholar",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://scholar.google.com/citations?user={{ obj.scholar }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.orcid %}
+                            "orcid": {
+                                name: "<i class='nuke-orcid context_menu-icon'></i> ORCID",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://orcid.org/{{ obj.orcid }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.researchgate %}
+                            "researchgate": {
+                                name: "<i class='nuke-researchgate-solid context_menu-icon'></i> ResearchGate",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://www.researchgate.net/profile/{{ obj.researchgate }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.zotero %}
+                            "zotero": {
+                                name: "<i class='nuke-zotero context_menu-icon'></i> Zotero",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://www.zotero.org/{{ obj.zotero }}";
+                                }
+                            },
+                            // {% endif %}
+                            // {% if obj.youtube %}
+                            "youtube": {
+                                name: "<i class='nuke-youtube context_menu-icon'></i> Youtube",
+                                isHtmlName: true,
+                                callback: function (key, options) {
+                                    window.location.href = "https://youtube.com/channel/{{ obj.youtube }}";
+                                }
+                            },
+                            // {% endif %}
+                        },
+                    });
+                });
+            </script>
+        </div>
+    </div>
+    {% endfor %}
+</div>
