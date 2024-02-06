@@ -1616,6 +1616,13 @@ textarea {
   margin-block-start: var(--mb-0-5);
   margin-block-end: var(--mb-0-5);
 }
+.page a:not([class]) {
+  color: var(--color);
+}
+.page a:not([class]):hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
 .page ul {
   padding-left: 1.5rem;
   list-style-type: disc;
