@@ -35,9 +35,15 @@
 - title: Manual
   icon: nuke-news
   children:
-    - title: About
-      icon: nuke-alert
+    - title: About Us
+      icon: nuke-about
       url: /about
+    - title: Privacy Policy
+      icon: nuke-lock
+      url: /privacy-policy
+    - title: Terms of Service
+      icon: nuke-document-ready
+      url: /terms-of-service
     - title: Code of Conduct
       icon: nuke-law
       url: /code-of-conduct
