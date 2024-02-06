@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'NukeHub';
-  src:  url('fonts/NukeHub.eot?vqsam6');
-  src:  url('fonts/NukeHub.eot?vqsam6#iefix') format('embedded-opentype'),
-    url('fonts/NukeHub.ttf?vqsam6') format('truetype'),
-    url('fonts/NukeHub.woff?vqsam6') format('woff'),
-    url('fonts/NukeHub.svg?vqsam6#NukeHub') format('svg');
+  src:  url('fonts/NukeHub.eot?td963s');
+  src:  url('fonts/NukeHub.eot?td963s#iefix') format('embedded-opentype'),
+    url('fonts/NukeHub.ttf?td963s') format('truetype'),
+    url('fonts/NukeHub.woff?td963s') format('woff'),
+    url('fonts/NukeHub.svg?td963s#NukeHub') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -284,6 +284,12 @@ i, .icomoon-liga {
 .nuke-edit-profile:before {
   content: "\e901";
 }
+.nuke-education:before {
+  content: "\e9eb";
+}
+.nuke-education-alt:before {
+  content: "\e9ec";
+}
 .nuke-education-book:before {
   content: "\e972";
 }
@@ -411,13 +417,16 @@ i, .icomoon-liga {
   content: "\e9ca";
 }
 .nuke-internet:before {
-  content: "\e962";
+  content: "\e936";
 }
 .nuke-internet-2:before {
   content: "\e964";
 }
-.nuke-internet-alt:before {
-  content: "\e963";
+.nuke-internet-3:before {
+  content: "\e962";
+}
+.nuke-internet-solid:before {
+  content: "\e9bb";
 }
 .nuke-invoice:before {
   content: "\e955";
@@ -544,6 +553,9 @@ i, .icomoon-liga {
 }
 .nuke-oil-tower:before {
   content: "\e97e";
+}
+.nuke-orcid:before {
+  content: "\e9f0";
 }
 .nuke-orcid-solid:before {
   content: "\e9c9";
@@ -674,6 +686,15 @@ i, .icomoon-liga {
 .nuke-signup:before {
   content: "\e920";
 }
+.nuke-skype:before {
+  content: "\e9f2";
+}
+.nuke-skype-alt:before {
+  content: "\e9f4";
+}
+.nuke-skype-solid:before {
+  content: "\e9f1";
+}
 .nuke-slack:before {
   content: "\e927";
 }
@@ -737,8 +758,8 @@ i, .icomoon-liga {
 .nuke-variable-power-plant:before {
   content: "\e9a6";
 }
-.nuke-website:before {
-  content: "\e9bb";
+.nuke-web-bold:before {
+  content: "\e9f3";
 }
 .nuke-whatsapp:before {
   content: "\e990";
@@ -752,6 +773,15 @@ i, .icomoon-liga {
 .nuke-youtube-alt:before {
   content: "\e9c0";
 }
+.nuke-youtube1:before {
+  content: "\e9ed";
+}
 .nuke-zoom:before {
   content: "\e9b7";
+}
+.nuke-zotero:before {
+  content: "\e9ee";
+}
+.nuke-zotero-solid:before {
+  content: "\e9ef";
 }

@@ -5,7 +5,7 @@
 # title (required): The title of the category.
 # description (required): A description of the category.
 # url (required): The URL of the project.
-# github (required): The URL of the project's GitHub repository.
+# source (required): The URL of the project's source code.
 # newpage (optional): Whether to open the URL in a new page.
 
 - title: NRMS
@@ -13,7 +13,7 @@
     Nuclear Reactor Monitoring System (NRMS) provides the user with the ability 
     to access the PRIS database and visualize the data in a user-friendly manner.
   url: https://nrms.nukehub.org
-  github: https://github.com/nukehub-dev/nrms
+  source: https://github.com/nukehub-dev/nrms
   newpage: true
 
 - title: NukeAnalytics
@@ -21,7 +21,7 @@
     Make use of the PRIS database to analyze the data using SQL Lab and generate 
     charts and dashboards.
   url: https://analytics.nukehub.org
-  github: https://github.com/nukehub-dev/nukeanalytics
+  source: https://github.com/nukehub-dev/nukeanalytics
   newpage: true
 
 - title: NukeLab
@@ -29,7 +29,7 @@
     Run nuclear physics simulations and analyses effortlessly in the cloud. 
     Access anytime, anywhere, and collaborate seamlessly with peers.
   url: https://lab.nukehub.org
-  github: https://github.com/nukehub-dev/nukelab
+  source: https://github.com/nukehub-dev/nukelab
   newpage: true
 
 - title: NukeBox
@@ -38,5 +38,5 @@
     management of vital packages and libraries required for nuclear physics 
     simulations and analyses.
   url: https://nukebox.readthedocs.io/
-  github: https://github.com/nukehub-dev/nukebox
+  source: https://github.com/nukehub-dev/nukebox
   newpage: true
