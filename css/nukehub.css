@@ -617,33 +617,10 @@ button {
   margin-top: auto;
   margin-bottom: auto;
 }
-.box_button_icon {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  font-size: calc(var(--normal-font) * 10);
-  color: #fff;
-  opacity: 0.3;
-}
 .box_header {
   display: flex;
   margin-bottom: 1rem;
 }
-.box_header_absolute {
-  background-color: var(--color);
-  color: #fff;
-  border-radius: 0 0 0.5rem 0.5rem;
-  border: 0;
-  width: 35%;
-  outline: 0;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.2rem 0rem;
-  text-align: center;
-}
-
 .box_title {
   font-size: var(--h3-font);
   font-weight: var(--font-medium);
@@ -1288,7 +1265,6 @@ button {
 }
 .context_menu-icon {
   margin-right: 0.25rem;
-  font-weight: 600;
 }
 
 .context-menu-separator {

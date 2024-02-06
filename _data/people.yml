@@ -13,19 +13,21 @@
 #   email (required): The email address of the person.
 #   phone (optional): The phone number of the person.
 #   url (optional): The URL of the person's website.
+#   whatsapp (optional): The WhatsApp number of the person.
+#   skype (optional): The Skype username of the person.
+#   linkedin (optional): The LinkedIn username of the person.
+#   twitter (optional): The Twitter username of the person.
+#   facebook (optional): The Facebook username of the person.
+#   instagram (optional): The Instagram username of the person.
 #   github (optional): The GitHub username of the person.
 #   gitlab (optional): The GitLab username of the person.
 #   bitbucket (optional): The Bitbucket username of the person.
 #   stackoverflow (optional): The StackOverflow ID of the person.
-#   whatsapp (optional): The WhatsApp number of the person.
-#   facebook (optional): The Facebook username of the person.
-#   instagram (optional): The Instagram username of the person.
-#   twitter (optional): The Twitter username of the person.
-#   youtube (optional): The URL of the person's YouTube channel.
-#   linkedin (optional): The LinkedIn username of the person.
 #   scholar (optional): The Google Scholar ID of the person.
 #   orcid (optional): The ORCID ID of the person.
 #   researchgate (optional): The ResearchGate username of the person.
+#   zotero (optional): The Zotero username of the person.
+#   youtube (optional): The YouTube channel username of the person.
 
 - title: Executive Council Members
   description: >
