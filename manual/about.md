@@ -2,6 +2,12 @@
 layout: page
 id: about
 title: About
+description: >-
+  NukeHub was born out of a shared enthusiasm for nuclear science and engineering.
+  We recognized the need for a dedicated platform where individuals from various
+  backgrounds could come together to explore, learn, and collaborate on projects
+  related to nuclear technology. With a vision of making nuclear knowledge
+  accessible and promoting innovation in this field, NukeHub was founded in 2023.
 permalink: /about
 ---
 
