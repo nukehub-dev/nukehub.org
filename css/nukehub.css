@@ -1555,6 +1555,7 @@ textarea {
 }
 .footer_title {
   font-size: var(--h1-font);
+  font-weight: var(--font-semi-bold);
   margin-bottom: var(--mb-0-25);
 }
 .footer_subtitle {
