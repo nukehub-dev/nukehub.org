@@ -2,6 +2,8 @@
 layout: page
 id: terms-of-service
 title: Terms of Service
+description: >-
+    Understand NukeHub's Terms of Service for using our website. Learn about account responsibilities, content guidelines, termination, and more.
 permalink: /terms-of-service
 ---
 
