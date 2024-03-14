@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" oncontextmenu="return false">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href="{{ site.url }}{{ page.permalink }}" />
+    <link rel="icon" type="image/svg+xml" href="{{ site.url }}/assets/images/nukehub.svg" />
     <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
     <script type="application/ld+json">
       {
         "@context" : "https://schema.org",
         "@type" : "WebSite",
-        "name" : "NukeHub",
-        "url" : "https://nukehub.org/"
+        "name" : "{{ site.title }}",
+        "url" : "{{ site.url }}",
       }
     </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}">
+    <meta property="og:url" content="{{ site.url }}{{ page.permalink }}">
+    <meta property="og:image" content="{{ site.url }}/assets/images/nukehub.svg">
     {% if page.description %}
-    <meta name="description" content="{{page.description}}" />
+    <meta name="description" content="{{ page.description }}" />
+    <meta property="og:description" content="{{ page.description }}" />
     {% endif %}
-    <link rel="icon" type="image/svg+xml" href="assets/images/nukehub.svg" />
+    {% if page.keywords %}
+    <meta name="keywords" content="{{ page.keywords }}">
+    {% endif %}
     <!--========== CSS ==========-->
     <link rel="stylesheet" href="css/swiper-bundle.min.css" />
     <link rel="stylesheet" href="css/nukehub.min.css" />
