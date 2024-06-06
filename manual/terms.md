@@ -3,7 +3,7 @@ layout: page
 id: terms-of-service
 title: Terms of Service
 description: >-
-    Understand NukeHub's Terms of Service for using our website. Learn about account responsibilities, content guidelines, termination, and more.
+  Understand NukeHub's Terms of Service for using our website. Learn about account responsibilities, content guidelines, termination, and more.
 permalink: /terms-of-service
 ---
 
@@ -29,7 +29,7 @@ You agree not to disclose your password to any third party. You must notify us i
 
 Our Service allows you to post, link, store, share, and otherwise make available certain information, text, graphics, videos, or other material ("Content"). You are responsible for the Content that you post on or through the Service, including its legality, reliability, and appropriateness.
 
-By posting Content on or through the Service, you represent and warrant that: (i) the Content is yours (you own it) and/or you have the right to use it and the right to grant us the rights and license as provided in these Terms, and (ii) that the posting of your Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person or entity. 
+By posting Content on or through the Service, you represent and warrant that: (i) the Content is yours (you own it) and/or you have the right to use it and the right to grant us the rights and license as provided in these Terms, and (ii) that the posting of your Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person or entity.
 
 We reserve the right to terminate the account of anyone found to be infringing on a copyright.
 

@@ -3,7 +3,7 @@ layout: page
 id: privacy-policy
 title: Privacy Policy
 description: >-
-    Learn how NukeHub collects, uses, and protects your personal information.
+  Learn how NukeHub collects, uses, and protects your personal information.
 permalink: /privacy-policy
 ---
 
