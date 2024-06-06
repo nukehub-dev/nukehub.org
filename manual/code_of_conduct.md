@@ -3,7 +3,7 @@ layout: page
 id: code-of-conduct
 title: Code of Conduct
 description: >-
-    Learn our expectations, promote respect, and ensure a welcoming environment for all.
+  Learn our expectations, promote respect, and ensure a welcoming environment for all.
 permalink: /code-of-conduct
 ---
 

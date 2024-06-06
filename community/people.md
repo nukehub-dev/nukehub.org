@@ -2,7 +2,7 @@
 layout: page
 id: people
 title: People
-description: >
+description: >-
   Discover the members who guide our mission in advancing nuclear technology, their roles, affiliations, and ways to connect with them.
 permalink: /people
 ---
