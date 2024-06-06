@@ -2,6 +2,8 @@
 layout: page
 id: nuke-lab
 title: NukeLab
+description: >
+    Run nuclear physics simulations and analyses effortlessly in the cloud.
 permalink: /nuke-lab
 ---
 
