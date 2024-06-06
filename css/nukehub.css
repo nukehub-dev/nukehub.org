@@ -530,7 +530,7 @@ button {
   transition: 0.3s;
 }
 .button:hover {
-  background-color: var(--color-alt);
+  background-color: var(--opacity-color-100);
   transition: 0.3s;
 }
 .button_title {
@@ -1630,13 +1630,13 @@ textarea {
   list-style-type: disc;
 }
 
-/*TODO: Team */
-.team {
+/*TODO: Team and Sponsor */
+.team, .sponsors {
   margin-top: var(--mb-1);
   margin-bottom: var(--mb-1-5);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
 }
-.our-team {
+.our-team, .our-sponsor {
   padding: 1.5rem 0.25rem 2rem 0.25rem;
   background-color: transparent;
   text-align: center;
@@ -1648,6 +1648,14 @@ textarea {
   display: inline-block;
   height: 160px;
   width: 160px;
+  margin-bottom: auto;
+  z-index: 1;
+  position: relative;
+}
+
+.our-sponsor .picture {
+  display: inline-block;
+  width: 90%;
   margin-bottom: auto;
   z-index: 1;
   position: relative;
@@ -1693,13 +1701,17 @@ textarea {
   transition: all 0.9s ease 0s;
 }
 
+.our-sponsor .picture img {
+  transition: all 0.9s ease 0s;
+}
+
 .our-team:hover .picture img {
   border: 0px solid var(--color);
   box-shadow: 0 0 0 14px var(--opacity-color-200);
   transform: scale(0.7);
 }
 
-.our-team .title {
+.our-team .title , .our-sponsor .title {
   display: block;
   font-size: 15px;
   color: var(--text-color);
@@ -1712,12 +1724,26 @@ textarea {
   margin: 0;
   background-color: var(--color);
   position: absolute;
-  bottom: -100px;
+  bottom: -100%;
   left: 0;
   transition: all 0.5s ease 0s;
 }
 
-.our-team:hover .social {
+.our-sponsor .acknowledgment {
+  width: 100%;
+  min-height: 50%;
+  padding: 0.5rem;
+  margin: 0;
+  background-color: var(--color);
+  color: #fff;
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  transition: all 0.5s ease 0s;
+  z-index: 10;
+}
+
+.our-team:hover .social, .our-sponsor:hover .acknowledgment {
   bottom: 0;
 }
 

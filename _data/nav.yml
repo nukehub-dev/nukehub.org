@@ -47,6 +47,12 @@
     - title: Code of Conduct
       icon: nuke-law
       url: /code-of-conduct
+    - title: Acknowledgment
+      icon: nuke-certificate-file
+      url: /acknowledgment
+    - title: Support Us
+      icon: nuke-love
+      url: /support
 
 - title: Community
   icon: nuke-group
@@ -64,4 +70,8 @@
     - title: GitHub
       icon: nuke-github
       url: https://github.com/nukehub-dev
+      newpage: true
+    - title: LinkedIn
+      icon: nuke-linkedin-solid
+      url: https://www.linkedin.com/company/nukehub
       newpage: true
