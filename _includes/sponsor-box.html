@@ -1,0 +1,46 @@
+<div class="box_container container grid sponsors">
+    {% for obj in include.data %}
+    <div class="box_content" id="sponsor{{ forloop.index }}" style="padding: 0">
+        <div class="box_bg"></div>
+        <div class="our-sponsor">
+            <a class="picture" target="_blank" href="{{ obj.url }}">
+                <img class="img-fluid" src="{{ obj.image }}" alt="{{ obj.name }}">
+            </a>
+            <p class="box_title">{{ obj.name }}</p>
+            <div class="acknowledgment">
+                <p>{{ obj.acknowledgment }}</p>
+                <a target="_blank" href="{{ obj.url }}" class="button button--flex">
+                    Visit Site <i class="nuke-arrow-ios-forward button_icon"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $.contextMenu({
+                selector: "#sponsor{{ forloop.index }}",
+                callback: function (key, options) {
+                    var m = "clicked: " + key;
+                },
+                animation: {
+                    duration: 200,
+                    show: "fadeIn",
+                    hide: "fadeOut",
+                },
+                zIndex: 10000,
+                items: {
+                    //{% if obj.url %}
+                    "url": {
+                        name: "<i class='nuke-share-1 context_menu-icon'></i> Visit Site",
+                        isHtmlName: true,
+                        callback: function (key, options) {
+                            window.location.href = "{{ obj.url }}";
+                        },
+                    },
+                    // {% endif %}
+                },
+            });
+        });
+    </script>
+    {% endfor %}
+</div>
