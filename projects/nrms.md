@@ -2,6 +2,8 @@
 layout: page
 id: nrms
 title: NRMS
+description: >
+  Access the PRIS database and visualize the data in a user-friendly manner.
 permalink: /nrms
 ---
 
@@ -38,7 +40,7 @@ Nuclear Reactor Monitoring System (NRMS) provides the user with the ability to a
 Our platform ensures a professional and efficient experience for users seeking in-depth information on nuclear reactors. Stay informed and make data-driven decisions with NRMS.
 
 <center>
-    <a href="https://nrms.nukehub.org" target="_blank" 
+    <a href="https://nrms.nukehub.org" target="_blank"
         class="button button--flex" style="margin-top: 1rem;">
         Try NRMS <i class="nuke-arrow-ios-forward button_icon"></i>
     </a>

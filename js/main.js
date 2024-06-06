@@ -34,26 +34,29 @@ if (navClose) {
 }
 
 // Close dropdown when clicking outside
-$(document).on('click', function (e) {
-  if (!$(e.target).closest('.nav_item.dropdown').length) {
-    $('.dropdown-menu').hide();
-    $('.nav_icon_droupdown').removeClass('rotate');
+$(document).on("click", function (e) {
+  if (!$(e.target).closest(".nav_item.dropdown").length) {
+    $(".dropdown-menu").hide();
+    $(".nav_icon_droupdown").removeClass("rotate");
   }
 });
 
 // Toggle dropdown on click
-$('.nav_item.dropdown').on('click', function () {
+$(".nav_item.dropdown").on("click", function () {
   // Calculate and set the position of the dropdown-menu
-  var dropdownMenu = $(this).find('.dropdown-menu');
-    dropdownMenu.css({
-      display: 'block',
-      left: $(this).offset().left,
-      bottom: 'auto'
-    });
-    $(this).find('.nav_icon_droupdown').addClass('rotate');
+  var dropdownMenu = $(this).find(".dropdown-menu");
+  dropdownMenu.css({
+    display: "block",
+    left: $(this).offset().left,
+    bottom: "auto",
+  });
+  $(this).find(".nav_icon_droupdown").addClass("rotate");
   // Hide other dropdowns
-  $('.dropdown-menu').not(dropdownMenu).hide();
-  $('.nav_item.dropdown').not(this).find('.nav_icon_droupdown').removeClass('rotate');
+  $(".dropdown-menu").not(dropdownMenu).hide();
+  $(".nav_item.dropdown")
+    .not(this)
+    .find(".nav_icon_droupdown")
+    .removeClass("rotate");
 });
 
 /*========== Remove Menu Mobile ==========*/
@@ -67,12 +70,12 @@ function linkAction() {
 navLink.forEach((n) => n.addEventListener("click", linkAction));
 
 /*TODO  Scroll Active Link */
-$(window).on('scroll', function() {
+$(window).on("scroll", function () {
   const scrollY = $(window).scrollTop();
-  $("section[id]").each(function() {
+  $("section[id]").each(function () {
     const sectionHeight = $(this).outerHeight();
     const sectionTop = $(this).offset().top - 100;
-    const sectionId = $(this).attr('id');
+    const sectionId = $(this).attr("id");
 
     if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
       $(".nav_menu a[href*=" + sectionId + "]").addClass("active-link");
@@ -140,6 +143,9 @@ if (selectedTheme) {
   themeButton.classList[selectedIcon === "nuke-moon" ? "add" : "remove"](
     iconTheme
   );
+} else if (window.matchMedia("(prefers-color-scheme:dark)").matches) {
+  document.body.classList.add(darkTheme);
+  themeButton.classList.add(iconTheme);
 }
 
 themeButton.addEventListener("click", () => {
@@ -150,7 +156,6 @@ themeButton.addEventListener("click", () => {
 });
 
 document.querySelectorAll(".theme-colors .color").forEach((color) => {
-  console.log("clicked");
   color.onclick = () => {
     var colorName = color.getAttribute("name");
     var background = color.getAttribute("hue-color");
@@ -276,7 +281,11 @@ try {
 
 themeButton.addEventListener("click", () => {
   $("particles-js").html("");
-  particleColor = localStorage.getItem("particle-color").split(",");
+  try {
+    particleColor = localStorage.getItem("particle-color").split(",");
+  } catch (err) {
+    particleColor = ["#e06257", "#cb4e43", "#fcbbb6"];
+  }
   runParticleJS(particleColor);
 });
 
@@ -289,12 +298,12 @@ function runParticleJS(particleColor) {
   particlesJS("particles-js", {
     particles: {
       number: { value: 10, density: { enable: true, value_area: 1500 } },
-      color: { value: particleColor }, //FIXME: Not updateing after change color need page reflesh
+      color: { value: particleColor },
       shape: {
         type: "circle",
         stroke: { width: 0, color: "#000000" },
         polygon: { nb_sides: 12 },
-        image: { src: "assets/images/nrms.svg", width: 100, height: 100 },
+        image: { src: "assets/images/nukehub.svg", width: 100, height: 100 },
       },
       opacity: {
         value: 0.03,
