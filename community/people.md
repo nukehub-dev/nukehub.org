@@ -2,14 +2,15 @@
 layout: page
 id: people
 title: People
-description: >-
-    Meet the passionate individuals behind NukeHub. Discover the Executive Council 
-    members who guide our mission in advancing nuclear technology, 
-    their roles, affiliations, and ways to connect with them.
+description: >
+  Discover the members who guide our mission in advancing nuclear technology, their roles, affiliations, and ways to connect with them.
 permalink: /people
 ---
+
 {% for obj in site.data.people %}
+
 # {{ obj.title }}
+
 <div class="box_content">
     <div class="box_bg"></div>
     <p>
