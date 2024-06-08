@@ -9,10 +9,34 @@
     <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
     <script type="application/ld+json">
       {
-        "@context" : "https://schema.org",
-        "@type" : "WebSite",
-        "name" : "{{ site.title }}",
-        "url" : "{{ site.url }}"
+        "@context": "https://schema.org",
+        "@id": "{{ site.url }}",
+        "@type": "WebSite",
+        "name": "{{ site.title }}",
+        "url": "{{ site.url }}"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@id": "{{ site.url }}",
+        "@type": "Organization",
+        "name": "{{ site.title }}",
+        "description": "{{ site.description }}",
+        "url": "{{ site.url }}",
+        "logo": "{{ site.url }}/assets/images/nukehub.svg",
+        "foundingDate": "2023",
+        "founders": [
+          {
+            "@type": "Person",
+            "name": "Ahnaf Tahmid Chowdhury"
+          }
+        ],
+        "email": "{{ site.email }}",
+        "sameAs": [
+          "https://github.com/nukehub-dev",
+          "https://linkedin.com/company/nukehub/"
+        ]
       }
     </script>
     <meta property="og:site_name" content="{{ site.title }}">
