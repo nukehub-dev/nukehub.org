@@ -29,8 +29,8 @@ NukeHub operates under the
 <a target="_blank" href="https://opensource.org/licenses/BSD-2-Clause">
 BSD-2-Clause license</a>, ensuring an open and collaborative environment for everyone. 
 
-We are committed to contributing to the Sustainable Development Goals, particularly:
+We are committed to contributing to the [Sustainable Development Goals](https://sdgs.un.org/goals), particularly:
 
-- SDG 4: Ensure quality education and promote lifelong learning opportunities for all.
-- SDG 7: Ensure access to affordable, reliable, and sustainable energy.
-- SDG 9: Build resilient infrastructure, promote inclusive and sustainable industrialization, and foster innovation.
+- **SDG 4**: Ensure quality education and promote lifelong learning opportunities for all.
+- **SDG 7**: Ensure access to affordable, reliable, and sustainable energy.
+- **SDG 9**: Build resilient infrastructure, promote inclusive and sustainable industrialization, and foster innovation.
