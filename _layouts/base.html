@@ -10,16 +10,15 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@id": "{{ site.url }}",
         "@type": "WebSite",
         "name": "{{ site.title }}",
+        "image": "{{ site.url }}/assets/images/nukehub.png",
         "url": "{{ site.url }}"
       }
     </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@id": "{{ site.url }}/about",
         "@type": "Organization",
         "name": "{{ site.title }}",
         "description": "{{ site.description }}",
@@ -43,7 +42,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}">
     <meta property="og:url" content="{{ site.url }}{{ page.permalink }}">
-    <meta property="og:image" content="{{ site.url }}/assets/images/nukehub.svg">
+    <meta property="og:image" content="{{ site.url }}/assets/images/nukehub.png">
     {% if page.description %}
     <meta name="description" content="{{ page.description }}" />
     <meta property="og:description" content="{{ page.description }}" />
@@ -62,7 +61,7 @@
   <body onload="PreLoad()" id="body">
     <!--========== Preloader ==========-->
     <div id="loading">
-      {% include svg.html  class="loading_image" %}
+      {% include svg.html class="loading_image" %}
     </div>
     {% include header.html %}
     <!--========== Main ==========-->
