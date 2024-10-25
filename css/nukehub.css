@@ -89,6 +89,9 @@
   --z-tooltip: 10;
   --z-fixed: 100;
   --z-model: 1000;
+
+  /*== Zoom ==*/
+  --zoom-scale: 1;
 }
 
 /*==Font size for large reactors==*/
@@ -201,6 +204,7 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 body {
+  zoom: var(--zoom-scale);
   font-family: var(--body-font);
   font-size: var(--normal-font);
   margin: 0 0 var(--header-height) 0;
@@ -250,6 +254,9 @@ ul {
 .space-between {
   justify-content: space-between;
 }
+.no-zoom {
+  zoom: calc(1 / var(--zoom-scale));
+}
 
 /* TODO: REUSABLE CSS CLASSES */
 .section {
@@ -281,8 +288,8 @@ ul {
   justify-content: center;
 }
 .loading_image {
-  width: 40%;
-  max-height: 40%;
+  width: 30%;
+  max-height: 30%;
   fill: var(--svg-fill);
   justify-self: center;
   animation: loading 1.5s;
@@ -1236,22 +1243,25 @@ button {
 }
 
 .context-menu-list {
+  zoom: calc(1 / var(--zoom-scale));
   position: absolute;
   display: inline-block;
-  min-width: 12rem;
-  max-width: 24rem;
-  padding: 0.5rem 0;
-  margin: 0.2rem;
+  zoom: calc(1 / var(--zoom-scale));
+  min-width: calc(12rem * var(--zoom-scale));
+  max-width: calc(24rem * var(--zoom-scale));
+  padding: calc(0.5rem * var(--zoom-scale)) 0;
+  margin: calc(0.2rem * var(--zoom-scale));
   font-family: inherit;
   font-size: inherit;
   list-style-type: none;
   background: var(--container-color);
-  border-radius: 0.5rem;
-  -webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+  border-radius: calc(0.5rem * var(--zoom-scale));
+  -webkit-box-shadow: 0 calc(4px * var(--zoom-scale)) calc(6px * var(--zoom-scale)) rgba(0, 0, 0, 0.25);
+  box-shadow: 0 calc(4px * var(--zoom-scale)) calc(6px * var(--zoom-scale)) rgba(0, 0, 0, 0.25);
 }
 
 .context-menu-item {
+  zoom: var(--zoom-scale);
   position: relative;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
@@ -1765,6 +1775,21 @@ textarea {
   background-color: #fff;
 }
 
+/*TODO: Particles JS*/
+#particles-js {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: -100;
+  background-color: var(--body-color);
+  background-image: url("");
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  filter: blur(4px);
+}
+
 /* TODO: Responsive */
 @media screen and (max-width: 410px) {
   .container {
@@ -2007,42 +2032,39 @@ textarea {
   }
 }
 
-/*TODO: Responsive for 2K and 4K*/
+/*TODO: Responsive for 2K*/
 @media screen and (min-width: 1900px) {
-  body {
-    zoom: 1.1;
-  }
-  .no-zoom {
-    zoom: calc(1 / 1.1);
+  :root {
+    --zoom-scale: 1.1;
   }
 }
+/*TODO: Responsive for 4K*/
 @media screen and (min-width: 2800px) {
-  body {
-    zoom: 1.65;
-  }
-  .no-zoom {
-    zoom: calc(1 / 1.65);
+  :root {
+    --zoom-scale: 1.65;
   }
 }
+/*TODO: Responsive for 5K*/
 @media screen and (min-width: 3800px) {
-  body {
-    zoom: 2.2;
-  }
-  .no-zoom {
-    zoom: calc(1 / 2.2);
+  :root {
+    --zoom-scale: 2.2;
   }
 }
-/*TODO: Particles JS*/
-#particles-js {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: -100;
-  background-color: var(--body-color);
-  background-image: url("");
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  filter: blur(4px);
+/*TODO: Responsive for 6K*/
+@media screen and (min-width: 4800px) {
+  :root {
+    --zoom-scale: 2.8;
+  }
+}
+/*TODO: Responsive for 7K*/
+@media screen and (min-width: 5800px) {
+  :root {
+    --zoom-scale: 3.5;
+  }
+}
+/*TODO: Responsive for 8K*/
+@media screen and (min-width: 6800px) {
+  :root {
+    --zoom-scale: 4.2;
+  }
 }

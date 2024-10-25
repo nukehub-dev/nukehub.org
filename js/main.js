@@ -47,7 +47,7 @@ $(".nav_item.dropdown").on("click", function () {
   var dropdownMenu = $(this).find(".dropdown-menu");
   dropdownMenu.css({
     display: "block",
-    left: $(this).offset().left,
+    left: "auto",
     bottom: "auto",
   });
   $(this).find(".nav_icon_droupdown").addClass("rotate");
