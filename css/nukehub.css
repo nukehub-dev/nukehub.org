@@ -290,45 +290,72 @@ ul {
 .loading_image {
   width: 30%;
   max-height: 30%;
-  fill: var(--svg-fill);
+  overflow: visible;
   justify-self: center;
-  animation: loading 1.5s;
-  animation-iteration-count: infinite;
 }
-@keyframes loading {
+
+@keyframes fadeInStay {
+  0% {
+    opacity: 0.1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes fadeInOut {
   0% {
     opacity: 0;
-  }
-  10% {
-    opacity: 0.2;
-  }
-  20% {
-    opacity: 0.4;
-  }
-  30% {
-    opacity: 0.6;
-  }
-  40% {
-    opacity: 0.8;
   }
   50% {
     opacity: 1;
   }
-  60% {
-    opacity: 0.8;
-  }
-  70% {
-    opacity: 0.6;
-  }
-  80% {
-    opacity: 0.4;
-  }
-  90% {
-    opacity: 0.2;
-  }
   100% {
     opacity: 0;
   }
+}
+
+.loading_image g path {
+  opacity: 0; /* Start invisible */
+  animation: fadeInOut 3s ease-in-out infinite;
+}
+
+.loading_image g path:nth-child(1) {
+  animation: fadeInStay 3s ease-in-out infinite;
+}
+
+.loading_image g path:nth-child(2) {
+  animation-delay: 0.2s; /* Second path appears after 0.2s */
+}
+
+.loading_image g path:nth-child(3) {
+  animation-delay: 0.4s; /* Third path appears after 0.4s */
+}
+
+.loading_image g path:nth-child(4) {
+  animation-delay: 0.6s; /* Fourth path appears after 0.6s */
+}
+
+.loading_image g path:nth-child(5) {
+  animation-delay: 0.8s; /* Fifth path appears after 0.8s */
+}
+
+.loading_image g path:nth-child(6) {
+  animation-delay: 1s; /* Sixth path appears after 1s */
+}
+
+.loading_image g path:nth-child(7) {
+  animation-delay: 1.2s; /* Seventh path appears after 1.2s */
+}
+
+.loading_image g path:nth-child(8) {
+  animation-delay: 1.4s; /* Eighth path appears after 1.4s */
+}
+.loading_image g path:nth-child(9) {
+  animation-delay: 1.6s; /* Eighth path appears after 1.6s */
 }
 
 /* TODO: LAYOUT */
@@ -1404,6 +1431,7 @@ button {
   color: var(--color-alt);
 }
 .nukehub-logo {
+  perspective: 1000px;
   fill: var(--svg-fill);
   overflow: visible;
   zoom: calc(1 / var(--zoom-scale));
@@ -1413,9 +1441,6 @@ button {
 }
 .nukehub-logo-circle {
   fill: var(--color-alt);
-}
-.nukehub-logo:hover {
-  animation: shake 0.5s;
 }
 .nukehub-logo:active {
   animation: shake 0.5s;
