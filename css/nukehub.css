@@ -260,7 +260,7 @@ ul {
 
 /* TODO: REUSABLE CSS CLASSES */
 .section {
-  padding: 2rem 0 4rem;
+  margin: 2rem 0 4rem;
 }
 .section_title {
   font-size: var(--h1-font);
@@ -1403,19 +1403,21 @@ button {
 .home_social-icon:hover {
   color: var(--color-alt);
 }
-.home_nukehub {
+.nukehub-logo {
   fill: var(--svg-fill);
+  overflow: visible;
+  zoom: calc(1 / var(--zoom-scale));
 }
-.home_nukehub-circle-light {
+.nukehub-logo-circle-light {
   fill: var(--color);
 }
-.home_nukehub-circle {
+.nukehub-logo-circle {
   fill: var(--color-alt);
 }
-.home_nukehub:hover {
+.nukehub-logo:hover {
   animation: shake 0.5s;
 }
-.home_nukehub:active {
+.nukehub-logo:active {
   animation: shake 0.5s;
   animation-iteration-count: infinite;
 }
@@ -1470,7 +1472,7 @@ button {
   margin-bottom: var(--mb-0-75);
 }
 .home_description {
-  margin-bottom: var(--mb-2);
+  font-size: var(--normal-font);
 }
 
 /*TODO: Join */
@@ -1802,16 +1804,13 @@ textarea {
   .nav_list {
     column-gap: 0;
   }
-
   .list_title {
     font-size: var(--normal-font);
   }
-
   .box_container {
     justify-content: center;
     gap: 0.5rem;
   }
-
   .home_content {
     grid-template-columns: 0.25fr 3fr;
   }
@@ -1822,15 +1821,14 @@ textarea {
 }
 
 @media screen and (min-width: 600px) {
+  .nukehub-logo {
+    width: calc(300px * var(--zoom-scale));
+  }
   .home_content {
     grid-template-columns: max-content 1fr 1fr;
   }
   .home_data {
     grid-column: initial;
-  }
-  .home_nukehub {
-    width: 320px;
-    transform: translateX(0);
   }
   .home_img {
     order: 1;
@@ -1865,7 +1863,7 @@ textarea {
     margin: 0;
   }
   .section {
-    padding: 5rem 0 2rem;
+    margin: 5rem 0 2rem;
   }
   .header {
     top: 0;
@@ -1960,13 +1958,9 @@ textarea {
     padding-top: 5.5rem;
     column-gap: 2rem;
   }
-  .home_nukehub {
-    width: 360px;
-  }
   .join_container {
     column-gap: 5rem;
   }
-
   .join_description {
     text-align: initial;
   }
@@ -2007,9 +2001,6 @@ textarea {
     bottom: 1%;
     left: 50%;
     transform: translate(-50%, -1%);
-  }
-  .home_nukehub {
-    width: 390px;
   }
   .home_social {
     transform: translateX(-6rem);
