@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'NukeHub';
-  src:  url('fonts/NukeHub.eot?l7xwi0');
-  src:  url('fonts/NukeHub.eot?l7xwi0#iefix') format('embedded-opentype'),
-    url('fonts/NukeHub.ttf?l7xwi0') format('truetype'),
-    url('fonts/NukeHub.woff?l7xwi0') format('woff'),
-    url('fonts/NukeHub.svg?l7xwi0#NukeHub') format('svg');
+  src:  url('fonts/NukeHub.eot?6l98j0');
+  src:  url('fonts/NukeHub.eot?6l98j0#iefix') format('embedded-opentype'),
+    url('fonts/NukeHub.ttf?6l98j0') format('truetype'),
+    url('fonts/NukeHub.woff?6l98j0') format('woff'),
+    url('fonts/NukeHub.svg?6l98j0#NukeHub') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -35,35 +35,11 @@ i, .icomoon-liga {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.nuke-about-alt:before {
-  content: "\e963";
-}
 .nuke-about:before {
   content: "\e9f5";
 }
-.nuke-code-solid:before {
-  content: "\e9f6";
-}
-.nuke-security:before {
-  content: "\e9f7";
-}
-.nuke-security-alt:before {
-  content: "\e9f8";
-}
-.nuke-terms:before {
-  content: "\e9f9";
-}
-.nuke-privacy-alt:before {
-  content: "\e9fa";
-}
-.nuke-privacy:before {
-  content: "\e9fb";
-}
-.nuke-lock-alt:before {
-  content: "\e9fc";
-}
-.nuke-lock:before {
-  content: "\e9fd";
+.nuke-about-alt:before {
+  content: "\e963";
 }
 .nuke-active:before {
   content: "\e91a";
@@ -76,6 +52,18 @@ i, .icomoon-liga {
 }
 .nuke-add-1:before {
   content: "\e91d";
+}
+.nuke-ai:before {
+  content: "\e9fe";
+}
+.nuke-ai-chip:before {
+  content: "\e9ff";
+}
+.nuke-ai-chip-2:before {
+  content: "\ea00";
+}
+.nuke-ai-solid:before {
+  content: "\ea01";
 }
 .nuke-alert:before {
   content: "\e91e";
@@ -239,6 +227,9 @@ i, .icomoon-liga {
 .nuke-code:before {
   content: "\e942";
 }
+.nuke-code-solid:before {
+  content: "\e9f6";
+}
 .nuke-collapse:before {
   content: "\e90e";
 }
@@ -392,6 +383,9 @@ i, .icomoon-liga {
 .nuke-gitlab-solid:before {
   content: "\e9cb";
 }
+.nuke-google-solid:before {
+  content: "\ea02";
+}
 .nuke-grab-machine:before {
   content: "\e9c3";
 }
@@ -497,6 +491,12 @@ i, .icomoon-liga {
 .nuke-location-2:before {
   content: "\e968";
 }
+.nuke-lock:before {
+  content: "\e9fd";
+}
+.nuke-lock-alt:before {
+  content: "\e9fc";
+}
 .nuke-log:before {
   content: "\e918";
 }
@@ -545,8 +545,17 @@ i, .icomoon-liga {
 .nuke-merge-cells:before {
   content: "\e9a0";
 }
+.nuke-meta-solid:before {
+  content: "\ea03";
+}
+.nuke-microsoft-solid:before {
+  content: "\ea04";
+}
 .nuke-mobile:before {
   content: "\e9ae";
+}
+.nuke-molecule:before {
+  content: "\ea05";
 }
 .nuke-moon:before {
   content: "\e976";
@@ -584,6 +593,9 @@ i, .icomoon-liga {
 .nuke-oil-tower:before {
   content: "\e97e";
 }
+.nuke-openshift-solid:before {
+  content: "\ea06";
+}
 .nuke-orcid:before {
   content: "\e9f0";
 }
@@ -592,6 +604,9 @@ i, .icomoon-liga {
 }
 .nuke-paper-plane:before {
   content: "\e97f";
+}
+.nuke-paypal-solid:before {
+  content: "\ea07";
 }
 .nuke-pdf:before {
   content: "\e980";
@@ -632,8 +647,17 @@ i, .icomoon-liga {
 .nuke-power-plant-2:before {
   content: "\e97c";
 }
+.nuke-power-plant-31:before {
+  content: "\ea08";
+}
 .nuke-power-plant-3:before {
   content: "\e9a1";
+}
+.nuke-power-plant-4:before {
+  content: "\ea09";
+}
+.nuke-power-plant-5:before {
+  content: "\ea0a";
 }
 .nuke-power-unit:before {
   content: "\e989";
@@ -643,6 +667,12 @@ i, .icomoon-liga {
 }
 .nuke-print-1:before {
   content: "\e98b";
+}
+.nuke-privacy:before {
+  content: "\e9fb";
+}
+.nuke-privacy-alt:before {
+  content: "\e9fa";
 }
 .nuke-profile:before {
   content: "\e98c";
@@ -667,6 +697,15 @@ i, .icomoon-liga {
 }
 .nuke-researchgate-solid:before {
   content: "\e9e8";
+}
+.nuke-robot:before {
+  content: "\ea0b";
+}
+.nuke-security:before {
+  content: "\e9f7";
+}
+.nuke-security-alt:before {
+  content: "\e9f8";
 }
 .nuke-security-ok:before {
   content: "\e9dd";
@@ -757,6 +796,9 @@ i, .icomoon-liga {
 }
 .nuke-telegram-solid:before {
   content: "\e992";
+}
+.nuke-terms:before {
+  content: "\e9f9";
 }
 .nuke-thermometer:before {
   content: "\e99d";
