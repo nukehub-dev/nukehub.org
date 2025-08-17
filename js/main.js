@@ -251,7 +251,7 @@ sr.reveal(`.home_social-icon`, {
   interval: 200,
   distance: "100px",
 });
-sr.reveal(`.box_container`, {
+sr.reveal(`.box_container,.box_content`, {
   origin: "left",
   interval: 200,
 });
@@ -287,12 +287,6 @@ sr.reveal(`.container > center img`, {
   interval: 50,
   origin: "left",
 });
-sr.reveal(
-  `.footer_bg,.footer_title,.footer_subtitle,.footer_copy,footer_link_title,.footer_links`,
-  {
-    interval: 50,
-  }
-);
 
 /*TODO  Notification */
 let globalOptions = {
