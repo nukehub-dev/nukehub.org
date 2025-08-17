@@ -11,11 +11,13 @@ permalink: /people
 
 # {{ obj.title }}
 
-<div class="box_content">
-    <div class="box_bg"></div>
-    <p>
-        {{ obj.description }}
-    </p>
+<div class="box_container container grid team">
+  <div class="box_content">
+      <div class="box_bg"></div>
+      <p>
+          {{ obj.description }}
+      </p>
+  </div>
 </div>
 {% include profile-box.html data=obj.children %}
 {% endfor %}
