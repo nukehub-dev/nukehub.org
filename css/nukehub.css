@@ -564,15 +564,16 @@ button {
 .button {
   display: inline-block;
   background-color: var(--color);
-  color: #fff;
+  color: #fff !important;
   padding: 1rem;
   border-radius: 0.5rem;
   font-weight: var(--font-medium);
-  transition: 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 .button:hover {
-  background-color: var(--opacity-color-100);
-  transition: 0.3s;
+  background-color: var(--color-alt);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px hsla(var(--hue-color), 69%, 61%, 0.3);
 }
 .button_title {
   color: #fff;
