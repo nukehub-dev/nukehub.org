@@ -5,34 +5,51 @@ const urlsToCache = [
   '/index.html',
   '/404.html',
 
+  // Fonts
+  '/css/fonts/NukeHub.eot',
+  '/css/fonts/NukeHub.svg',
+  '/css/fonts/NukeHub.ttf',
+  '/css/fonts/NukeHub.woff',
+
   // Stylesheets
   '/css/style.css',
   '/css/nukehub.min.css',
+  '/css/swiper-bundle.min.css',
 
   // JavaScript
   '/js/main.min.js',
   '/js/jquery-3.7.1.min.js',
+  '/js/fullcalendar-6.1.10.min.js',
+  '/js/index.var.js',
+  '/js/jquery.contextMenu.min.js',
+  '/js/jquery.ui.position.min.js',
+  '/js/moment.min.js',
+  '/js/particles.min.js',
+  '/js/popper.min.js',
+  '/js/scrollreveal.min.js',
+  '/js/swiper-bundle.min.js',
+  '/js/tooltip.min.js',
 
   // Assets
   '/assets/images/nukehub.svg',
   '/assets/images/nukehub-brand.svg',
 
   // Community Pages
-  '/community/events.html',
-  '/community/people.html',
+  '/events.html',
+  '/people.html',
 
   // Manual Pages
-  '/manual/about.html',
-  '/manual/acknowledgment.html',
-  '/manual/code_of_conduct.html',
-  '/manual/privacy.html',
-  '/manual/support.html',
-  '/manual/terms.html',
+  '/about.html',
+  '/acknowledgment.html',
+  '/code-of-conduct.html',
+  '/privacy-policy.html',
+  '/support.html',
+  '/terms-of-service.html',
 
   // Project Pages
-  '/projects/nrms.html',
-  '/projects/nuke-analytics.html',
-  '/projects/nuke-lab.html'
+  '/nrms.html',
+  '/nuke-analytics.html',
+  '/nuke-lab.html'
 ];
 
 self.addEventListener('install', event => {
