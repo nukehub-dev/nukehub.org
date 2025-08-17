@@ -1,3 +1,17 @@
+/*TODO  Console Warning */
+console.log(
+  "%cStop!",
+  "color: red; font-size: 48px; font-weight: bold; -webkit-text-stroke: 1px black;"
+);
+console.log(
+  '%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a feature or "hack" someone\'s account, it is a scam and will give them access to your account.',
+  "font-size: 18px;"
+);
+console.log(
+  `%cWelcome to the console of ${document.title}!`,
+  "font-size: 24px; font-weight: bold; color: #4CAF50;"
+);
+
 /*TODO  Preload */
 var preLoad = document.getElementById("loading");
 
@@ -123,13 +137,24 @@ const iconTheme = "nuke-sun";
 const selectedTheme = localStorage.getItem("selected-theme");
 const selectedIcon = localStorage.getItem("selected-icon");
 
-var selectedColor = localStorage.getItem("selected-color");
-var redColor = localStorage.getItem("setRedColor");
-var greenColor = localStorage.getItem("setGreenColor");
-var blueColor = localStorage.getItem("setBlueColor");
+var hueColor = localStorage.getItem("hue-color");
+var redColor = localStorage.getItem("red-color");
+var greenColor = localStorage.getItem("green-color");
+var blueColor = localStorage.getItem("blue-color");
+var particleColor = localStorage.getItem("particle-color");
 var SVGColor = localStorage.getItem("svg-color");
-document.querySelector(":root").style.setProperty("--hue-color", selectedColor);
+
+try {
+  particleColor = particleColor.split(",");
+} catch (err) {
+  particleColor = ["#e06257", "#cb4e43", "#fcbbb6"];
+}
+
+document.querySelector(":root").style.setProperty("--hue-color", hueColor);
 document.querySelector(":root").style.setProperty("--color-svg", SVGColor);
+document
+  .querySelector('meta[name="theme-color"]')
+  .setAttribute("content", particleColor[0]);
 
 const getCurrentTheme = () =>
   document.body.classList.contains(darkTheme) ? "dark" : "light";
@@ -153,28 +178,36 @@ themeButton.addEventListener("click", () => {
   themeButton.classList.toggle(iconTheme);
   localStorage.setItem("selected-theme", getCurrentTheme());
   localStorage.setItem("selected-icon", getCurrentIcon());
+  $("particles-js").html("");
+  particleColor = localStorage.getItem("particle-color");
+  try {
+    particleColor = particleColor.split(",");
+  } catch (err) {
+    particleColor = ["#e06257", "#cb4e43", "#fcbbb6"];
+  }
+  runParticleJS(particleColor);
 });
 
 document.querySelectorAll(".theme-colors .color").forEach((color) => {
   color.onclick = () => {
-    var colorName = color.getAttribute("name");
-    var background = color.getAttribute("hue-color");
+    var hueColor = color.getAttribute("hue-color");
     var redColor = color.getAttribute("red");
     var greenColor = color.getAttribute("green");
     var blueColor = color.getAttribute("blue");
     var particleColor = color.getAttribute("particle-color");
     var SVGColor = color.getAttribute("svg-color");
-    localStorage.setItem("selected-color", background);
+    localStorage.setItem("hue-color", hueColor);
     localStorage.setItem("particle-color", particleColor);
-    localStorage.setItem("setRedColor", redColor);
-    localStorage.setItem("setGreenColor", greenColor);
-    localStorage.setItem("setBlueColor", blueColor);
+    localStorage.setItem("red-color", redColor);
+    localStorage.setItem("green-color", greenColor);
+    localStorage.setItem("blue-color", blueColor);
     localStorage.setItem("svg-color", SVGColor);
-    document
-      .querySelector(":root")
-      .style.setProperty("--hue-color", background);
+    document.querySelector(":root").style.setProperty("--hue-color", hueColor);
     document.querySelector(":root").style.setProperty("--color-svg", SVGColor);
     particleColor = particleColor.split(",");
+    document
+      .querySelector('meta[name="theme-color"]')
+      .setAttribute("content", particleColor[0]);
     $("particles-js").html("");
     runParticleJS(particleColor);
   };
@@ -272,22 +305,6 @@ let notifier = new AWN(globalOptions);
 /*TODO  particlesJS */
 const particleActive = document.querySelector(".ParticlesJS");
 var particleLineColor;
-var particleColor;
-try {
-  particleColor = localStorage.getItem("particle-color").split(",");
-} catch (err) {
-  particleColor = ["#e06257", "#cb4e43", "#fcbbb6"];
-}
-
-themeButton.addEventListener("click", () => {
-  $("particles-js").html("");
-  try {
-    particleColor = localStorage.getItem("particle-color").split(",");
-  } catch (err) {
-    particleColor = ["#e06257", "#cb4e43", "#fcbbb6"];
-  }
-  runParticleJS(particleColor);
-});
 
 function runParticleJS(particleColor) {
   if (document.body.className === darkTheme) {
