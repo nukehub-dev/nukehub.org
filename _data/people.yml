@@ -45,9 +45,9 @@
   children:
     - name: Ahnaf Tahmid Chowdhury
       image: https://github.com/ahnaf-tahmid-chowdhury.png
-      organization: Military Institute of Science and Technology (MIST)
-      location: Dhaka, Bangladesh
-      email: tahmid@nse.mist.ac.bd
+      organization: NukeHub
+      role: Founder & Executive Director
+      email: tahmid@nukehub.org
       url: https://tahmid.pages.dev/
       twitter: tahmid__
       github: ahnaf-tahmid-chowdhury

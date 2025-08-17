@@ -251,9 +251,9 @@ sr.reveal(`.home_social-icon`, {
   interval: 200,
   distance: "100px",
 });
-sr.reveal(`.box_content`, {
+sr.reveal(`.box_container`, {
   origin: "left",
-  delay: 100,
+  interval: 200,
 });
 sr.reveal(`.join_description,.join_info,.join_buttons`, {
   origin: "right",
