@@ -699,6 +699,7 @@ button {
 .button--link:hover {
   background-color: transparent;
   color: var(--color-alt);
+  box-shadow: none;
 }
 .box_button:hover .button_icon {
   transform: translateX(0.25rem);
