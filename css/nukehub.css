@@ -564,13 +564,14 @@ button {
 .button {
   display: inline-block;
   background-color: var(--color);
-  color: #fff !important;
+  color: #fff;
   padding: 1rem;
   border-radius: 0.5rem;
   font-weight: var(--font-medium);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 .button:hover {
+  color: #fff;
   background-color: var(--color-alt);
   transform: translateY(-3px);
   box-shadow: 0 4px 12px hsla(var(--hue-color), 69%, 61%, 0.3);
