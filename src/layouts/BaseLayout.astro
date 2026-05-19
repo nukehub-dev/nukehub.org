@@ -1,5 +1,7 @@
 ---
 import '@styles/global.css';
+import { Header } from '@components/layout/Header';
+import { Footer } from '@components/layout/Footer';
 
 interface Props {
   title?: string;
@@ -67,9 +69,59 @@ const canonicalUrl = `${siteUrl}${permalink}`;
         "https://linkedin.com/company/nukehub/",
       ],
     })} />
+
+    <!-- Theme init script to prevent flash -->
+    <script is:inline>
+      (function() {
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme');
+        const savedAccent = localStorage.getItem('accent') || 'orange';
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme) {
+          html.setAttribute('data-theme', savedTheme);
+        } else if (prefersDark) {
+          html.setAttribute('data-theme', 'dark');
+        }
+        html.setAttribute('data-accent', savedAccent);
+      })();
+    </script>
   </head>
 
-  <body>
-    <slot />
+  <body class="min-h-screen flex flex-col">
+    <Header client:load />
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Scroll to top -->
+    <button
+      id="scroll-top"
+      class="fixed bottom-6 right-6 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg opacity-0 pointer-events-none transition-all duration-300 hover:brightness-110"
+      aria-label="Scroll to top"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
+
+    <script is:inline>
+      (function() {
+        const btn = document.getElementById('scroll-top');
+        if (!btn) return;
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > 300) {
+            btn.classList.remove('opacity-0', 'pointer-events-none');
+            btn.classList.add('opacity-100', 'pointer-events-auto');
+          } else {
+            btn.classList.remove('opacity-100', 'pointer-events-auto');
+            btn.classList.add('opacity-0', 'pointer-events-none');
+          }
+        });
+        btn.addEventListener('click', function() {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      })();
+    </script>
   </body>
 </html>

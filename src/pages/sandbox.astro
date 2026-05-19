@@ -31,34 +31,6 @@ import { BrandIcon } from '@components/ui/BrandIcon';
       </div>
     </section>
 
-    <!-- Theme Controls -->
-    <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Theme Controls</h2>
-      <div class="flex flex-wrap items-center gap-6">
-        <Button id="theme-toggle" variant="outline" client:load>
-          Toggle Dark Mode
-        </Button>
-
-        <div class="flex items-center gap-3">
-          <span class="text-sm text-muted-foreground">Accent:</span>
-          {[
-            { name: 'red',    hsl: 'oklch(61% 0.209 27)' },
-            { name: 'orange', hsl: 'oklch(70% 0.177 48)' },
-            { name: 'green',  hsl: 'oklch(67% 0.162 144)' },
-            { name: 'cyan',   hsl: 'oklch(73% 0.126 211)' },
-            { name: 'purple', hsl: 'oklch(52% 0.215 321)' },
-          ].map((color) => (
-            <button
-              data-accent={color.name}
-              class="w-8 h-8 rounded-full border-2 cursor-pointer transition-transform hover:scale-110 accent-swatch"
-              style={'background: ' + color.hsl + '; border-color: transparent;'}
-              title={color.name}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-
     <!-- Buttons -->
     <section class="space-y-6">
       <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Buttons</h2>
@@ -154,7 +126,7 @@ import { BrandIcon } from '@components/ui/BrandIcon';
       </p>
     </section>
 
-    <!-- Colors -->
+    <!-- Semantic Tokens -->
     <section class="space-y-6">
       <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Semantic Tokens</h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -200,38 +172,4 @@ import { BrandIcon } from '@components/ui/BrandIcon';
     </section>
 
   </main>
-
-  <script is:inline>
-    (function () {
-      const html = document.documentElement;
-      const toggle = document.getElementById('theme-toggle');
-      const swatches = document.querySelectorAll('.accent-swatch');
-
-      toggle?.addEventListener('click', () => {
-        const current = html.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-      });
-
-      swatches.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const accent = btn.getAttribute('data-accent');
-          html.setAttribute('data-accent', accent);
-          localStorage.setItem('accent', accent);
-          swatches.forEach((s) => (s.style.borderColor = 'transparent'));
-          btn.style.borderColor = 'var(--foreground)';
-        });
-      });
-
-      const savedTheme = localStorage.getItem('theme');
-      const savedAccent = localStorage.getItem('accent') || 'orange';
-      if (savedTheme) html.setAttribute('data-theme', savedTheme);
-      if (savedAccent) {
-        html.setAttribute('data-accent', savedAccent);
-        const active = document.querySelector('[data-accent="' + savedAccent + '"]');
-        if (active) active.style.borderColor = 'var(--foreground)';
-      }
-    })();
-  </script>
 </BaseLayout>
