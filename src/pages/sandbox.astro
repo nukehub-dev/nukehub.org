@@ -1,99 +1,46 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import { Button } from '@components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/Card';
+import { Badge } from '@components/ui/Badge';
+import { Mail, ArrowRight } from 'lucide-react';
+import { BrandIcon } from '@components/ui/BrandIcon';
 ---
 
 <BaseLayout
   title="Sandbox"
-  description="Design token verification page"
+  description="Design token & primitive component verification"
   permalink="/sandbox"
 >
   <main class="min-h-screen px-6 py-16 max-w-5xl mx-auto space-y-20">
 
     <!-- Typography -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest opacity-60">Typography</h2>
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Typography</h2>
       <div class="space-y-4">
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tight">Display H1</h1>
-        <h2 class="text-4xl md:text-5xl font-semibold tracking-tight">Heading H2</h2>
-        <h3 class="text-2xl md:text-3xl font-semibold">Heading H3</h3>
-        <p class="text-lg leading-relaxed max-w-2xl">
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-foreground">Display H1</h1>
+        <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-foreground">Heading H2</h2>
+        <h3 class="text-2xl md:text-3xl font-semibold text-foreground">Heading H3</h3>
+        <p class="text-lg leading-relaxed max-w-2xl text-foreground">
           Body text uses Geist at 16–18px with relaxed line-height for comfortable reading.
           The quick brown fox jumps over the lazy dog.
         </p>
-        <p class="font-mono text-sm opacity-70">
+        <p class="font-mono text-sm text-muted-foreground">
           Mono text: const nucleus = {'{ protons: 92, neutrons: 146 }'};
-        </p>
-      </div>
-    </section>
-
-    <!-- Colors -->
-    <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest opacity-60">Primary Scale</h2>
-      <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
-        {['50','100','200','300','400','500','600','700','800','900'].map((step) => {
-          const isDark = parseInt(step) >= 500;
-          const bg = 'var(--color-primary-' + step + ')';
-          const fg = isDark ? 'white' : 'var(--color-text)';
-          return (
-            <div class="space-y-2">
-              <div
-                class="h-16 rounded-lg flex items-end p-2 text-xs font-mono"
-                style={'background: ' + bg + '; color: ' + fg + ';'}
-              >
-                {step}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-
-    <!-- Surfaces -->
-    <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest opacity-60">Surfaces</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="h-24 rounded-xl border p-4 text-sm" style="background: var(--color-surface); border-color: var(--color-border);">
-          surface
-        </div>
-        <div class="h-24 rounded-xl p-4 text-sm" style="background: var(--color-surface-muted);">
-          surface-muted
-        </div>
-        <div class="h-24 rounded-xl shadow-lg p-4 text-sm" style="background: var(--color-surface-elevated);">
-          surface-elevated
-        </div>
-        <div class="h-24 rounded-xl p-4 text-sm" style="background: var(--color-surface-inverse); color: var(--color-text-inverted);">
-          surface-inverse
-        </div>
-      </div>
-    </section>
-
-    <!-- Text colors -->
-    <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest opacity-60">Text Colors</h2>
-      <div class="space-y-3 text-lg">
-        <p style="color: var(--color-text)">text — Primary body color</p>
-        <p style="color: var(--color-text-muted)">text-muted — Secondary/muted text</p>
-        <p style="color: var(--color-text-subtle)">text-subtle — Tertiary/caption text</p>
-        <p class="inline-block px-3 py-1 rounded" style="background: var(--color-surface-inverse); color: var(--color-text-inverted)">
-          text-inverted — On dark backgrounds
         </p>
       </div>
     </section>
 
     <!-- Theme Controls -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest opacity-60">Theme Controls</h2>
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Theme Controls</h2>
       <div class="flex flex-wrap items-center gap-6">
-        <button
-          id="theme-toggle"
-          class="px-4 py-2 rounded-lg border text-sm font-medium transition-colors cursor-pointer"
-          style="border-color: var(--color-border); background: var(--color-surface-elevated);"
-        >
+        <Button id="theme-toggle" variant="outline" client:load>
           Toggle Dark Mode
-        </button>
+        </Button>
 
         <div class="flex items-center gap-3">
-          <span class="text-sm opacity-70">Accent:</span>
+          <span class="text-sm text-muted-foreground">Accent:</span>
           {[
             { name: 'red',    hsl: 'oklch(61% 0.209 27)' },
             { name: 'orange', hsl: 'oklch(70% 0.177 48)' },
@@ -112,30 +59,143 @@ import BaseLayout from '@layouts/BaseLayout.astro';
       </div>
     </section>
 
-    <!-- Animation Demo -->
+    <!-- Buttons -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest opacity-60">Animation Presets</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="p-4 rounded-xl border text-center text-sm" style="border-color: var(--color-border)">
-          <code class="font-mono text-xs opacity-70 block mb-2">fadeIn</code>
-          <div class="h-8 rounded" style="background: var(--color-primary-200)" />
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Buttons</h2>
+      <div class="flex flex-wrap gap-4 items-center">
+        <Button client:load>Default</Button>
+        <Button client:load variant="secondary">Secondary</Button>
+        <Button client:load variant="outline">Outline</Button>
+        <Button client:load variant="ghost">Ghost</Button>
+        <Button client:load variant="destructive">Destructive</Button>
+      </div>
+      <div class="flex flex-wrap gap-4 items-center">
+        <Button client:load size="sm">Small</Button>
+        <Button client:load size="default">Default</Button>
+        <Button client:load size="lg">Large</Button>
+        <Button client:load size="icon"><ArrowRight className="h-4 w-4" /></Button>
+      </div>
+      <div class="flex flex-wrap gap-4 items-center">
+        <Button client:load loading>Loading</Button>
+        <Button client:load disabled>Disabled</Button>
+      </div>
+    </section>
+
+    <!-- Cards -->
+    <section class="space-y-6">
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Cards</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Default Card</CardTitle>
+            <CardDescription>Standard elevated card with border.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p class="text-sm text-muted-foreground">Uses bg-card and border-border/50 tokens.</p>
+          </CardContent>
+        </Card>
+
+        <Card variant="bubble">
+          <CardHeader>
+            <CardTitle>Bubble Card</CardTitle>
+            <CardDescription>Glassmorphism with radial gradient tint.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p class="text-sm text-muted-foreground">Uses the .bubble utility from NukeLab.</p>
+          </CardContent>
+        </Card>
+
+        <Card variant="outlined">
+          <CardHeader>
+            <CardTitle>Outlined Card</CardTitle>
+            <CardDescription>Transparent background, visible border.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p class="text-sm text-muted-foreground">Minimal card for secondary content.</p>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+
+    <!-- Badges -->
+    <section class="space-y-6">
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Badges</h2>
+      <div class="flex flex-wrap gap-3">
+        <Badge>Default</Badge>
+        <Badge variant="secondary">Secondary</Badge>
+        <Badge variant="outline">Outline</Badge>
+        <Badge variant="ghost">Ghost</Badge>
+      </div>
+    </section>
+
+    <!-- Icons -->
+    <section class="space-y-6">
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Icons</h2>
+      <div class="flex flex-wrap gap-4 text-muted-foreground">
+        <div class="flex items-center gap-2 text-sm">
+          <BrandIcon name="github" size={20} />
+          <span>Github</span>
         </div>
-        <div class="p-4 rounded-xl border text-center text-sm" style="border-color: var(--color-border)">
-          <code class="font-mono text-xs opacity-70 block mb-2">fadeInUp</code>
-          <div class="h-8 rounded" style="background: var(--color-primary-300)" />
+        <div class="flex items-center gap-2 text-sm">
+          <BrandIcon name="linkedin" size={20} />
+          <span>LinkedIn</span>
         </div>
-        <div class="p-4 rounded-xl border text-center text-sm" style="border-color: var(--color-border)">
-          <code class="font-mono text-xs opacity-70 block mb-2">spring</code>
-          <div class="h-8 rounded" style="background: var(--color-primary-400)" />
+        <div class="flex items-center gap-2 text-sm">
+          <BrandIcon name="twitter" size={20} />
+          <span>Twitter</span>
         </div>
-        <div class="p-4 rounded-xl border text-center text-sm" style="border-color: var(--color-border)">
-          <code class="font-mono text-xs opacity-70 block mb-2">stagger</code>
-          <div class="h-8 rounded" style="background: var(--color-primary-500)" />
+        <div class="flex items-center gap-2 text-sm">
+          <Mail className="h-5 w-5" />
+          <span>Mail</span>
         </div>
       </div>
-      <p class="text-sm opacity-60">
+      <p class="text-sm text-muted-foreground">
+        React components <code class="font-mono">Icon</code> and <code class="font-mono">SocialIcon</code> are available in <code class="font-mono">src/components/ui/</code>.
+      </p>
+    </section>
+
+    <!-- Colors -->
+    <section class="space-y-6">
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Semantic Tokens</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="h-24 rounded-xl border p-4 text-sm bg-background border-border text-foreground">
+          background
+        </div>
+        <div class="h-24 rounded-xl border p-4 text-sm bg-card border-border/50 text-card-foreground shadow-sm">
+          card
+        </div>
+        <div class="h-24 rounded-xl p-4 text-sm bg-muted text-muted-foreground">
+          muted
+        </div>
+        <div class="h-24 rounded-xl p-4 text-sm bg-primary text-primary-foreground">
+          primary
+        </div>
+      </div>
+    </section>
+
+    <!-- Animation Demo -->
+    <section class="space-y-6">
+      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Animation Presets</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl border text-center text-sm border-border">
+          <code class="font-mono text-xs text-muted-foreground block mb-2">fadeIn</code>
+          <div class="h-8 rounded bg-primary/20" />
+        </div>
+        <div class="p-4 rounded-xl border text-center text-sm border-border">
+          <code class="font-mono text-xs text-muted-foreground block mb-2">fadeInUp</code>
+          <div class="h-8 rounded bg-primary/30" />
+        </div>
+        <div class="p-4 rounded-xl border text-center text-sm border-border">
+          <code class="font-mono text-xs text-muted-foreground block mb-2">spring</code>
+          <div class="h-8 rounded bg-primary/40" />
+        </div>
+        <div class="p-4 rounded-xl border text-center text-sm border-border">
+          <code class="font-mono text-xs text-muted-foreground block mb-2">stagger</code>
+          <div class="h-8 rounded bg-primary/50" />
+        </div>
+      </div>
+      <p class="text-sm text-muted-foreground">
         Framer Motion variants are defined in <code class="font-mono">src/lib/animations.ts</code>.
-        Import them and use with <code class="font-mono">motion.div</code> or <code class="font-mono">whileInView</code>.
       </p>
     </section>
 
@@ -147,7 +207,6 @@ import BaseLayout from '@layouts/BaseLayout.astro';
       const toggle = document.getElementById('theme-toggle');
       const swatches = document.querySelectorAll('.accent-swatch');
 
-      // Dark mode toggle
       toggle?.addEventListener('click', () => {
         const current = html.getAttribute('data-theme');
         const next = current === 'dark' ? 'light' : 'dark';
@@ -155,26 +214,23 @@ import BaseLayout from '@layouts/BaseLayout.astro';
         localStorage.setItem('theme', next);
       });
 
-      // Accent picker
       swatches.forEach((btn) => {
         btn.addEventListener('click', () => {
           const accent = btn.getAttribute('data-accent');
           html.setAttribute('data-accent', accent);
           localStorage.setItem('accent', accent);
-          // Update active state
           swatches.forEach((s) => (s.style.borderColor = 'transparent'));
-          btn.style.borderColor = 'var(--color-text)';
+          btn.style.borderColor = 'var(--foreground)';
         });
       });
 
-      // Restore preferences
       const savedTheme = localStorage.getItem('theme');
       const savedAccent = localStorage.getItem('accent') || 'orange';
       if (savedTheme) html.setAttribute('data-theme', savedTheme);
       if (savedAccent) {
         html.setAttribute('data-accent', savedAccent);
-        const active = document.querySelector(`[data-accent="${savedAccent}"]`);
-        if (active) active.style.borderColor = 'var(--color-text)';
+        const active = document.querySelector('[data-accent="' + savedAccent + '"]');
+        if (active) active.style.borderColor = 'var(--foreground)';
       }
     })();
   </script>
