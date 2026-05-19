@@ -1,0 +1,75 @@
+---
+import '@styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  permalink?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description = 'NukeHub is a pioneering platform dedicated to the exploration and advancement of nuclear technology.',
+  keywords = 'nukehub, nuclear, technology, science, open source, innovation, collaboration, community, simulation',
+  permalink = '/',
+  image = '/assets/images/nukehub.png',
+} = Astro.props;
+
+const siteUrl = 'https://nukehub.org';
+const pageTitle = title ? `${title} | NukeHub` : 'NukeHub';
+const canonicalUrl = `${siteUrl}${permalink}`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href="/assets/images/nukehub.svg" />
+
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="NukeHub" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={`${siteUrl}${image}`} />
+    <meta property="og:description" content={description} />
+
+    <!-- Schema.org -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "NukeHub",
+      image: `${siteUrl}/assets/images/nukehub.png`,
+      url: siteUrl,
+    })} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "NukeHub",
+      description,
+      url: siteUrl,
+      logo: `${siteUrl}/assets/images/nukehub.svg`,
+      foundingDate: "2023",
+      founders: [{ "@type": "Person", name: "Ahnaf Tahmid Chowdhury" }],
+      email: "tahmid@nukehub.org",
+      sameAs: [
+        "https://github.com/nukehub-dev",
+        "https://linkedin.com/company/nukehub/",
+      ],
+    })} />
+  </head>
+
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,56 @@
+# Build output
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.ruby-lsp/
+
+# OS
+.DS_Store
+Thumbs.db
+*.pem
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Testing
+coverage/
+test-results/
+*.tsbuildinfo
+
+# Deployment platforms
+.vercel
+.netlify
+.cloudflare
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Old site archive
+archive/
+
+# Migration planning
+.phases/
+
+# Misc
+*.tgz
+*.tar.gz

@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Fonts
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/Geist-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/GeistMono-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Tailwind v4 Theme Tokens
+   ========================================================================== */
+
+@theme {
+  /* Typography */
+  --font-sans: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* OKLCH Accent — Orange family (default hue 25) */
+  --hue-accent: 48;
+  --color-primary: oklch(65% 0.2 var(--hue-accent));
+  --color-primary-dark: oklch(55% 0.18 var(--hue-accent));
+  --color-primary-light: oklch(75% 0.15 var(--hue-accent));
+
+  --color-primary-50: color-mix(in oklch, var(--color-primary) 5%, white);
+  --color-primary-100: color-mix(in oklch, var(--color-primary) 10%, white);
+  --color-primary-200: color-mix(in oklch, var(--color-primary) 20%, white);
+  --color-primary-300: color-mix(in oklch, var(--color-primary) 30%, white);
+  --color-primary-400: color-mix(in oklch, var(--color-primary) 40%, white);
+  --color-primary-500: var(--color-primary);
+  --color-primary-600: var(--color-primary-dark);
+  --color-primary-700: color-mix(in oklch, var(--color-primary) 70%, black);
+  --color-primary-800: color-mix(in oklch, var(--color-primary) 50%, black);
+  --color-primary-900: color-mix(in oklch, var(--color-primary) 30%, black);
+
+  /* Semantic surface tokens (light mode defaults) */
+  --color-surface: oklch(100% 0 0);
+  --color-surface-muted: oklch(97% 0 0);
+  --color-surface-elevated: oklch(100% 0 0);
+  --color-surface-inverse: oklch(20% 0 0);
+
+  --color-border: oklch(90% 0 0);
+  --color-border-subtle: oklch(95% 0 0);
+
+  --color-text: oklch(20% 0 0);
+  --color-text-muted: oklch(50% 0 0);
+  --color-text-subtle: oklch(65% 0 0);
+  --color-text-inverted: oklch(97% 0 0);
+
+  /* Accent hue variants (mirrors current 5-color picker) */
+  --hue-red: 27;
+  --hue-orange: 48;
+  --hue-green: 144;
+  --hue-cyan: 211;
+  --hue-purple: 321;
+}
+
+/* ==========================================================================
+   Dark mode variant hook
+   Usage: <html data-theme="dark"> ... </html>
+   ========================================================================== */
+
+@variant dark (&:where([data-theme="dark"] *));
+
+/* ==========================================================================
+   Dark mode token overrides
+   ========================================================================== */
+
+[data-theme="dark"] {
+  --color-surface: oklch(15% 0 0);
+  --color-surface-muted: oklch(18% 0 0);
+  --color-surface-elevated: oklch(22% 0 0);
+  --color-surface-inverse: oklch(95% 0 0);
+
+  --color-border: oklch(30% 0 0);
+  --color-border-subtle: oklch(25% 0 0);
+
+  --color-text: oklch(95% 0 0);
+  --color-text-muted: oklch(70% 0 0);
+  --color-text-subtle: oklch(55% 0 0);
+  --color-text-inverted: oklch(15% 0 0);
+}
+
+/* ==========================================================================
+   Accent hue variants (for color picker)
+   ========================================================================== */
+
+[data-accent="red"]     { --hue-accent: var(--hue-red); }
+[data-accent="orange"]  { --hue-accent: var(--hue-orange); }
+[data-accent="green"]   { --hue-accent: var(--hue-green); }
+[data-accent="cyan"]    { --hue-accent: var(--hue-cyan); }
+[data-accent="purple"]  { --hue-accent: var(--hue-purple); }
+
+/* ==========================================================================
+   Base styles
+   ========================================================================== */
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  ::selection {
+    background-color: var(--color-primary-200);
+    color: var(--color-text);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
