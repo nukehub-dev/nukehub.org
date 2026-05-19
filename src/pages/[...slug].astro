@@ -1,0 +1,39 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import PageLayout from '@layouts/PageLayout.astro';
+
+export async function getStaticPaths() {
+  const manual = await getCollection('manual');
+  const projects = await getCollection('projects');
+
+  const manualPaths = manual.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry, collection: 'manual' as const },
+  }));
+
+  const projectPaths = projects.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry, collection: 'projects' as const },
+  }));
+
+  return [...manualPaths, ...projectPaths];
+}
+
+interface Props {
+  entry: CollectionEntry<'manual'> | CollectionEntry<'projects'>;
+  collection: 'manual' | 'projects';
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<PageLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  permalink={entry.data.permalink || `/${entry.slug}`}
+>
+  <article class="prose prose-neutral max-w-none dark:prose-invert">
+    <Content />
+  </article>
+</PageLayout>

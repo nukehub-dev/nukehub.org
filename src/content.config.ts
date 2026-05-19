@@ -4,8 +4,8 @@ const manual = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
-    permalink: z.string(),
+    description: z.string().optional(),
+    permalink: z.string().optional(),
     lastUpdated: z.coerce.date().optional(),
   }),
 });
@@ -14,11 +14,9 @@ const projects = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
-    url: z.string().url(),
-    source: z.string().url(),
-    image: z.string().optional(),
-    tags: z.array(z.string()).optional(),
+    description: z.string().optional(),
+    permalink: z.string().optional(),
+    lastUpdated: z.coerce.date().optional(),
   }),
 });
 

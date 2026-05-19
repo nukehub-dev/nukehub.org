@@ -1,5 +1,8 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import { HeroSection } from '@components/home/HeroSection';
+import { ProjectsGrid } from '@components/home/ProjectsGrid';
+import { JoinCTA } from '@components/home/JoinCTA';
 ---
 
 <BaseLayout
@@ -7,29 +10,13 @@ import BaseLayout from '@layouts/BaseLayout.astro';
   keywords="nukehub, nuclear, technology, science, open source, innovation, collaboration, community, simulation, discussions"
   permalink="/"
 >
-  <div class="flex flex-col items-center justify-center px-4 py-20 sm:py-32">
-    <div class="text-center space-y-6 max-w-3xl">
-      <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-foreground">
-        Open Source <span class="text-primary">Nuclear</span> Engineering
-      </h1>
-      <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-        A pioneering platform dedicated to the exploration and advancement
-        of nuclear technology through open collaboration.
-      </p>
-      <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
-        <a
-          href="/projects"
-          class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-all duration-100 hover:-translate-y-[1px] active:translate-y-[1px] hover:brightness-110"
-        >
-          Explore Projects
-        </a>
-        <a
-          href="/about"
-          class="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-5 text-sm font-medium text-foreground transition-all duration-100 hover:-translate-y-[1px] active:translate-y-[1px] hover:bg-accent hover:text-accent-foreground"
-        >
-          Learn More
-        </a>
-      </div>
-    </div>
+  <HeroSection client:load />
+
+  <div class="border-t border-border/50">
+    <ProjectsGrid client:load />
+  </div>
+
+  <div class="border-t border-border/50">
+    <JoinCTA client:load />
   </div>
 </BaseLayout>
