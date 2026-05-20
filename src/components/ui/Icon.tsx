@@ -72,7 +72,6 @@ const lucideMap: Record<string, React.ComponentType<LucideProps>> = {
   'nuke-mail-solid': Mail,
   'nuke-internet-solid': Globe,
   'nuke-whatsapp-solid': MessageCircle,
-  'nuke-skype-solid': Video,
 
   // Academic
   'nuke-education-solid': GraduationCap,

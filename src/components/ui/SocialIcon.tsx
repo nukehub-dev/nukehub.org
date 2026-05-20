@@ -3,12 +3,7 @@ import {
   Phone,
   Mail,
   Globe,
-  MessageCircle,
   Video,
-  GraduationCap,
-  Fingerprint,
-  BookOpen,
-  Library,
   type LucideProps,
 } from 'lucide-react';
 import { BrandIcon } from './BrandIcon';
@@ -23,17 +18,10 @@ const lucideMap: Record<string, React.ComponentType<LucideProps>> = {
   url: Globe,
   website: Globe,
   portfolio: Globe,
-  whatsapp: MessageCircle,
-  skype: Video,
-  scholar: GraduationCap,
-  orcid: Fingerprint,
-  researchgate: BookOpen,
-  zotero: Library,
 };
 
 const brandMap: Record<string, string> = {
   linkedin: 'linkedin',
-  twitter: 'twitter',
   facebook: 'facebook',
   instagram: 'instagram',
   github: 'github',
@@ -41,6 +29,22 @@ const brandMap: Record<string, string> = {
   bitbucket: 'bitbucket',
   stackoverflow: 'stackoverflow',
   youtube: 'youtube',
+  mastodon: 'mastodon',
+  bluesky: 'bluesky',
+  discord: 'discord',
+  telegram: 'telegram',
+  medium: 'medium',
+  tiktok: 'tiktok',
+  threads: 'threads',
+  x: 'x',
+  twitch: 'twitch',
+  reddit: 'reddit',
+  signal: 'signal',
+  whatsapp: 'whatsapp',
+  scholar: 'googlescholar',
+  orcid: 'orcid',
+  researchgate: 'researchgate',
+  zotero: 'zotero',
 };
 
 interface SocialIconProps extends LucideProps {
@@ -69,9 +73,7 @@ export function getSocialUrl(platform: string, handle: string): string {
     phone: `tel:${handle}`,
     email: `mailto:${handle}`,
     whatsapp: `https://wa.me/${handle}`,
-    skype: `skype:${handle}?call`,
     linkedin: `https://linkedin.com/in/${handle}`,
-    twitter: `https://twitter.com/${handle}`,
     facebook: `https://facebook.com/${handle}`,
     instagram: `https://instagram.com/${handle}`,
     github: `https://github.com/${handle}`,
@@ -83,6 +85,17 @@ export function getSocialUrl(platform: string, handle: string): string {
     researchgate: `https://www.researchgate.net/profile/${handle}`,
     zotero: `https://www.zotero.org/${handle}`,
     youtube: `https://youtube.com/channel/${handle}`,
+    mastodon: handle.startsWith('http') ? handle : `https://mastodon.social/@${handle}`,
+    bluesky: handle.startsWith('http') ? handle : `https://bsky.app/profile/${handle}`,
+    discord: handle,
+    telegram: handle.startsWith('http') ? handle : `https://t.me/${handle}`,
+    medium: handle.startsWith('http') ? handle : `https://medium.com/@${handle}`,
+    tiktok: handle.startsWith('http') ? handle : `https://tiktok.com/@${handle}`,
+    threads: handle.startsWith('http') ? handle : `https://threads.net/@${handle}`,
+    x: handle.startsWith('http') ? handle : `https://x.com/${handle}`,
+    twitch: handle.startsWith('http') ? handle : `https://twitch.tv/${handle}`,
+    reddit: handle.startsWith('http') ? handle : `https://reddit.com/user/${handle}`,
+    signal: handle,
   };
   return urls[platform.toLowerCase()] || handle;
 }

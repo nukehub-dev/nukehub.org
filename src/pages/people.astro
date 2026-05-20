@@ -1,7 +1,68 @@
 ---
+import { getCollection } from 'astro:content';
 import PageLayout from '@layouts/PageLayout.astro';
 import { PeopleGrid } from '@components/people/PeopleGrid';
-import { peopleCategories } from '@data/people';
+import type { Person, PeopleCategory } from '@lib/people';
+
+// Load people and categories from YAML files
+const peopleEntries = await getCollection('people');
+const categoryEntries = await getCollection('peopleCategories');
+
+// Map to typed objects
+const people: Person[] = peopleEntries.map((entry) => ({
+  id: entry.id,
+  name: entry.data.name,
+  image: entry.data.image,
+  organization: entry.data.organization,
+  role: entry.data.role,
+  location: entry.data.location,
+  email: entry.data.email,
+  phone: entry.data.phone,
+  url: entry.data.url,
+  whatsapp: entry.data.whatsapp,
+  signal: entry.data.signal,
+  linkedin: entry.data.linkedin,
+  facebook: entry.data.facebook,
+  instagram: entry.data.instagram,
+  github: entry.data.github,
+  gitlab: entry.data.gitlab,
+  bitbucket: entry.data.bitbucket,
+  stackoverflow: entry.data.stackoverflow,
+  scholar: entry.data.scholar,
+  orcid: entry.data.orcid,
+  researchgate: entry.data.researchgate,
+  zotero: entry.data.zotero,
+  youtube: entry.data.youtube,
+  mastodon: entry.data.mastodon,
+  bluesky: entry.data.bluesky,
+  discord: entry.data.discord,
+  telegram: entry.data.telegram,
+  medium: entry.data.medium,
+  tiktok: entry.data.tiktok,
+  threads: entry.data.threads,
+  x: entry.data.x,
+  twitch: entry.data.twitch,
+  reddit: entry.data.reddit,
+  category: entry.data.category,
+}));
+
+// Group people by their category
+const peopleByCategory = new Map<string, Person[]>();
+for (const person of people) {
+  if (!peopleByCategory.has(person.category)) {
+    peopleByCategory.set(person.category, []);
+  }
+  peopleByCategory.get(person.category)!.push(person);
+}
+
+// Build categories sorted by explicit order (fallback to title alphabetical)
+const peopleCategories: PeopleCategory[] = categoryEntries
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
+  .map((entry) => ({
+    title: entry.data.title,
+    description: entry.data.description,
+    children: peopleByCategory.get(entry.data.title) || [],
+  }));
 
 const title = 'People';
 const description = 'Meet the people behind NukeHub — researchers, engineers, and enthusiasts advancing nuclear technology.';

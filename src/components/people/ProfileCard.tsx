@@ -1,58 +1,19 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, MoreHorizontal } from 'lucide-react';
+import { Image } from '@components/ui/Image';
 import { Card, CardContent } from '@components/ui/Card';
 import { Badge } from '@components/ui/Badge';
-import { SocialIcon, getSocialUrl } from '@components/ui/SocialIcon';
+import { SocialIcon } from '@components/ui/SocialIcon';
 import { cn } from '@lib/utils';
-import type { Person } from '@data/people';
+import { type Person, type SocialLink, SOCIAL_FIELDS, extractSocialLinks } from '@lib/people';
 
 // ============================================================================
 // Social link extraction
 // ============================================================================
 
-interface SocialLink {
-  platform: string;
-  label: string;
-  url: string;
-}
-
-const SOCIAL_FIELDS: Array<{ key: keyof Person; label: string; platform: string }> = [
-  { key: 'url', label: 'Website', platform: 'website' },
-  { key: 'email', label: 'Email', platform: 'email' },
-  { key: 'phone', label: 'Phone', platform: 'phone' },
-  { key: 'whatsapp', label: 'WhatsApp', platform: 'whatsapp' },
-  { key: 'skype', label: 'Skype', platform: 'skype' },
-  { key: 'linkedin', label: 'LinkedIn', platform: 'linkedin' },
-  { key: 'twitter', label: 'Twitter', platform: 'twitter' },
-  { key: 'facebook', label: 'Facebook', platform: 'facebook' },
-  { key: 'instagram', label: 'Instagram', platform: 'instagram' },
-  { key: 'github', label: 'GitHub', platform: 'github' },
-  { key: 'gitlab', label: 'GitLab', platform: 'gitlab' },
-  { key: 'bitbucket', label: 'Bitbucket', platform: 'bitbucket' },
-  { key: 'stackoverflow', label: 'Stack Overflow', platform: 'stackoverflow' },
-  { key: 'scholar', label: 'Google Scholar', platform: 'scholar' },
-  { key: 'orcid', label: 'ORCID', platform: 'orcid' },
-  { key: 'researchgate', label: 'ResearchGate', platform: 'researchgate' },
-  { key: 'zotero', label: 'Zotero', platform: 'zotero' },
-  { key: 'youtube', label: 'YouTube', platform: 'youtube' },
-];
-
-function extractSocialLinks(person: Person): SocialLink[] {
-  return SOCIAL_FIELDS
-    .filter(({ key }) => person[key])
-    .map(({ key, label, platform }) => {
-      const handle = person[key] as string;
-      return {
-        platform,
-        label,
-        url: key === 'url' ? handle : getSocialUrl(platform, handle),
-      };
-    });
-}
-
 function getDisplaySocials(person: Person): SocialLink[] {
-  const priority = ['github', 'linkedin', 'twitter', 'email', 'url', 'gitlab'];
+  const priority = ['github', 'linkedin', 'x', 'email', 'url', 'gitlab'];
   const all = extractSocialLinks(person);
   const prioritized = priority
     .map((p) => all.find((s) => s.platform === p))
@@ -168,22 +129,14 @@ export function ProfileCard({ person, index = 0, onOpen }: ProfileCardProps) {
           <CardContent className="p-5 flex flex-col items-center text-center relative">
             {/* Avatar */}
             <div className="relative mb-4">
-              <div className="h-24 w-24 rounded-full overflow-hidden ring-2 ring-border/60 bg-muted shadow-sm">
-                <img
-                  src={person.image}
-                  alt={person.name}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    target.style.display = 'none';
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.innerHTML = `<div class="flex h-full w-full items-center justify-center text-2xl font-bold text-muted-foreground">${person.name.charAt(0)}</div>`;
-                    }
-                  }}
-                />
-              </div>
+              <Image
+                src={person.image}
+                alt={person.name}
+                fallback={person.name}
+                wrapperClassName="h-24 w-24 ring-2 ring-border/60 shadow-sm"
+                rounded="full"
+                loading="lazy"
+              />
             </div>
 
             {/* Info */}

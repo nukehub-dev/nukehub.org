@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
+import { SearchInput } from '@components/ui/SearchInput';
 import { ProfileCard } from './ProfileCard';
 import { ProfileModal } from './ProfileModal';
 import { cn } from '@lib/utils';
-import type { Person, PeopleCategory } from '@data/people';
+import type { Person, PeopleCategory } from '@lib/people';
 
 // ============================================================================
 // Filter logic
@@ -82,32 +83,12 @@ export function PeopleGrid({ categories }: PeopleGridProps) {
       <div className="sticky top-20 z-30 -mx-4 px-4 py-3 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <div className="relative flex-1 max-w-md">
-              <Search
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-              />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by name, role, or organization..."
-                className={cn(
-                  'w-full rounded-lg border border-input bg-background py-2.5 pl-10 pr-4 text-sm',
-                  'placeholder:text-muted-foreground',
-                  'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1',
-                  'transition-shadow'
-                )}
-              />
-              {query && (
-                <button
-                  onClick={() => setQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
+            <SearchInput
+              value={query}
+              onChange={setQuery}
+              placeholder="Search by name, role, or organization..."
+              className="flex-1 max-w-md"
+            />
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Users size={16} />
               <span>

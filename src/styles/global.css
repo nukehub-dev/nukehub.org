@@ -661,3 +661,20 @@ input[type="number"] {
 .fc-dark .fc .fc-list-day-cushion {
   background-color: var(--muted) !important;
 }
+
+/* ==========================================================================
+   Shimmer animation for image loading skeletons
+   ========================================================================== */
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+}

@@ -2,52 +2,20 @@ import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Briefcase, Mail, Globe, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@components/ui/Badge';
-import { SocialIcon, getSocialUrl } from '@components/ui/SocialIcon';
+import { Image } from '@components/ui/Image';
+import { SocialIcon } from '@components/ui/SocialIcon';
 import { cn } from '@lib/utils';
-import type { Person } from '@data/people';
+import { type Person, type SocialLink, SOCIAL_FIELDS, extractSocialLinks } from '@lib/people';
 
 // ============================================================================
 // Social link extraction with handles
 // ============================================================================
 
-interface SocialLink {
-  platform: string;
-  label: string;
-  handle: string;
-  url: string;
-}
+const HEADER_SOCIALS = new Set(['email', 'url', 'website']);
 
-const SOCIAL_FIELDS: Array<{ key: keyof Person; label: string; platform: string }> = [
-  { key: 'phone', label: 'Phone', platform: 'phone' },
-  { key: 'whatsapp', label: 'WhatsApp', platform: 'whatsapp' },
-  { key: 'skype', label: 'Skype', platform: 'skype' },
-  { key: 'linkedin', label: 'LinkedIn', platform: 'linkedin' },
-  { key: 'twitter', label: 'Twitter', platform: 'twitter' },
-  { key: 'facebook', label: 'Facebook', platform: 'facebook' },
-  { key: 'instagram', label: 'Instagram', platform: 'instagram' },
-  { key: 'github', label: 'GitHub', platform: 'github' },
-  { key: 'gitlab', label: 'GitLab', platform: 'gitlab' },
-  { key: 'bitbucket', label: 'Bitbucket', platform: 'bitbucket' },
-  { key: 'stackoverflow', label: 'Stack Overflow', platform: 'stackoverflow' },
-  { key: 'scholar', label: 'Google Scholar', platform: 'scholar' },
-  { key: 'orcid', label: 'ORCID', platform: 'orcid' },
-  { key: 'researchgate', label: 'ResearchGate', platform: 'researchgate' },
-  { key: 'zotero', label: 'Zotero', platform: 'zotero' },
-  { key: 'youtube', label: 'YouTube', platform: 'youtube' },
-];
-
-function extractSocialLinks(person: Person): SocialLink[] {
-  return SOCIAL_FIELDS
-    .filter(({ key }) => person[key])
-    .map(({ key, label, platform }) => {
-      const handle = person[key] as string;
-      return {
-        platform,
-        label,
-        handle,
-        url: getSocialUrl(platform, handle),
-      };
-    });
+function getModalSocials(person: Person): SocialLink[] {
+  return extractSocialLinks(person)
+    .filter((s) => !HEADER_SOCIALS.has(s.platform));
 }
 
 // ============================================================================
@@ -77,7 +45,7 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
     return () => document.removeEventListener('keydown', handleKey);
   }, [person, onClose]);
 
-  const socials = person ? extractSocialLinks(person) : [];
+  const socials = person ? getModalSocials(person) : [];
 
   return (
     <AnimatePresence>
@@ -132,21 +100,13 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
                   transition={{ delay: 0.08, type: 'spring', stiffness: 200 }}
                   className="shrink-0"
                 >
-                  <div className="h-24 w-24 md:h-20 md:w-20 rounded-full overflow-hidden ring-4 ring-primary/10 bg-muted shadow-lg">
-                    <img
-                      src={person.image}
-                      alt={person.name}
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        const parent = target.parentElement;
-                        if (parent) {
-                          parent.innerHTML = `<div class="flex h-full w-full items-center justify-center text-3xl font-bold text-muted-foreground">${person.name.charAt(0)}</div>`;
-                        }
-                      }}
-                    />
-                  </div>
+                  <Image
+                    src={person.image}
+                    alt={person.name}
+                    fallback={person.name}
+                    wrapperClassName="h-24 w-24 md:h-20 md:w-20 ring-4 ring-primary/10 shadow-lg"
+                    rounded="full"
+                  />
                 </motion.div>
 
                 {/* Info */}

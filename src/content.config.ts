@@ -66,4 +66,52 @@ const events = defineCollection({
   }),
 });
 
-export const collections = { manual, projects, community, events };
+const people = defineCollection({
+  type: 'data',
+  schema: z.object({
+    name: z.string(),
+    image: z.string(),
+    organization: z.string().optional(),
+    role: z.string().optional(),
+    location: z.string().optional(),
+    email: z.string().email(),
+    phone: z.string().optional(),
+    url: z.string().url().optional(),
+    whatsapp: z.string().optional(),
+    signal: z.string().optional(),
+    linkedin: z.string().optional(),
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    github: z.string().optional(),
+    gitlab: z.string().optional(),
+    bitbucket: z.string().optional(),
+    stackoverflow: z.string().optional(),
+    scholar: z.string().optional(),
+    orcid: z.string().optional(),
+    researchgate: z.string().optional(),
+    zotero: z.string().optional(),
+    youtube: z.string().optional(),
+    mastodon: z.string().optional(),
+    bluesky: z.string().optional(),
+    discord: z.string().optional(),
+    telegram: z.string().optional(),
+    medium: z.string().optional(),
+    tiktok: z.string().optional(),
+    threads: z.string().optional(),
+    x: z.string().optional(),
+    twitch: z.string().optional(),
+    reddit: z.string().optional(),
+    category: z.string(),
+  }),
+});
+
+const peopleCategories = defineCollection({
+  type: 'data',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    order: z.number().optional(),
+  }),
+});
+
+export const collections = { manual, projects, community, events, people, peopleCategories };

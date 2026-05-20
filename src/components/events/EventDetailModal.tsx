@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Calendar, Clock, Users, Mail, Link2, ArrowUpRight, Video } from 'lucide-react';
 import { Badge } from '@components/ui/Badge';
@@ -61,24 +62,28 @@ interface EventDetailModalProps {
 }
 
 export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
-  React.useEffect(() => {
-    if (event) {
-      const original = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = original; };
-    }
-  }, [event]);
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
 
   React.useEffect(() => {
-    if (!event) return;
+    if (!mounted || !event) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = original; };
+  }, [mounted, event]);
+
+  React.useEffect(() => {
+    if (!mounted || !event) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [event, onClose]);
+  }, [mounted, event, onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {event && (
         <motion.div
@@ -100,9 +105,7 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
           {/* Modal */}
           <motion.div
             className={cn(
-              'relative w-full max-w-lg rounded-2xl border border-border/60',
-              'bg-background/95 dark:bg-background/90',
-              'shadow-2xl overflow-hidden',
+              'bubble relative w-full max-w-lg overflow-hidden',
               'max-h-[85vh] flex flex-col'
             )}
             initial={{ opacity: 0, scale: 0.95, y: 16 }}
@@ -299,6 +302,7 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
