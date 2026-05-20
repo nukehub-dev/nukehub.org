@@ -4,7 +4,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
-import type { CalendarEvent } from '@data/events';
+import type { CalendarApi, EventContentArg } from '@fullcalendar/core';
+import { cn } from '@lib/utils';
+import { Tooltip } from '@components/ui/Tooltip';
+import type { CalendarEvent } from '@lib/events';
 
 // ============================================================================
 // Event conversion
@@ -30,6 +33,49 @@ function convertEvent(event: CalendarEvent) {
 }
 
 // ============================================================================
+// Custom event render — replaces native browser tooltip with our Tooltip
+// ============================================================================
+
+function EventContent({ info, onEventClick }: { info: EventContentArg; onEventClick: (event: CalendarEvent) => void }) {
+  const event = info.event;
+  const timeText = info.timeText;
+  const isList = info.view.type === 'listMonth' || info.view.type.startsWith('list');
+
+  // For list view, FullCalendar handles the layout — just return null to use default
+  if (isList) return null;
+
+  // Build tooltip content
+  const venue = event.extendedProps.venue as string | undefined;
+  const tooltipContent = (
+    <div className="max-w-[200px]">
+      <div className="font-semibold mb-0.5">{event.title}</div>
+      {timeText && <div className="text-[11px] opacity-80">{timeText}</div>}
+      {venue && <div className="text-[11px] opacity-70 mt-0.5">{venue}</div>}
+    </div>
+  );
+
+  return (
+    <Tooltip content={tooltipContent} position="top" delay={200}>
+      <div
+        className={cn(
+          'fc-event-main-frame w-full overflow-hidden',
+          info.isMirror && 'opacity-50'
+        )}
+      >
+        {info.isStart && (
+          <div className="fc-event-time text-[10px] font-medium opacity-90 truncate">
+            {timeText}
+          </div>
+        )}
+        <div className="fc-event-title text-[11px] font-medium truncate leading-tight">
+          {info.isStart ? event.title : ''}
+        </div>
+      </div>
+    </Tooltip>
+  );
+}
+
+// ============================================================================
 // Event Calendar
 // ============================================================================
 
@@ -39,6 +85,7 @@ interface EventCalendarProps {
 }
 
 export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
+  const calendarRef = React.useRef<FullCalendar>(null);
   const [isDark, setIsDark] = React.useState(false);
 
   // Sync dark mode with our theme system
@@ -55,9 +102,50 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
 
   const fcEvents = React.useMemo(() => events.map(convertEvent), [events]);
 
+  const getApi = (): CalendarApi | null => {
+    return calendarRef.current?.getApi() ?? null;
+  };
+
+  // Strip native title attributes from FullCalendar elements to prevent ugly browser tooltips
+  React.useEffect(() => {
+    const calendarEl = calendarRef.current?.getApi()?.el;
+    if (!calendarEl) return;
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'title') {
+          const target = mutation.target as HTMLElement;
+          if (target.hasAttribute('title')) {
+            target.removeAttribute('title');
+          }
+        }
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node instanceof HTMLElement) {
+              node.querySelectorAll('[title]').forEach((el) => el.removeAttribute('title'));
+            }
+          });
+        }
+      }
+    });
+
+    observer.observe(calendarEl, {
+      attributes: true,
+      attributeFilter: ['title'],
+      childList: true,
+      subtree: true,
+    });
+
+    // Initial cleanup
+    calendarEl.querySelectorAll('[title]').forEach((el) => el.removeAttribute('title'));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className={isDark ? 'fc-dark' : ''}>
+    <div className={cn(isDark ? 'fc-dark' : '')}>
       <FullCalendar
+        ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         headerToolbar={{
@@ -66,6 +154,9 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
         }}
         events={fcEvents}
+        eventContent={(info) => (
+          <EventContent info={info} onEventClick={onEventClick} />
+        )}
         eventClick={(info) => {
           const original = events.find((e) => e.id === info.event.id);
           if (original) {
@@ -81,7 +172,13 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
         height="auto"
         dayMaxEvents={3}
         moreLinkClick="day"
-        navLinks={false}
+        navLinks
+        navLinkDayClick={(date) => {
+          const api = getApi();
+          if (api) {
+            api.changeView('timeGridDay', date);
+          }
+        }}
         selectable={false}
         editable={false}
         locale="en"

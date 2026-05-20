@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Calendar, Clock, Users, Mail, Link2, ArrowUpRight } from 'lucide-react';
+import { X, MapPin, Calendar, Clock, Users, Mail, Link2, ArrowUpRight, Video } from 'lucide-react';
 import { Badge } from '@components/ui/Badge';
 import { cn } from '@lib/utils';
-import type { CalendarEvent } from '@data/events';
+import type { CalendarEvent } from '@lib/events';
 
 // ============================================================================
 // Date formatting helper
@@ -244,6 +244,22 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
                   transition={{ delay: 0.24 }}
                   className="flex flex-wrap items-center gap-2.5"
                 >
+                  {event.meetingUrl && (
+                    <a
+                      href={event.meetingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'inline-flex items-center gap-2 rounded-lg px-4 py-2',
+                        'bg-primary text-primary-foreground text-sm font-medium',
+                        'hover:brightness-110 transition-all shadow-sm'
+                      )}
+                    >
+                      <Video size={15} />
+                      Join Meeting
+                      <ArrowUpRight size={14} />
+                    </a>
+                  )}
                   {event.url && (
                     <a
                       href={event.url}
@@ -251,8 +267,10 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
                       rel="noopener noreferrer"
                       className={cn(
                         'inline-flex items-center gap-2 rounded-lg px-4 py-2',
-                        'bg-primary text-primary-foreground text-sm font-medium',
-                        'hover:brightness-110 transition-all shadow-sm'
+                        event.meetingUrl
+                          ? 'bg-muted text-foreground hover:bg-accent border border-border'
+                          : 'bg-primary text-primary-foreground hover:brightness-110 shadow-sm',
+                        'text-sm font-medium transition-all'
                       )}
                     >
                       <Link2 size={15} />
