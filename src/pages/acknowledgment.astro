@@ -1,0 +1,14 @@
+---
+import ManualPage from '@components/manual/ManualPage.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('manual', 'acknowledgment');
+if (!entry) {
+  throw new Error('Manual entry "acknowledgment" not found');
+}
+const { Content, headings } = await entry.render();
+---
+
+<ManualPage entry={entry} headings={headings}>
+  <Content />
+</ManualPage>

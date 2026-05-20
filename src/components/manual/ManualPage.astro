@@ -1,0 +1,162 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { format } from 'date-fns';
+import type { CollectionEntry } from 'astro:content';
+import { Badge } from '@components/ui/Badge';
+import { CalendarDays, TableOfContents } from 'lucide-react';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  entry: CollectionEntry<'manual'>;
+  headings: Heading[];
+}
+
+const { entry, headings } = Astro.props;
+const { title, description, permalink, lastUpdated } = entry.data;
+
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  permalink={permalink || `/${entry.slug}`}
+>
+  <div class="mx-auto max-w-5xl">
+    {/* Header */}
+    <div class="mb-10 border-b border-border pb-8">
+      <h1 class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+        {title}
+      </h1>
+
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        {
+          lastUpdated && (
+            <Badge variant="default" className="gap-1.5">
+              <CalendarDays size={14} />
+              <span>Last updated {format(lastUpdated, 'MMMM d, yyyy')}</span>
+            </Badge>
+          )
+        }
+      </div>
+    </div>
+
+    {/* Mobile TOC — shown above content on small screens */}
+    {
+      tocHeadings.length > 0 && (
+        <div class="mb-8 lg:hidden">
+          <div class="bubble p-4">
+            <div class="mb-2 flex items-center gap-2 text-sm font-medium text-foreground">
+              <TableOfContents size={16} />
+              <span>On this page</span>
+            </div>
+            <nav>
+              <ul class="space-y-1 text-sm">
+                {tocHeadings.map((h) => (
+                  <li>
+                    <a
+                      href={`#${h.slug}`}
+                      data-toc-link
+                      class={`block rounded-md px-2 py-1 leading-snug transition-colors hover:bg-primary/10 ${
+                        h.depth === 3 ? 'pl-4 text-muted-foreground' : 'text-foreground'
+                      }`}
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_18rem]">
+      {/* Main content */}
+      <article class="prose prose-lg max-w-none">
+        <slot />
+      </article>
+
+      {/* Desktop TOC sidebar */}
+      {
+        tocHeadings.length > 0 && (
+          <aside class="hidden lg:block">
+            <div class="sticky top-24">
+              <div class="bubble p-5">
+                <div class="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                  <TableOfContents size={16} />
+                  <span>On this page</span>
+                </div>
+                <nav>
+                  <ul class="space-y-1.5 text-sm">
+                    {tocHeadings.map((h) => (
+                      <li>
+                        <a
+                          href={`#${h.slug}`}
+                          data-toc-link
+                          class={`toc-link block rounded-md px-2 py-1 leading-snug transition-colors hover:bg-primary/10 ${
+                            h.depth === 3 ? 'pl-4 text-muted-foreground' : 'text-foreground'
+                          }`}
+                        >
+                          {h.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </aside>
+        )
+      }
+    </div>
+  </div>
+
+  {/* Scroll-spy: highlight current section in TOC */}
+  <script is:inline>
+    (function () {
+      const links = document.querySelectorAll('a[data-toc-link]');
+      if (!links.length) return;
+
+      const map = new Map();
+      links.forEach((link) => {
+        const h = document.getElementById(link.getAttribute('href').slice(1));
+        if (h) map.set(h, link);
+      });
+
+      const targets = Array.from(map.keys());
+      if (!targets.length) return;
+
+      const clear = () => {
+        links.forEach((link) => {
+          link.classList.remove('text-primary', 'font-medium', 'bg-primary/10');
+          link.classList.add(link.classList.contains('pl-4') ? 'text-muted-foreground' : 'text-foreground');
+        });
+      };
+
+      const setActive = (link) => {
+        link.classList.remove('text-muted-foreground', 'text-foreground');
+        link.classList.add('text-primary', 'font-medium', 'bg-primary/10');
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((e) => e.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          clear();
+          if (visible.length) setActive(map.get(visible[0].target));
+        },
+        { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+      );
+
+      targets.forEach((t) => observer.observe(t));
+    })();
+  </script>
+</PageLayout>
