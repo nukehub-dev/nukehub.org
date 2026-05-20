@@ -1,0 +1,28 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { PeopleGrid } from '@components/people/PeopleGrid';
+import { peopleCategories } from '@data/people';
+
+const title = 'People';
+const description = 'Meet the people behind NukeHub — researchers, engineers, and enthusiasts advancing nuclear technology.';
+const keywords = 'nukehub, people, team, members, nuclear, community, researchers, engineers';
+const permalink = '/people';
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  permalink={permalink}
+>
+  <div class="space-y-6">
+    <div class="text-center sm:text-left">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">People</h1>
+      <p class="text-muted-foreground max-w-2xl">
+        Meet the researchers, engineers, and enthusiasts driving nuclear technology forward at NukeHub.
+      </p>
+    </div>
+
+    <PeopleGrid client:load categories={peopleCategories} />
+  </div>
+</PageLayout>
