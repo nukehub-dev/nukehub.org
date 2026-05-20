@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cn } from '@lib/utils';
-import { navItems } from '@data/nav';
-import { Icon } from '@components/ui/Icon';
+import { navItems } from '@data/nav.tsx';
+
 import { Menu, X, Moon, Sun } from 'lucide-react';
 
 const accentColors = [
@@ -71,7 +71,7 @@ export function Header() {
                     onMouseLeave={() => setOpenDropdown(null)}
                     onClick={() => setOpenDropdown(openDropdown === item.title ? null : item.title)}
                   >
-                    <Icon name={item.icon} className="h-4 w-4" />
+                    <item.icon className="h-4 w-4" />
                     {item.title}
                     <svg
                       className={cn('h-3 w-3 transition-transform', openDropdown === item.title && 'rotate-180')}
@@ -94,7 +94,7 @@ export function Header() {
                           rel={child.newpage ? 'noopener noreferrer' : undefined}
                           className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                         >
-                          <Icon name={child.icon} className="h-4 w-4 text-muted-foreground" />
+                          <child.icon className="h-4 w-4 text-muted-foreground" />
                           {child.title}
                         </a>
                       ))}
@@ -106,7 +106,7 @@ export function Header() {
                   href={item.url}
                   className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
                 >
-                  <Icon name={item.icon} className="h-4 w-4" />
+                  <item.icon className="h-4 w-4" />
                   {item.title}
                 </a>
               )}
@@ -161,7 +161,7 @@ export function Header() {
                 {item.children ? (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-foreground">
-                      <Icon name={item.icon} className="h-4 w-4" />
+                      <item.icon className="h-4 w-4" />
                       {item.title}
                     </div>
                     {item.children.map((child) => (
@@ -173,7 +173,7 @@ export function Header() {
                         className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors ml-6"
                         onClick={() => setMobileOpen(false)}
                       >
-                        <Icon name={child.icon} className="h-4 w-4" />
+                        <child.icon className="h-4 w-4" />
                         {child.title}
                       </a>
                     ))}
@@ -184,7 +184,7 @@ export function Header() {
                     className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
-                    <Icon name={item.icon} className="h-4 w-4" />
+                    <item.icon className="h-4 w-4" />
                     {item.title}
                   </a>
                 )}
