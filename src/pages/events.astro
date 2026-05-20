@@ -1,0 +1,30 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { EventsContainer } from '@components/events/EventsContainer';
+import { events } from '@data/events';
+
+const title = 'Events';
+const description = 'Discover upcoming nuclear technology events, workshops, hackathons, and community gatherings hosted by NukeHub.';
+const keywords = 'nukehub, events, calendar, nuclear, workshops, hackathons, summits, conferences';
+const permalink = '/events';
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  permalink={permalink}
+>
+  <div class="space-y-6">
+    <div class="text-center sm:text-left">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Events</h1>
+      <p class="text-muted-foreground max-w-2xl">
+        Discover upcoming nuclear technology events, workshops, hackathons, and community gatherings.
+      </p>
+    </div>
+
+    <div class="bubble rounded-xl border border-border/40 overflow-hidden shadow-sm">
+      <EventsContainer client:load events={events} />
+    </div>
+  </div>
+</PageLayout>
