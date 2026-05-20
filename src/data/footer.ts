@@ -1,37 +1,72 @@
-export interface FooterChild {
+import type { LucideIcon } from 'lucide-react';
+import {
+  Info,
+  Award,
+  Heart,
+  User,
+  Calendar,
+  MessageSquare,
+  Factory,
+  BarChart3,
+  FlaskConical,
+  Package,
+  ExternalLink,
+} from 'lucide-react';
+
+export interface FooterLink {
   title: string;
   url: string;
   newpage?: boolean;
+  icon?: LucideIcon;
 }
 
 export interface FooterColumn {
   title: string;
-  children: FooterChild[];
+  links: FooterLink[];
 }
 
 export const footerColumns: FooterColumn[] = [
   {
-    title: 'Navigation',
-    children: [
-      { title: 'Home', url: '/#home' },
-      { title: 'Projects', url: '/#projects' },
-      { title: 'About Us', url: '/about' },
-    ],
-  },
-  {
     title: 'Projects',
-    children: [
-      { title: 'NRMS', url: '/nrms', newpage: true },
-      { title: 'NukeAnalytics', url: '/nuke-analytics', newpage: true },
-      { title: 'NukeLab', url: '/nuke-lab', newpage: true },
-      { title: 'NukeBox', url: 'https://nukebox.readthedocs.io/', newpage: true },
+    links: [
+      { title: 'NRMS', url: '/nrms', newpage: true, icon: Factory },
+      { title: 'NukeAnalytics', url: '/nuke-analytics', newpage: true, icon: BarChart3 },
+      { title: 'NukeLab', url: '/nuke-lab', newpage: true, icon: FlaskConical },
+      { title: 'NukeBox', url: 'https://nukebox.readthedocs.io/', newpage: true, icon: Package },
     ],
   },
   {
-    title: 'Connect Us',
-    children: [
-      { title: 'GitHub', url: 'https://github.com/nukehub-dev/', newpage: true },
-      { title: 'LinkedIn', url: 'https://www.linkedin.com/company/nukehub', newpage: true },
+    title: 'Manual',
+    links: [
+      { title: 'About Us', url: '/about', icon: Info },
+      { title: 'Acknowledgment', url: '/acknowledgment', icon: Award },
+      { title: 'Support Us', url: '/support', icon: Heart },
+    ],
+  },
+  {
+    title: 'Community',
+    links: [
+      { title: 'People', url: '/people', icon: User },
+      { title: 'Events', url: '/events', icon: Calendar },
+      { title: 'NukeTalk', url: 'https://talk.nukehub.org', newpage: true, icon: MessageSquare },
+    ],
+  },
+  {
+    title: 'Connect',
+    links: [
+      { title: 'GitHub', url: 'https://github.com/nukehub-dev/', newpage: true, icon: ExternalLink },
+      { title: 'LinkedIn', url: 'https://www.linkedin.com/company/nukehub', newpage: true, icon: ExternalLink },
     ],
   },
 ];
+
+export const footerLegal = [
+  { title: 'Privacy', url: '/privacy-policy' },
+  { title: 'Terms', url: '/terms-of-service' },
+  { title: 'Code of Conduct', url: '/code-of-conduct' },
+];
+
+export const socialLinks = [
+  { name: 'github', url: 'https://github.com/nukehub-dev' },
+  { name: 'linkedin', url: 'https://www.linkedin.com/company/nukehub' },
+] as const;
