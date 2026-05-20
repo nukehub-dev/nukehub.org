@@ -116,6 +116,9 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         )
       }
     </div>
+
+    {/* Optional after-content slot */}
+    <slot name="after" />
   </div>
 
   {/* Scroll-spy: highlight current section in TOC */}

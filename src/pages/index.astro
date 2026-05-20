@@ -3,6 +3,17 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import { HeroSection } from '@components/home/HeroSection';
 import { ProjectsGrid } from '@components/home/ProjectsGrid';
 import { JoinCTA } from '@components/home/JoinCTA';
+import { getCollection } from 'astro:content';
+
+// Load projects from content collection
+const projectEntries = await getCollection('projects');
+const projects = projectEntries.map((entry) => ({
+  title: entry.data.title,
+  description: entry.data.description || '',
+  url: entry.data.url || '',
+  source: entry.data.source || '',
+  newpage: entry.data.newpage ?? false,
+}));
 ---
 
 <BaseLayout
@@ -13,7 +24,7 @@ import { JoinCTA } from '@components/home/JoinCTA';
   <HeroSection client:load />
 
   <div class="border-t border-border/50">
-    <ProjectsGrid client:load />
+    <ProjectsGrid client:load projects={projects} />
   </div>
 
   <div class="border-t border-border/50">

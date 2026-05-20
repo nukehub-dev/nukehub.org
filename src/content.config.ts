@@ -17,6 +17,9 @@ const projects = defineCollection({
     description: z.string().optional(),
     permalink: z.string().optional(),
     lastUpdated: z.coerce.date().optional(),
+    url: z.string().url().optional(),
+    source: z.string().url().optional(),
+    newpage: z.boolean().optional(),
   }),
 });
 
@@ -114,4 +117,15 @@ const peopleCategories = defineCollection({
   }),
 });
 
-export const collections = { manual, projects, community, events, people, peopleCategories };
+const sponsors = defineCollection({
+  type: 'data',
+  schema: z.object({
+    name: z.string(),
+    image: z.string(),
+    url: z.string().url(),
+    acknowledgment: z.string(),
+    tier: z.enum(['platinum', 'gold', 'silver', 'bronze']).default('bronze'),
+  }),
+});
+
+export const collections = { manual, projects, community, events, people, peopleCategories, sponsors };

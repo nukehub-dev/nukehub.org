@@ -1,12 +1,23 @@
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import { projects } from '@data/projects';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/Card';
 import { Badge } from '@components/ui/Badge';
 import { ArrowUpRight } from 'lucide-react';
 import { BrandIcon } from '@components/ui/BrandIcon';
 
-export function ProjectsGrid() {
+export interface Project {
+  title: string;
+  description: string;
+  url: string;
+  source: string;
+  newpage?: boolean;
+}
+
+interface ProjectsGridProps {
+  projects: Project[];
+}
+
+export function ProjectsGrid({ projects }: ProjectsGridProps) {
   return (
     <section className="px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-7xl">
@@ -48,8 +59,8 @@ export function ProjectsGrid() {
                   <div className="flex items-center gap-2">
                     <a
                       href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target={project.newpage ? '_blank' : undefined}
+                      rel={project.newpage ? 'noopener noreferrer' : undefined}
                       className="inline-flex h-8 items-center gap-1 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-all hover:brightness-110"
                     >
                       Try
