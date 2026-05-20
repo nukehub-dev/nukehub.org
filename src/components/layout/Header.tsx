@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '@lib/utils';
 import { navItems } from '@data/nav.tsx';
+import { Logo } from '@components/ui/Logo';
 
 import { Menu, X, Moon, Sun } from 'lucide-react';
 
@@ -44,15 +45,7 @@ export function Header() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2 text-lg font-semibold text-foreground hover:opacity-80 transition-opacity">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-primary">
-            <circle cx="12" cy="12" r="3" fill="currentColor" />
-            <circle cx="12" cy="5" r="1.5" fill="currentColor" opacity="0.6" />
-            <circle cx="18.5" cy="9" r="1.5" fill="currentColor" opacity="0.6" />
-            <circle cx="18.5" cy="15" r="1.5" fill="currentColor" opacity="0.6" />
-            <circle cx="12" cy="19" r="1.5" fill="currentColor" opacity="0.6" />
-            <circle cx="5.5" cy="15" r="1.5" fill="currentColor" opacity="0.6" />
-            <circle cx="5.5" cy="9" r="1.5" fill="currentColor" opacity="0.6" />
-          </svg>
+          <Logo size={24} className="text-primary" />
           <span>NukeHub</span>
         </a>
 
