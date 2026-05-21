@@ -1,14 +1,50 @@
 ---
-import ManualPage from '@components/manual/ManualPage.astro';
+import PageLayout from '@layouts/PageLayout.astro';
+import { ImpactSection } from '@components/support/ImpactSection';
+import { SupportMethods } from '@components/support/SupportMethods';
+import { SponsorshipTiers } from '@components/support/SponsorshipTiers';
+import { ContactCTA } from '@components/support/ContactCTA';
 import { getEntry } from 'astro:content';
+import * as Icons from 'lucide-react';
 
-const entry = await getEntry('manual', 'support');
+const entry = await getEntry('support', 'main');
 if (!entry) {
-  throw new Error('Manual entry "support" not found');
+  throw new Error('Support data entry "main" not found');
 }
-const { Content, headings } = await entry.render();
+
+const data = entry.data;
+
+// Resolve hero icon dynamically
+const HeroIcon = (Icons as Record<string, React.ComponentType<{ size?: number }>>)['Heart'];
 ---
 
-<ManualPage entry={entry} headings={headings}>
-  <Content />
-</ManualPage>
+<PageLayout
+  title={data.hero.title}
+  description={data.hero.description}
+>
+  <div class="mx-auto max-w-6xl px-4">
+    {/* Hero */}
+    <div class="pt-16 pb-10 text-center">
+      <div class="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-3 text-primary mb-6">
+        <Icons.Heart size={28} />
+      </div>
+      <h1 class="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        {data.hero.title}
+      </h1>
+      <p class="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        {data.hero.description}
+      </p>
+    </div>
+
+    <ImpactSection client:visible items={data.impacts} />
+    <SupportMethods client:visible methods={data.methods} />
+    <SponsorshipTiers client:visible tiers={data.tiers} />
+    <ContactCTA
+      client:visible
+      title={data.contact.title}
+      description={data.contact.description}
+      primaryCta={data.contact.primaryCta}
+      secondaryCta={data.contact.secondaryCta}
+    />
+  </div>
+</PageLayout>

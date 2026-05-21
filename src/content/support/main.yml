@@ -1,0 +1,123 @@
+hero:
+  title: Support Us
+  description: >
+    NukeHub is driven by the generosity of sponsors, donors, and volunteers.
+    Your support helps us maintain and expand our platform, promoting nuclear
+    technology and fostering a vibrant global community of innovators.
+
+impacts:
+  - icon: Zap
+    title: Platform Performance
+    description: >
+      Expanding server capacity and improving technical infrastructure to keep
+      NukeHub fast and reliable.
+  - icon: Code
+    title: Feature Development
+    description: >
+      Creating new tools and features that benefit our growing community of
+      users and researchers.
+  - icon: GraduationCap
+    title: Educational Initiatives
+    description: >
+      Organizing webinars, workshops, and events to promote nuclear technology
+      education worldwide.
+  - icon: Users
+    title: Community Building
+    description: >
+      Fostering a collaborative environment where professionals, students, and
+      enthusiasts innovate together.
+
+methods:
+  - icon: Banknote
+    title: Financial Contributions
+    description: >
+      Become a sponsor and gain visibility within the NukeHub community, or
+      donate to specific projects that align with your interests.
+    cta: View Sponsorship Tiers
+    href: "#sponsorship-tiers"
+  - icon: Server
+    title: Resource Donations
+    description: >
+      Provide technical resources such as additional server capacity, software
+      tools, or infrastructure to help us expand our capabilities.
+    cta: Contact Us
+    href: "mailto:tahmid@nukehub.org"
+  - icon: HandHeart
+    title: Volunteering
+    description: >
+      Share your expertise by contributing to our projects, writing technical
+      articles, or leading educational workshops.
+    cta: Get Involved
+    href: "mailto:tahmid@nukehub.org"
+
+tiers:
+  - name: Bronze
+    price: "$250"
+    period: "/year"
+    tier: bronze
+    description: >
+      Perfect for individuals and small businesses looking to support the
+      community.
+    features:
+      - Logo on our acknowledgment page
+      - Mention in our annual sponsor report
+      - Newsletter mention
+    cta: Become a Bronze Sponsor
+    href: "mailto:tahmid@nukehub.org"
+  - name: Silver
+    price: "$500"
+    period: "/year"
+    tier: silver
+    description: >
+      Ideal for growing organizations wanting increased visibility in the
+      community.
+    features:
+      - All Bronze benefits
+      - Logo in the footer of our website
+      - Social media recognition
+      - Priority support for your contributions
+    cta: Become a Silver Sponsor
+    href: "mailto:tahmid@nukehub.org"
+  - name: Gold
+    price: "$1,000"
+    period: "/year"
+    tier: gold
+    description: >
+      Designed for established organizations seeking prominent community
+      presence.
+    features:
+      - All Silver benefits
+      - Featured sponsor placement
+      - Dedicated sponsor spotlight article
+      - Access to early features and updates
+    cta: Become a Gold Sponsor
+    href: "mailto:tahmid@nukehub.org"
+  - name: Platinum
+    price: "$2,500"
+    period: "/year"
+    tier: platinum
+    description: >
+      Our highest tier for organizations committed to long-term strategic
+      partnership.
+    features:
+      - All Gold benefits
+      - Top-tier placement across all pages
+      - Co-branded event opportunities
+      - Direct input on roadmap priorities
+      - Quarterly partner calls
+    cta: Become a Platinum Sponsor
+    href: "mailto:tahmid@nukehub.org"
+    featured: true
+
+contact:
+  title: Ready to Make an Impact?
+  description: >
+    Whether you want to sponsor, donate resources, or get involved as a
+    volunteer — we'd love to hear from you. Reach out and let's build
+    something great together.
+  primaryCta:
+    text: Contact Us
+    href: "mailto:tahmid@nukehub.org"
+  secondaryCta:
+    text: View Current Sponsors
+    href: "/acknowledgment"
