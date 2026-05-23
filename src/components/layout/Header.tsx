@@ -22,16 +22,18 @@ export function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
-            <div key={item.title} className="relative">
+            <React.Fragment key={item.title}>
               {item.children ? (
-                <>
+                <div
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdown(item.title)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
                   <button
                     className={cn(
                       'inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                       'text-muted-foreground hover:text-foreground hover:bg-accent'
                     )}
-                    onMouseEnter={() => setOpenDropdown(item.title)}
-                    onMouseLeave={() => setOpenDropdown(null)}
                     onClick={() => setOpenDropdown(openDropdown === item.title ? null : item.title)}
                   >
                     <item.icon className="h-4 w-4" />
@@ -44,36 +46,36 @@ export function Header() {
                     </svg>
                   </button>
                   {openDropdown === item.title && (
-                    <div
-                      className="absolute left-0 top-full mt-1 w-48 rounded-lg border border-border bg-popover p-1 shadow-lg"
-                      onMouseEnter={() => setOpenDropdown(item.title)}
-                      onMouseLeave={() => setOpenDropdown(null)}
-                    >
-                      {item.children.map((child) => (
-                        <a
-                          key={child.title}
-                          href={child.url}
-                          target={child.newpage ? '_blank' : undefined}
-                          rel={child.newpage ? 'noopener noreferrer' : undefined}
-                          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-                        >
-                          <child.icon className="h-4 w-4 text-muted-foreground" />
-                          {child.title}
-                        </a>
-                      ))}
+                    <div className="absolute left-0 top-full pt-1 w-48">
+                      <div className="rounded-lg border border-border bg-popover p-1 shadow-lg">
+                        {item.children.map((child) => (
+                          <a
+                            key={child.title}
+                            href={child.url}
+                            target={child.newpage ? '_blank' : undefined}
+                            rel={child.newpage ? 'noopener noreferrer' : undefined}
+                            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                          >
+                            <child.icon className="h-4 w-4 text-muted-foreground" />
+                            {child.title}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   )}
-                </>
+                </div>
               ) : (
-                <a
-                  href={item.url}
-                  className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
-                </a>
+                <div className="relative">
+                  <a
+                    href={item.url}
+                    className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.title}
+                  </a>
+                </div>
               )}
-            </div>
+            </React.Fragment>
           ))}
         </nav>
 
