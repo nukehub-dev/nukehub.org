@@ -70,19 +70,45 @@ const canonicalUrl = `${siteUrl}${permalink}`;
       ],
     })} />
 
-    <!-- Theme init script to prevent flash -->
+    <!--
+      ============================================================
+      Theme init script — MUST be inline and blocking to prevent
+      flash of unstyled content (FOUC).
+      ============================================================
+    -->
     <script is:inline>
       (function() {
-        const html = document.documentElement;
-        const savedTheme = localStorage.getItem('theme');
-        const savedAccent = localStorage.getItem('accent') || 'orange';
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (savedTheme) {
-          html.setAttribute('data-theme', savedTheme);
-        } else if (prefersDark) {
-          html.setAttribute('data-theme', 'dark');
+        var html = document.documentElement;
+        var storedTheme = localStorage.getItem('theme');
+        var storedAccent = localStorage.getItem('accent') || 'orange';
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Resolve 'system' to an actual light/dark value immediately
+        var resolvedTheme;
+        if (storedTheme === 'light' || storedTheme === 'dark') {
+          resolvedTheme = storedTheme;
+        } else if (storedTheme === 'system' || !storedTheme) {
+          resolvedTheme = prefersDark ? 'dark' : 'light';
+        } else {
+          resolvedTheme = 'light';
         }
-        html.setAttribute('data-accent', savedAccent);
+
+        html.setAttribute('data-theme', resolvedTheme);
+        html.setAttribute('data-accent', storedAccent);
+
+        // Update theme-color meta for mobile browsers
+        var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          var accentMap = {
+            red:    { light: '#e03131', dark: '#c92a2a' },
+            orange: { light: '#f37524', dark: '#d65a0f' },
+            green:  { light: '#40c057', dark: '#2f9e44' },
+            cyan:   { light: '#15aabf', dark: '#1098ad' },
+            purple: { light: '#be4bdb', dark: '#9c36b5' },
+          };
+          var color = (accentMap[storedAccent] || accentMap.orange)[resolvedTheme];
+          metaThemeColor.setAttribute('content', color);
+        }
       })();
     </script>
   </head>
@@ -107,7 +133,7 @@ const canonicalUrl = `${siteUrl}${permalink}`;
 
     <script is:inline>
       (function() {
-        const btn = document.getElementById('scroll-top');
+        var btn = document.getElementById('scroll-top');
         if (!btn) return;
         window.addEventListener('scroll', function() {
           if (window.scrollY > 300) {

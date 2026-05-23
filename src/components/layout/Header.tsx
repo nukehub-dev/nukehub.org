@@ -2,43 +2,13 @@ import * as React from 'react';
 import { cn } from '@lib/utils';
 import { navItems } from '@data/nav.tsx';
 import { Logo } from '@components/ui/Logo';
-
-import { Menu, X, Moon, Sun } from 'lucide-react';
-
-const accentColors = [
-  { name: 'red', hue: 27 },
-  { name: 'orange', hue: 48 },
-  { name: 'green', hue: 144 },
-  { name: 'cyan', hue: 211 },
-  { name: 'purple', hue: 321 },
-];
+import { ThemeToggle } from '@components/shared/ThemeToggle';
+import { ColorPicker } from '@components/shared/ColorPicker';
+import { Menu, X } from 'lucide-react';
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
-  const [theme, setTheme] = React.useState<'light' | 'dark'>('light');
-  const [accent, setAccent] = React.useState('orange');
-
-  React.useEffect(() => {
-    const html = document.documentElement;
-    const savedTheme = html.getAttribute('data-theme') as 'light' | 'dark' | null;
-    const savedAccent = html.getAttribute('data-accent');
-    if (savedTheme) setTheme(savedTheme);
-    if (savedAccent) setAccent(savedAccent);
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-  };
-
-  const setAccentColor = (name: string) => {
-    setAccent(name);
-    document.documentElement.setAttribute('data-accent', name);
-    localStorage.setItem('accent', name);
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -109,30 +79,13 @@ export function Header() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-2">
-          {/* Accent picker */}
-          <div className="hidden sm:flex items-center gap-1.5">
-            {accentColors.map((color) => (
-              <button
-                key={color.name}
-                onClick={() => setAccentColor(color.name)}
-                className={cn(
-                  'h-5 w-5 rounded-full border-2 transition-transform hover:scale-110',
-                  accent === color.name ? 'border-foreground' : 'border-transparent'
-                )}
-                style={{ background: `oklch(65% 0.18 ${color.hue})` }}
-                title={color.name}
-              />
-            ))}
+          {/* Accent picker (desktop) */}
+          <div className="hidden sm:flex items-center">
+            <ColorPicker />
           </div>
 
           {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+          <ThemeToggle variant="dropdown" />
 
           {/* Mobile menu toggle */}
           <button
@@ -185,19 +138,9 @@ export function Header() {
             ))}
 
             {/* Mobile accent picker */}
-            <div className="flex items-center gap-2 px-3 pt-2 border-t border-border mt-2">
+            <div className="flex items-center gap-2 px-3 pt-3 border-t border-border mt-2">
               <span className="text-xs text-muted-foreground">Accent:</span>
-              {accentColors.map((color) => (
-                <button
-                  key={color.name}
-                  onClick={() => setAccentColor(color.name)}
-                  className={cn(
-                    'h-5 w-5 rounded-full border-2 transition-transform',
-                    accent === color.name ? 'border-foreground' : 'border-transparent'
-                  )}
-                  style={{ background: `oklch(65% 0.18 ${color.hue})` }}
-                />
-              ))}
+              <ColorPicker showLabels />
             </div>
           </div>
         </div>
