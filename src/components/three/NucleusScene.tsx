@@ -75,7 +75,7 @@ export function NucleusScene({ mobile, reducedMotion, orbitControls }: SceneProp
   return (
     <Canvas
       dpr={[1, 1.5]}
-      camera={{ position: [0, 3.5, 7], fov: 36, near: 0.1, far: 100 }}
+      camera={{ position: [0.5, 3.5, 7.5], fov: 34, near: 0.1, far: 100 }}
       gl={{
         antialias: true,
         alpha: true,

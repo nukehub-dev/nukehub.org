@@ -243,9 +243,9 @@ function ControlRodSpider({
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.elapsedTime;
-    const insertion = (Math.sin(t * 0.4) + 1) / 2; // 0 to 1
+    const insertion = (Math.sin(t * 0.35) + 1) / 2; // 0 to 1, ~9s half-cycle
     insertionRef.current = insertion;
-    const offset = insertion * 1.0; // travel 1.0 unit
+    const offset = insertion * 1.8; // travel 1.8 units for clearer motion
     groupRef.current.position.y = baseY + offset;
   });
 
@@ -305,8 +305,8 @@ function ControlRodSpider({
         );
         return (
           <mesh key={i} position={mid} quaternion={quat}>
-            <cylinderGeometry args={[0.012, 0.012, armLen, 8]} />
-            <meshStandardMaterial color="#555560" roughness={0.3} metalness={0.9} />
+            <cylinderGeometry args={[0.02, 0.018, armLen, 8]} />
+            <meshStandardMaterial color="#3a3a42" roughness={0.35} metalness={0.85} />
           </mesh>
         );
       })}
@@ -324,11 +324,11 @@ function ControlRodSpider({
         <group key={i} position={[x, 0.11, z]}>
           {/* Rod body — neutron absorber (Ag-In-Cd), darker */}
           <mesh position={[0, -rodHeight / 2, 0]}>
-            <cylinderGeometry args={[0.04, 0.04, rodHeight, 16]} />
+            <cylinderGeometry args={[0.042, 0.042, rodHeight, 16]} />
             <meshStandardMaterial
-              color="#4a4a52"
+              color="#2e2e34"
               roughness={0.45}
-              metalness={0.6}
+              metalness={0.55}
             />
           </mesh>
           {/* Rod tip — tapered */}
@@ -745,7 +745,7 @@ function CoreBarrel({ accent }: { accent: string }) {
           emissive={accent}
           emissiveIntensity={0.015}
           transparent
-          opacity={0.12}
+          opacity={0.06}
           side={THREE.BackSide}
           depthWrite={false}
         />
@@ -755,7 +755,7 @@ function CoreBarrel({ accent }: { accent: string }) {
         <meshBasicMaterial
           color="#4488ff"
           transparent
-          opacity={0.04}
+          opacity={0.02}
           side={THREE.DoubleSide}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
@@ -766,7 +766,7 @@ function CoreBarrel({ accent }: { accent: string }) {
         <meshBasicMaterial
           color="#4488ff"
           transparent
-          opacity={0.04}
+          opacity={0.02}
           side={THREE.DoubleSide}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
@@ -1057,10 +1057,10 @@ function AmbientParticles({ count, accent }: { count: number; accent: string }) 
 
   const particles = useMemo(() => {
     return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * 8,
-      y: Math.random() * 5 - 0.5,
-      z: (Math.random() - 0.5) * 8,
-      speed: 0.08 + Math.random() * 0.15,
+      x: 1.5 + (Math.random() - 0.5) * 5,
+      y: Math.random() * 4 - 0.3,
+      z: (Math.random() - 0.5) * 5,
+      speed: 0.03 + Math.random() * 0.06,
       phase: Math.random() * Math.PI * 2,
     }));
   }, [count]);
@@ -1074,8 +1074,8 @@ function AmbientParticles({ count, accent }: { count: number; accent: string }) 
         p.y + Math.sin(t * p.speed * 0.7 + p.phase) * 0.4,
         p.z + Math.cos(t * p.speed + p.phase) * 0.6
       );
-      const s = 0.025 + Math.sin(t * 1.5 + p.phase) * 0.015;
-      dummy.scale.setScalar(Math.max(0.01, s));
+      const s = 0.02 + Math.sin(t * 0.8 + p.phase) * 0.01;
+      dummy.scale.setScalar(Math.max(0.008, s));
       dummy.updateMatrix();
       meshRef.current!.setMatrixAt(i, dummy.matrix);
     });
@@ -1088,7 +1088,7 @@ function AmbientParticles({ count, accent }: { count: number; accent: string }) 
       <meshBasicMaterial
         color={accent}
         transparent
-        opacity={0.35}
+        opacity={0.18}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
         toneMapped={false}
@@ -1107,7 +1107,7 @@ function ReactionPointLight({ insertionRef }: { insertionRef: React.MutableRefOb
   useFrame(() => {
     if (!lightRef.current) return;
     const insertion = insertionRef.current;
-    lightRef.current.intensity = 0.4 + insertion * 1.2;
+    lightRef.current.intensity = 0.2 + insertion * 0.5;
   });
 
   return (
@@ -1133,7 +1133,7 @@ function FloorRing({ radius }: { radius: number }) {
       <meshBasicMaterial
         color="#00aaff"
         transparent
-        opacity={0.05}
+        opacity={0.025}
         side={THREE.DoubleSide}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
@@ -1149,7 +1149,7 @@ function CoreGlow() {
       <meshBasicMaterial
         color="#00aaff"
         transparent
-        opacity={0.06}
+        opacity={0.03}
         side={THREE.DoubleSide}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
@@ -1241,13 +1241,13 @@ function CherenkovGlow({ maxRodHeight, cells, insertionRef }: { maxRodHeight: nu
   useFrame(() => {
     const insertion = insertionRef.current; // 0 = inserted (dim), 1 = withdrawn (bright)
     if (lightRef.current) {
-      lightRef.current.intensity = 0.3 + insertion * 1.2;
+      lightRef.current.intensity = 0.15 + insertion * 0.5;
     }
     if (centerGlowRef.current) {
-      centerGlowRef.current.opacity = 0.02 + insertion * 0.07;
+      centerGlowRef.current.opacity = 0.015 + insertion * 0.035;
     }
     if (ringRef.current) {
-      ringRef.current.opacity = 0.02 + insertion * 0.06;
+      ringRef.current.opacity = 0.015 + insertion * 0.03;
     }
   });
 
@@ -1260,7 +1260,7 @@ function CherenkovGlow({ maxRodHeight, cells, insertionRef }: { maxRodHeight: nu
           ref={centerGlowRef}
           color="#00aaff"
           transparent
-          opacity={0.04}
+          opacity={0.02}
           side={THREE.DoubleSide}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
@@ -1275,7 +1275,7 @@ function CherenkovGlow({ maxRodHeight, cells, insertionRef }: { maxRodHeight: nu
           <meshBasicMaterial
             color="#00aaff"
             transparent
-            opacity={0.03}
+            opacity={0.015}
             side={THREE.DoubleSide}
             depthWrite={false}
             blending={THREE.AdditiveBlending}
@@ -1301,7 +1301,7 @@ function CherenkovGlow({ maxRodHeight, cells, insertionRef }: { maxRodHeight: nu
           ref={ringRef}
           color="#00aaff"
           transparent
-          opacity={0.04}
+          opacity={0.02}
           side={THREE.DoubleSide}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
@@ -1423,7 +1423,7 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
   }, [cells]);
 
   const neutronCount = mobile ? 2 : 4;
-  const ambientCount = mobile ? 25 : 60;
+  const ambientCount = mobile ? 12 : 22;
   const coolantCount = mobile ? 15 : 35;
   const shimmerCount = mobile ? 12 : 28;
 
