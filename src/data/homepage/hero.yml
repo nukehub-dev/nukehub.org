@@ -1,0 +1,33 @@
+badge:
+  text: "Open Source Nuclear Platform"
+  showLiveDot: true
+
+headline:
+  line1:
+    prefix: "Engineering the"
+    highlight: "Future"
+  line2: "of Nuclear Technology"
+
+subtitle: "A pioneering open-source platform dedicated to the exploration, simulation, and advancement of nuclear engineering through global collaboration."
+
+ctas:
+  - text: "Explore Projects"
+    href: "/projects"
+    variant: "primary"
+    icon: "arrowRight"
+  - text: "Learn More"
+    href: "/about"
+    variant: "secondary"
+
+stats:
+  - value: "12+"
+    numericValue: 12
+    label: "Active Projects"
+    icon: "atom"
+  - value: "850+"
+    numericValue: 850
+    label: "Contributions"
+    icon: "gitBranch"
+  - value: "Global"
+    label: "Community"
+    icon: "users"

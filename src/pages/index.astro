@@ -1,9 +1,36 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { HeroSection } from '@components/home/HeroSection';
+import { MissionStrip } from '@components/home/MissionStrip';
 import { ProjectsGrid } from '@components/home/ProjectsGrid';
-import { JoinCTA } from '@components/home/JoinCTA';
+import { TechEcosystem } from '@components/home/TechEcosystem';
+import { EnhancedCTA } from '@components/home/EnhancedCTA';
+import { MarqueeBand } from '@components/home/MarqueeBand';
+import { TestimonialsSection } from '@components/home/TestimonialsSection';
+import { TrustLogos } from '@components/home/TrustLogos';
+import { SmoothScroll } from '@components/shared/SmoothScroll';
+import { PageLoader } from '@components/shared/PageLoader';
+import { HeroStatsBand } from '@components/home/HeroStatsBand';
+import { loadYaml } from '@lib/loadYaml';
 import { getCollection } from 'astro:content';
+import type {
+  HeroData,
+  MissionData,
+  MarqueeData,
+  ToolsData,
+  TestimonialsData,
+  TrustData,
+  CTAData,
+} from '../types/homepage';
+
+// Load homepage data from YAML
+const heroData = loadYaml<HeroData>('homepage/hero.yml');
+const missionData = loadYaml<MissionData>('homepage/mission.yml');
+const marqueeData = loadYaml<MarqueeData>('homepage/marquee.yml');
+const toolsData = loadYaml<ToolsData>('homepage/tools.yml');
+const testimonialsData = loadYaml<TestimonialsData>('homepage/testimonials.yml');
+const trustData = loadYaml<TrustData>('homepage/trust.yml');
+const ctaData = loadYaml<CTAData>('homepage/cta.yml');
 
 // Load projects from content collection
 const projectEntries = await getCollection('projects');
@@ -13,6 +40,8 @@ const projects = projectEntries.map((entry) => ({
   url: entry.data.url || '',
   source: entry.data.source || '',
   newpage: entry.data.newpage ?? false,
+  image: entry.data.image,
+  tags: entry.data.tags,
 }));
 ---
 
@@ -21,13 +50,28 @@ const projects = projectEntries.map((entry) => ({
   keywords="nukehub, nuclear, technology, science, open source, innovation, collaboration, community, simulation, discussions"
   permalink="/"
 >
-  <HeroSection client:load />
+  <SmoothScroll client:load />
+  <PageLoader client:load />
 
-  <div class="border-t border-border/50">
+  <HeroSection client:load data={heroData} />
+
+  <HeroStatsBand client:load stats={heroData.stats} />
+
+  <MarqueeBand client:load data={marqueeData} />
+
+  <MissionStrip client:load data={missionData} />
+
+  <div class="border-t border-border/30">
     <ProjectsGrid client:load projects={projects} />
   </div>
 
-  <div class="border-t border-border/50">
-    <JoinCTA client:load />
+  <TechEcosystem client:load data={toolsData} />
+
+  <TestimonialsSection client:load data={testimonialsData} />
+
+  <TrustLogos client:load data={trustData} />
+
+  <div class="border-t border-border/30">
+    <EnhancedCTA client:load data={ctaData} />
   </div>
 </BaseLayout>

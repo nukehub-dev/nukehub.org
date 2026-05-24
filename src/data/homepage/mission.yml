@@ -1,0 +1,14 @@
+sectionTitle: "Built for Nuclear Engineers"
+sectionSubtitle: "Three pillars that define how we advance nuclear technology together."
+badge: "Our Mission"
+
+pillars:
+  - title: "Open Data"
+    description: "Direct integration with the IAEA PRIS database. Monitor global reactor fleets, benchmark performance, and explore trends with transparent, open data."
+    icon: "globe"
+  - title: "Cloud Simulation"
+    description: "Run Monte Carlo simulations, criticality analyses, and fuel depletion studies in the browser. No local installation of OpenMC, Geant4, or DAGMC required."
+    icon: "cloud"
+  - title: "Open Source"
+    description: "Every tool is community-driven and freely available. Contribute, fork, and extend the platform alongside nuclear engineers and researchers worldwide."
+    icon: "code2"

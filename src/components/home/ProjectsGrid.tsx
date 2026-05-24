@@ -1,9 +1,8 @@
-import { motion } from 'framer-motion';
-import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/Card';
-import { Badge } from '@components/ui/Badge';
-import { ArrowUpRight } from 'lucide-react';
-import { BrandIcon } from '@components/ui/BrandIcon';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
+import { viewportOnce } from '@lib/animations';
+import { ProjectCard } from './ProjectCard';
+import { ProjectsCanvas } from '@components/three/ProjectsCanvas';
 
 export interface Project {
   title: string;
@@ -11,6 +10,8 @@ export interface Project {
   url: string;
   source: string;
   newpage?: boolean;
+  image?: string;
+  tags?: string[];
 }
 
 interface ProjectsGridProps {
@@ -18,69 +19,51 @@ interface ProjectsGridProps {
 }
 
 export function ProjectsGrid({ projects }: ProjectsGridProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
+
   return (
-    <section className="px-4 py-16 sm:py-24">
-      <div className="mx-auto max-w-7xl">
+    <section ref={sectionRef} className="relative isolate overflow-hidden py-24 sm:py-32">
+      {/* 3D Background Canvas with parallax */}
+      <motion.div className="absolute inset-0 -z-10" style={{ y: backgroundY }}>
+        <ProjectsCanvas />
+      </motion.div>
+
+      {/* Darkening overlay for readability */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
+
+      <div className="relative mx-auto max-w-7xl px-4">
+        {/* Section Header */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
-          variants={staggerContainer}
-          className="mb-12 text-center"
+          transition={{ duration: 0.7, ease: [0.215, 0.61, 0.355, 1] }}
+          className="mb-16 text-center"
         >
-          <motion.h2 variants={fadeInUp} className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Projects
-          </motion.h2>
-          <motion.p variants={fadeInUp} className="mt-3 text-lg text-muted-foreground">
-            Research and Development
-          </motion.p>
+          <span className="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+            Our Ecosystem
+          </span>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            Research & Development
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            Open-source tools powering the next generation of nuclear engineering — from data
+            visualization to cloud-based simulation.
+          </p>
         </motion.div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={staggerContainer}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-        >
-          {projects.map((project) => (
-            <motion.div key={project.title} variants={fadeInUp}>
-              <Card variant="bubble" className="h-full group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{project.title}</CardTitle>
-                    <Badge variant="ghost" className="text-xs">R&D</Badge>
-                  </div>
-                  <CardDescription className="line-clamp-3">
-                    {project.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={project.url}
-                      target={project.newpage ? '_blank' : undefined}
-                      rel={project.newpage ? 'noopener noreferrer' : undefined}
-                      className="inline-flex h-8 items-center gap-1 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-all hover:brightness-110"
-                    >
-                      Try
-                      <ArrowUpRight className="h-3 w-3" />
-                    </a>
-                    <a
-                      href={project.source}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                      aria-label={`${project.title} source code`}
-                    >
-                      <BrandIcon name="github" size={16} />
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {projects.map((project, i) => (
+            <ProjectCard key={project.title} project={project} index={i} />
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
+import { useCanvasVisibility } from './useCanvasVisibility';
 
 const NucleusScene = lazy(() =>
   import('./NucleusScene').then((mod) => ({ default: mod.NucleusScene }))
@@ -58,7 +59,8 @@ function CanvasLoader() {
 export function HeroCanvas() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const isVisible = useCanvasVisibility('hero-canvas-anchor');
 
   useEffect(() => {
     // Check prefers-reduced-motion
@@ -75,13 +77,13 @@ export function HeroCanvas() {
     checkMobile();
     window.addEventListener('resize', checkMobile, { passive: true });
 
-    // Visibility: only load Three.js when hero is near viewport
+    // Trigger lazy load once when hero is near viewport
     const hero = document.getElementById('hero-canvas-anchor');
     if (hero) {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setIsVisible(true);
+            setHasLoaded(true);
             observer.disconnect();
           }
         },
@@ -89,7 +91,7 @@ export function HeroCanvas() {
       );
       observer.observe(hero);
     } else {
-      setIsVisible(true);
+      setHasLoaded(true);
     }
 
     return () => {
@@ -106,10 +108,14 @@ export function HeroCanvas() {
   return (
     <div className="absolute inset-0" id="hero-canvas-anchor">
       <StaticFallback />
-      {isVisible && (
+      {hasLoaded && (
         <Suspense fallback={<CanvasLoader />}>
           <div className="absolute inset-0">
-            <NucleusScene mobile={isMobile} reducedMotion={reducedMotion} />
+            <NucleusScene
+              mobile={isMobile}
+              reducedMotion={reducedMotion}
+              frameloop={isVisible ? 'always' : 'never'}
+            />
           </div>
         </Suspense>
       )}

@@ -1,0 +1,13 @@
+headline: "Shape the Future of Nuclear Energy"
+subtitle: "Ignite your passion for nuclear science & engineering. Collaborate with experts, run simulations in the cloud, and shape the future of open-source nuclear tools."
+
+ctas:
+  - text: "Join NukeTalk"
+    href: "https://talk.nukehub.org"
+    variant: "primary"
+    icon: "messageCircle"
+    external: true
+  - text: "Explore Docs"
+    href: "/about"
+    variant: "secondary"
+    icon: "bookOpen"
