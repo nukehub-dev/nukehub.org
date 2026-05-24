@@ -1,12 +1,12 @@
 ---
 import ManualPage from '@components/manual/ManualPage.astro';
-import { getEntry } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 
 const entry = await getEntry('manual', 'terms');
 if (!entry) {
   throw new Error('Manual entry "terms" not found');
 }
-const { Content, headings } = await entry.render();
+const { Content, headings } = await render(entry);
 ---
 
 <ManualPage entry={entry} headings={headings}>

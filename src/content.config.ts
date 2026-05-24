@@ -1,7 +1,9 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const manual = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/[^_]*.mdx', base: './src/content/manual' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -11,7 +13,7 @@ const manual = defineCollection({
 });
 
 const projects = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/[^_]*.mdx', base: './src/content/projects' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -25,32 +27,8 @@ const projects = defineCollection({
   }),
 });
 
-const community = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    permalink: z.string(),
-  }),
-});
-
-const recurrenceSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('monthly-date'), day: z.number().min(1).max(31) }),
-  z.object({
-    type: z.literal('monthly-weekday'),
-    weekday: z.number().min(0).max(6),
-    occurrence: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(-1)]),
-  }),
-  z.object({ type: z.literal('weekly'), weekday: z.number().min(0).max(6) }),
-  z.object({
-    type: z.literal('biweekly'),
-    weekday: z.number().min(0).max(6),
-    anchorDate: z.string(),
-  }),
-]);
-
 const events = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/events' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -67,12 +45,25 @@ const events = defineCollection({
     meetingUrl: z.string().url().optional(),
     backgroundColor: z.string().optional(),
     textColor: z.string().optional(),
-    recurrence: recurrenceSchema.optional(),
+    recurrence: z.discriminatedUnion('type', [
+      z.object({ type: z.literal('monthly-date'), day: z.number().min(1).max(31) }),
+      z.object({
+        type: z.literal('monthly-weekday'),
+        weekday: z.number().min(0).max(6),
+        occurrence: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(-1)]),
+      }),
+      z.object({ type: z.literal('weekly'), weekday: z.number().min(0).max(6) }),
+      z.object({
+        type: z.literal('biweekly'),
+        weekday: z.number().min(0).max(6),
+        anchorDate: z.string(),
+      }),
+    ]).optional(),
   }),
 });
 
 const people = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/people' }),
   schema: z.object({
     name: z.string(),
     image: z.string(),
@@ -111,7 +102,7 @@ const people = defineCollection({
 });
 
 const peopleCategories = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/peopleCategories' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -120,7 +111,7 @@ const peopleCategories = defineCollection({
 });
 
 const sponsors = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/sponsors' }),
   schema: z.object({
     name: z.string(),
     image: z.string(),
@@ -131,7 +122,7 @@ const sponsors = defineCollection({
 });
 
 const support = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/support' }),
   schema: z.object({
     hero: z.object({
       title: z.string(),
@@ -175,4 +166,4 @@ const support = defineCollection({
   }),
 });
 
-export const collections = { manual, projects, community, events, people, peopleCategories, sponsors, support };
+export const collections = { manual, projects, events, people, peopleCategories, sponsors, support };

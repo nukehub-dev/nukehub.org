@@ -1,13 +1,13 @@
 ---
 import ManualPage from '@components/manual/ManualPage.astro';
 import { SponsorList } from '@components/sponsors/SponsorList';
-import { getEntry, getCollection } from 'astro:content';
+import { getEntry, getCollection, render } from 'astro:content';
 
 const entry = await getEntry('manual', 'acknowledgment');
 if (!entry) {
   throw new Error('Manual entry "acknowledgment" not found');
 }
-const { Content, headings } = await entry.render();
+const { Content, headings } = await render(entry);
 
 // Load sponsors from content collection
 const sponsorEntries = await getCollection('sponsors');
