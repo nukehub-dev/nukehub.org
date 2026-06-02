@@ -70,10 +70,10 @@ function CarouselCard({
       }}
     >
       <div
-        className={`relative flex h-[400px] flex-col overflow-hidden rounded-2xl border backdrop-blur-xl transition-all duration-500 ${
+        className={`bubble relative flex h-[400px] flex-col overflow-hidden rounded-2xl border backdrop-blur-xl transition-all duration-500 ${
           isActive
-            ? 'border-border/60 bg-card/70 shadow-2xl shadow-primary/[0.06]'
-            : 'border-border/30 bg-card/40 shadow-lg'
+            ? 'border-border/60 shadow-2xl shadow-primary/[0.06]'
+            : 'border-border/30 shadow-lg'
         }`}
       >
         {/* Top edge highlight */}
@@ -121,7 +121,7 @@ function CarouselCard({
 export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const autoPlayRef = useRef<ReturnType<typeof setInterval>>();
+  const autoPlayRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const touchStartX = useRef(0);
 
   const goTo = useCallback(

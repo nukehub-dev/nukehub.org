@@ -868,3 +868,9 @@ input[type="number"] {
 .animate-line-draw {
   animation: line-draw 2s ease-in-out infinite;
 }
+
+/* Submenu fade-in animation */
+@keyframes cmFadeIn {
+  from { opacity: 0; transform: translateX(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}

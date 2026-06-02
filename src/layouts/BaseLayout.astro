@@ -4,6 +4,7 @@ import { Header } from '@components/layout/Header';
 import { Footer } from '@components/layout/Footer';
 import { ScrollProgress } from '@components/shared/ScrollProgress';
 import { CustomCursor } from '@components/shared/CustomCursor';
+import { GlobalContextMenu } from '@components/shared/GlobalContextMenu';
 import GrainOverlay from '@components/shared/GrainOverlay.astro';
 
 interface Props {
@@ -119,6 +120,7 @@ const canonicalUrl = `${siteUrl}${permalink}`;
   <body class="min-h-screen flex flex-col">
     <ScrollProgress client:load />
     <CustomCursor client:load />
+    <GlobalContextMenu client:load />
     <GrainOverlay />
 
     <Header client:load />

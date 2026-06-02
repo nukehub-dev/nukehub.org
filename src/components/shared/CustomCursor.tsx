@@ -79,7 +79,7 @@ export function CustomCursor() {
     <>
       {/* ── Trail ring (back layer) ── */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9997] hidden md:block"
+        className="fixed top-0 left-0 pointer-events-none z-[9999] hidden md:block"
         style={{
           x: trailX,
           y: trailY,
@@ -101,7 +101,7 @@ export function CustomCursor() {
 
       {/* ── Main cursor (front layer) ── */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9998] hidden md:block"
+        className="fixed top-0 left-0 pointer-events-none z-[10000] hidden md:block"
         style={{
           x: cursorX,
           y: cursorY,
