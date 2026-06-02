@@ -208,6 +208,10 @@ function ReactorParticles({ accent }: { accent: string }) {
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
+  const scales = useMemo(() => {
+    return Array.from({ length: count }, () => 0.012 + Math.random() * 0.008);
+  }, [count]);
+
   useFrame(() => {
     if (!meshRef.current) return;
     for (let i = 0; i < count; i++) {
@@ -225,7 +229,7 @@ function ReactorParticles({ accent }: { accent: string }) {
       if (positions[ix + 1] < -2) positions[ix + 1] = 2;
 
       dummy.position.set(positions[ix], positions[ix + 1], positions[ix + 2]);
-      dummy.scale.setScalar(0.012 + Math.random() * 0.008);
+      dummy.scale.setScalar(scales[i]);
       dummy.updateMatrix();
       meshRef.current.setMatrixAt(i, dummy.matrix);
     }

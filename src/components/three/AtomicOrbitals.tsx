@@ -8,7 +8,7 @@ import { getPrimaryColor } from '@lib/themeColors';
 /* ------------------------------------------------------------------ */
 function ParticleField({ color, isLight }: { color: string; isLight: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const count = 150;
+  const count = 80;
 
   const { positions, velocities, phases } = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -61,9 +61,11 @@ function ParticleField({ color, isLight }: { color: string; isLight: boolean }) 
 }
 
 /* ------------------------------------------------------------------ */
-// Gentle orbital rings — subtle breathe
+// Gentle orbital rings — single useFrame updates all rings
 /* ------------------------------------------------------------------ */
 function OrbitalRings({ color, isLight }: { color: string; isLight: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+
   const ringDefs = useMemo(
     () => [
       { radius: 2.2, speed: 0.8, phase: 0, tilt: 0.25 },
@@ -73,62 +75,43 @@ function OrbitalRings({ color, isLight }: { color: string; isLight: boolean }) {
     []
   );
 
-  return (
-    <group>
-      {ringDefs.map((ring, i) => (
-        <OrbitalRing key={i} {...ring} color={color} isLight={isLight} />
-      ))}
-    </group>
-  );
-}
-
-function OrbitalRing({
-  radius,
-  speed,
-  phase,
-  tilt,
-  color,
-  isLight,
-}: {
-  radius: number;
-  speed: number;
-  phase: number;
-  tilt: number;
-  color: string;
-  isLight: boolean;
-}) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const matRef = useRef<THREE.MeshBasicMaterial>(null);
-
   const baseOpacity = isLight ? 0.35 : 0.15;
   const thickness = isLight ? 0.035 : 0.018;
 
   useFrame((state) => {
+    if (!groupRef.current) return;
     const t = state.clock.elapsedTime;
-    if (!matRef.current || !meshRef.current) return;
 
-    // Gentle sine breathe — no blink, no disappear
-    const breathe = 0.7 + 0.3 * Math.sin(t * speed + phase);
-    matRef.current.opacity = baseOpacity * breathe;
+    groupRef.current.children.forEach((child, i) => {
+      const ring = ringDefs[i];
+      if (!ring) return;
+      const mesh = child as THREE.Mesh;
+      const mat = mesh.material as THREE.MeshBasicMaterial;
 
-    // Very subtle scale pulse
-    const scalePulse = 1 + 0.03 * Math.sin(t * speed * 0.7 + phase);
-    meshRef.current.scale.setScalar(scalePulse);
+      const breathe = 0.7 + 0.3 * Math.sin(t * ring.speed + ring.phase);
+      mat.opacity = baseOpacity * breathe;
+
+      const scalePulse = 1 + 0.03 * Math.sin(t * ring.speed * 0.7 + ring.phase);
+      mesh.scale.setScalar(scalePulse);
+    });
   });
 
   return (
-    <mesh ref={meshRef} rotation={[Math.PI / 2, tilt, 0]}>
-      <ringGeometry args={[radius - thickness, radius, 96]} />
-      <meshBasicMaterial
-        ref={matRef}
-        color={color}
-        transparent
-        opacity={baseOpacity}
-        side={THREE.DoubleSide}
-        depthWrite={false}
-        blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
-      />
-    </mesh>
+    <group ref={groupRef}>
+      {ringDefs.map((ring, i) => (
+        <mesh key={i} rotation={[Math.PI / 2, ring.tilt, 0]}>
+          <ringGeometry args={[ring.radius - thickness, ring.radius, 96]} />
+          <meshBasicMaterial
+            color={color}
+            transparent
+            opacity={baseOpacity}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+            blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
@@ -211,7 +194,7 @@ export function AtomicOrbitalsScene({ isVisible }: { isVisible: boolean }) {
 
   return (
     <Canvas
-      dpr={[1, 1.5]}
+      dpr={[1, 1]}
       camera={{ position: [0, 0, 5], fov: 50 }}
       frameloop={isVisible ? 'always' : 'never'}
       gl={{

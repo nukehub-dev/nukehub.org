@@ -474,6 +474,12 @@ input, textarea, select {
   cursor: text;
 }
 
+/* Hide native cursor when custom cursor is active */
+body.custom-cursor-active,
+body.custom-cursor-active * {
+  cursor: none !important;
+}
+
 /* Hide native number input spinners */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {

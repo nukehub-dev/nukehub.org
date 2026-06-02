@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { getPrimaryColor } from '@lib/themeColors';
 import { useCanvasVisibility } from './useCanvasVisibility';
-import { ShowcaseScene } from './ProjectEmblems';
+
+const ShowcaseScene = lazy(() =>
+  import('./ProjectEmblems').then((mod) => ({ default: mod.ShowcaseScene }))
+);
 
 function StaticFallback() {
   const [primary, setPrimary] = useState('#f37524');
@@ -28,6 +31,7 @@ function StaticFallback() {
 }
 
 export function ProjectsCanvas() {
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const isVisible = useCanvasVisibility('projects-canvas-anchor');
 
@@ -36,6 +40,23 @@ export function ProjectsCanvas() {
     setReducedMotion(mq.matches);
     const handleChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mq.addEventListener('change', handleChange);
+
+    const anchor = document.getElementById('projects-canvas-anchor');
+    if (anchor) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setHasLoaded(true);
+            observer.disconnect();
+          }
+        },
+        { rootMargin: '200px' }
+      );
+      observer.observe(anchor);
+    } else {
+      setHasLoaded(true);
+    }
+
     return () => mq.removeEventListener('change', handleChange);
   }, []);
 
@@ -44,17 +65,21 @@ export function ProjectsCanvas() {
   return (
     <div className="absolute inset-0" id="projects-canvas-anchor">
       <StaticFallback />
-      <div className="absolute inset-0">
-        <Canvas
-          dpr={[1, 1]}
-          camera={{ position: [0, 0, 5], fov: 50, near: 0.1, far: 50 }}
-          frameloop={isVisible ? 'always' : 'never'}
-          gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-          style={{ background: 'transparent' }}
-        >
-          <ShowcaseScene visible={isVisible} />
-        </Canvas>
-      </div>
+      {hasLoaded && (
+        <Suspense fallback={null}>
+          <div className="absolute inset-0">
+            <Canvas
+              dpr={[1, 1]}
+              camera={{ position: [0, 0, 5], fov: 50, near: 0.1, far: 50 }}
+              frameloop={isVisible ? 'always' : 'never'}
+              gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+              style={{ background: 'transparent' }}
+            >
+              <ShowcaseScene visible={isVisible} />
+            </Canvas>
+          </div>
+        </Suspense>
+      )}
     </div>
   );
 }

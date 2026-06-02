@@ -19,66 +19,10 @@ function createHexGeometry(radius: number) {
   return new THREE.ShapeGeometry(shape);
 }
 
-/* ------------------------------------------------------------------ */
-// Single hex cell
-/* ------------------------------------------------------------------ */
-function HexCell({
-  position,
-  distFromCenter,
-  baseOpacity,
-  pulsePhase,
-  isActive,
-  color,
-  isLight,
-  mousePos,
-}: {
-  position: [number, number, number];
-  distFromCenter: number;
-  baseOpacity: number;
-  pulsePhase: number;
-  isActive: boolean;
-  color: string;
-  isLight: boolean;
-  mousePos: React.MutableRefObject<THREE.Vector2>;
-}) {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-
-    // Traveling wave
-    const wave = Math.sin(distFromCenter * 1.2 - t * 0.6) * 0.5 + 0.5;
-    const waveBoost = wave * (isActive ? 0.3 : 0.1);
-
-    // Mouse proximity glow
-    const dx = position[0] - mousePos.current.x;
-    const dy = position[1] - mousePos.current.y;
-    const distToMouse = Math.sqrt(dx * dx + dy * dy);
-    const mouseGlow = Math.max(0, 1 - distToMouse * 0.6) * 0.4;
-
-    const pulse = 0.5 + 0.5 * Math.sin(t * 0.4 + pulsePhase);
-
-    if (meshRef.current) {
-      const mat = meshRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = baseOpacity + waveBoost + mouseGlow + (isActive ? pulse * 0.1 : 0);
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} position={position} geometry={createHexGeometry(0.22)}>
-      <meshBasicMaterial
-        color={isLight ? '#aaaaaa' : color}
-        transparent
-        opacity={baseOpacity}
-        depthWrite={false}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
-  );
-}
+const sharedHexGeo = createHexGeometry(0.22);
 
 /* ------------------------------------------------------------------ */
-// Hex grid
+// Hex grid — single useFrame updates all cells
 /* ------------------------------------------------------------------ */
 function HexGrid({
   color,
@@ -90,11 +34,37 @@ function HexGrid({
   mousePos: React.MutableRefObject<THREE.Vector2>;
 }) {
   const groupRef = useRef<THREE.Group>(null);
+  const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
   const { camera } = useThree();
 
   useFrame((state) => {
+    // Group rotation
     if (groupRef.current) {
       groupRef.current.rotation.z = state.clock.elapsedTime * 0.004;
+    }
+
+    // Single pass: update all cell opacities
+    const t = state.clock.elapsedTime;
+    const mx = mousePos.current.x;
+    const my = mousePos.current.y;
+
+    for (let i = 0; i < cells.length; i++) {
+      const mesh = meshRefs.current[i];
+      if (!mesh) continue;
+      const cell = cells[i];
+
+      const wave = Math.sin(cell.distFromCenter * 1.2 - t * 0.6) * 0.5 + 0.5;
+      const waveBoost = wave * (cell.isActive ? 0.3 : 0.1);
+
+      const dx = cell.position[0] - mx;
+      const dy = cell.position[1] - my;
+      const distToMouse = Math.sqrt(dx * dx + dy * dy);
+      const mouseGlow = Math.max(0, 1 - distToMouse * 0.6) * 0.4;
+
+      const pulse = 0.5 + 0.5 * Math.sin(t * 0.4 + cell.pulsePhase);
+
+      const mat = mesh.material as THREE.MeshBasicMaterial;
+      mat.opacity = cell.baseOpacity + waveBoost + mouseGlow + (cell.isActive ? pulse * 0.1 : 0);
     }
   });
 
@@ -157,10 +127,25 @@ function HexGrid({
     return items;
   }, [isLight]);
 
+  const matColor = isLight ? '#aaaaaa' : color;
+
   return (
     <group ref={groupRef}>
       {cells.map((cell, i) => (
-        <HexCell key={i} {...cell} color={color} isLight={isLight} mousePos={mousePos} />
+        <mesh
+          key={i}
+          ref={(el) => { meshRefs.current[i] = el; }}
+          position={cell.position}
+          geometry={sharedHexGeo}
+        >
+          <meshBasicMaterial
+            color={matColor}
+            transparent
+            opacity={cell.baseOpacity}
+            depthWrite={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
       ))}
     </group>
   );

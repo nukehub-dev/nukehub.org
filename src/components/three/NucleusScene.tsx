@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { ReactorLattice } from './ReactorLattice';
@@ -33,6 +33,8 @@ function CameraController({ reducedMotion, orbitControls }: { reducedMotion?: bo
     camera.lookAt(0, 2.0, 0);
   }, [camera]);
 
+  const lookTarget = useMemo(() => new THREE.Vector3(0, 2.0, 0), []);
+
   useFrame((state, delta) => {
     if (reducedMotion || orbitControls) return;
 
@@ -44,8 +46,6 @@ function CameraController({ reducedMotion, orbitControls }: { reducedMotion?: bo
     const orbitX = Math.sin(t * 0.025) * 1.8;
     const orbitZ = 5.0 + Math.sin(t * 0.018 + 1.0) * 0.7;   // 4.3 to 5.7
     const orbitY = 0.35 + Math.sin(t * 0.015) * 0.25;       // 0.1 to 0.6
-
-    const lookTarget = new THREE.Vector3(0, 2.0, 0);
 
     const lerpFactor = 1 - Math.exp(-delta * 0.8);
     camera.position.x += (orbitX - camera.position.x) * lerpFactor;
@@ -103,7 +103,7 @@ function SceneContent({ mobile, reducedMotion, orbitControls }: SceneProps) {
 export function NucleusScene({ mobile, reducedMotion, orbitControls, frameloop = 'always' }: SceneProps) {
   return (
     <Canvas
-      dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)]}
+      dpr={[1, 1]}
       camera={{ position: [0.5, 0.4, 5.2], fov: 52, near: 0.1, far: 100 }}
       frameloop={frameloop}
       gl={{

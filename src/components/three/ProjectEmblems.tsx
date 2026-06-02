@@ -484,6 +484,9 @@ function ParticleCloud() {
     return () => observer.disconnect();
   }, []);
 
+  const lastMouseX = useRef(0);
+  const lastMouseY = useRef(0);
+
   useFrame((state) => {
     if (!isReadyRef.current || !materialRef.current) return;
 
@@ -500,18 +503,28 @@ function ParticleCloud() {
     material.uniforms.uMouse.value.x += (targetX - material.uniforms.uMouse.value.x) * lerpFactor;
     material.uniforms.uMouse.value.y += (targetY - material.uniforms.uMouse.value.y) * lerpFactor;
 
-    raycasterRef.current.setFromCamera(mouseRef.current, camera);
-    if (planeRef.current) {
-      const intersects = raycasterRef.current.intersectObject(planeRef.current);
-      if (intersects.length > 0) {
-        const point = intersects[0].point;
-        material.uniforms.uMousePos.value.set(point.x, point.y);
-        material.uniforms.uMouseHover.value = 1.0;
-        if (intersects[0].uv) {
-          touchTextureRef.current?.addPoint(intersects[0].uv.x, intersects[0].uv.y);
+    // Only raycast when mouse has actually moved — skip 60×/sec redundant work
+    if (mouseActive.current) {
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
+      const moved = Math.abs(mx - lastMouseX.current) > 0.0001 || Math.abs(my - lastMouseY.current) > 0.0001;
+      if (moved) {
+        lastMouseX.current = mx;
+        lastMouseY.current = my;
+        raycasterRef.current.setFromCamera(mouseRef.current, camera);
+        if (planeRef.current) {
+          const intersects = raycasterRef.current.intersectObject(planeRef.current);
+          if (intersects.length > 0) {
+            const point = intersects[0].point;
+            material.uniforms.uMousePos.value.set(point.x, point.y);
+            material.uniforms.uMouseHover.value = 1.0;
+            if (intersects[0].uv) {
+              touchTextureRef.current?.addPoint(intersects[0].uv.x, intersects[0].uv.y);
+            }
+          } else {
+            material.uniforms.uMouseHover.value = 0.0;
+          }
         }
-      } else {
-        material.uniforms.uMouseHover.value = 0.0;
       }
     }
 
@@ -527,7 +540,7 @@ function ParticleCloud() {
 function DustField() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
-  const count = 800;
+  const count = 500;
 
   const { positions, velocities } = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -607,11 +620,11 @@ export function ShowcaseScene({ visible = true }: { visible?: boolean }) {
     <>
       <EffectComposer>
         <Bloom
-          intensity={1.2}
-          luminanceThreshold={0.4}
+          intensity={0.9}
+          luminanceThreshold={0.5}
           luminanceSmoothing={0.3}
           mipmapBlur
-          radius={0.6}
+          radius={0.5}
         />
         <ChromaticAberration
           offset={[0.0008, 0.0003]}

@@ -31,7 +31,7 @@ export function useCanvasVisibility(
         setState((s) => ({ ...s, inViewport: entry.isIntersecting }));
       },
       {
-        rootMargin: options?.rootMargin ?? '100px',
+        rootMargin: options?.rootMargin ?? '0px',
         threshold: options?.threshold ?? 0,
       }
     );

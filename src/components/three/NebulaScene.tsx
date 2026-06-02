@@ -57,7 +57,7 @@ float fbm(vec2 p) {
   float sum = 0.0;
   float amp = 0.5;
   float freq = 1.0;
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 4; i++) {
     sum += amp * snoise(p * freq);
     amp *= 0.5;
     freq *= 2.0;
@@ -227,10 +227,13 @@ function NebulaPlane({ primaryColor, isLight }: { primaryColor: string; isLight:
     [colors, isLight]
   );
 
-  useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
-    }
+  const accRef = useRef(0);
+  useFrame((state, delta) => {
+    if (!materialRef.current) return;
+    accRef.current += delta;
+    if (accRef.current < 1 / 30) return;
+    accRef.current = 0;
+    materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
   });
 
   return (

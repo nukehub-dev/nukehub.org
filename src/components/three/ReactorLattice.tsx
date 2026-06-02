@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useAccentColor } from './useAccentColor';
@@ -866,17 +866,44 @@ function NeutronFlux({
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Fission Sparks — occasional bright bursts from center                     */
+/*  Fission Sparks — occasional bright bursts from center (ref-based, no setState) */
 /* -------------------------------------------------------------------------- */
+
+interface SparkData {
+  mesh: THREE.Mesh;
+  light: THREE.PointLight;
+  born: number;
+  pos: THREE.Vector3;
+}
 
 function FissionSparks({ accent }: { accent: string }) {
   const groupRef = useRef<THREE.Group>(null);
-  const [sparks, setSparks] = useState<{ id: number; pos: THREE.Vector3; born: number }[]>([]);
-  const nextId = useRef(0);
+  const sparksRef = useRef<SparkData[]>([]);
+  const geoRef = useRef<THREE.SphereGeometry | null>(null);
+  const matRef = useRef<THREE.MeshBasicMaterial | null>(null);
+
+  // Shared geometry & material to avoid recreating per spark
+  useMemo(() => {
+    geoRef.current = new THREE.SphereGeometry(1, 6, 6);
+    matRef.current = new THREE.MeshBasicMaterial({
+      color: '#ffffff',
+      transparent: true,
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: false,
+    });
+  }, []);
 
   useFrame((state) => {
+    const group = groupRef.current;
+    const geo = geoRef.current;
+    const mat = matRef.current;
+    if (!group || !geo || !mat) return;
+
     const t = state.clock.elapsedTime;
 
+    // Spawn new spark
     if (Math.random() < 0.015) {
       const angle = Math.random() * Math.PI * 2;
       const r = Math.random() * 0.5;
@@ -885,54 +912,36 @@ function FissionSparks({ accent }: { accent: string }) {
         0.8 + Math.random() * 0.8,
         Math.sin(angle) * r
       );
-      const id = nextId.current++;
-      setSparks((prev) => [...prev, { id, pos, born: t }]);
+
+      const mesh = new THREE.Mesh(geo, mat);
+      const light = new THREE.PointLight(accent, 2, 2, 2);
+      mesh.add(light);
+      group.add(mesh);
+
+      sparksRef.current.push({ mesh, light, born: t, pos });
     }
 
-    setSparks((prev) => prev.filter((s) => t - s.born < 0.6));
+    // Update alive sparks, remove expired
+    const alive: SparkData[] = [];
+    for (const spark of sparksRef.current) {
+      const age = t - spark.born;
+      if (age >= 0.6) {
+        group.remove(spark.mesh);
+        continue;
+      }
+
+      const life = 1 - age / 0.6;
+      const scale = Math.sin(life * Math.PI) * 0.12;
+      spark.mesh.scale.setScalar(Math.max(0, scale));
+      spark.mesh.position.set(spark.pos.x, spark.pos.y + age * 0.3, spark.pos.z);
+      spark.light.intensity = life * 2;
+
+      alive.push(spark);
+    }
+    sparksRef.current = alive;
   });
 
-  return (
-    <group ref={groupRef}>
-      {sparks.map((s) => (
-        <FissionSpark key={s.id} pos={s.pos} accent={accent} born={s.born} />
-      ))}
-    </group>
-  );
-}
-
-function FissionSpark({ pos, accent, born }: { pos: THREE.Vector3; accent: string; born: number }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const lightRef = useRef<THREE.PointLight>(null);
-
-  useFrame((state) => {
-    const age = state.clock.elapsedTime - born;
-    if (!meshRef.current || !lightRef.current) return;
-
-    const life = 1 - age / 0.6;
-    const scale = Math.sin(life * Math.PI) * 0.12;
-    meshRef.current.scale.setScalar(Math.max(0, scale));
-    meshRef.current.position.set(pos.x, pos.y + age * 0.3, pos.z);
-    lightRef.current.intensity = life * 2;
-    lightRef.current.position.copy(meshRef.current.position);
-  });
-
-  return (
-    <group>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[1, 8, 8]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.9}
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-          toneMapped={false}
-        />
-      </mesh>
-      <pointLight ref={lightRef} color={accent} intensity={2} distance={2} decay={2} />
-    </group>
-  );
+  return <group ref={groupRef} />;
 }
 
 /* -------------------------------------------------------------------------- */

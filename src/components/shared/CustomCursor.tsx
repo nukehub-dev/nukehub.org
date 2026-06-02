@@ -6,9 +6,15 @@ import { motion, useSpring } from 'framer-motion';
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isClicking, setIsClicking] = useState(false);
 
+  /* Fast spring for the main cursor */
   const cursorX = useSpring(-100, { stiffness: 500, damping: 28 });
   const cursorY = useSpring(-100, { stiffness: 500, damping: 28 });
+
+  /* Slow spring for the trailing ring – creates fluid depth */
+  const trailX = useSpring(cursorX, { stiffness: 60, damping: 16, mass: 0.8 });
+  const trailY = useSpring(cursorY, { stiffness: 60, damping: 16, mass: 0.8 });
 
   useEffect(() => {
     const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -17,6 +23,7 @@ export function CustomCursor() {
     if (!hasFinePointer || prefersReducedMotion) return;
 
     setIsVisible(true);
+    document.body.classList.add('custom-cursor-active');
 
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
@@ -41,38 +48,129 @@ export function CustomCursor() {
       }
     };
 
+    const handleMouseDown = () => setIsClicking(true);
+    const handleMouseUp = () => setIsClicking(false);
+    const handleMouseLeave = () => {
+      cursorX.set(-100);
+      cursorY.set(-100);
+    };
+
     window.addEventListener('mousemove', moveCursor);
     document.addEventListener('mouseover', handleMouseOver);
     document.addEventListener('mouseout', handleMouseOut);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    document.body.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
       window.removeEventListener('mousemove', moveCursor);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.removeEventListener('mouseleave', handleMouseLeave);
+      document.body.classList.remove('custom-cursor-active');
     };
   }, [cursorX, cursorY]);
 
   if (!isVisible) return null;
 
   return (
-    <motion.div
-      className="fixed top-0 left-0 pointer-events-none z-[9998] mix-blend-difference hidden md:block"
-      style={{
-        x: cursorX,
-        y: cursorY,
-        translateX: '-50%',
-        translateY: '-50%',
-      }}
-    >
+    <>
+      {/* ── Trail ring (back layer) ── */}
       <motion.div
-        className="rounded-full bg-white"
-        animate={{
-          width: isHovering ? 40 : 8,
-          height: isHovering ? 40 : 8,
-          opacity: isHovering ? 0.8 : 1,
+        className="fixed top-0 left-0 pointer-events-none z-[9997] hidden md:block"
+        style={{
+          x: trailX,
+          y: trailY,
+          translateX: '-50%',
+          translateY: '-50%',
+          mixBlendMode: 'difference',
         }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20, mass: 0.5 }}
-      />
-    </motion.div>
+      >
+        <motion.div
+          className="rounded-full border border-white"
+          animate={{
+            width: isHovering ? 72 : 52,
+            height: isHovering ? 72 : 52,
+            opacity: isClicking ? 0.06 : 0.12,
+          }}
+          transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.6 }}
+        />
+      </motion.div>
+
+      {/* ── Main cursor (front layer) ── */}
+      <motion.div
+        className="fixed top-0 left-0 pointer-events-none z-[9998] hidden md:block"
+        style={{
+          x: cursorX,
+          y: cursorY,
+          translateX: '-50%',
+          translateY: '-50%',
+          mixBlendMode: 'difference',
+        }}
+      >
+        {/* Soft radial glow – creates ambient depth */}
+        <motion.div
+          className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            background: 'radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)',
+          }}
+          animate={{
+            width: isHovering ? 88 : 64,
+            height: isHovering ? 88 : 64,
+            opacity: isClicking ? 0.25 : isHovering ? 0.55 : 0.4,
+          }}
+          transition={{ type: 'spring', stiffness: 180, damping: 18, mass: 0.5 }}
+        />
+
+        {/* Primary 3D glass ring */}
+        <motion.div
+          className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            border: '1.5px solid rgba(255,255,255,0.9)',
+            boxShadow:
+              '0 0 0 1px rgba(255,255,255,0.12), ' +
+              '0 0 24px 3px rgba(255,255,255,0.15), ' +
+              'inset 0 0 12px rgba(255,255,255,0.08)',
+          }}
+          animate={{
+            width: isHovering ? 48 : 32,
+            height: isHovering ? 48 : 32,
+            opacity: isClicking ? 0.5 : 0.9,
+          }}
+          transition={{ type: 'spring', stiffness: 280, damping: 22, mass: 0.5 }}
+        />
+
+        {/* Inner precision ring */}
+        <motion.div
+          className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            border: '1px solid rgba(255,255,255,0.55)',
+          }}
+          animate={{
+            width: isHovering ? 20 : 14,
+            height: isHovering ? 20 : 14,
+            opacity: isClicking ? 0.5 : 0.85,
+          }}
+          transition={{ type: 'spring', stiffness: 320, damping: 22, mass: 0.5 }}
+        />
+
+        {/* Glowing core dot */}
+        <motion.div
+          className="rounded-full bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            boxShadow:
+              '0 0 8px 3px rgba(255,255,255,0.55), ' +
+              '0 0 18px 7px rgba(255,255,255,0.28)',
+          }}
+          animate={{
+            width: isClicking ? 4 : isHovering ? 2 : 4,
+            height: isClicking ? 4 : isHovering ? 2 : 4,
+          }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20, mass: 0.5 }}
+        />
+      </motion.div>
+    </>
   );
 }
