@@ -1,113 +1,87 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { MagneticButton } from '@components/shared/MagneticButton';
 import { getIcon } from '@lib/icons';
+import { CTACanvas } from '@components/three/CTACanvas';
 import type { CTAData } from '../../types/homepage';
 
 interface EnhancedCTAProps {
   data: CTAData;
 }
 
-function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
-  const [displayText, setDisplayText] = useState('');
-  const [showCursor, setShowCursor] = useState(true);
-  const ref = useRef<HTMLHeadingElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    if (!isInView || started) return;
-    setStarted(true);
-
-    const startTimeout = setTimeout(() => {
-      let currentIndex = 0;
-      const interval = setInterval(() => {
-        if (currentIndex <= text.length) {
-          setDisplayText(text.slice(0, currentIndex));
-          currentIndex++;
-        } else {
-          clearInterval(interval);
-          setTimeout(() => setShowCursor(false), 2000);
-        }
-      }, 50);
-
-      return () => clearInterval(interval);
-    }, delay);
-
-    return () => clearTimeout(startTimeout);
-  }, [isInView, text, delay, started]);
-
-  return (
-    <h2
-      ref={ref}
-      className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl min-h-[1.2em]"
-    >
-      {displayText}
-      {showCursor && started && (
-        <span className="animate-blink text-primary">|</span>
-      )}
-    </h2>
-  );
-}
-
 export function EnhancedCTA({ data }: EnhancedCTAProps) {
-  const { headline, subtitle, ctas } = data;
+  const { badge, headline, subtitle, ctas } = data;
 
   return (
-    <section className="relative overflow-hidden px-4 py-24 sm:py-32">
-      {/* Radial glow background */}
+    <section
+      className="relative overflow-hidden px-4 py-24 sm:py-32"
+      style={{
+        maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+      }}
+    >
+      {/* Three.js energy field background */}
+      <div className="absolute inset-0 -z-20">
+        <CTACanvas />
+      </div>
+
+      {/* Radial glow overlay */}
       <div
         className="absolute inset-0 -z-10"
         style={{
-          background: `radial-gradient(ellipse 80% 60% at 50% 50%, color-mix(in oklch, var(--primary) 10%, transparent) 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse 80% 60% at 50% 50%, color-mix(in oklch, var(--primary) 8%, transparent) 0%, transparent 70%)`,
         }}
       />
-
-      {/* Floating particles */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        {Array.from({ length: 16 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-primary/15"
-            style={{
-              width: `${3 + Math.random() * 5}px`,
-              height: `${3 + Math.random() * 5}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `cta-float ${10 + Math.random() * 15}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 5}s`,
-              opacity: 0.2 + Math.random() * 0.3,
-            }}
-          />
-        ))}
-      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
-        transition={{ duration: 0.6 }}
-        className="mx-auto max-w-4xl text-center"
+        transition={{ duration: 0.7, ease: [0.215, 0.61, 0.355, 1] }}
+        className="relative mx-auto max-w-4xl text-center"
       >
-        <TypewriterText text={headline} delay={300} />
+        {/* Badge */}
+        {badge && (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-6 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary"
+          >
+            {badge}
+          </motion.span>
+        )}
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+        {/* Headline */}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl"
+        >
+          {headline}
+        </motion.h2>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground"
         >
           {subtitle}
         </motion.p>
 
+        {/* Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 1.0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
           className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           {ctas.map((cta, i) => {
@@ -119,10 +93,10 @@ export function EnhancedCTA({ data }: EnhancedCTAProps) {
                 href={cta.href}
                 target={cta.external ? '_blank' : undefined}
                 rel={cta.external ? 'noopener noreferrer' : undefined}
-                className={`inline-flex h-12 items-center gap-2 rounded-xl px-8 text-sm font-semibold transition-shadow duration-300 active:scale-[0.98] ${
+                className={`inline-flex h-12 items-center gap-2 rounded-xl px-8 text-sm font-semibold transition-all duration-300 active:scale-[0.98] ${
                   isPrimary
-                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30'
-                    : 'border border-input bg-background/60 text-foreground backdrop-blur-md hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5'
+                    : 'border border-input bg-background/60 text-foreground backdrop-blur-md hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5'
                 }`}
               >
                 {CtaIcon && <CtaIcon className="h-4 w-4" />}

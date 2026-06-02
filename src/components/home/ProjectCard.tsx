@@ -57,7 +57,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
-        className="project-card relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/80 backdrop-blur-md transition-all duration-300 ease-out"
+        className="project-card relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-md transition-all duration-300 ease-out dark:border-border/60 dark:bg-card/70"
         style={{
           transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) scale(${isHovered ? 1.02 : 1})`,
           transformStyle: 'preserve-3d',

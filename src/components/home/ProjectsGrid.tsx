@@ -20,6 +20,7 @@ interface ProjectsGridProps {
 
 export function ProjectsGrid({ projects }: ProjectsGridProps) {
   const sectionRef = useRef<HTMLElement>(null);
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
@@ -28,14 +29,21 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
   const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
 
   return (
-    <section ref={sectionRef} className="relative isolate overflow-hidden py-24 sm:py-32">
+    <section
+      ref={sectionRef}
+      className="relative isolate overflow-hidden py-24 sm:py-32"
+      style={{
+        maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+      }}
+    >
       {/* 3D Background Canvas with parallax */}
-      <motion.div className="absolute inset-0 -z-10" style={{ y: backgroundY }}>
+      <motion.div className="absolute inset-0 -z-20" style={{ y: backgroundY }}>
         <ProjectsCanvas />
       </motion.div>
 
-      {/* Darkening overlay for readability */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
+      {/* Semi-transparent overlay so canvas shows through */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-background/75" />
 
       <div className="relative mx-auto max-w-7xl px-4">
         {/* Section Header */}
@@ -59,9 +67,11 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
         </motion.div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex flex-wrap justify-center gap-6">
           {projects.map((project, i) => (
-            <ProjectCard key={project.title} project={project} index={i} />
+            <div key={project.title} className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]">
+              <ProjectCard project={project} index={i} />
+            </div>
           ))}
         </div>
       </div>

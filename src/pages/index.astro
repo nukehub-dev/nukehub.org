@@ -3,11 +3,10 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import { HeroSection } from '@components/home/HeroSection';
 import { MissionStrip } from '@components/home/MissionStrip';
 import { ProjectsGrid } from '@components/home/ProjectsGrid';
-import { TechEcosystem } from '@components/home/TechEcosystem';
+import { IntegrationsSection } from '@components/home/IntegrationsSection';
 import { EnhancedCTA } from '@components/home/EnhancedCTA';
 import { MarqueeBand } from '@components/home/MarqueeBand';
 import { TestimonialsSection } from '@components/home/TestimonialsSection';
-import { TrustLogos } from '@components/home/TrustLogos';
 import { SmoothScroll } from '@components/shared/SmoothScroll';
 import { PageLoader } from '@components/shared/PageLoader';
 import { HeroStatsBand } from '@components/home/HeroStatsBand';
@@ -17,7 +16,7 @@ import type {
   HeroData,
   MissionData,
   MarqueeData,
-  ToolsData,
+  IntegrationsData,
   TestimonialsData,
   TrustData,
   CTAData,
@@ -27,7 +26,7 @@ import type {
 const heroData = loadYaml<HeroData>('homepage/hero.yml');
 const missionData = loadYaml<MissionData>('homepage/mission.yml');
 const marqueeData = loadYaml<MarqueeData>('homepage/marquee.yml');
-const toolsData = loadYaml<ToolsData>('homepage/tools.yml');
+const integrationsData = loadYaml<IntegrationsData>('homepage/integrations.yml');
 const testimonialsData = loadYaml<TestimonialsData>('homepage/testimonials.yml');
 const trustData = loadYaml<TrustData>('homepage/trust.yml');
 const ctaData = loadYaml<CTAData>('homepage/cta.yml');
@@ -61,17 +60,11 @@ const projects = projectEntries.map((entry) => ({
 
   <MissionStrip client:load data={missionData} />
 
-  <div class="border-t border-border/30">
-    <ProjectsGrid client:load projects={projects} />
-  </div>
+  <ProjectsGrid client:load projects={projects} />
 
-  <TechEcosystem client:load data={toolsData} />
+  <IntegrationsSection client:load data={integrationsData} />
 
-  <TestimonialsSection client:load data={testimonialsData} />
+  <TestimonialsSection client:load data={testimonialsData} trustData={trustData} />
 
-  <TrustLogos client:load data={trustData} />
-
-  <div class="border-t border-border/30">
-    <EnhancedCTA client:load data={ctaData} />
-  </div>
+  <EnhancedCTA client:load data={ctaData} />
 </BaseLayout>

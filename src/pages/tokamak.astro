@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { TokamakDebug } from '@components/three/TokamakDebug';
+---
+
+<BaseLayout
+  title="Tokamak Scene Debug"
+  description="Three.js tokamak plasma scene debug view"
+  permalink="/tokamak"
+>
+  <TokamakDebug client:only="react" />
+</BaseLayout>

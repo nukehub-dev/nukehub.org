@@ -15,7 +15,7 @@ export function HeroSection({ data }: HeroSectionProps) {
   const { badge, headline, subtitle, ctas } = data;
 
   return (
-    <section className="relative isolate flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4 pt-24">
+    <section className="relative isolate flex min-h-[85dvh] flex-col items-center justify-center overflow-hidden px-4 pt-32 sm:pt-36 lg:pt-40">
       {/* 3D Canvas Background — subtle in light mode, full in dark mode */}
       <div className="absolute inset-0 -z-20 opacity-[0.28] dark:opacity-100 transition-opacity duration-700">
         <HeroCanvas />
@@ -96,7 +96,7 @@ export function HeroSection({ data }: HeroSectionProps) {
           </motion.div>
 
           {/* Scroll indicator */}
-          <div className="mt-12">
+          <div className="mt-6">
             <ScrollIndicator />
           </div>
         </motion.div>

@@ -88,7 +88,7 @@
     --popover: color-mix(in oklch, var(--primary) 3%, oklch(0.985 0 0));
     --popover-foreground: oklch(0.22 0.005 285.823);
     --primary: oklch(70% 0.177 48);
-    --primary-foreground: oklch(0.15 0.01 48);
+    --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.90 0.005 286.033);
     --secondary-foreground: oklch(0.22 0.005 285.823);
     --muted: oklch(0.90 0.005 286.033);
@@ -204,11 +204,11 @@
    Accent hue variants (for color picker)
    ========================================================================== */
 
-[data-accent="red"]     { --primary: oklch(61% 0.209 27); --primary-foreground: oklch(0.15 0.01 27); --ring: oklch(61% 0.209 27); }
-[data-accent="orange"]  { --primary: oklch(70% 0.177 48); --primary-foreground: oklch(0.15 0.01 48); --ring: oklch(70% 0.177 48); }
-[data-accent="green"]   { --primary: oklch(67% 0.162 144); --primary-foreground: oklch(0.15 0.01 144); --ring: oklch(67% 0.162 144); }
-[data-accent="cyan"]    { --primary: oklch(73% 0.126 211); --primary-foreground: oklch(0.15 0.01 211); --ring: oklch(73% 0.126 211); }
-[data-accent="purple"]  { --primary: oklch(62% 0.215 321); --primary-foreground: oklch(0.15 0.01 321); --ring: oklch(62% 0.215 321); }
+[data-accent="red"]     { --primary: oklch(64% 0.155 27); --primary-foreground: oklch(0.15 0.01 27); --ring: oklch(64% 0.155 27); }
+[data-accent="orange"]  { --primary: oklch(72% 0.13 48); --primary-foreground: oklch(0.15 0.01 48); --ring: oklch(72% 0.13 48); }
+[data-accent="green"]   { --primary: oklch(70% 0.12 144); --primary-foreground: oklch(0.15 0.01 144); --ring: oklch(70% 0.12 144); }
+[data-accent="cyan"]    { --primary: oklch(75% 0.095 211); --primary-foreground: oklch(0.15 0.01 211); --ring: oklch(75% 0.095 211); }
+[data-accent="purple"]  { --primary: oklch(68% 0.16 321); --primary-foreground: oklch(0.15 0.01 321); --ring: oklch(68% 0.16 321); }
 
 [data-theme="dark"][data-accent="red"]     { --primary: oklch(55% 0.18 27); --primary-foreground: oklch(0.97 0.01 27); --ring: oklch(55% 0.18 27); }
 [data-theme="dark"][data-accent="orange"]  { --primary: oklch(56% 0.16 48); --primary-foreground: oklch(0.97 0.01 48); --ring: oklch(56% 0.16 48); }

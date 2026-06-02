@@ -44,7 +44,7 @@ export interface MarqueeData {
   };
 }
 
-export interface ToolsData {
+export interface IntegrationsData {
   sectionTitle: string;
   sectionSubtitle: string;
   badge: string;
@@ -71,6 +71,7 @@ export interface TrustData {
 }
 
 export interface CTAData {
+  badge?: string;
   headline: string;
   subtitle: string;
   ctas: {

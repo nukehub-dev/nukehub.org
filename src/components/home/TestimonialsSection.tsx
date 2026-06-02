@@ -2,89 +2,100 @@
 
 import { motion } from 'framer-motion';
 import { viewportOnce } from '@lib/animations';
-import { Quote } from 'lucide-react';
-import type { TestimonialsData } from '../../types/homepage';
+
+import { TestimonialsCanvas } from '@components/three/TestimonialsCanvas';
+import { TestimonialCarousel } from './TestimonialCarousel';
+import type { TestimonialsData, TrustData } from '../../types/homepage';
 
 interface TestimonialsSectionProps {
   data: TestimonialsData;
+  trustData?: TrustData;
 }
 
-function TestimonialCard({
-  testimonial,
-  index,
-}: {
-  testimonial: TestimonialsData['testimonials'][0];
-  index: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30, x: index === 1 ? 0 : index === 0 ? -20 : 20 }}
-      whileInView={{ opacity: 1, y: 0, x: 0 }}
-      viewport={viewportOnce}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.15,
-        ease: [0.215, 0.61, 0.355, 1],
-      }}
-      className="group relative"
-    >
-      <div className="relative h-full overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm transition-all duration-300 hover:bg-card/80 hover:border-primary/20 sm:p-8">
-        {/* Quote icon */}
-        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Quote className="h-5 w-5" />
-        </div>
-
-        {/* Quote text */}
-        <p className="mb-6 text-sm leading-relaxed text-foreground/90 sm:text-base">
-          &ldquo;{testimonial.quote}&rdquo;
-        </p>
-
-        {/* Author */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-            {testimonial.avatar}
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-foreground">{testimonial.author}</div>
-            <div className="text-xs text-muted-foreground">{testimonial.role}</div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-export function TestimonialsSection({ data }: TestimonialsSectionProps) {
+/* ------------------------------------------------------------------ */
+// Section
+/* ------------------------------------------------------------------ */
+export function TestimonialsSection({ data, trustData }: TestimonialsSectionProps) {
   const { sectionTitle, sectionSubtitle, badge, testimonials } = data;
 
   return (
-    <section className="relative overflow-hidden px-4 py-20 sm:py-28">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+    <section className="relative isolate overflow-hidden px-4 py-24 sm:py-32">
+      {/* Three.js ambient background with edge fade */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 85%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 85%, transparent 100%)',
+        }}
+      >
+        <TestimonialsCanvas />
+      </div>
 
-      <div className="mx-auto max-w-7xl">
+      <div className="relative mx-auto max-w-7xl">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
-          transition={{ duration: 0.5 }}
-          className="mb-14 text-center"
+          transition={{ duration: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
+          className="mb-16 text-center sm:mb-20"
         >
-          <span className="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+          <motion.span
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary"
+          >
             {badge}
-          </span>
+          </motion.span>
+
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
             {sectionTitle}
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="mx-auto mt-4 max-w-xl text-muted-foreground"
+          >
             {sectionSubtitle}
-          </p>
+          </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <TestimonialCard key={t.author} testimonial={t} index={i} />
-          ))}
-        </div>
+        {/* 3D Carousel */}
+        <TestimonialCarousel testimonials={testimonials} />
+
+        {/* Trust logos */}
+        {trustData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-20 pt-12"
+          >
+            <p className="mb-8 text-center text-sm font-semibold uppercase tracking-[0.15em] text-muted-foreground/70 dark:text-muted-foreground/90">
+              {trustData.sectionTitle}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-16">
+              {trustData.institutions.map((inst, i) => (
+                <motion.div
+                  key={inst}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={viewportOnce}
+                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.215, 0.61, 0.355, 1] }}
+                  className="text-lg font-bold tracking-tight text-muted-foreground/40 transition-all duration-500 hover:scale-105 hover:text-foreground dark:text-muted-foreground/60 dark:hover:text-foreground sm:text-xl"
+                >
+                  {inst}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );
