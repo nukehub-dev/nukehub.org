@@ -74,15 +74,18 @@ export function TestimonialsCanvas() {
   if (reducedMotion) return <StaticFallback />;
 
   return (
-    <div className="absolute inset-0" id="testimonials-canvas-anchor">
-      <StaticFallback />
-      {hasLoaded && shouldRender && (
-        <Suspense fallback={null}>
-          <div className="absolute inset-0">
-            <NebulaScene isVisible={isVisible} />
-          </div>
-        </Suspense>
-      )}
+    <div className="absolute inset-0 overflow-hidden" id="testimonials-canvas-anchor">
+      {/* On mobile, keep a wider canvas so the nebula isn't squeezed — sides get cropped instead */}
+      <div className="absolute inset-y-0 left-1/2 w-[900px] -translate-x-1/2 sm:inset-x-0 sm:left-0 sm:w-full sm:translate-x-0">
+        <StaticFallback />
+        {hasLoaded && shouldRender && (
+          <Suspense fallback={null}>
+            <div className="absolute inset-0 animate-fade-in">
+              <NebulaScene isVisible={isVisible} />
+            </div>
+          </Suspense>
+        )}
+      </div>
     </div>
   );
 }

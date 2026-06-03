@@ -64,9 +64,10 @@ export function CTACanvas() {
 
   return (
     <div className="absolute inset-0" id="cta-canvas-anchor">
+      <StaticFallback />
       {hasLoaded && shouldRender && (
         <Suspense fallback={null}>
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 animate-fade-in">
             <AtomicOrbitalsScene isVisible={isVisible} />
           </div>
         </Suspense>

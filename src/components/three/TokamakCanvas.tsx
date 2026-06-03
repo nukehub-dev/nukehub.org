@@ -78,7 +78,7 @@ export function TokamakCanvas() {
       <StaticFallback />
       {hasLoaded && shouldRender && (
         <Suspense fallback={null}>
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 animate-fade-in">
             <TokamakScene isVisible={isVisible} mobile={isMobile} reducedMotion={reducedMotion} />
           </div>
         </Suspense>

@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
 import { HeroCanvas } from '@components/three/HeroCanvas';
-import { ScrollIndicator } from '@components/shared/ScrollIndicator';
 import { SplitText } from '@components/shared/SplitText';
 import { MagneticButton } from '@components/shared/MagneticButton';
 import { HeroStatCard } from './HeroStatCard';
@@ -29,17 +28,17 @@ export function HeroSection({ data }: HeroSectionProps) {
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/90 to-transparent" />
 
       {/* Main Content */}
-      <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center pt-24 sm:pt-28 lg:pt-32">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-4 pt-24 pb-8 sm:pt-28 sm:pb-12 lg:pt-32">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
           variants={staggerContainer}
-          className="flex flex-col items-center text-center"
+          className="flex w-full flex-col items-center text-center"
         >
           {/* Badge */}
           <motion.div variants={fadeInUp}>
-            <span className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-primary backdrop-blur-sm">
+            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-primary backdrop-blur-sm sm:mb-8">
               {badge.showLiveDot && (
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
@@ -66,7 +65,7 @@ export function HeroSection({ data }: HeroSectionProps) {
           {/* Subtitle */}
           <motion.p
             variants={fadeInUp}
-            className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
+            className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:mt-8 sm:text-xl"
           >
             {subtitle}
           </motion.p>
@@ -74,7 +73,7 @@ export function HeroSection({ data }: HeroSectionProps) {
           {/* CTAs with magnetic effect */}
           <motion.div
             variants={fadeInUp}
-            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+            className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:mt-10"
           >
             {ctas.map((cta, i) => {
               const CtaIcon = cta.icon ? getIcon(cta.icon) : null;
@@ -96,32 +95,24 @@ export function HeroSection({ data }: HeroSectionProps) {
             })}
           </motion.div>
 
-          {/* Scroll indicator */}
-          <div className="mt-6">
-            <ScrollIndicator />
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Stats Row */}
-      <div className="relative mx-auto w-full max-w-6xl pb-8 sm:pb-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={staggerContainer}
-          className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4"
-        >
-          {stats.map((stat, i) => (
-            <HeroStatCard
-              key={stat.label}
-              iconName={stat.icon}
-              value={stat.value}
-              numericValue={stat.numericValue}
-              label={stat.label}
-              index={i}
-            />
-          ))}
+          {/* Stats Row — inline below CTAs so they're visible without scrolling */}
+          <motion.div
+            variants={fadeInUp}
+            className="mt-8 w-full max-w-3xl sm:mt-10"
+          >
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+              {stats.map((stat, i) => (
+                <HeroStatCard
+                  key={stat.label}
+                  iconName={stat.icon}
+                  value={stat.value}
+                  numericValue={stat.numericValue}
+                  label={stat.label}
+                  index={i}
+                />
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

@@ -5,8 +5,9 @@ import { MissionStrip } from '@components/home/MissionStrip';
 import { ProjectsGrid } from '@components/home/ProjectsGrid';
 import { IntegrationsSection } from '@components/home/IntegrationsSection';
 import { EnhancedCTA } from '@components/home/EnhancedCTA';
-import { MarqueeBand } from '@components/home/MarqueeBand';
+
 import { TestimonialsSection } from '@components/home/TestimonialsSection';
+import { InstitutionsSection } from '@components/home/InstitutionsSection';
 import { PageLoader } from '@components/shared/PageLoader';
 import { Footer } from '@components/layout/Footer';
 
@@ -15,7 +16,6 @@ import { getCollection } from 'astro:content';
 import type {
   HeroData,
   MissionData,
-  MarqueeData,
   IntegrationsData,
   TestimonialsData,
   TrustData,
@@ -25,7 +25,7 @@ import type {
 // Load homepage data from YAML
 const heroData = loadYaml<HeroData>('homepage/hero.yml');
 const missionData = loadYaml<MissionData>('homepage/mission.yml');
-const marqueeData = loadYaml<MarqueeData>('homepage/marquee.yml');
+
 const integrationsData = loadYaml<IntegrationsData>('homepage/integrations.yml');
 const testimonialsData = loadYaml<TestimonialsData>('homepage/testimonials.yml');
 const trustData = loadYaml<TrustData>('homepage/trust.yml');
@@ -55,20 +55,20 @@ const projects = projectEntries.map((entry) => ({
 
   <HeroSection client:load data={heroData} />
 
-  <MarqueeBand client:load data={marqueeData} />
-
   <MissionStrip client:load data={missionData} />
 
   <ProjectsGrid client:load projects={projects} />
 
   <IntegrationsSection client:load data={integrationsData} />
 
-  <TestimonialsSection client:load data={testimonialsData} trustData={trustData} />
+  <TestimonialsSection client:load data={testimonialsData} />
+
+  <InstitutionsSection client:load data={trustData} />
 
   <EnhancedCTA client:load data={ctaData} />
 
   {/* Homepage footer section — snap target so users can reach the footer */}
-  <section class="relative flex min-h-[60dvh] flex-col justify-center snap-section">
+  <section class="relative flex min-h-[60dvh] flex-col justify-center overflow-hidden snap-section">
     {/* Large ambient radial glow — much more visible */}
     <div
       class="absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.08] blur-3xl"

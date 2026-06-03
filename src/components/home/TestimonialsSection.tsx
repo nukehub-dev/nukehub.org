@@ -5,17 +5,16 @@ import { viewportOnce } from '@lib/animations';
 
 import { TestimonialsCanvas } from '@components/three/TestimonialsCanvas';
 import { TestimonialCarousel } from './TestimonialCarousel';
-import type { TestimonialsData, TrustData } from '../../types/homepage';
+import type { TestimonialsData } from '../../types/homepage';
 
 interface TestimonialsSectionProps {
   data: TestimonialsData;
-  trustData?: TrustData;
 }
 
 /* ------------------------------------------------------------------ */
 // Section
 /* ------------------------------------------------------------------ */
-export function TestimonialsSection({ data, trustData }: TestimonialsSectionProps) {
+export function TestimonialsSection({ data }: TestimonialsSectionProps) {
   const { sectionTitle, sectionSubtitle, badge, testimonials } = data;
 
   return (
@@ -67,35 +66,6 @@ export function TestimonialsSection({ data, trustData }: TestimonialsSectionProp
 
         {/* 3D Carousel */}
         <TestimonialCarousel testimonials={testimonials} />
-
-        {/* Trust logos */}
-        {trustData && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-20 pt-12"
-          >
-            <p className="mb-8 text-center text-sm font-semibold uppercase tracking-[0.15em] text-muted-foreground/70 dark:text-muted-foreground/90">
-              {trustData.sectionTitle}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-16">
-              {trustData.institutions.map((inst, i) => (
-                <motion.div
-                  key={inst}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={viewportOnce}
-                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.215, 0.61, 0.355, 1] }}
-                  className="text-lg font-bold tracking-tight text-muted-foreground/40 transition-all duration-500 hover:scale-105 hover:text-foreground dark:text-muted-foreground/60 dark:hover:text-foreground sm:text-xl"
-                >
-                  {inst}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
       </div>
     </section>
   );

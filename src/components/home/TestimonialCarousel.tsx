@@ -11,7 +11,7 @@ interface TestimonialCarouselProps {
 /* ------------------------------------------------------------------ */
 // 3D position values for each card based on offset from active index
 /* ------------------------------------------------------------------ */
-function getCardTransform(offset: number) {
+function getCardTransform(offset: number, isMobile = false) {
   const absOffset = Math.abs(offset);
 
   if (absOffset > 2) {
@@ -29,8 +29,10 @@ function getCardTransform(offset: number) {
   }
 
   const dir = offset > 0 ? 1 : -1;
+  const baseX = isMobile ? 170 : 240;
+  const stepX = isMobile ? 120 : 180;
   return {
-    x: dir * (240 + (absOffset - 1) * 180),
+    x: dir * (baseX + (absOffset - 1) * stepX),
     rotateY: dir * -32 * absOffset,
     scale: 1 - absOffset * 0.14,
     opacity: 1 - absOffset * 0.4,
@@ -45,21 +47,21 @@ function CarouselCard({
   testimonial,
   offset,
   onClick,
+  isMobile,
 }: {
   testimonial: TestimonialsData['testimonials'][0];
   offset: number;
   onClick: () => void;
+  isMobile: boolean;
 }) {
   const isActive = offset === 0;
-  const t = getCardTransform(offset);
+  const t = getCardTransform(offset, isMobile);
 
   return (
     <div
       onClick={onClick}
-      className="absolute left-1/2 top-1/2 w-[320px] cursor-pointer sm:w-[400px]"
+      className="absolute left-1/2 top-1/2 -ml-[42.5vw] -mt-[190px] w-[85vw] cursor-pointer sm:w-[400px] sm:-ml-[200px] sm:-mt-[200px]"
       style={{
-        marginLeft: '-160px',
-        marginTop: '-200px',
         zIndex: t.zIndex,
         transform: `translateX(${t.x}px) rotateY(${t.rotateY}deg) scale(${t.scale})`,
         opacity: t.opacity,
@@ -70,7 +72,7 @@ function CarouselCard({
       }}
     >
       <div
-        className={`bubble relative flex h-[400px] flex-col overflow-hidden rounded-2xl border bg-card/60 transition-all duration-500 ${
+        className={`bubble relative flex h-[380px] flex-col overflow-hidden rounded-2xl border bg-card/60 transition-all duration-500 sm:h-[400px] ${
           isActive
             ? 'border-border/60 shadow-2xl shadow-primary/[0.06]'
             : 'border-border/30 shadow-lg'
@@ -121,8 +123,17 @@ function CarouselCard({
 export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const autoPlayRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const touchStartX = useRef(0);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const goTo = useCallback(
     (index: number) => {
@@ -167,7 +178,7 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
     >
       {/* 3D Stage */}
       <div
-        className="relative mx-auto h-[440px] sm:h-[460px]"
+        className="relative mx-auto h-[420px] sm:h-[460px]"
         style={{ perspective: '1400px' }}
       >
         <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d' }}>
@@ -179,23 +190,24 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
                 testimonial={t}
                 offset={offset}
                 onClick={() => goTo(i)}
+                isMobile={isMobile}
               />
             );
           })}
         </div>
       </div>
 
-      {/* Navigation arrows */}
+      {/* Navigation arrows — hidden on mobile (swipe + dots are enough) */}
       <button
         onClick={goPrev}
-        className="absolute left-1 top-1/2 z-20 -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:left-0"
+        className="absolute left-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:block sm:left-4 lg:-left-14"
         aria-label="Previous"
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
       <button
         onClick={goNext}
-        className="absolute right-1 top-1/2 z-20 -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:right-0"
+        className="absolute right-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:block sm:right-4 lg:-right-14"
         aria-label="Next"
       >
         <ChevronRight className="h-5 w-5" />

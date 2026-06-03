@@ -111,7 +111,7 @@ export function HeroCanvas() {
       <StaticFallback />
       {hasLoaded && shouldRender && (
         <Suspense fallback={<CanvasLoader />}>
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 animate-fade-in">
             <NucleusScene
               mobile={isMobile}
               reducedMotion={reducedMotion}

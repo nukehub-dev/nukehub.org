@@ -122,6 +122,7 @@
     color: var(--foreground);
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
@@ -358,14 +359,6 @@
       0 8px 24px oklch(0 0 0 / 0.06);
   }
 
-  .bubble-outline {
-    background:
-      linear-gradient(var(--glass-base, var(--bg-surface)), var(--glass-base, var(--bg-surface))) padding-box,
-      linear-gradient(135deg, color-mix(in oklch, var(--glass-tint, var(--primary)) 28%, transparent), transparent 60%) border-box;
-    border: 1px solid transparent;
-    border-radius: var(--radius-lg);
-  }
-
   .hover-lift {
     transition: transform 200ms ease, box-shadow 200ms ease;
   }
@@ -374,23 +367,8 @@
     transform: translateY(-2px) translateZ(0);
   }
 
-  .shimmer {
-    background: linear-gradient(
-      90deg,
-      var(--muted) 25%,
-      color-mix(in oklch, var(--muted) 70%, var(--background)) 50%,
-      var(--muted) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
   .live-pulse {
     animation: live-pulse 2s ease-in-out infinite;
-  }
-
-  .blob-float {
-    animation: blob-float-1 20s ease-in-out infinite;
   }
 }
 
@@ -422,42 +400,12 @@
 }
 
 /* Keyframes */
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 @keyframes live-pulse {
   0%, 100% {
     box-shadow: 0 0 0 0 color-mix(in oklch, var(--primary) 40%, transparent);
   }
   50% {
     box-shadow: 0 0 0 8px color-mix(in oklch, var(--primary) 0%, transparent);
-  }
-}
-
-@keyframes blob-float-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-}
-
-@keyframes cta-float {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
-    opacity: 0.2;
-  }
-  25% {
-    transform: translateY(-20px) translateX(10px);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateY(-10px) translateX(-10px);
-    opacity: 0.3;
-  }
-  75% {
-    transform: translateY(-30px) translateX(5px);
-    opacity: 0.4;
   }
 }
 
@@ -807,25 +755,6 @@ input[type="number"] {
    Cinematic Enhancements
    ========================================================================== */
 
-/* Marquee */
-@keyframes marquee {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
-
-@keyframes marquee-reverse {
-  from { transform: translate3d(-50%, 0, 0); }
-  to { transform: translate3d(0, 0, 0); }
-}
-
-.animate-marquee {
-  animation: marquee 40s linear infinite;
-}
-
-.animate-marquee-reverse {
-  animation: marquee-reverse 40s linear infinite;
-}
-
 /* Text reveal perspective */
 .perspective-text {
   perspective: 1000px;
@@ -841,12 +770,6 @@ input[type="number"] {
   animation: float-gentle 4s ease-in-out infinite;
 }
 
-/* Vignette utility */
-.vignette {
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black 30%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black 30%, transparent 100%);
-}
-
 /* Typewriter cursor blink */
 @keyframes blink {
   0%, 100% { opacity: 1; }
@@ -857,18 +780,6 @@ input[type="number"] {
   animation: blink 1s step-end infinite;
 }
 
-/* Scroll indicator line draw */
-@keyframes line-draw {
-  0% { transform: scaleY(0); transform-origin: top; }
-  50% { transform: scaleY(1); transform-origin: top; }
-  51% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
-}
-
-.animate-line-draw {
-  animation: line-draw 2s ease-in-out infinite;
-}
-
 /* Submenu fade-in animation */
 @keyframes cmFadeIn {
   from { opacity: 0; transform: translateX(-6px) scale(0.98); }
@@ -876,16 +787,32 @@ input[type="number"] {
 }
 
 /* ==========================================================================
-   Section scroll snap — full-height canvas sections snap into view
+   Canvas fade-in — smooth transition when 3D scene lazy-loads
    ========================================================================== */
 
-html {
-  scroll-behavior: smooth;
+@keyframes fade-in {
+  0%   { opacity: 0; }
+  30%  { opacity: 0; }
+  100% { opacity: 1; }
 }
 
+.animate-fade-in {
+  animation: fade-in 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ==========================================================================
+   Section scroll snap — full-height canvas sections snap into view
+   (desktop only; disabled on mobile for smooth native scrolling)
+   ========================================================================== */
+
 html.homepage {
-  scroll-snap-type: y mandatory;
   scroll-padding-top: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  html.homepage {
+    scroll-snap-type: y mandatory;
+  }
 }
 
 .snap-section {
