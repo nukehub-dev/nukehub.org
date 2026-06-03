@@ -5,6 +5,7 @@ import { Footer } from '@components/layout/Footer';
 import { ScrollProgress } from '@components/shared/ScrollProgress';
 import { CustomCursor } from '@components/shared/CustomCursor';
 import { GlobalContextMenu } from '@components/shared/GlobalContextMenu';
+import { PerformanceMonitor } from '@components/shared/PerformanceMonitor';
 import GrainOverlay from '@components/shared/GrainOverlay.astro';
 
 interface Props {
@@ -121,6 +122,7 @@ const canonicalUrl = `${siteUrl}${permalink}`;
     <ScrollProgress client:load />
     <CustomCursor client:load />
     <GlobalContextMenu client:load />
+    <PerformanceMonitor client:load />
     <GrainOverlay />
 
     <Header client:load />
