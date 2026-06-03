@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
-import { useCanvasVisibility } from './useCanvasVisibility';
+import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const NebulaScene = lazy(() =>
   import('./NebulaScene').then((mod) => ({ default: mod.NebulaScene }))
@@ -42,6 +42,7 @@ export function TestimonialsCanvas() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const isVisible = useCanvasVisibility('testimonials-canvas-anchor');
+  const shouldRender = useDelayedUnmount(isVisible, 3000);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -75,7 +76,7 @@ export function TestimonialsCanvas() {
   return (
     <div className="absolute inset-0" id="testimonials-canvas-anchor">
       <StaticFallback />
-      {hasLoaded && (
+      {hasLoaded && shouldRender && (
         <Suspense fallback={null}>
           <div className="absolute inset-0">
             <NebulaScene isVisible={isVisible} />

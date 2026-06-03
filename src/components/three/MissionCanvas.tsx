@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
-import { useCanvasVisibility } from './useCanvasVisibility';
+import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const ReactorCoreScene = lazy(() =>
   import('./ReactorCore').then((mod) => ({ default: mod.ReactorCoreScene }))
@@ -41,6 +41,7 @@ export function MissionCanvas() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const isVisible = useCanvasVisibility('mission-canvas-anchor');
+  const shouldRender = useDelayedUnmount(isVisible, 3000);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -74,7 +75,7 @@ export function MissionCanvas() {
   return (
     <div className="absolute inset-0" id="mission-canvas-anchor">
       <StaticFallback />
-      {hasLoaded && (
+      {hasLoaded && shouldRender && (
         <Suspense fallback={null}>
           <div className="absolute inset-0">
             <ReactorCoreScene isVisible={isVisible} />

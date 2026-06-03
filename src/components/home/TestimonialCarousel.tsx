@@ -70,7 +70,7 @@ function CarouselCard({
       }}
     >
       <div
-        className={`bubble relative flex h-[400px] flex-col overflow-hidden rounded-2xl border backdrop-blur-xl transition-all duration-500 ${
+        className={`bubble relative flex h-[400px] flex-col overflow-hidden rounded-2xl border bg-card/60 transition-all duration-500 ${
           isActive
             ? 'border-border/60 shadow-2xl shadow-primary/[0.06]'
             : 'border-border/30 shadow-lg'

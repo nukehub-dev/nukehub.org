@@ -8,6 +8,9 @@ interface VisibilityState {
 /**
  * Tracks both viewport intersection and tab visibility.
  * Returns true only when the element is in the viewport AND the tab is active.
+ *
+ * Default rootMargin is '-20%' so canvases stop rendering before they're
+ * fully scrolled out of view, reducing simultaneous active WebGL contexts.
  */
 export function useCanvasVisibility(
   anchorId: string,
@@ -31,7 +34,7 @@ export function useCanvasVisibility(
         setState((s) => ({ ...s, inViewport: entry.isIntersecting }));
       },
       {
-        rootMargin: options?.rootMargin ?? '0px',
+        rootMargin: options?.rootMargin ?? '-20%',
         threshold: options?.threshold ?? 0,
       }
     );
@@ -49,4 +52,35 @@ export function useCanvasVisibility(
   }, [anchorId, options?.rootMargin, options?.threshold]);
 
   return state.inViewport && state.tabActive;
+}
+
+/**
+ * Delays unmounting by `delayMs` after `visible` becomes false.
+ * Useful for WebGL canvases so they don't flash when quickly scrolling past.
+ */
+export function useDelayedUnmount(visible: boolean, delayMs = 3000): boolean {
+  const [shouldRender, setShouldRender] = useState(visible);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (visible) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      setShouldRender(true);
+    } else {
+      timerRef.current = setTimeout(() => {
+        setShouldRender(false);
+      }, delayMs);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [visible, delayMs]);
+
+  return shouldRender;
 }

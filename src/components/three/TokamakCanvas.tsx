@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
-import { useCanvasVisibility } from './useCanvasVisibility';
+import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const TokamakScene = lazy(() =>
   import('./TokamakScene').then((mod) => ({ default: mod.TokamakScene }))
@@ -34,6 +34,7 @@ export function TokamakCanvas() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const isVisible = useCanvasVisibility('tech-canvas-anchor');
+  const shouldRender = useDelayedUnmount(isVisible, 3000);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -75,7 +76,7 @@ export function TokamakCanvas() {
   return (
     <div className="absolute inset-0" id="tech-canvas-anchor">
       <StaticFallback />
-      {hasLoaded && (
+      {hasLoaded && shouldRender && (
         <Suspense fallback={null}>
           <div className="absolute inset-0">
             <TokamakScene isVisible={isVisible} mobile={isMobile} reducedMotion={reducedMotion} />

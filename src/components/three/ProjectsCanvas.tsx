@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { getPrimaryColor } from '@lib/themeColors';
-import { useCanvasVisibility } from './useCanvasVisibility';
+import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const ShowcaseScene = lazy(() =>
   import('./ProjectEmblems').then((mod) => ({ default: mod.ShowcaseScene }))
@@ -34,6 +34,7 @@ export function ProjectsCanvas() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const isVisible = useCanvasVisibility('projects-canvas-anchor');
+  const shouldRender = useDelayedUnmount(isVisible, 3000);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -65,7 +66,7 @@ export function ProjectsCanvas() {
   return (
     <div className="absolute inset-0" id="projects-canvas-anchor">
       <StaticFallback />
-      {hasLoaded && (
+      {hasLoaded && shouldRender && (
         <Suspense fallback={null}>
           <div className="absolute inset-0">
             <Canvas

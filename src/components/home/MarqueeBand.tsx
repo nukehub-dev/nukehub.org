@@ -20,7 +20,7 @@ function MarqueeRow({ items, reverse = false, speed = 40 }: { items: string[]; r
 
   return (
     <div
-      className={`flex w-max ${reverse ? 'animate-marquee-reverse' : 'animate-marquee'}`}
+      className={`flex w-max will-change-transform ${reverse ? 'animate-marquee-reverse' : 'animate-marquee'}`}
       style={{ animationDuration: `${speed}s` }}
     >
       <div className="flex shrink-0">{content}</div>

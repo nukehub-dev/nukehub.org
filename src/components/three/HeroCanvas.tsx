@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
-import { useCanvasVisibility } from './useCanvasVisibility';
+import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const NucleusScene = lazy(() =>
   import('./NucleusScene').then((mod) => ({ default: mod.NucleusScene }))
@@ -61,6 +61,7 @@ export function HeroCanvas() {
   const [isMobile, setIsMobile] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const isVisible = useCanvasVisibility('hero-canvas-anchor');
+  const shouldRender = useDelayedUnmount(isVisible, 3000);
 
   useEffect(() => {
     // Check prefers-reduced-motion
@@ -108,7 +109,7 @@ export function HeroCanvas() {
   return (
     <div className="absolute inset-0" id="hero-canvas-anchor">
       <StaticFallback />
-      {hasLoaded && (
+      {hasLoaded && shouldRender && (
         <Suspense fallback={<CanvasLoader />}>
           <div className="absolute inset-0">
             <NucleusScene

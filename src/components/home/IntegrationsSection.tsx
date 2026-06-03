@@ -81,7 +81,7 @@ export function IntegrationsSection({ data }: IntegrationsSectionProps) {
               }}
               className="group"
             >
-              <div className="relative overflow-hidden rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-md shadow-black/[0.04] transition-all duration-500 hover:-translate-y-1 hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/[0.08] dark:border-border/30 dark:bg-card/50 dark:shadow-sm dark:backdrop-blur-xl dark:hover:border-primary/25 dark:hover:bg-card/70 dark:hover:shadow-xl dark:hover:shadow-primary/[0.06] sm:text-base sm:px-8 sm:py-3.5">
+              <div className="relative overflow-hidden rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-md shadow-black/[0.04] transition-all duration-500 hover:-translate-y-1 hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/[0.08] dark:border-border/30 dark:bg-card/50 dark:shadow-sm dark:hover:border-primary/25 dark:hover:bg-card/70 dark:hover:shadow-xl dark:hover:shadow-primary/[0.06] sm:text-base sm:px-8 sm:py-3.5">
                 {/* Top edge glow */}
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:via-primary/20" />
 
