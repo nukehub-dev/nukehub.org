@@ -19,7 +19,7 @@ export function TestimonialsSection({ data, trustData }: TestimonialsSectionProp
   const { sectionTitle, sectionSubtitle, badge, testimonials } = data;
 
   return (
-    <section className="relative isolate overflow-hidden px-4 py-24 sm:py-32">
+    <section className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section">
       {/* Three.js ambient background with edge fade */}
       <div
         className="absolute inset-0 -z-10"

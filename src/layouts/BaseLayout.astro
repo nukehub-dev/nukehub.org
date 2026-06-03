@@ -14,6 +14,9 @@ interface Props {
   keywords?: string;
   permalink?: string;
   image?: string;
+  bodyClass?: string;
+  htmlClass?: string;
+  showFooter?: boolean;
 }
 
 const {
@@ -22,6 +25,9 @@ const {
   keywords = 'nukehub, nuclear, technology, science, open source, innovation, collaboration, community, simulation',
   permalink = '/',
   image = '/assets/images/nukehub.png',
+  bodyClass,
+  htmlClass,
+  showFooter = true,
 } = Astro.props;
 
 const siteUrl = 'https://nukehub.org';
@@ -30,7 +36,7 @@ const canonicalUrl = `${siteUrl}${permalink}`;
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class={htmlClass || ''}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -118,7 +124,7 @@ const canonicalUrl = `${siteUrl}${permalink}`;
     </script>
   </head>
 
-  <body class="min-h-screen flex flex-col">
+  <body class={`min-h-screen flex flex-col ${bodyClass || ''}`}>
     <ScrollProgress client:load />
     <CustomCursor client:load />
     <GlobalContextMenu client:load />
@@ -131,7 +137,7 @@ const canonicalUrl = `${siteUrl}${permalink}`;
       <slot />
     </main>
 
-    <Footer />
+    {showFooter && <Footer />}
 
     <!-- Scroll to top -->
     <button

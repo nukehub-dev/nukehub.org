@@ -7,9 +7,9 @@ import { IntegrationsSection } from '@components/home/IntegrationsSection';
 import { EnhancedCTA } from '@components/home/EnhancedCTA';
 import { MarqueeBand } from '@components/home/MarqueeBand';
 import { TestimonialsSection } from '@components/home/TestimonialsSection';
-import { SmoothScroll } from '@components/shared/SmoothScroll';
 import { PageLoader } from '@components/shared/PageLoader';
-import { HeroStatsBand } from '@components/home/HeroStatsBand';
+import { Footer } from '@components/layout/Footer';
+
 import { loadYaml } from '@lib/loadYaml';
 import { getCollection } from 'astro:content';
 import type {
@@ -48,13 +48,12 @@ const projects = projectEntries.map((entry) => ({
   description="NukeHub is a pioneering platform dedicated to the exploration and advancement of nuclear technology."
   keywords="nukehub, nuclear, technology, science, open source, innovation, collaboration, community, simulation, discussions"
   permalink="/"
+  htmlClass="homepage"
+  showFooter={false}
 >
-  <SmoothScroll client:load />
   <PageLoader client:load />
 
   <HeroSection client:load data={heroData} />
-
-  <HeroStatsBand client:load stats={heroData.stats} />
 
   <MarqueeBand client:load data={marqueeData} />
 
@@ -67,4 +66,37 @@ const projects = projectEntries.map((entry) => ({
   <TestimonialsSection client:load data={testimonialsData} trustData={trustData} />
 
   <EnhancedCTA client:load data={ctaData} />
+
+  {/* Homepage footer section — snap target so users can reach the footer */}
+  <section class="relative flex min-h-[60dvh] flex-col justify-center snap-section">
+    {/* Large ambient radial glow — much more visible */}
+    <div
+      class="absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.08] blur-3xl"
+      style={{ background: 'radial-gradient(circle, var(--primary) 0%, transparent 60%)' }}
+    />
+
+    {/* Secondary smaller glow */}
+    <div
+      class="absolute right-1/4 top-1/3 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.05] blur-3xl"
+      style={{ background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)' }}
+    />
+
+    {/* Visible dot grid pattern */}
+    <div
+      class="absolute inset-0 -z-10 opacity-[0.03]"
+      style={{
+        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)`,
+        backgroundSize: '48px 48px',
+      }}
+    />
+
+    {/* Giant watermark — positioned above footer content so it doesn't get cut */}
+    <div class="pointer-events-none absolute top-0 left-0 right-0 h-[45%] flex items-end justify-center">
+      <span class="select-none text-[16vw] font-black leading-none text-foreground/[0.01] tracking-tighter whitespace-nowrap translate-y-1/3">
+        NukeHub
+      </span>
+    </div>
+
+    <Footer />
+  </section>
 </BaseLayout>

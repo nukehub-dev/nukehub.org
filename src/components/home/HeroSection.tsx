@@ -4,6 +4,7 @@ import { HeroCanvas } from '@components/three/HeroCanvas';
 import { ScrollIndicator } from '@components/shared/ScrollIndicator';
 import { SplitText } from '@components/shared/SplitText';
 import { MagneticButton } from '@components/shared/MagneticButton';
+import { HeroStatCard } from './HeroStatCard';
 import { getIcon } from '@lib/icons';
 import type { HeroData } from '../../types/homepage';
 
@@ -12,10 +13,10 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ data }: HeroSectionProps) {
-  const { badge, headline, subtitle, ctas } = data;
+  const { badge, headline, subtitle, ctas, stats } = data;
 
   return (
-    <section className="relative isolate flex min-h-[85dvh] flex-col items-center justify-center overflow-hidden px-4 pt-32 sm:pt-36 lg:pt-40">
+    <section className="relative isolate flex min-h-[100dvh] flex-col overflow-hidden px-4 snap-section">
       {/* 3D Canvas Background — subtle in light mode, full in dark mode */}
       <div className="absolute inset-0 -z-20 opacity-[0.28] dark:opacity-100 transition-opacity duration-700">
         <HeroCanvas />
@@ -27,8 +28,8 @@ export function HeroSection({ data }: HeroSectionProps) {
       {/* Bottom fade for text readability */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/90 to-transparent" />
 
-      {/* Content */}
-      <div className="relative mx-auto w-full max-w-6xl">
+      {/* Main Content */}
+      <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center pt-24 sm:pt-28 lg:pt-32">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -99,6 +100,28 @@ export function HeroSection({ data }: HeroSectionProps) {
           <div className="mt-6">
             <ScrollIndicator />
           </div>
+        </motion.div>
+      </div>
+
+      {/* Stats Row */}
+      <div className="relative mx-auto w-full max-w-6xl pb-8 sm:pb-12">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          variants={staggerContainer}
+          className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4"
+        >
+          {stats.map((stat, i) => (
+            <HeroStatCard
+              key={stat.label}
+              iconName={stat.icon}
+              value={stat.value}
+              numericValue={stat.numericValue}
+              label={stat.label}
+              index={i}
+            />
+          ))}
         </motion.div>
       </div>
     </section>

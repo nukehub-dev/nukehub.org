@@ -12,7 +12,7 @@ export function IntegrationsSection({ data }: IntegrationsSectionProps) {
 
   return (
     <section
-      className="relative isolate overflow-hidden px-4 py-40 sm:py-52 lg:py-64"
+      className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section"
       style={{
         maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
         WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',

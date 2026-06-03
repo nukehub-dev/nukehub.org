@@ -15,7 +15,7 @@ export function EnhancedCTA({ data }: EnhancedCTAProps) {
 
   return (
     <section
-      className="relative overflow-hidden px-4 py-24 sm:py-32"
+      className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section"
       style={{
         maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
         WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
@@ -33,6 +33,9 @@ export function EnhancedCTA({ data }: EnhancedCTAProps) {
           background: `radial-gradient(ellipse 80% 60% at 50% 50%, color-mix(in oklch, var(--primary) 8%, transparent) 0%, transparent 70%)`,
         }}
       />
+
+      {/* Bottom fade to prevent canvas bleeding into footer */}
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent -z-10" />
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}

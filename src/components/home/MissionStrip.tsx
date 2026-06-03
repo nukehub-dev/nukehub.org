@@ -95,7 +95,7 @@ export function MissionStrip({ data }: MissionStripProps) {
 
   return (
     <section
-      className="relative isolate overflow-hidden px-4 py-24 sm:py-32"
+      className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section"
       style={{
         maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
         WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
