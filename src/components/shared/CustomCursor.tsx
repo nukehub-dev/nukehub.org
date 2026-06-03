@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react';
 import { motion, useSpring } from 'framer-motion';
 
+/*
+  Cursor is rendered at 2× size and scaled down with CSS.
+  This eliminates sub-pixel border artifacts on the circular rings,
+  giving perfectly smooth, retina-crisp edges.
+*/
+const R = 0.5; // scale factor
+
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -86,17 +93,22 @@ export function CustomCursor() {
           translateX: '-50%',
           translateY: '-50%',
           mixBlendMode: 'difference',
+          willChange: 'transform',
         }}
       >
-        <motion.div
-          className="rounded-full border border-white"
-          animate={{
-            width: isHovering ? 72 : 52,
-            height: isHovering ? 72 : 52,
-            opacity: isClicking ? 0.06 : 0.12,
-          }}
-          transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.6 }}
-        />
+        {/* 2× render + scale down = crisp anti-aliased edges */}
+        <div style={{ transform: `scale(${R})`, transformOrigin: 'center center' }}>
+          <motion.div
+            className="rounded-full"
+            style={{ border: '2px solid white' }}
+            animate={{
+              width: isHovering ? 144 : 104,
+              height: isHovering ? 144 : 104,
+              opacity: isClicking ? 0.06 : 0.12,
+            }}
+            transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.6 }}
+          />
+        </div>
       </motion.div>
 
       {/* ── Main cursor (front layer) ── */}
@@ -108,68 +120,69 @@ export function CustomCursor() {
           translateX: '-50%',
           translateY: '-50%',
           mixBlendMode: 'difference',
+          willChange: 'transform',
         }}
       >
-        {/* Soft radial glow – creates ambient depth */}
-        <motion.div
-          className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            background: 'radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)',
-          }}
-          animate={{
-            width: isHovering ? 88 : 64,
-            height: isHovering ? 88 : 64,
-            opacity: isClicking ? 0.25 : isHovering ? 0.55 : 0.4,
-          }}
-          transition={{ type: 'spring', stiffness: 180, damping: 18, mass: 0.5 }}
-        />
+        <div style={{ transform: `scale(${R})`, transformOrigin: 'center center' }}>
+          {/* Soft radial glow – creates ambient depth */}
+          <motion.div
+            className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              background: 'radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)',
+            }}
+            animate={{
+              width: isHovering ? 176 : 128,
+              height: isHovering ? 176 : 128,
+              opacity: isClicking ? 0.25 : isHovering ? 0.55 : 0.4,
+            }}
+            transition={{ type: 'spring', stiffness: 180, damping: 18, mass: 0.5 }}
+          />
 
-        {/* Primary 3D glass ring */}
-        <motion.div
-          className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            border: '1.5px solid rgba(255,255,255,0.9)',
-            boxShadow:
-              '0 0 0 1px rgba(255,255,255,0.12), ' +
-              '0 0 24px 3px rgba(255,255,255,0.15), ' +
-              'inset 0 0 12px rgba(255,255,255,0.08)',
-          }}
-          animate={{
-            width: isHovering ? 48 : 32,
-            height: isHovering ? 48 : 32,
-            opacity: isClicking ? 0.5 : 0.9,
-          }}
-          transition={{ type: 'spring', stiffness: 280, damping: 22, mass: 0.5 }}
-        />
+          {/* Primary 3D glass ring */}
+          <motion.div
+            className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              border: '3px solid rgba(255,255,255,0.9)',
+              boxShadow:
+                '0 0 0 2px rgba(255,255,255,0.12), ' +
+                '0 0 48px 6px rgba(255,255,255,0.15), ' +
+                'inset 0 0 24px rgba(255,255,255,0.08)',
+            }}
+            animate={{
+              width: isHovering ? 96 : 64,
+              height: isHovering ? 96 : 64,
+              opacity: isClicking ? 0.5 : 0.9,
+            }}
+            transition={{ type: 'spring', stiffness: 280, damping: 22, mass: 0.5 }}
+          />
 
-        {/* Inner precision ring */}
-        <motion.div
-          className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            border: '1px solid rgba(255,255,255,0.55)',
-          }}
-          animate={{
-            width: isHovering ? 20 : 14,
-            height: isHovering ? 20 : 14,
-            opacity: isClicking ? 0.5 : 0.85,
-          }}
-          transition={{ type: 'spring', stiffness: 320, damping: 22, mass: 0.5 }}
-        />
+          {/* Inner precision ring */}
+          <motion.div
+            className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ border: '2px solid rgba(255,255,255,0.55)' }}
+            animate={{
+              width: isHovering ? 40 : 28,
+              height: isHovering ? 40 : 28,
+              opacity: isClicking ? 0.5 : 0.85,
+            }}
+            transition={{ type: 'spring', stiffness: 320, damping: 22, mass: 0.5 }}
+          />
 
-        {/* Glowing core dot */}
-        <motion.div
-          className="rounded-full bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            boxShadow:
-              '0 0 8px 3px rgba(255,255,255,0.55), ' +
-              '0 0 18px 7px rgba(255,255,255,0.28)',
-          }}
-          animate={{
-            width: isClicking ? 4 : isHovering ? 2 : 4,
-            height: isClicking ? 4 : isHovering ? 2 : 4,
-          }}
-          transition={{ type: 'spring', stiffness: 400, damping: 20, mass: 0.5 }}
-        />
+          {/* Glowing core dot */}
+          <motion.div
+            className="rounded-full bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              boxShadow:
+                '0 0 16px 6px rgba(255,255,255,0.55), ' +
+                '0 0 36px 14px rgba(255,255,255,0.28)',
+            }}
+            animate={{
+              width: isClicking ? 8 : isHovering ? 4 : 8,
+              height: isClicking ? 8 : isHovering ? 4 : 8,
+            }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20, mass: 0.5 }}
+          />
+        </div>
       </motion.div>
     </>
   );
