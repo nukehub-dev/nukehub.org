@@ -103,18 +103,14 @@ export function SponsorshipTiers({ tiers }: Props) {
               >
                 {/* Glow backdrop for featured */}
                 {t.featured && (
-                  <motion.div
-                    className="absolute -inset-1 rounded-2xl bg-primary/20 blur-xl"
-                    animate={{ opacity: [0.4, 0.7, 0.4] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                  />
+                  <div className="absolute -inset-1 rounded-2xl bg-primary/20 animate-pulse-slow" />
                 )}
 
                 {/* Card */}
                 <div
-                  className={`relative flex flex-col h-full overflow-hidden rounded-2xl border border-border ${cfg.topBorder} border-t-[3px] bg-gradient-to-b ${cfg.fromColor} to-card backdrop-blur-sm transition-shadow duration-500 ${
+                  className={`relative flex flex-col h-full overflow-hidden rounded-2xl border border-border ${cfg.topBorder} border-t-[3px] bg-gradient-to-b ${cfg.fromColor} to-card transition-all duration-500 ${
                     t.featured
-                      ? 'shadow-2xl shadow-primary/15'
+                      ? 'shadow-2xl shadow-primary/20 hover:shadow-primary/60 hover:ring-1 hover:ring-primary/20'
                       : `hover:shadow-xl ${cfg.glowColor}`
                   }`}
                 >
@@ -170,7 +166,7 @@ export function SponsorshipTiers({ tiers }: Props) {
                         href={t.href}
                         className={`flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-nowrap transition-all duration-200 ${
                           t.featured
-                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98]'
+                            ? 'border border-primary/30 bg-primary/10 text-primary shadow-sm hover:bg-primary/15 hover:shadow-md active:scale-[0.98] dark:border-primary/50 dark:bg-primary dark:text-primary-foreground dark:shadow-lg dark:shadow-primary/25 dark:hover:bg-primary/90 dark:hover:shadow-xl dark:hover:shadow-primary/40'
                             : `border ${cfg.btnBorder} bg-transparent text-foreground ${cfg.btnHover} active:scale-[0.98]`
                         }`}
                       >

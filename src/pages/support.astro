@@ -1,9 +1,16 @@
 ---
-import PageLayout from '@layouts/PageLayout.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
 import { ImpactSection } from '@components/support/ImpactSection';
 import { SupportMethods } from '@components/support/SupportMethods';
 import { SponsorshipTiers } from '@components/support/SponsorshipTiers';
 import { ContactCTA } from '@components/support/ContactCTA';
+import { SupportBackground } from '@components/support/SupportBackground';
+import { FloatingShapes } from '@components/support/decorations/FloatingShapes';
+
+
+import { FloatingHexagons } from '@components/support/decorations/FloatingHexagons';
+import { AtomicLattice } from '@components/support/decorations/AtomicLattice';
+import { SingularityAura } from '@components/support/decorations/SingularityAura';
 import { getEntry } from 'astro:content';
 import * as Icons from 'lucide-react';
 
@@ -13,38 +20,70 @@ if (!entry) {
 }
 
 const data = entry.data;
-
-// Resolve hero icon dynamically
-const HeroIcon = (Icons as Record<string, React.ComponentType<{ size?: number }>>)['Heart'];
 ---
 
-<PageLayout
+<BaseLayout
   title={data.hero.title}
   description={data.hero.description}
+  permalink="/support"
 >
-  <div class="mx-auto max-w-6xl px-4">
-    {/* Hero */}
-    <div class="pt-16 pb-10 text-center">
-      <div class="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-3 text-primary mb-6">
-        <Icons.Heart size={28} />
+  {/* Single seamless Three.js background for entire page */}
+  <SupportBackground client:load />
+
+  {/* ===== HERO ===== */}
+  <div class="relative z-10 pt-28 pb-20 text-center">
+    <FloatingShapes client:visible />
+
+    <div class="relative z-10 px-4 sm:px-0">
+      <div class="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-4 text-primary mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-heartbeat">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        </svg>
       </div>
-      <h1 class="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+      <h1 class="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
         {data.hero.title}
       </h1>
       <p class="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
         {data.hero.description}
       </p>
     </div>
-
-    <ImpactSection client:visible items={data.impacts} />
-    <SupportMethods client:visible methods={data.methods} />
-    <SponsorshipTiers client:visible tiers={data.tiers} />
-    <ContactCTA
-      client:visible
-      title={data.contact.title}
-      description={data.contact.description}
-      primaryCta={data.contact.primaryCta}
-      secondaryCta={data.contact.secondaryCta}
-    />
   </div>
-</PageLayout>
+
+  {/* ===== IMPACT ===== */}
+  <div class="relative z-10 mx-auto max-w-6xl px-4 py-8">
+    <div class="relative z-10">
+      <ImpactSection client:visible items={data.impacts} />
+    </div>
+  </div>
+
+  {/* ===== METHODS ===== */}
+  <div class="relative z-10 mx-auto max-w-6xl px-4 py-8">
+    <FloatingHexagons client:visible />
+
+    <div class="relative z-10">
+      <SupportMethods client:visible methods={data.methods} />
+    </div>
+  </div>
+
+  {/* ===== TIERS ===== */}
+  <div class="relative z-10 mx-auto max-w-6xl px-4 py-8">
+    <AtomicLattice client:visible />
+    <div class="relative z-10">
+      <SponsorshipTiers client:visible tiers={data.tiers} />
+    </div>
+  </div>
+
+  {/* ===== CTA ===== */}
+  <div class="relative z-10 py-16">
+    <SingularityAura client:visible />
+    <div class="relative z-10 mx-auto max-w-6xl px-4">
+      <ContactCTA
+        client:visible
+        title={data.contact.title}
+        description={data.contact.description}
+        primaryCta={data.contact.primaryCta}
+        secondaryCta={data.contact.secondaryCta}
+      />
+    </div>
+  </div>
+</BaseLayout>

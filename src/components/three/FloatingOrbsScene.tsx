@@ -19,9 +19,9 @@ function SoftOrbs({ primaryColor }: { primaryColor: string }) {
     const phs = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 6;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 4;
+      pos[i * 3] = (Math.random() - 0.5) * 8;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 5;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 3;
 
       vel[i * 3] = (Math.random() - 0.5) * 0.0015;
       vel[i * 3 + 1] = (Math.random() - 0.5) * 0.001;
@@ -46,9 +46,9 @@ function SoftOrbs({ primaryColor }: { primaryColor: string }) {
       positions[i * 3 + 2] += velocities[i * 3 + 2];
 
       // Soft bounce boundaries
-      if (Math.abs(positions[i * 3]) > 5) velocities[i * 3] *= -1;
-      if (Math.abs(positions[i * 3 + 1]) > 3) velocities[i * 3 + 1] *= -1;
-      if (Math.abs(positions[i * 3 + 2]) > 2) velocities[i * 3 + 2] *= -1;
+      if (Math.abs(positions[i * 3]) > 4) velocities[i * 3] *= -1;
+      if (Math.abs(positions[i * 3 + 1]) > 2.5) velocities[i * 3 + 1] *= -1;
+      if (Math.abs(positions[i * 3 + 2]) > 1.5) velocities[i * 3 + 2] *= -1;
 
       // Gentle breathing scale
       const breathe = 1 + Math.sin(t * 0.5 + phases[i]) * 0.08;
@@ -65,7 +65,7 @@ function SoftOrbs({ primaryColor }: { primaryColor: string }) {
   const orbColor = useMemo(() => {
     const c = new THREE.Color(primaryColor);
     // Mix with white for softer glow
-    return c.clone().lerp(new THREE.Color(1, 1, 1), 0.35);
+    return c.clone().lerp(new THREE.Color(1, 1, 1), 0.15);
   }, [primaryColor]);
 
   return (
@@ -74,7 +74,7 @@ function SoftOrbs({ primaryColor }: { primaryColor: string }) {
       <meshBasicMaterial
         color={orbColor}
         transparent
-        opacity={0.35}
+        opacity={0.55}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
       />

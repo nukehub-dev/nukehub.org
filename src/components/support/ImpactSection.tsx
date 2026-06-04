@@ -42,13 +42,17 @@ export function ImpactSection({ items }: Props) {
               <motion.div
                 key={item.title}
                 variants={fadeInUp}
-                className="bubble p-6 text-center transition-all duration-300 hover:-translate-y-1"
+                className="bubble-solid p-6 text-center transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group"
               >
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon size={22} />
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <div className="relative z-10">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon size={22} />
+                  </div>
+                  <h3 className="mt-4 text-base font-medium text-foreground">{item.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
                 </div>
-                <h3 className="mt-4 text-base font-medium text-foreground">{item.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
               </motion.div>
             );
           })}

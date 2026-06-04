@@ -328,14 +328,16 @@
       ),
       radial-gradient(
         120% 100% at 100% 0%,
-        color-mix(in oklch, var(--glass-base, var(--bg-surface)) 12%, transparent) 0%,
+        color-mix(in oklch, var(--glass-base, var(--bg-surface)) 15%, transparent) 0%,
         transparent 60%
       );
-    background-color: color-mix(in oklch, var(--glass-base, var(--bg-surface)) 92%, transparent);
+    background-color: color-mix(in oklch, var(--glass-base, var(--bg-surface)) 30%, transparent);
     border-radius: var(--radius-xl);
+    backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid color-mix(in oklch, var(--primary) 12%, oklch(1 0 0 / 0.06));
     box-shadow:
-      0 8px 24px -8px color-mix(in oklch, var(--glass-shadow-color) 70%, transparent),
-      0 1px 0 0 color-mix(in oklch, var(--glass-base, var(--bg-surface)) 30%, transparent) inset;
+      0 8px 32px -8px color-mix(in oklch, var(--glass-shadow-color) 50%, transparent),
+      inset 0 1px 0 0 color-mix(in oklch, var(--glass-base, var(--bg-surface)) 25%, transparent);
   }
 
   /* Light mode bubble visibility fix */
@@ -343,20 +345,20 @@
     background:
       radial-gradient(
         120% 100% at 10% 0%,
-        color-mix(in oklch, var(--glass-tint, var(--primary)) 12%, transparent) 0%,
+        color-mix(in oklch, var(--glass-tint, var(--primary)) 14%, transparent) 0%,
         transparent 60%
       ),
       radial-gradient(
         120% 100% at 100% 0%,
-        color-mix(in oklch, var(--glass-base, var(--bg-surface)) 15%, transparent) 0%,
+        color-mix(in oklch, var(--glass-base, var(--bg-surface)) 18%, transparent) 0%,
         transparent 60%
       );
-    background-color: color-mix(in oklch, var(--glass-base, var(--bg-surface)) 95%, transparent);
-    border: 1px solid color-mix(in oklch, var(--primary) 18%, oklch(0 0 0 / 0.08));
+    background-color: color-mix(in oklch, var(--glass-base, var(--bg-surface)) 28%, transparent);
+    border: 1px solid color-mix(in oklch, var(--primary) 15%, oklch(0 0 0 / 0.06));
     box-shadow:
-      0 0 0 1px oklch(0 0 0 / 0.04),
-      0 2px 8px oklch(0 0 0 / 0.05),
-      0 8px 24px oklch(0 0 0 / 0.06);
+      0 0 0 1px oklch(0 0 0 / 0.03),
+      0 2px 8px oklch(0 0 0 / 0.04),
+      0 8px 32px oklch(0 0 0 / 0.05);
   }
 
   .hover-lift {
@@ -369,6 +371,49 @@
 
   .live-pulse {
     animation: live-pulse 2s ease-in-out infinite;
+  }
+
+  /* Bubble variant without backdrop-filter — keeps transparency so the
+     background shows through, but avoids blur GPU cost and stacking-context
+     bugs (e.g. with context menus or animated WebGL canvases). */
+  .bubble-solid {
+    background:
+      radial-gradient(
+        120% 100% at 10% 0%,
+        color-mix(in oklch, var(--glass-tint, var(--primary)) 10%, transparent) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        120% 100% at 100% 0%,
+        color-mix(in oklch, var(--glass-base, var(--bg-surface)) 15%, transparent) 0%,
+        transparent 60%
+      );
+    background-color: color-mix(in oklch, var(--glass-base, var(--bg-surface)) 30%, transparent);
+    border-radius: var(--radius-xl);
+    border: 1px solid color-mix(in oklch, var(--primary) 12%, oklch(1 0 0 / 0.06));
+    box-shadow:
+      0 8px 32px -8px color-mix(in oklch, var(--glass-shadow-color) 50%, transparent),
+      inset 0 1px 0 0 color-mix(in oklch, var(--glass-base, var(--bg-surface)) 25%, transparent);
+  }
+
+  html:not([data-theme="dark"]) .bubble-solid {
+    background:
+      radial-gradient(
+        120% 100% at 10% 0%,
+        color-mix(in oklch, var(--glass-tint, var(--primary)) 14%, transparent) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        120% 100% at 100% 0%,
+        color-mix(in oklch, var(--glass-base, var(--bg-surface)) 18%, transparent) 0%,
+        transparent 60%
+      );
+    background-color: color-mix(in oklch, var(--glass-base, var(--bg-surface)) 28%, transparent);
+    border: 1px solid color-mix(in oklch, var(--primary) 15%, oklch(0 0 0 / 0.06));
+    box-shadow:
+      0 0 0 1px oklch(0 0 0 / 0.03),
+      0 2px 8px oklch(0 0 0 / 0.04),
+      0 8px 32px oklch(0 0 0 / 0.05);
   }
 }
 
@@ -407,6 +452,28 @@
   50% {
     box-shadow: 0 0 0 8px color-mix(in oklch, var(--primary) 0%, transparent);
   }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out 1;
+  transform-origin: center;
 }
 
 /* Global cursor utilities */

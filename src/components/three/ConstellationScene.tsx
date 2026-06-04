@@ -150,10 +150,10 @@ function Constellation({ primaryColor }: { primaryColor: string }) {
     <group ref={groupRef}>
       <points ref={particleRef} geometry={particleGeo}>
         <pointsMaterial
-          size={0.1}
+          size={0.18}
           vertexColors
           transparent
-          opacity={0.6}
+          opacity={0.9}
           sizeAttenuation
           blending={THREE.AdditiveBlending}
           depthWrite={false}
@@ -163,7 +163,7 @@ function Constellation({ primaryColor }: { primaryColor: string }) {
         <lineBasicMaterial
           color={primaryColor}
           transparent
-          opacity={0.05}
+          opacity={0.18}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />

@@ -44,21 +44,25 @@ export function SupportMethods({ methods }: Props) {
               <motion.div
                 key={method.title}
                 variants={fadeInUp}
-                className="bubble p-6 flex flex-col transition-all duration-300 hover:-translate-y-1"
+                className="bubble-solid p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon size={22} />
+                <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                <div className="relative z-10">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon size={22} />
+                  </div>
+                  <h3 className="mt-4 text-lg font-medium text-foreground">{method.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">
+                    {method.description}
+                  </p>
+                  <a
+                    href={method.href}
+                    className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                  >
+                    {method.cta}
+                  </a>
                 </div>
-                <h3 className="mt-4 text-lg font-medium text-foreground">{method.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">
-                  {method.description}
-                </p>
-                <a
-                  href={method.href}
-                  className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                >
-                  {method.cta}
-                </a>
               </motion.div>
             );
           })}
