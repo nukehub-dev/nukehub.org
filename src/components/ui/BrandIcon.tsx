@@ -26,7 +26,7 @@ interface BrandIconProps extends React.SVGProps<SVGSVGElement> {
     | 'orcid'
     | 'researchgate'
     | 'zotero';
-  size?: number;
+  size?: string | number;
 }
 
 const icons: Record<string, React.FC<React.SVGProps<SVGSVGElement>>> = {

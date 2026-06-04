@@ -85,7 +85,7 @@ export function PeopleGrid({ categories }: PeopleGridProps) {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <SearchInput
               value={query}
-              onChange={setQuery}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name, role, or organization..."
               className="flex-1 max-w-md"
             />

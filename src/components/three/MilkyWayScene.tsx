@@ -176,27 +176,19 @@ function GalaxyStars({
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
         <bufferAttribute
           attach="attributes-color"
-          count={count}
-          array={colors}
-          itemSize={3}
+          args={[colors, 3]}
         />
         <bufferAttribute
           attach="attributes-aSize"
-          count={count}
-          array={sizes}
-          itemSize={1}
+          args={[sizes, 1]}
         />
         <bufferAttribute
           attach="attributes-aPhase"
-          count={count}
-          array={phases}
-          itemSize={1}
+          args={[phases, 1]}
         />
       </bufferGeometry>
       <shaderMaterial

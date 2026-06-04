@@ -31,7 +31,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
             boxShadow: '0 12px 24px -8px rgba(0,0,0,0.12)',
             transition: { type: 'spring', stiffness: 300, damping: 20 },
           }}
-          {...props}
+          {...(props as any)}
         >
           {children}
         </motion.div>

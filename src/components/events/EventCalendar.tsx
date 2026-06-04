@@ -108,7 +108,7 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
 
   // Strip native title attributes from FullCalendar elements to prevent ugly browser tooltips
   React.useEffect(() => {
-    const calendarEl = calendarRef.current?.getApi()?.el;
+    const calendarEl = (calendarRef.current?.getApi() as any)?.el as HTMLElement | undefined;
     if (!calendarEl) return;
 
     const observer = new MutationObserver((mutations) => {
@@ -122,7 +122,7 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
         if (mutation.type === 'childList') {
           mutation.addedNodes.forEach((node) => {
             if (node instanceof HTMLElement) {
-              node.querySelectorAll('[title]').forEach((el) => el.removeAttribute('title'));
+              node.querySelectorAll('[title]').forEach((el: Element) => el.removeAttribute('title'));
             }
           });
         }
@@ -137,7 +137,7 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
     });
 
     // Initial cleanup
-    calendarEl.querySelectorAll('[title]').forEach((el) => el.removeAttribute('title'));
+    calendarEl.querySelectorAll('[title]').forEach((el: Element) => el.removeAttribute('title'));
 
     return () => observer.disconnect();
   }, []);
