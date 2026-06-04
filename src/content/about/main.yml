@@ -1,0 +1,88 @@
+hero:
+  title: "Advancing Nuclear Technology Together"
+  description: "NukeHub is a pioneering platform dedicated to the exploration and advancement of nuclear technology through open collaboration, education, and innovation."
+  stats:
+    - value: "15+"
+      label: "Open Source Projects"
+    - value: "100+"
+      label: "Community Members"
+    - value: "50+"
+      label: "Contributors"
+    - value: "2023"
+      label: "Founded"
+
+story:
+  title: "Our Story"
+  milestones:
+    - year: "2023"
+      title: "The Beginning"
+      description: "NukeHub was founded with a vision to make nuclear knowledge accessible to everyone. Started as a small community of nuclear enthusiasts."
+    - year: "2024"
+      title: "Community Growth"
+      description: "Expanded to include simulation tools, educational resources, and global collaboration. Launched first open-source projects."
+    - year: "2025"
+      title: "Open Source Ecosystem"
+      description: "Built a comprehensive ecosystem with NukeBox, NukeLab, and Nuke Analytics. Reached global community of contributors."
+
+mission:
+  title: "Our Mission"
+  subtitle: "Empowering the global nuclear community"
+  description: "NukeHub empowers the global nuclear community to focus on designing the clean energy systems of tomorrow by transforming months of software configuration into seconds of cloud deployment."
+  points:
+    - title: "Democratize Access"
+      description: "Make high-performance nuclear simulation tools accessible to students and institutions with limited IT resources."
+    - title: "Foster Collaboration"
+      description: "Enable cross-institutional collaborations via shared workspaces and common open-source platforms."
+    - title: "Accelerate Innovation"
+      description: "Reduce barriers to entry for emerging researchers and accelerate nuclear R&D timelines."
+
+values:
+  title: "Our Core Values"
+  items:
+    - icon: "Globe"
+      title: "Open Science"
+      description: "Making nuclear knowledge freely accessible to everyone, everywhere. We believe transparency accelerates innovation."
+    - icon: "Users"
+      title: "Community First"
+      description: "Building a diverse, inclusive community of nuclear enthusiasts, professionals, and learners worldwide."
+    - icon: "Lightbulb"
+      title: "Innovation"
+      description: "Pushing boundaries in nuclear simulation, education, and research through cutting-edge open-source tools."
+    - icon: "Shield"
+      title: "Safety & Ethics"
+      description: "Promoting responsible nuclear technology development with highest safety standards and ethical practices."
+
+sdgs:
+  title: "Sustainable Development Goals"
+  subtitle: "Contributing to a better future"
+  description: "NukeHub directly advances the UN Sustainable Development Goals through its open-source ecosystem and community-driven approach."
+  goals:
+    - number: "7"
+      title: "Affordable and Clean Energy"
+      description: "Accelerating nuclear R&D timelines and reducing barriers to entry for emerging researchers in clean energy."
+      color: "#FCC30B"
+    - number: "9"
+      title: "Industry, Innovation, and Infrastructure"
+      description: "Fostering global collaboration and reproducible research through an open-source ecosystem approach."
+      color: "#FD6925"
+    - number: "4"
+      title: "Quality Education"
+      description: "Democratizing access to high-performance nuclear simulation tools for students and institutions worldwide."
+      color: "#C5192D"
+    - number: "17"
+      title: "Partnerships for the Goals"
+      description: "Uniting universities, national laboratories, and industry partners through community-driven development."
+      color: "#19486A"
+
+closing:
+  text: "By transforming months of software configuration into seconds of cloud deployment, NukeHub empowers the global nuclear community to focus on designing the clean energy systems of tomorrow."
+
+community:
+  title: "Join Our Community"
+  description: "Be part of a global movement advancing nuclear technology. Whether you are a student, professional, or enthusiast, there is a place for you."
+  primaryCta:
+    text: "Explore Projects"
+    href: "/projects"
+  secondaryCta:
+    text: "Meet the Team"
+    href: "/people"

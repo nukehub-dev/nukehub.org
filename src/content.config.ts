@@ -166,4 +166,73 @@ const support = defineCollection({
   }),
 });
 
-export const collections = { manual, projects, events, people, peopleCategories, sponsors, support };
+const about = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/about' }),
+  schema: z.object({
+    hero: z.object({
+      title: z.string(),
+      description: z.string(),
+      stats: z.array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+        })
+      ),
+    }),
+    story: z.object({
+      title: z.string(),
+      milestones: z.array(
+        z.object({
+          year: z.string(),
+          title: z.string(),
+          description: z.string(),
+        })
+      ),
+    }),
+    mission: z.object({
+      title: z.string(),
+      subtitle: z.string(),
+      description: z.string(),
+      points: z.array(
+        z.object({
+          title: z.string(),
+          description: z.string(),
+        })
+      ),
+    }),
+    values: z.object({
+      title: z.string(),
+      items: z.array(
+        z.object({
+          icon: z.string(),
+          title: z.string(),
+          description: z.string(),
+        })
+      ),
+    }),
+    sdgs: z.object({
+      title: z.string(),
+      subtitle: z.string(),
+      description: z.string(),
+      goals: z.array(
+        z.object({
+          number: z.string(),
+          title: z.string(),
+          description: z.string(),
+          color: z.string(),
+        })
+      ),
+    }),
+    closing: z.object({
+      text: z.string(),
+    }),
+    community: z.object({
+      title: z.string(),
+      description: z.string(),
+      primaryCta: z.object({ text: z.string(), href: z.string() }),
+      secondaryCta: z.object({ text: z.string(), href: z.string() }),
+    }),
+  }),
+});
+
+export const collections = { manual, projects, events, people, peopleCategories, sponsors, support, about };

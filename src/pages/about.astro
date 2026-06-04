@@ -1,14 +1,99 @@
 ---
-import ManualPage from '@components/manual/ManualPage.astro';
-import { getEntry, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { AboutHero } from '@components/about/AboutHero';
+import { StoryTimeline } from '@components/about/StoryTimeline';
+import { MissionSection } from '@components/about/MissionSection';
+import { ValuesGrid } from '@components/about/ValuesGrid';
+import { SDGsSection } from '@components/about/SDGsSection';
+import { AboutCTA } from '@components/about/AboutCTA';
+import { AboutBackground } from '@components/about/AboutBackground';
+import { OrbitRings } from '@components/about/decorations/OrbitRings';
+import { FloatingParticles } from '@components/about/decorations/FloatingParticles';
+import { GradientOrbs } from '@components/about/decorations/GradientOrbs';
+import { ConnectingNodes } from '@components/about/decorations/ConnectingNodes';
+import { StarBurst } from '@components/about/decorations/StarBurst';
+import { getEntry } from 'astro:content';
 
-const entry = await getEntry('manual', 'about');
+const entry = await getEntry('about', 'main');
 if (!entry) {
-  throw new Error('Manual entry "about" not found');
+  throw new Error('About data entry "main" not found');
 }
-const { Content, headings } = await render(entry);
+
+const data = entry.data;
 ---
 
-<ManualPage entry={entry} headings={headings}>
-  <Content />
-</ManualPage>
+<BaseLayout
+  title="About"
+  description={data.hero.description}
+  permalink="/about"
+>
+  <AboutBackground />
+
+  <div class="relative z-10">
+    {/* ===== HERO ===== */}
+    <div class="relative">
+      <OrbitRings client:load />
+      <AboutHero
+        client:load
+        title={data.hero.title}
+        description={data.hero.description}
+        stats={data.hero.stats}
+      />
+    </div>
+
+    {/* ===== STORY / TIMELINE ===== */}
+    <div class="relative">
+      <StoryTimeline
+        client:visible
+        title={data.story.title}
+        milestones={data.story.milestones}
+      />
+    </div>
+
+    {/* ===== MISSION ===== */}
+    <div class="relative">
+      <FloatingParticles client:visible count={24} />
+      <MissionSection
+        client:visible
+        title={data.mission.title}
+        subtitle={data.mission.subtitle}
+        description={data.mission.description}
+        points={data.mission.points}
+      />
+    </div>
+
+    {/* ===== VALUES ===== */}
+    <div class="relative">
+      <GradientOrbs client:visible />
+      <ValuesGrid
+        client:visible
+        title={data.values.title}
+        items={data.values.items}
+      />
+    </div>
+
+    {/* ===== SDGs ===== */}
+    <div class="relative">
+      <ConnectingNodes client:visible />
+      <SDGsSection
+        client:visible
+        title={data.sdgs.title}
+        subtitle={data.sdgs.subtitle}
+        description={data.sdgs.description}
+        goals={data.sdgs.goals}
+        closingText={data.closing.text}
+      />
+    </div>
+
+    {/* ===== CTA ===== */}
+    <div class="relative">
+      <AboutCTA
+        client:visible
+        title={data.community.title}
+        description={data.community.description}
+        primaryCta={data.community.primaryCta}
+        secondaryCta={data.community.secondaryCta}
+      />
+    </div>
+  </div>
+</BaseLayout>
