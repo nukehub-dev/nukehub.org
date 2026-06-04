@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface FrameData {
   fps: number;
@@ -8,7 +8,7 @@ interface FrameData {
   timestamp: number;
 }
 
-const STORAGE_KEY = 'perf-monitor-state';
+const STORAGE_KEY = "perf-monitor-state";
 
 interface MonitorState {
   x: number;
@@ -22,14 +22,18 @@ function loadState(): MonitorState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch { /* noop */ }
+  } catch {
+    /* noop */
+  }
   return { x: 16, y: 16, w: 300, h: 420, minimized: false };
 }
 
 function saveState(s: MonitorState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-  } catch { /* noop */ }
+  } catch {
+    /* noop */
+  }
 }
 
 export function PerformanceMonitor() {
@@ -40,7 +44,11 @@ export function PerformanceMonitor() {
   const [memory, setMemory] = useState<number | null>(null);
   const [domNodes, setDomNodes] = useState(0);
   const [layoutShifts, setLayoutShifts] = useState(0);
-  const [webVitals, setWebVitals] = useState<{ lcp?: number; fcp?: number; ttfb?: number }>({});
+  const [webVitals, setWebVitals] = useState<{
+    lcp?: number;
+    fcp?: number;
+    ttfb?: number;
+  }>({});
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameHistoryRef = useRef<FrameData[]>([]);
@@ -51,16 +59,41 @@ export function PerformanceMonitor() {
   const layoutShiftsRef = useRef(0);
 
   const stateRef = useRef<MonitorState>(loadState());
-  const [pos, setPos] = useState({ x: stateRef.current.x, y: stateRef.current.y });
-  const [size, setSize] = useState({ w: stateRef.current.w, h: stateRef.current.h });
+  const [pos, setPos] = useState({
+    x: stateRef.current.x,
+    y: stateRef.current.y,
+  });
+  const [size, setSize] = useState({
+    w: stateRef.current.w,
+    h: stateRef.current.h,
+  });
   const [minimized, setMinimized] = useState(stateRef.current.minimized);
 
   const panelRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ dragging: boolean; startX: number; startY: number; initX: number; initY: number } | null>(null);
-  const resizeRef = useRef<{ resizing: boolean; startX: number; startY: number; initW: number; initH: number } | null>(null);
+  const dragRef = useRef<{
+    dragging: boolean;
+    startX: number;
+    startY: number;
+    initX: number;
+    initY: number;
+  } | null>(null);
+  const resizeRef = useRef<{
+    resizing: boolean;
+    startX: number;
+    startY: number;
+    initW: number;
+    initH: number;
+  } | null>(null);
 
   useEffect(() => {
-    stateRef.current = { ...stateRef.current, x: pos.x, y: pos.y, w: size.w, h: size.h, minimized };
+    stateRef.current = {
+      ...stateRef.current,
+      x: pos.x,
+      y: pos.y,
+      w: size.w,
+      h: size.h,
+      minimized,
+    };
     saveState(stateRef.current);
   }, [pos, size, minimized]);
 
@@ -84,19 +117,27 @@ export function PerformanceMonitor() {
         setFps(currentFps);
         setFrameTime(currentFrameTime);
 
-        frameHistoryRef.current.push({ fps: currentFps, frameTime: currentFrameTime, timestamp });
-        if (frameHistoryRef.current.length > 120) frameHistoryRef.current.shift();
+        frameHistoryRef.current.push({
+          fps: currentFps,
+          frameTime: currentFrameTime,
+          timestamp,
+        });
+        if (frameHistoryRef.current.length > 120)
+          frameHistoryRef.current.shift();
 
         const recent = frameHistoryRef.current.slice(-20);
-        const avg = Math.round(recent.reduce((sum, f) => sum + f.fps, 0) / recent.length);
+        const avg = Math.round(
+          recent.reduce((sum, f) => sum + f.fps, 0) / recent.length,
+        );
         setAvgFps(avg);
 
         frameCountRef.current = 0;
         lastFpsUpdateRef.current = timestamp;
 
         const perf = performance as any;
-        if (perf.memory) setMemory(Math.round(perf.memory.usedJSHeapSize / 1048576));
-        setDomNodes(document.querySelectorAll('*').length);
+        if (perf.memory)
+          setMemory(Math.round(perf.memory.usedJSHeapSize / 1048576));
+        setDomNodes(document.querySelectorAll("*").length);
         setLayoutShifts(layoutShiftsRef.current);
       }
       rafRef.current = requestAnimationFrame(loop);
@@ -110,7 +151,7 @@ export function PerformanceMonitor() {
     if (!isVisible || minimized) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
@@ -129,7 +170,7 @@ export function PerformanceMonitor() {
     const step = width / (history.length - 1);
 
     // Background grid
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.08)";
     ctx.lineWidth = 1;
     [0.25, 0.5, 0.75].forEach((p) => {
       const y = height * p;
@@ -151,16 +192,16 @@ export function PerformanceMonitor() {
     ctx.lineTo(0, height);
     ctx.closePath();
     const grad = ctx.createLinearGradient(0, 0, 0, height);
-    grad.addColorStop(0, 'rgba(34, 197, 94, 0.18)');
-    grad.addColorStop(1, 'rgba(34, 197, 94, 0.01)');
+    grad.addColorStop(0, "rgba(34, 197, 94, 0.18)");
+    grad.addColorStop(1, "rgba(34, 197, 94, 0.01)");
     ctx.fillStyle = grad;
     ctx.fill();
 
     // FPS line
     ctx.beginPath();
-    ctx.strokeStyle = '#4ade80';
+    ctx.strokeStyle = "#4ade80";
     ctx.lineWidth = 1.5;
-    ctx.lineJoin = 'round';
+    ctx.lineJoin = "round";
     history.forEach((frame, i) => {
       const x = i * step;
       const y = height - (Math.min(frame.fps, maxFps) / maxFps) * height;
@@ -171,7 +212,7 @@ export function PerformanceMonitor() {
 
     // 60 FPS line
     const y60 = height - (60 / maxFps) * height;
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.35)";
     ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -181,15 +222,15 @@ export function PerformanceMonitor() {
     ctx.setLineDash([]);
 
     // 60 label
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
-    ctx.font = '9px monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText('60', width - 4, y60 - 3);
+    ctx.fillStyle = "rgba(148, 163, 184, 0.5)";
+    ctx.font = "9px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("60", width - 4, y60 - 3);
   }, [isVisible, minimized, fps, size.w, size.h]);
 
   // Layout Shift Observer
   useEffect(() => {
-    if (!('PerformanceObserver' in window)) return;
+    if (!("PerformanceObserver" in window)) return;
     let observer: PerformanceObserver;
     try {
       observer = new PerformanceObserver((list) => {
@@ -198,33 +239,41 @@ export function PerformanceMonitor() {
           layoutShiftsRef.current += (entry as any).value || 0;
         }
       });
-      observer.observe({ type: 'layout-shift', buffered: true } as any);
-    } catch { /* unsupported */ }
+      observer.observe({ type: "layout-shift", buffered: true } as any);
+    } catch {
+      /* unsupported */
+    }
     return () => observer?.disconnect();
   }, []);
 
   // Keyboard shortcut
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey && (e.key === 'p' || e.key === 'P')) {
+      if (e.altKey && (e.key === "p" || e.key === "P")) {
         e.preventDefault();
         setIsVisible((v) => !v);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Web Vitals
   useEffect(() => {
     const gather = () => {
-      const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-      const paint = performance.getEntriesByType('paint');
-      const lcpEntry = performance.getEntriesByType('largest-contentful-paint').pop() as PerformanceEntry | undefined;
+      const nav = performance.getEntriesByType("navigation")[0] as
+        | PerformanceNavigationTiming
+        | undefined;
+      const paint = performance.getEntriesByType("paint");
+      const lcpEntry = performance
+        .getEntriesByType("largest-contentful-paint")
+        .pop() as PerformanceEntry | undefined;
       setWebVitals({
         ttfb: nav ? Math.round(nav.responseStart) : undefined,
-        fcp: paint.find((p) => p.name === 'first-contentful-paint')
-          ? Math.round(paint.find((p) => p.name === 'first-contentful-paint')!.startTime)
+        fcp: paint.find((p) => p.name === "first-contentful-paint")
+          ? Math.round(
+              paint.find((p) => p.name === "first-contentful-paint")!.startTime,
+            )
           : undefined,
         lcp: lcpEntry ? Math.round(lcpEntry.startTime) : undefined,
       });
@@ -234,76 +283,91 @@ export function PerformanceMonitor() {
   }, []);
 
   // Drag
-  const onDragStart = useCallback((e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('[data-no-drag]')) return;
-    dragRef.current = {
-      dragging: true,
-      startX: e.clientX,
-      startY: e.clientY,
-      initX: pos.x,
-      initY: pos.y,
-    };
-    document.body.style.userSelect = 'none';
-    document.body.style.cursor = 'grabbing';
-  }, [pos.x, pos.y]);
+  const onDragStart = useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
+      dragRef.current = {
+        dragging: true,
+        startX: e.clientX,
+        startY: e.clientY,
+        initX: pos.x,
+        initY: pos.y,
+      };
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "grabbing";
+    },
+    [pos.x, pos.y],
+  );
 
   // Resize
-  const onResizeStart = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    resizeRef.current = {
-      resizing: true,
-      startX: e.clientX,
-      startY: e.clientY,
-      initW: size.w,
-      initH: size.h,
-    };
-    document.body.style.userSelect = 'none';
-    document.body.style.cursor = 'nwse-resize';
-  }, [size.w, size.h]);
+  const onResizeStart = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      resizeRef.current = {
+        resizing: true,
+        startX: e.clientX,
+        startY: e.clientY,
+        initW: size.w,
+        initH: size.h,
+      };
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "nwse-resize";
+    },
+    [size.w, size.h],
+  );
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       if (dragRef.current?.dragging) {
         const d = dragRef.current;
-        setPos({ x: d.initX + (e.clientX - d.startX), y: d.initY + (e.clientY - d.startY) });
+        setPos({
+          x: d.initX + (e.clientX - d.startX),
+          y: d.initY + (e.clientY - d.startY),
+        });
       }
       if (resizeRef.current?.resizing) {
         const r = resizeRef.current;
-        setSize({ w: Math.max(240, r.initW + (e.clientX - r.startX)), h: Math.max(160, r.initH + (e.clientY - r.startY)) });
+        setSize({
+          w: Math.max(240, r.initW + (e.clientX - r.startX)),
+          h: Math.max(160, r.initH + (e.clientY - r.startY)),
+        });
       }
     };
     const onUp = () => {
       dragRef.current = null;
       resizeRef.current = null;
-      document.body.style.userSelect = '';
-      document.body.style.cursor = '';
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
     };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
     return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
     };
   }, []);
 
   const getFpsColor = useCallback((value: number) => {
-    if (value >= 55) return 'text-emerald-400';
-    if (value >= 30) return 'text-amber-400';
-    return 'text-rose-400';
+    if (value >= 55) return "text-emerald-400";
+    if (value >= 30) return "text-amber-400";
+    return "text-rose-400";
   }, []);
 
   const getStatusDot = (value: number, good: number, warn: number) => {
-    const color = value <= good ? 'bg-emerald-400' : value <= warn ? 'bg-amber-400' : 'bg-rose-400';
-    return <span className={`inline-block w-1.5 h-1.5 rounded-full ${color} ml-1.5 shadow-[0_0_6px_currentColor]`} />;
+    const color =
+      value <= good
+        ? "bg-emerald-400"
+        : value <= warn
+          ? "bg-amber-400"
+          : "bg-rose-400";
+    return (
+      <span
+        className={`inline-block w-1.5 h-1.5 rounded-full ${color} ml-1.5 shadow-[0_0_6px_currentColor]`}
+      />
+    );
   };
 
-  if (!isVisible) {
-    return (
-      <div className="fixed bottom-3 left-3 z-[9999] pointer-events-none select-none">
-        <div className="text-[10px] text-white/20 font-mono">Alt+P</div>
-      </div>
-    );
-  }
+  if (!isVisible) return null;
 
   return (
     <div
@@ -313,7 +377,7 @@ export function PerformanceMonitor() {
         left: pos.x,
         top: pos.y,
         width: size.w,
-        height: minimized ? 'auto' : size.h,
+        height: minimized ? "auto" : size.h,
         minWidth: 240,
         minHeight: minimized ? undefined : 160,
       }}
@@ -328,19 +392,44 @@ export function PerformanceMonitor() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <span className="font-semibold tracking-wider text-slate-300 text-[10px] uppercase select-none">Perf Monitor</span>
+          <span className="font-semibold tracking-wider text-slate-300 text-[10px] uppercase select-none">
+            Perf Monitor
+          </span>
         </div>
         <div className="flex items-center gap-0.5" data-no-drag>
           <button
             onClick={() => setMinimized((m) => !m)}
             className="text-slate-500 hover:text-slate-200 transition-colors h-6 w-6 flex items-center justify-center rounded-md hover:bg-white/5"
-            aria-label={minimized ? 'Expand' : 'Minimize'}
-            title={minimized ? 'Expand' : 'Minimize'}
+            aria-label={minimized ? "Expand" : "Minimize"}
+            title={minimized ? "Expand" : "Minimize"}
           >
             {minimized ? (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8"/></svg>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M8 12h8" />
+              </svg>
             ) : (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/></svg>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14" />
+              </svg>
             )}
           </button>
           <button
@@ -349,7 +438,19 @@ export function PerformanceMonitor() {
             aria-label="Close"
             title="Close"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </button>
         </div>
       </div>
@@ -360,32 +461,60 @@ export function PerformanceMonitor() {
           {/* Big FPS */}
           <div className="flex items-end justify-between">
             <div>
-              <div className="text-[9px] uppercase tracking-widest text-slate-500 mb-0.5">FPS</div>
-              <div className={`text-3xl font-bold tabular-nums leading-none ${getFpsColor(fps)}`}>{fps}</div>
+              <div className="text-[9px] uppercase tracking-widest text-slate-500 mb-0.5">
+                FPS
+              </div>
+              <div
+                className={`text-3xl font-bold tabular-nums leading-none ${getFpsColor(fps)}`}
+              >
+                {fps}
+              </div>
             </div>
             <div className="text-right">
-              <div className="text-[9px] uppercase tracking-widest text-slate-500 mb-0.5">Avg</div>
-              <div className="text-sm font-semibold tabular-nums text-slate-300">{avgFps}</div>
+              <div className="text-[9px] uppercase tracking-widest text-slate-500 mb-0.5">
+                Avg
+              </div>
+              <div className="text-sm font-semibold tabular-nums text-slate-300">
+                {avgFps}
+              </div>
             </div>
           </div>
 
           {/* Sparkline */}
           <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-2">
-            <canvas ref={canvasRef} className="w-full" style={{ height: Math.max(48, size.h * 0.16) }} />
+            <canvas
+              ref={canvasRef}
+              className="w-full"
+              style={{ height: Math.max(48, size.h * 0.16) }}
+            />
           </div>
 
           {/* Metrics grid */}
           <div className="space-y-1.5">
-            <MetricRow label="Frame" value={`${frameTime.toFixed(1)} ms`} dot={getStatusDot(frameTime, 16.7, 33)} />
-            {memory !== null && <MetricRow label="Memory" value={`${memory} MB`} />}
+            <MetricRow
+              label="Frame"
+              value={`${frameTime.toFixed(1)} ms`}
+              dot={getStatusDot(frameTime, 16.7, 33)}
+            />
+            {memory !== null && (
+              <MetricRow label="Memory" value={`${memory} MB`} />
+            )}
             <MetricRow label="DOM Nodes" value={domNodes.toLocaleString()} />
-            <MetricRow label="CLS" value={layoutShifts.toFixed(4)} dot={getStatusDot(layoutShifts, 0.05, 0.1)} />
+            <MetricRow
+              label="CLS"
+              value={layoutShifts.toFixed(4)}
+              dot={getStatusDot(layoutShifts, 0.05, 0.1)}
+            />
           </div>
 
           {/* Web Vitals */}
-          {(webVitals.ttfb !== undefined || webVitals.fcp !== undefined || webVitals.lcp !== undefined) && (
+          {(webVitals.ttfb !== undefined ||
+            webVitals.fcp !== undefined ||
+            webVitals.lcp !== undefined) && (
             <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
-              <div className="text-[9px] uppercase tracking-widest text-slate-500 font-semibold">Web Vitals</div>
+              <div className="text-[9px] uppercase tracking-widest text-slate-500 font-semibold">
+                Web Vitals
+              </div>
               {webVitals.ttfb !== undefined && (
                 <MetricRow label="TTFB" value={`${webVitals.ttfb} ms`} />
               )}
@@ -425,7 +554,15 @@ export function PerformanceMonitor() {
   );
 }
 
-function MetricRow({ label, value, dot }: { label: string; value: string; dot?: React.ReactNode }) {
+function MetricRow({
+  label,
+  value,
+  dot,
+}: {
+  label: string;
+  value: string;
+  dot?: React.ReactNode;
+}) {
   return (
     <div className="flex items-center justify-between py-0.5">
       <span className="text-slate-500">{label}</span>
