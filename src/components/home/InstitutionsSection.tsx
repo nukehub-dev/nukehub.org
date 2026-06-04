@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { viewportOnce } from '@lib/animations';
+import { motion } from "framer-motion";
+import { viewportOnce } from "@lib/animations";
 
-import { InstitutionsCanvas } from '@components/three/InstitutionsCanvas';
-import type { TrustData } from '../../types/homepage';
+import { InstitutionsCanvas } from "@components/three/InstitutionsCanvas";
+import type { TrustData } from "../../types/homepage";
 
 interface InstitutionsSectionProps {
   data: TrustData;
@@ -20,8 +20,10 @@ export function InstitutionsSection({ data }: InstitutionsSectionProps) {
     <section
       className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-20 snap-section"
       style={{
-        maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
+        maskImage:
+          "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+        WebkitMaskImage:
+          "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
       }}
     >
       {/* Milky Way galaxy background — subtle in light, full in dark */}
@@ -33,7 +35,10 @@ export function InstitutionsSection({ data }: InstitutionsSectionProps) {
       <div className="absolute inset-0 -z-[15] overflow-hidden pointer-events-none">
         <div
           className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.10] dark:opacity-[0.15]"
-          style={{ background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)' }}
+          style={{
+            background:
+              "radial-gradient(circle, var(--primary) 0%, transparent 70%)",
+          }}
         />
       </div>
 
@@ -76,7 +81,8 @@ export function InstitutionsSection({ data }: InstitutionsSectionProps) {
             transition={{ duration: 0.5, delay: 0.25 }}
             className="mx-auto mt-4 max-w-xl text-muted-foreground"
           >
-            Trusted by world-class research institutions, national laboratories, and international organizations advancing nuclear science.
+            Trusted by world-class research institutions, national laboratories,
+            and international organizations advancing nuclear science.
           </motion.p>
         </motion.div>
 
@@ -107,15 +113,6 @@ export function InstitutionsSection({ data }: InstitutionsSectionProps) {
             </motion.div>
           ))}
         </div>
-
-        {/* Decorative connecting line */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.8, delay: 0.5, ease: [0.215, 0.61, 0.355, 1] }}
-          className="mx-auto mt-16 h-px w-48 origin-center bg-gradient-to-r from-transparent via-primary/30 to-transparent sm:mt-20"
-        />
       </div>
     </section>
   );

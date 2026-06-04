@@ -1,7 +1,7 @@
-import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
-import { getPrimaryColor } from '@lib/themeColors';
+import { useRef, useMemo, useEffect, useState } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+import { getPrimaryColor } from "@lib/themeColors";
 
 /* ------------------------------------------------------------------ */
 // Hexagon shape geometry
@@ -67,8 +67,8 @@ function HexGrid({
         const isActive = Math.random() > 0.92;
 
         const baseOpacity = isActive
-          ? (isLight ? 0.04 : 0.035) * distFade
-          : (isLight ? 0.02 : 0.018) * distFade;
+          ? (isLight ? 0.06 : 0.03) * distFade
+          : (isLight ? 0.03 : 0.015) * distFade;
 
         items.push({
           position: [x, y, 0],
@@ -90,9 +90,13 @@ function HexGrid({
   }, [isLight]);
 
   useFrame((state) => {
-    // Group rotation
+    // Group rotation + gentle wobble for 3D depth perception
     if (groupRef.current) {
       groupRef.current.rotation.z = state.clock.elapsedTime * 0.004;
+      groupRef.current.rotation.x =
+        Math.sin(state.clock.elapsedTime * 0.12) * 0.04;
+      groupRef.current.rotation.y =
+        Math.cos(state.clock.elapsedTime * 0.1) * 0.04;
     }
 
     // Throttle opacity updates: only update every 2nd frame (~30fps)
@@ -119,7 +123,11 @@ function HexGrid({
       const pulse = 0.5 + 0.5 * Math.sin(t * 0.4 + cell.pulsePhase);
 
       const mat = mesh.material as THREE.MeshBasicMaterial;
-      mat.opacity = cell.baseOpacity + waveBoost + mouseGlow + (cell.isActive ? pulse * 0.1 : 0);
+      mat.opacity =
+        cell.baseOpacity +
+        waveBoost +
+        mouseGlow +
+        (cell.isActive ? pulse * 0.1 : 0);
     }
   });
 
@@ -142,8 +150,8 @@ function HexGrid({
       cachedMouse.current.y = pos.y;
     };
 
-    window.addEventListener('mousemove', onMove, { passive: true });
-    return () => window.removeEventListener('mousemove', onMove);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
   }, [camera]);
 
   // Convert mouse NDC to world space at z=0 for proximity check
@@ -159,19 +167,21 @@ function HexGrid({
       mousePos.current.set(pos.x, pos.y);
     };
 
-    window.addEventListener('mousemove', onMove, { passive: true });
-    return () => window.removeEventListener('mousemove', onMove);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
   }, [camera, mousePos]);
 
   const cellsArr = cells;
-  const matColor = isLight ? '#aaaaaa' : color;
+  const matColor = color;
 
   return (
     <group ref={groupRef}>
       {cellsArr.map((cell, i) => (
         <mesh
           key={i}
-          ref={(el) => { meshRefs.current[i] = el; }}
+          ref={(el) => {
+            meshRefs.current[i] = el;
+          }}
           position={cell.position}
           geometry={sharedHexGeo}
         >
@@ -203,16 +213,24 @@ export function ReactorCoreScene({ isVisible }: { isVisible: boolean }) {
 
   useEffect(() => {
     const update = () => {
+      const isLightMode =
+        document.documentElement.getAttribute("data-theme") === "light";
       const c = new THREE.Color(getPrimaryColor());
-      c.multiplyScalar(0.25);
-      setColor('#' + c.getHexString());
-      setIsLight(document.documentElement.getAttribute('data-theme') === 'light');
+      if (isLightMode) {
+        // Light mode: blend toward white so the tint is subtle but still colored
+        c.lerp(new THREE.Color(1, 1, 1), 0.55);
+      } else {
+        // Dark mode: darken for a subtle glow
+        c.multiplyScalar(0.25);
+      }
+      setColor("#" + c.getHexString());
+      setIsLight(isLightMode);
     };
     update();
     const observer = new MutationObserver(update);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-accent', 'data-theme'],
+      attributeFilter: ["data-accent", "data-theme"],
     });
     return () => observer.disconnect();
   }, []);
@@ -221,13 +239,13 @@ export function ReactorCoreScene({ isVisible }: { isVisible: boolean }) {
     <Canvas
       dpr={[1, 1]}
       camera={{ position: [0, 0, 5], fov: 55 }}
-      frameloop={isVisible ? 'always' : 'never'}
+      frameloop={isVisible ? "always" : "never"}
       gl={{
         alpha: true,
         antialias: true,
-        powerPreference: 'high-performance',
+        powerPreference: "high-performance",
       }}
-      style={{ background: 'transparent' }}
+      style={{ background: "transparent" }}
     >
       <HexGrid color={color} isLight={isLight} mousePos={mousePos} />
     </Canvas>
