@@ -14,6 +14,7 @@ export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(true);
 
   /* Fast spring for the main cursor */
   const cursorX = useSpring(-100, { stiffness: 500, damping: 28 });
@@ -57,10 +58,8 @@ export function CustomCursor() {
 
     const handleMouseDown = () => setIsClicking(true);
     const handleMouseUp = () => setIsClicking(false);
-    const handleMouseLeave = () => {
-      cursorX.set(-100);
-      cursorY.set(-100);
-    };
+    const handleMouseLeave = () => setIsInViewport(false);
+    const handleMouseEnter = () => setIsInViewport(true);
 
     window.addEventListener('mousemove', moveCursor);
     document.addEventListener('mouseover', handleMouseOver);
@@ -68,6 +67,7 @@ export function CustomCursor() {
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     document.body.addEventListener('mouseleave', handleMouseLeave);
+    document.body.addEventListener('mouseenter', handleMouseEnter);
 
     return () => {
       window.removeEventListener('mousemove', moveCursor);
@@ -76,6 +76,7 @@ export function CustomCursor() {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
       document.body.removeEventListener('mouseleave', handleMouseLeave);
+      document.body.removeEventListener('mouseenter', handleMouseEnter);
       document.body.classList.remove('custom-cursor-active');
     };
   }, [cursorX, cursorY]);
@@ -104,7 +105,7 @@ export function CustomCursor() {
             animate={{
               width: isHovering ? 144 : 104,
               height: isHovering ? 144 : 104,
-              opacity: isClicking ? 0.06 : 0.12,
+              opacity: !isInViewport ? 0 : isClicking ? 0.06 : 0.12,
             }}
             transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.6 }}
           />
@@ -133,7 +134,7 @@ export function CustomCursor() {
             animate={{
               width: isHovering ? 176 : 128,
               height: isHovering ? 176 : 128,
-              opacity: isClicking ? 0.25 : isHovering ? 0.55 : 0.4,
+              opacity: !isInViewport ? 0 : isClicking ? 0.25 : isHovering ? 0.55 : 0.4,
             }}
             transition={{ type: 'spring', stiffness: 180, damping: 18, mass: 0.5 }}
           />
@@ -151,7 +152,7 @@ export function CustomCursor() {
             animate={{
               width: isHovering ? 96 : 64,
               height: isHovering ? 96 : 64,
-              opacity: isClicking ? 0.5 : 0.9,
+              opacity: !isInViewport ? 0 : isClicking ? 0.5 : 0.9,
             }}
             transition={{ type: 'spring', stiffness: 280, damping: 22, mass: 0.5 }}
           />
@@ -163,7 +164,7 @@ export function CustomCursor() {
             animate={{
               width: isHovering ? 40 : 28,
               height: isHovering ? 40 : 28,
-              opacity: isClicking ? 0.5 : 0.85,
+              opacity: !isInViewport ? 0 : isClicking ? 0.5 : 0.85,
             }}
             transition={{ type: 'spring', stiffness: 320, damping: 22, mass: 0.5 }}
           />
@@ -177,8 +178,8 @@ export function CustomCursor() {
                 '0 0 36px 14px rgba(255,255,255,0.28)',
             }}
             animate={{
-              width: isClicking ? 8 : isHovering ? 4 : 8,
-              height: isClicking ? 8 : isHovering ? 4 : 8,
+              width: !isInViewport ? 0 : isClicking ? 8 : isHovering ? 4 : 8,
+              height: !isInViewport ? 0 : isClicking ? 8 : isHovering ? 4 : 8,
             }}
             transition={{ type: 'spring', stiffness: 400, damping: 20, mass: 0.5 }}
           />
