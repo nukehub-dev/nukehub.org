@@ -44,7 +44,7 @@ export function SupportMethods({ methods }: Props) {
               <motion.div
                 key={method.title}
                 variants={fadeInUp}
-                className="bubble-solid p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group"
+                className="bubble p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group"
               >
                 <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 

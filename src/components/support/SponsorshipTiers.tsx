@@ -108,7 +108,7 @@ export function SponsorshipTiers({ tiers }: Props) {
 
                 {/* Card */}
                 <div
-                  className={`relative flex flex-col h-full overflow-hidden rounded-2xl border border-border ${cfg.topBorder} border-t-[3px] bg-gradient-to-b ${cfg.fromColor} to-card transition-all duration-500 ${
+                  className={`relative flex flex-col h-full overflow-hidden rounded-2xl border border-border backdrop-blur-sm ${cfg.topBorder} border-t-[3px] bg-gradient-to-b ${cfg.fromColor} to-card transition-all duration-500 ${
                     t.featured
                       ? 'shadow-2xl shadow-primary/20 hover:shadow-primary/60 hover:ring-1 hover:ring-primary/20'
                       : `hover:shadow-xl ${cfg.glowColor}`

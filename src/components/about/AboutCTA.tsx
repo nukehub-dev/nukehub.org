@@ -76,7 +76,7 @@ export function AboutCTA({ title, description, primaryCta, secondaryCta }: Props
         >
           <motion.div variants={fadeInUp} className="relative">
             {/* Card */}
-            <div className="bubble-solid relative overflow-hidden rounded-3xl p-10 sm:p-14 text-center">
+            <div className="bubble relative overflow-hidden rounded-3xl p-10 sm:p-14 text-center">
               {/* Glowing blur orbits inside the card */}
               <GlowingOrbits />
               {/* Warm inner glow */}

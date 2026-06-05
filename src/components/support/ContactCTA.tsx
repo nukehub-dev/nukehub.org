@@ -31,7 +31,7 @@ export function ContactCTA({ title, description, icon = 'Mail', primaryCta, seco
       viewport={viewportOnce}
       variants={fadeInUp}
     >
-      <div className="bubble-solid p-8 sm:p-12 text-center relative overflow-hidden">
+      <div className="bubble p-8 sm:p-12 text-center relative overflow-hidden">
         {/* Inner warm glow */}
         <div
           className="absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-40"

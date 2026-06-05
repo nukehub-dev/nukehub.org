@@ -42,7 +42,7 @@ export function ImpactSection({ items }: Props) {
               <motion.div
                 key={item.title}
                 variants={fadeInUp}
-                className="bubble-solid p-6 text-center transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group"
+                className="bubble p-6 text-center transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
