@@ -11,6 +11,7 @@ import {
   resolveTheme,
 } from '@lib/theme';
 import { Sun, Moon, Monitor, Check } from 'lucide-react';
+import { Tooltip } from '@components/ui/Tooltip';
 
 const options: { value: ThemePreference; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { value: 'light', label: 'Light', icon: Sun },
@@ -99,18 +100,19 @@ export function ThemeToggle({ className, variant = 'dropdown' }: ThemeToggleProp
 
   if (variant === 'cycle') {
     return (
-      <button
-        onClick={handleCycle}
-        className={cn(
-          'inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground',
-          'hover:bg-accent hover:text-accent-foreground transition-colors',
-          className
-        )}
-        aria-label={`Theme: ${resolvedLabel}. Click to cycle.`}
-        title={`Theme: ${resolvedLabel}`}
-      >
-        <Icon className="h-4 w-4" />
-      </button>
+      <Tooltip content={`Theme: ${resolvedLabel}`}>
+        <button
+          onClick={handleCycle}
+          className={cn(
+            'inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground',
+            'hover:bg-accent hover:text-accent-foreground transition-colors',
+            className
+          )}
+          aria-label={`Theme: ${resolvedLabel}. Click to cycle.`}
+        >
+          <Icon className="h-4 w-4" />
+        </button>
+      </Tooltip>
     );
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { Tooltip } from "@components/ui/Tooltip";
 
 interface FrameData {
   fps: number;
@@ -397,61 +398,63 @@ export function PerformanceMonitor() {
           </span>
         </div>
         <div className="flex items-center gap-0.5" data-no-drag>
-          <button
-            onClick={() => setMinimized((m) => !m)}
-            className="text-slate-500 hover:text-slate-200 transition-colors h-6 w-6 flex items-center justify-center rounded-md hover:bg-white/5"
-            aria-label={minimized ? "Expand" : "Minimize"}
-            title={minimized ? "Expand" : "Minimize"}
-          >
-            {minimized ? (
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M8 12h8" />
-              </svg>
-            ) : (
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14" />
-              </svg>
-            )}
-          </button>
-          <button
-            onClick={() => setIsVisible(false)}
-            className="text-slate-500 hover:text-slate-200 transition-colors h-6 w-6 flex items-center justify-center rounded-md hover:bg-white/5"
-            aria-label="Close"
-            title="Close"
-          >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <Tooltip content={minimized ? "Expand" : "Minimize"}>
+            <button
+              onClick={() => setMinimized((m) => !m)}
+              className="text-slate-500 hover:text-slate-200 transition-colors h-6 w-6 flex items-center justify-center rounded-md hover:bg-white/5"
+              aria-label={minimized ? "Expand" : "Minimize"}
             >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
+              {minimized ? (
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M8 12h8" />
+                </svg>
+              ) : (
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14" />
+                </svg>
+              )}
+            </button>
+          </Tooltip>
+          <Tooltip content="Close">
+            <button
+              onClick={() => setIsVisible(false)}
+              className="text-slate-500 hover:text-slate-200 transition-colors h-6 w-6 flex items-center justify-center rounded-md hover:bg-white/5"
+              aria-label="Close"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </Tooltip>
         </div>
       </div>
 
@@ -531,24 +534,25 @@ export function PerformanceMonitor() {
 
       {/* Resize handle */}
       {!minimized && (
-        <div
-          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize group"
-          onMouseDown={onResizeStart}
-          title="Resize"
-        >
-          {/* Visible resize grip */}
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            className="absolute bottom-1.5 right-1.5 text-slate-600 group-hover:text-slate-300 transition-colors"
-            fill="currentColor"
+        <Tooltip content="Resize">
+          <div
+            className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize group"
+            onMouseDown={onResizeStart}
           >
-            <path d="M11 11h2v2h-2zM7 11h2v2H7zM11 7h2v2h-2z" opacity="0.6" />
-          </svg>
-          {/* Larger invisible hit area for easier grabbing */}
-          <div className="absolute bottom-0 right-0 w-10 h-10" />
-        </div>
+            {/* Visible resize grip */}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              className="absolute bottom-1.5 right-1.5 text-slate-600 group-hover:text-slate-300 transition-colors"
+              fill="currentColor"
+            >
+              <path d="M11 11h2v2h-2zM7 11h2v2H7zM11 7h2v2h-2z" opacity="0.6" />
+            </svg>
+            {/* Larger invisible hit area for easier grabbing */}
+            <div className="absolute bottom-0 right-0 w-10 h-10" />
+          </div>
+        </Tooltip>
       )}
     </div>
   );

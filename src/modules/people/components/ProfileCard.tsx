@@ -5,6 +5,7 @@ import { Image } from '@components/ui/Image';
 import { Card, CardContent } from '@components/ui/Card';
 import { Badge } from '@components/ui/Badge';
 import { SocialIcon } from '@components/ui/SocialIcon';
+import { Tooltip } from '@components/ui/Tooltip';
 import { cn } from '@lib/utils';
 import { type Person, type SocialLink, SOCIAL_FIELDS, extractSocialLinks } from '@modules/people/types';
 
@@ -166,32 +167,33 @@ export function ProfileCard({ person, index = 0, onOpen }: ProfileCardProps) {
             {/* Social Icons */}
             <div className="flex items-center justify-center gap-1 mt-auto">
               {displaySocials.map((social) => (
-                <a
-                  key={social.platform}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
-                  aria-label={social.label}
-                  title={social.label}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <SocialIcon platform={social.platform} size={16} />
-                </a>
+                <Tooltip key={social.platform} content={social.label}>
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                    aria-label={social.label}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <SocialIcon platform={social.platform} size={16} />
+                  </a>
+                </Tooltip>
               ))}
               {hasMoreSocials && (
-                <button
-                  ref={menuButtonRef}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
-                  aria-label="More links"
-                  title="More links"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openMenuFromButton();
-                  }}
-                >
-                  <MoreHorizontal size={16} />
-                </button>
+                <Tooltip content="More links">
+                  <button
+                    ref={menuButtonRef}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                    aria-label="More links"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openMenuFromButton();
+                    }}
+                  >
+                    <MoreHorizontal size={16} />
+                  </button>
+                </Tooltip>
               )}
             </div>
 

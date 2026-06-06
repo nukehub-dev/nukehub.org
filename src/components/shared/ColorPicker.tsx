@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '@lib/utils';
 import { getAccentColor, setAccentColor, ACCENT_SWATCHES, type AccentColor } from '@lib/theme';
+import { Tooltip } from '@components/ui/Tooltip';
 
 export interface ColorPickerProps {
   className?: string;
@@ -45,23 +46,23 @@ export function ColorPicker({ className, showLabels = false }: ColorPickerProps)
       {ACCENT_SWATCHES.map((swatch) => {
         const active = accent === swatch.name;
         return (
-          <button
-            key={swatch.name}
-            role="radio"
-            aria-checked={active}
-            onClick={() => handleSelect(swatch.name)}
-            className={cn(
-              'relative h-5 w-5 rounded-full border-2 transition-transform',
-              'hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
-              active ? 'border-foreground' : 'border-transparent'
-            )}
-            style={{ background: `oklch(65% 0.18 ${swatch.hue})` }}
-            title={swatch.label}
-          >
-            {active && (
-              <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/40" />
-            )}
-          </button>
+          <Tooltip key={swatch.name} content={swatch.label}>
+            <button
+              role="radio"
+              aria-checked={active}
+              onClick={() => handleSelect(swatch.name)}
+              className={cn(
+                'relative h-5 w-5 rounded-full border-2 transition-transform',
+                'hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
+                active ? 'border-foreground' : 'border-transparent'
+              )}
+              style={{ background: `oklch(65% 0.18 ${swatch.hue})` }}
+            >
+              {active && (
+                <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/40" />
+              )}
+            </button>
+          </Tooltip>
         );
       })}
       {showLabels && (
