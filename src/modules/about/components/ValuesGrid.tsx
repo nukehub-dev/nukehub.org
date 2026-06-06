@@ -13,7 +13,7 @@ interface Value {
 
 interface Props {
   title: string;
-  subtitle?: string;
+  description?: string;
   items: Value[];
 }
 
@@ -48,7 +48,7 @@ const cardStyles = [
   },
 ];
 
-export function ValuesGrid({ title, subtitle, items }: Props) {
+export function ValuesGrid({ title, description, items }: Props) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -61,12 +61,14 @@ export function ValuesGrid({ title, subtitle, items }: Props) {
           variants={staggerContainer}
         >
           <motion.div variants={fadeInUp} className="text-center mb-16">
-            {subtitle && (
-              <p className="text-sm font-medium text-primary uppercase tracking-wider">{subtitle}</p>
-            )}
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {title}
             </h2>
+            {description && (
+              <p className="mt-4 text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
+                {description}
+              </p>
+            )}
           </motion.div>
 
           {/* Bento grid layout */}

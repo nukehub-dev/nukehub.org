@@ -12,7 +12,6 @@ interface MissionPoint {
 
 interface Props {
   title: string;
-  subtitle: string;
   description: string;
   points: MissionPoint[];
 }
@@ -25,7 +24,7 @@ const accentColors = [
   { border: 'border-l-sky-500', bg: 'bg-sky-500/10', text: 'text-sky-600 dark:text-sky-400', glow: 'group-hover:shadow-sky-500/10' },
 ];
 
-export function MissionSection({ title, subtitle, description, points }: Props) {
+export function MissionSection({ title, description, points }: Props) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -38,8 +37,7 @@ export function MissionSection({ title, subtitle, description, points }: Props) 
           variants={staggerContainer}
         >
           <motion.div variants={fadeInUp} className="text-center mb-16">
-            <p className="text-sm font-medium text-primary uppercase tracking-wider">{subtitle}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {title}
             </h2>
             <p className="mt-4 text-muted-foreground max-w-3xl mx-auto text-lg leading-relaxed">

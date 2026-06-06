@@ -9,7 +9,7 @@ export interface AboutHeroData {
 
 export interface AboutStoryData {
   title: string;
-  subtitle?: string;
+  description?: string;
   milestones: {
     year: string;
     title: string;
@@ -19,7 +19,6 @@ export interface AboutStoryData {
 
 export interface AboutMissionData {
   title: string;
-  subtitle: string;
   description: string;
   points: {
     title: string;
@@ -29,7 +28,7 @@ export interface AboutMissionData {
 
 export interface AboutValuesData {
   title: string;
-  subtitle?: string;
+  description?: string;
   items: {
     icon: string;
     title: string;

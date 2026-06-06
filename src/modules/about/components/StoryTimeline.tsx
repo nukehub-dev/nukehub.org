@@ -12,7 +12,7 @@ interface Milestone {
 
 interface Props {
   title: string;
-  subtitle?: string;
+  description?: string;
   milestones: Milestone[];
 }
 
@@ -38,7 +38,7 @@ const lineColors = [
   'bg-gradient-to-b from-sky-500/60 via-amber-500/60 to-emerald-500/60',
 ];
 
-export function StoryTimeline({ title, subtitle, milestones }: Props) {
+export function StoryTimeline({ title, description, milestones }: Props) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -51,12 +51,14 @@ export function StoryTimeline({ title, subtitle, milestones }: Props) {
           variants={staggerContainer}
         >
           <motion.div variants={fadeInUp} className="text-center mb-16">
-            {subtitle && (
-              <p className="text-sm font-medium text-primary uppercase tracking-wider">{subtitle}</p>
-            )}
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {title}
             </h2>
+            {description && (
+              <p className="mt-4 text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
+                {description}
+              </p>
+            )}
           </motion.div>
 
           <div className="relative">

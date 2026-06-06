@@ -13,7 +13,7 @@ hero:
 
 story:
   title: "Our Story"
-  subtitle: "Our journey so far"
+  description: "From a small community of nuclear enthusiasts to a global open-source ecosystem, our journey reflects the power of collaboration in advancing nuclear technology."
   milestones:
     - year: "2023"
       title: "The Beginning"
@@ -27,7 +27,6 @@ story:
 
 mission:
   title: "Our Mission"
-  subtitle: "Empowering the global nuclear community"
   description: "NukeHub empowers the global nuclear community to focus on designing the clean energy systems of tomorrow by transforming months of software configuration into seconds of cloud deployment."
   points:
     - title: "Democratize Access"
@@ -39,7 +38,7 @@ mission:
 
 values:
   title: "Our Core Values"
-  subtitle: "What drives us forward"
+  description: "These principles guide every decision we make, every tool we build, and every interaction within our community. They are the foundation of our culture."
   items:
     - icon: "Globe"
       title: "Open Science"

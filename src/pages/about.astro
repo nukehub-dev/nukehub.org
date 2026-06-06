@@ -42,7 +42,7 @@ const data = loadYaml<AboutData>('about/data/page.yml');
       <StoryTimeline
         client:visible
         title={data.story.title}
-        subtitle={data.story.subtitle}
+        description={data.story.description}
         milestones={data.story.milestones}
       />
     </div>
@@ -53,7 +53,6 @@ const data = loadYaml<AboutData>('about/data/page.yml');
       <MissionSection
         client:visible
         title={data.mission.title}
-        subtitle={data.mission.subtitle}
         description={data.mission.description}
         points={data.mission.points}
       />
@@ -65,7 +64,7 @@ const data = loadYaml<AboutData>('about/data/page.yml');
       <ValuesGrid
         client:visible
         title={data.values.title}
-        subtitle={data.values.subtitle}
+        description={data.values.description}
         items={data.values.items}
       />
     </div>
