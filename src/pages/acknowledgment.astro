@@ -1,15 +1,8 @@
 ---
-import ManualPage from '@modules/manual/components/ManualPage.astro';
-import { SponsorList } from '@modules/sponsors/components/SponsorList';
-import { getEntry, getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { AcknowledgmentPageContent } from '@modules/acknowledgment/components/AcknowledgmentPageContent';
+import { getCollection } from 'astro:content';
 
-const entry = await getEntry('manual', 'acknowledgment');
-if (!entry) {
-  throw new Error('Manual entry "acknowledgment" not found');
-}
-const { Content, headings } = await render(entry);
-
-// Load sponsors from content collection
 const sponsorEntries = await getCollection('sponsors');
 const sponsors = sponsorEntries.map((entry) => ({
   id: entry.id,
@@ -21,8 +14,10 @@ const sponsors = sponsorEntries.map((entry) => ({
 }));
 ---
 
-<ManualPage entry={entry} headings={headings}>
-  <Content />
-
-  <SponsorList slot="after" sponsors={sponsors} client:load />
-</ManualPage>
+<BaseLayout
+  title="Acknowledgment"
+  description="We extend our sincere gratitude to the organizations and individuals who make NukeHub possible."
+  permalink="/acknowledgment"
+>
+  <AcknowledgmentPageContent client:load sponsors={sponsors} />
+</BaseLayout>
