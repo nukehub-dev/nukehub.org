@@ -9,7 +9,8 @@
       "@data/*": ["./src/data/*"],
       "@styles/*": ["./src/styles/*"],
       "@lib/*": ["./src/lib/*"],
-      "@content/*": ["./src/content/*"]
+      "@content/*": ["./src/content/*"],
+      "@modules/*": ["./src/modules/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

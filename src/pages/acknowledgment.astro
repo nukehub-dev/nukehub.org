@@ -1,6 +1,6 @@
 ---
-import ManualPage from '@components/manual/ManualPage.astro';
-import { SponsorList } from '@components/sponsors/SponsorList';
+import ManualPage from '@modules/manual/components/ManualPage.astro';
+import { SponsorList } from '@modules/sponsors/components/SponsorList';
 import { getEntry, getCollection, render } from 'astro:content';
 
 const entry = await getEntry('manual', 'acknowledgment');

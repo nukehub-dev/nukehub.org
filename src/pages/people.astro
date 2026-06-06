@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import PageLayout from '@layouts/PageLayout.astro';
-import { PeopleGrid } from '@components/people/PeopleGrid';
-import type { Person, PeopleCategory } from '@lib/people';
+import { PeopleGrid } from '@modules/people/components/PeopleGrid';
+import type { Person, PeopleCategory } from '@modules/people/types';
 
 // Load people and categories from YAML files
 const peopleEntries = await getCollection('people');

@@ -1,25 +1,20 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { ImpactSection } from '@components/support/ImpactSection';
-import { SupportMethods } from '@components/support/SupportMethods';
-import { SponsorshipTiers } from '@components/support/SponsorshipTiers';
-import { ContactCTA } from '@components/support/ContactCTA';
-import { SupportBackground } from '@components/support/SupportBackground';
-import { FloatingShapes } from '@components/support/decorations/FloatingShapes';
+import { ImpactSection } from '@modules/support/components/ImpactSection';
+import { SupportMethods } from '@modules/support/components/SupportMethods';
+import { SponsorshipTiers } from '@modules/support/components/SponsorshipTiers';
+import { ContactCTA } from '@modules/support/components/ContactCTA';
+import { SupportBackground } from '@modules/support/components/SupportBackground';
+import { FloatingShapes } from '@modules/support/components/decorations/FloatingShapes';
 
 
-import { FloatingHexagons } from '@components/support/decorations/FloatingHexagons';
-import { AtomicLattice } from '@components/support/decorations/AtomicLattice';
-import { SingularityAura } from '@components/support/decorations/SingularityAura';
-import { getEntry } from 'astro:content';
-import * as Icons from 'lucide-react';
+import { FloatingHexagons } from '@modules/support/components/decorations/FloatingHexagons';
+import { AtomicLattice } from '@modules/support/components/decorations/AtomicLattice';
+import { SingularityAura } from '@modules/support/components/decorations/SingularityAura';
+import { loadYaml } from '@lib/loadYaml';
+import type { SupportData } from '@modules/support/types';
 
-const entry = await getEntry('support', 'main');
-if (!entry) {
-  throw new Error('Support data entry "main" not found');
-}
-
-const data = entry.data;
+const data = loadYaml<SupportData>('support/data/page.yml');
 ---
 
 <BaseLayout

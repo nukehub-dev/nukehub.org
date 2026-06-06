@@ -1,25 +1,21 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { AboutHero } from '@components/about/AboutHero';
-import { StoryTimeline } from '@components/about/StoryTimeline';
-import { MissionSection } from '@components/about/MissionSection';
-import { ValuesGrid } from '@components/about/ValuesGrid';
-import { SDGsSection } from '@components/about/SDGsSection';
-import { AboutCTA } from '@components/about/AboutCTA';
-import { AboutBackground } from '@components/about/AboutBackground';
-import { OrbitRings } from '@components/about/decorations/OrbitRings';
-import { FloatingParticles } from '@components/about/decorations/FloatingParticles';
-import { GradientOrbs } from '@components/about/decorations/GradientOrbs';
-import { ConnectingNodes } from '@components/about/decorations/ConnectingNodes';
-import { StarBurst } from '@components/about/decorations/StarBurst';
-import { getEntry } from 'astro:content';
+import { AboutHero } from '@modules/about/components/AboutHero';
+import { StoryTimeline } from '@modules/about/components/StoryTimeline';
+import { MissionSection } from '@modules/about/components/MissionSection';
+import { ValuesGrid } from '@modules/about/components/ValuesGrid';
+import { SDGsSection } from '@modules/about/components/SDGsSection';
+import { AboutCTA } from '@modules/about/components/AboutCTA';
+import { AboutBackground } from '@modules/about/components/AboutBackground';
+import { OrbitRings } from '@modules/about/components/decorations/OrbitRings';
+import { FloatingParticles } from '@modules/about/components/decorations/FloatingParticles';
+import { GradientOrbs } from '@modules/about/components/decorations/GradientOrbs';
+import { ConnectingNodes } from '@modules/about/components/decorations/ConnectingNodes';
+import { StarBurst } from '@modules/about/components/decorations/StarBurst';
+import { loadYaml } from '@lib/loadYaml';
+import type { AboutData } from '@modules/about/types';
 
-const entry = await getEntry('about', 'main');
-if (!entry) {
-  throw new Error('About data entry "main" not found');
-}
-
-const data = entry.data;
+const data = loadYaml<AboutData>('about/data/page.yml');
 ---
 
 <BaseLayout
@@ -46,6 +42,7 @@ const data = entry.data;
       <StoryTimeline
         client:visible
         title={data.story.title}
+        subtitle={data.story.subtitle}
         milestones={data.story.milestones}
       />
     </div>
@@ -68,6 +65,7 @@ const data = entry.data;
       <ValuesGrid
         client:visible
         title={data.values.title}
+        subtitle={data.values.subtitle}
         items={data.values.items}
       />
     </div>

@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import PageLayout from '@layouts/PageLayout.astro';
-import { EventsContainer } from '@components/events/EventsContainer';
-import { expandEvents } from '@lib/events';
-import type { CalendarEvent } from '@lib/events';
+import { EventsContainer } from '@modules/events/components/EventsContainer';
+import { expandEvents } from '@modules/events/types';
+import type { CalendarEvent } from '@modules/events/types';
 
 // Load events from YAML files in src/content/events/
 const entries = await getCollection('events');

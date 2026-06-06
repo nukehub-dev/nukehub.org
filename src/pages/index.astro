@@ -1,13 +1,13 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { HeroSection } from '@components/home/HeroSection';
-import { MissionStrip } from '@components/home/MissionStrip';
-import { ProjectsGrid } from '@components/home/ProjectsGrid';
-import { IntegrationsSection } from '@components/home/IntegrationsSection';
-import { EnhancedCTA } from '@components/home/EnhancedCTA';
+import { HeroSection } from '@modules/home/components/HeroSection';
+import { MissionStrip } from '@modules/home/components/MissionStrip';
+import { ProjectsGrid } from '@modules/home/components/ProjectsGrid';
+import { IntegrationsSection } from '@modules/home/components/IntegrationsSection';
+import { EnhancedCTA } from '@modules/home/components/EnhancedCTA';
 
-import { TestimonialsSection } from '@components/home/TestimonialsSection';
-import { InstitutionsSection } from '@components/home/InstitutionsSection';
+import { TestimonialsSection } from '@modules/home/components/TestimonialsSection';
+import { InstitutionsSection } from '@modules/home/components/InstitutionsSection';
 import { PageLoader } from '@components/shared/PageLoader';
 import { Footer } from '@components/layout/Footer';
 
@@ -17,22 +17,26 @@ import type {
   HeroData,
   MissionData,
   IntegrationsData,
-  TestimonialsData,
+  TestimonialsSectionData,
   TrustData,
   CTAData,
-} from '../types/homepage';
+} from '@modules/home/types';
 
 // Load homepage data from YAML
-const heroData = loadYaml<HeroData>('homepage/hero.yml');
-const missionData = loadYaml<MissionData>('homepage/mission.yml');
+const heroData = loadYaml<HeroData>('home/data/hero.yml');
+const missionData = loadYaml<MissionData>('home/data/mission.yml');
 
-const integrationsData = loadYaml<IntegrationsData>('homepage/integrations.yml');
-const testimonialsData = loadYaml<TestimonialsData>('homepage/testimonials.yml');
-const trustData = loadYaml<TrustData>('homepage/trust.yml');
-const ctaData = loadYaml<CTAData>('homepage/cta.yml');
+const integrationsData = loadYaml<IntegrationsData>('home/data/integrations.yml');
+const testimonialsSectionData = loadYaml<TestimonialsSectionData>('home/data/testimonials.yml');
+const trustData = loadYaml<TrustData>('home/data/trust.yml');
+const ctaData = loadYaml<CTAData>('home/data/cta.yml');
 
 // Load projects from content collection
 const projectEntries = await getCollection('projects');
+
+// Load testimonials from content collection
+const testimonialEntries = await getCollection('testimonials');
+const testimonials = testimonialEntries.map((entry) => entry.data);
 const projects = projectEntries.map((entry) => ({
   title: entry.data.title,
   description: entry.data.description || '',
@@ -61,7 +65,7 @@ const projects = projectEntries.map((entry) => ({
 
   <IntegrationsSection client:load data={integrationsData} />
 
-  <TestimonialsSection client:load data={testimonialsData} />
+  <TestimonialsSection client:load data={testimonialsSectionData} testimonials={testimonials} />
 
   <InstitutionsSection client:load data={trustData} />
 
