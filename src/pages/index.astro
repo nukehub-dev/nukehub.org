@@ -33,11 +33,7 @@ const ctaData = loadYaml<CTAData>('home/data/cta.yml');
 
 // Load projects from content collection
 const projectEntries = await getCollection('projects');
-
-// Load testimonials from content collection
-const testimonialEntries = await getCollection('testimonials');
-const testimonials = testimonialEntries.map((entry) => entry.data);
-const projects = projectEntries.map((entry) => ({
+const allProjects = projectEntries.map((entry) => ({
   title: entry.data.title,
   description: entry.data.description || '',
   url: entry.data.url || '',
@@ -46,6 +42,16 @@ const projects = projectEntries.map((entry) => ({
   image: entry.data.image,
   tags: entry.data.tags,
 }));
+const projects = allProjects.slice(0, 4);
+
+// Load testimonials from content collection
+const testimonialEntries = await getCollection('testimonials');
+const testimonials = testimonialEntries.map((entry) => entry.data);
+
+// Load integrations from content collection
+const integrationEntries = await getCollection('integrations');
+const allIntegrations = integrationEntries.map((entry) => entry.data);
+const integrations = allIntegrations.slice(0, 12);
 ---
 
 <BaseLayout
@@ -61,9 +67,20 @@ const projects = projectEntries.map((entry) => ({
 
   <MissionStrip client:load data={missionData} />
 
-  <ProjectsGrid client:load projects={projects} />
+  <ProjectsGrid
+    client:load
+    projects={projects}
+    totalCount={allProjects.length}
+    viewAllHref="/projects"
+  />
 
-  <IntegrationsSection client:load data={integrationsData} />
+  <IntegrationsSection
+    client:load
+    data={integrationsData}
+    integrations={integrations}
+    totalCount={allIntegrations.length}
+    viewAllHref="/projects"
+  />
 
   <TestimonialsSection client:load data={testimonialsSectionData} testimonials={testimonials} />
 

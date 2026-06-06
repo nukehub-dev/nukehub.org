@@ -16,9 +16,11 @@ export interface Project {
 
 interface ProjectsGridProps {
   projects: Project[];
+  totalCount?: number;
+  viewAllHref?: string;
 }
 
-export function ProjectsGrid({ projects }: ProjectsGridProps) {
+export function ProjectsGrid({ projects, totalCount, viewAllHref }: ProjectsGridProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -74,6 +76,25 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
             </div>
           ))}
         </div>
+
+        {/* View All Link */}
+        {viewAllHref && totalCount && totalCount > projects.length && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-12 text-center"
+          >
+            <a
+              href={viewAllHref}
+              className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-6 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10 hover:border-primary/30"
+            >
+              View All {totalCount} Projects
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          </motion.div>
+        )}
       </div>
     </section>
   );

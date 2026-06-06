@@ -131,4 +131,14 @@ const testimonials = defineCollection({
   }),
 });
 
-export const collections = { manual, projects, events, people, peopleCategories, sponsors, testimonials };
+const integrations = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/integrations' }),
+  schema: z.object({
+    name: z.string(),
+    description: z.string(),
+    url: z.string().url(),
+    category: z.enum(['Simulation', 'Geometry', 'Data Processing', 'Plasma Physics', 'Fusion']),
+  }),
+});
+
+export const collections = { manual, projects, events, people, peopleCategories, sponsors, testimonials, integrations };

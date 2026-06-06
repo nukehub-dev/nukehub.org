@@ -1,0 +1,4 @@
+name: DAGMC
+description: Direct Accelerated Geometry Monte Carlo toolkit for CAD-based radiation transport and geometry handling.
+url: https://svalinn.github.io/DAGMC/
+category: Geometry

@@ -48,7 +48,6 @@ export interface IntegrationsData {
   sectionTitle: string;
   sectionSubtitle: string;
   badge: string;
-  tools: string[];
 }
 
 export interface TestimonialsSectionData {

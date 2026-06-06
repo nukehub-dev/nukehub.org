@@ -1,0 +1,48 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { ProjectsHero } from '@modules/projects/components/ProjectsHero';
+import { ProjectsFilterGrid } from '@modules/projects/components/ProjectsFilterGrid';
+import { IntegrationsFilter } from '@modules/projects/components/IntegrationsFilter';
+import { getCollection } from 'astro:content';
+
+// Load projects from content collection
+const projectEntries = await getCollection('projects');
+const projects = projectEntries.map((entry) => ({
+  title: entry.data.title,
+  description: entry.data.description || '',
+  url: entry.data.url || '',
+  source: entry.data.source || '',
+  newpage: entry.data.newpage ?? false,
+  image: entry.data.image,
+  tags: entry.data.tags,
+  slug: entry.data.permalink || `/${entry.id}`,
+}));
+
+// Load integrations from content collection
+const integrationEntries = await getCollection('integrations');
+const integrations = integrationEntries.map((entry) => entry.data);
+
+const title = 'Projects';
+const description = 'Explore NukeHub\'s open-source nuclear engineering tools and integrations with industry-standard simulation libraries.';
+const keywords = 'nukehub, projects, open source, nuclear, simulation, OpenMC, Geant4, cloud computing';
+const permalink = '/projects';
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  permalink={permalink}
+>
+  <ProjectsHero
+    client:load
+    projectCount={projects.length}
+    integrationCount={integrations.length}
+  />
+
+  <ProjectsFilterGrid client:load projects={projects} />
+
+  <div class="border-t border-border/50" />
+
+  <IntegrationsFilter client:load integrations={integrations} />
+</PageLayout>

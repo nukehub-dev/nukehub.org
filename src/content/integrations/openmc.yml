@@ -1,0 +1,4 @@
+name: OpenMC
+description: A community-developed Monte Carlo particle transport simulation code focused on neutron criticality and shielding applications.
+url: https://openmc.org
+category: Simulation

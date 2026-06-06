@@ -1,0 +1,4 @@
+name: PyNE
+description: Python toolkit for nuclear engineering simulations, providing interfaces to canonical nuclear data and algorithms.
+url: https://pyne.io
+category: Data Processing

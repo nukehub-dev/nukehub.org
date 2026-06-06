@@ -3,12 +3,22 @@ import { viewportOnce } from '@lib/animations';
 import { TokamakCanvas } from '@modules/home/components/three/TokamakCanvas';
 import type { IntegrationsData } from '@modules/home/types';
 
-interface IntegrationsSectionProps {
-  data: IntegrationsData;
+interface Integration {
+  name: string;
+  description: string;
+  url: string;
+  category: string;
 }
 
-export function IntegrationsSection({ data }: IntegrationsSectionProps) {
-  const { sectionTitle, sectionSubtitle, badge, tools } = data;
+interface IntegrationsSectionProps {
+  data: IntegrationsData;
+  integrations: Integration[];
+  totalCount?: number;
+  viewAllHref?: string;
+}
+
+export function IntegrationsSection({ data, integrations, totalCount, viewAllHref }: IntegrationsSectionProps) {
+  const { sectionTitle, sectionSubtitle, badge } = data;
 
   return (
     <section
@@ -68,9 +78,12 @@ export function IntegrationsSection({ data }: IntegrationsSectionProps) {
 
         {/* Tool pills */}
         <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-          {tools.map((tool, i) => (
-            <motion.div
-              key={tool}
+          {integrations.map((integration, i) => (
+            <motion.a
+              key={integration.name}
+              href={integration.url}
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 30, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={viewportOnce}
@@ -88,11 +101,30 @@ export function IntegrationsSection({ data }: IntegrationsSectionProps) {
                 {/* Radial glow */}
                 <div className="pointer-events-none absolute -bottom-10 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full bg-primary/[0.1] opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100 dark:bg-primary/5" />
 
-                <span className="relative z-10">{tool}</span>
+                <span className="relative z-10">{integration.name}</span>
               </div>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
+
+        {/* View All Link */}
+        {viewAllHref && totalCount && totalCount > integrations.length && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-12 text-center"
+          >
+            <a
+              href={viewAllHref}
+              className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-6 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10 hover:border-primary/30"
+            >
+              Explore All {totalCount} Integrations
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          </motion.div>
+        )}
       </div>
     </section>
   );

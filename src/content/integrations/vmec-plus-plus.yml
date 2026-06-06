@@ -1,0 +1,4 @@
+name: VMEC++
+description: C++ implementation of the Variational Moments Equilibrium Code for 3D stellarator and tokamak equilibria.
+url: https://github.com/jonathanschilling/vmecpp
+category: Fusion

@@ -1,0 +1,4 @@
+name: Paramak
+description: Python package for creating parametric 3D CAD models of fusion reactors and components.
+url: https://paramak.readthedocs.io
+category: Geometry
