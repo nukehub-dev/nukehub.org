@@ -21,23 +21,27 @@ const data = loadYaml<SupportData>('support/data/page.yml');
   <SupportBackground client:load />
 
   {/* ===== HERO ===== */}
-  <div class="relative z-10 pt-28 pb-20 text-center">
+  <section class="relative overflow-hidden">
     <FloatingShapes client:visible />
+    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
 
-    <div class="relative z-10 px-4 sm:px-0">
-      <div class="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-4 text-primary mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-heartbeat">
-          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-        </svg>
+    <div class="relative z-10 pt-28 pb-16 px-4 sm:px-6 lg:px-8 text-center">
+      <div class="mx-auto max-w-4xl">
+        <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+          Support Us
+        </div>
+        <h1 class="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          Fuel Our <span class="text-primary">Mission</span>
+        </h1>
+        <p class="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          {data.hero.description}
+        </p>
       </div>
-      <h1 class="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-        {data.hero.title}
-      </h1>
-      <p class="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-        {data.hero.description}
-      </p>
     </div>
-  </div>
+  </section>
 
   {/* ===== CONTENT ===== */}
   <div class="relative z-10 mx-auto max-w-6xl px-4">
