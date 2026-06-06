@@ -14,7 +14,7 @@ export interface SupportMethod {
   title: string;
   description: string;
   cta: string;
-  href: string;
+  inquiryType: string;
 }
 
 export interface SupportTier {
@@ -25,15 +25,16 @@ export interface SupportTier {
   description: string;
   features: string[];
   cta: string;
-  href: string;
+  inquiryType: string;
   featured?: boolean;
 }
 
 export interface SupportContactData {
   title: string;
   description: string;
-  primaryCta: { text: string; href: string };
-  secondaryCta: { text: string; href: string };
+  primaryText: string;
+  secondaryText: string;
+  secondaryHref: string;
 }
 
 export interface SupportData {

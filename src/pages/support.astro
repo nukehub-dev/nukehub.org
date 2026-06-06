@@ -1,13 +1,8 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { ImpactSection } from '@modules/support/components/ImpactSection';
-import { SupportMethods } from '@modules/support/components/SupportMethods';
-import { SponsorshipTiers } from '@modules/support/components/SponsorshipTiers';
-import { ContactCTA } from '@modules/support/components/ContactCTA';
+import { SupportPageContent } from '@modules/support/components/SupportPageContent';
 import { SupportBackground } from '@modules/support/components/SupportBackground';
 import { FloatingShapes } from '@modules/support/components/decorations/FloatingShapes';
-
-
 import { FloatingHexagons } from '@modules/support/components/decorations/FloatingHexagons';
 import { AtomicLattice } from '@modules/support/components/decorations/AtomicLattice';
 import { SingularityAura } from '@modules/support/components/decorations/SingularityAura';
@@ -44,41 +39,11 @@ const data = loadYaml<SupportData>('support/data/page.yml');
     </div>
   </div>
 
-  {/* ===== IMPACT ===== */}
-  <div class="relative z-10 mx-auto max-w-6xl px-4 py-8">
-    <div class="relative z-10">
-      <ImpactSection client:visible items={data.impacts} />
-    </div>
-  </div>
-
-  {/* ===== METHODS ===== */}
-  <div class="relative z-10 mx-auto max-w-6xl px-4 py-8">
+  {/* ===== CONTENT ===== */}
+  <div class="relative z-10 mx-auto max-w-6xl px-4">
     <FloatingHexagons client:visible />
-
-    <div class="relative z-10">
-      <SupportMethods client:visible methods={data.methods} />
-    </div>
-  </div>
-
-  {/* ===== TIERS ===== */}
-  <div class="relative z-10 mx-auto max-w-6xl px-4 py-8">
     <AtomicLattice client:visible />
-    <div class="relative z-10">
-      <SponsorshipTiers client:visible tiers={data.tiers} />
-    </div>
-  </div>
-
-  {/* ===== CTA ===== */}
-  <div class="relative z-10 py-16">
     <SingularityAura client:visible />
-    <div class="relative z-10 mx-auto max-w-6xl px-4">
-      <ContactCTA
-        client:visible
-        title={data.contact.title}
-        description={data.contact.description}
-        primaryCta={data.contact.primaryCta}
-        secondaryCta={data.contact.secondaryCta}
-      />
-    </div>
+    <SupportPageContent client:load data={data} />
   </div>
 </BaseLayout>

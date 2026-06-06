@@ -33,22 +33,22 @@ methods:
     description: >
       Become a sponsor and gain visibility within the NukeHub community, or
       donate to specific projects that align with your interests.
-    cta: View Sponsorship Tiers
-    href: "#sponsorship-tiers"
+      cta: View Sponsorship Tiers
+    inquiryType: ""
   - icon: Server
     title: Resource Donations
     description: >
       Provide technical resources such as additional server capacity, software
       tools, or infrastructure to help us expand our capabilities.
     cta: Contact Us
-    href: "mailto:tahmid@nukehub.org"
+    inquiryType: "Resource Donation"
   - icon: HandHeart
     title: Volunteering
     description: >
       Share your expertise by contributing to our projects, writing technical
       articles, or leading educational workshops.
     cta: Get Involved
-    href: "mailto:tahmid@nukehub.org"
+    inquiryType: "Volunteering"
 
 tiers:
   - name: Bronze
@@ -63,7 +63,7 @@ tiers:
       - Mention in our annual sponsor report
       - Newsletter mention
     cta: Become a Bronze Sponsor
-    href: "mailto:tahmid@nukehub.org"
+    inquiryType: "Sponsorship"
   - name: Silver
     price: "$500"
     period: "/year"
@@ -77,7 +77,7 @@ tiers:
       - Social media recognition
       - Priority support for your contributions
     cta: Become a Silver Sponsor
-    href: "mailto:tahmid@nukehub.org"
+    inquiryType: "Sponsorship"
   - name: Gold
     price: "$1,000"
     period: "/year"
@@ -91,7 +91,7 @@ tiers:
       - Dedicated sponsor spotlight article
       - Access to early features and updates
     cta: Become a Gold Sponsor
-    href: "mailto:tahmid@nukehub.org"
+    inquiryType: "Sponsorship"
   - name: Platinum
     price: "$2,500"
     period: "/year"
@@ -106,7 +106,7 @@ tiers:
       - Direct input on roadmap priorities
       - Quarterly partner calls
     cta: Become a Platinum Sponsor
-    href: "mailto:tahmid@nukehub.org"
+    inquiryType: "Sponsorship"
     featured: true
 
 contact:
@@ -115,9 +115,6 @@ contact:
     Whether you want to sponsor, donate resources, or get involved as a
     volunteer — we'd love to hear from you. Reach out and let's build
     something great together.
-  primaryCta:
-    text: Contact Us
-    href: "mailto:tahmid@nukehub.org"
-  secondaryCta:
-    text: View Current Sponsors
-    href: "/acknowledgment"
+  primaryText: "Contact Us"
+  secondaryText: "View Current Sponsors"
+  secondaryHref: "/acknowledgment"

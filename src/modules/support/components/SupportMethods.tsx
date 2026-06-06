@@ -8,18 +8,19 @@ interface SupportMethod {
   title: string;
   description: string;
   cta: string;
-  href: string;
+  inquiryType: string;
 }
 
 interface Props {
   methods: SupportMethod[];
+  onContactClick: (inquiryType: string) => void;
 }
 
 function resolveIcon(name: string): LucideIcon {
   return (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Circle;
 }
 
-export function SupportMethods({ methods }: Props) {
+export function SupportMethods({ methods, onContactClick }: Props) {
   return (
     <section className="py-16 border-t border-border/50">
       <motion.div
@@ -56,12 +57,12 @@ export function SupportMethods({ methods }: Props) {
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">
                     {method.description}
                   </p>
-                  <a
-                    href={method.href}
+                  <button
+                    onClick={() => onContactClick(method.inquiryType)}
                     className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                   >
                     {method.cta}
-                  </a>
+                  </button>
                 </div>
               </motion.div>
             );

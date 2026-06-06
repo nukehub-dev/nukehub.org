@@ -10,12 +10,13 @@ interface Tier {
   description: string;
   features: string[];
   cta: string;
-  href: string;
+  inquiryType: string;
   featured?: boolean;
 }
 
 interface Props {
   tiers: Tier[];
+  onContactClick: (inquiryType: string) => void;
 }
 
 const tierConfig: Record<
@@ -73,7 +74,7 @@ const tierConfig: Record<
   },
 };
 
-export function SponsorshipTiers({ tiers }: Props) {
+export function SponsorshipTiers({ tiers, onContactClick }: Props) {
   return (
     <section id="sponsorship-tiers" className="py-20 border-t border-border/50">
       <motion.div
@@ -162,8 +163,8 @@ export function SponsorshipTiers({ tiers }: Props) {
 
                     {/* CTA */}
                     <div className="mt-7">
-                      <a
-                        href={t.href}
+                      <button
+                        onClick={() => onContactClick(t.inquiryType)}
                         className={`flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-nowrap transition-all duration-200 ${
                           t.featured
                             ? 'border border-primary/30 bg-primary/10 text-primary shadow-sm hover:bg-primary/15 hover:shadow-md active:scale-[0.98] dark:border-primary/50 dark:bg-primary dark:text-primary-foreground dark:shadow-lg dark:shadow-primary/25 dark:hover:bg-primary/90 dark:hover:shadow-xl dark:hover:shadow-primary/40'
@@ -171,7 +172,7 @@ export function SponsorshipTiers({ tiers }: Props) {
                         }`}
                       >
                         {t.cta}
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
