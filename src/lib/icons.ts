@@ -9,6 +9,7 @@ import {
   MessageCircle,
   BookOpen,
   Quote,
+  Mail,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -23,6 +24,7 @@ export const iconMap: Record<string, LucideIcon> = {
   messageCircle: MessageCircle,
   bookOpen: BookOpen,
   quote: Quote,
+  mail: Mail,
 };
 
 export function getIcon(name: string): LucideIcon | undefined {

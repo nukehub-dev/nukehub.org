@@ -17,6 +17,7 @@ import {
   User,
   Calendar,
   MessageSquare,
+  Mail,
 } from 'lucide-react';
 import { BrandIcon } from '@components/ui/BrandIcon';
 
@@ -73,6 +74,7 @@ export const navItems: NavItem[] = [
     children: [
       { title: 'People', icon: User, url: '/people' },
       { title: 'Events', icon: Calendar, url: '/events' },
+      { title: 'Contact', icon: Mail, url: '/contact' },
       { title: 'NukeTalk', icon: MessageSquare, url: 'https://talk.nukehub.org', newpage: true },
       { title: 'GitHub', icon: GithubIcon, url: 'https://github.com/nukehub-dev', newpage: true },
       { title: 'LinkedIn', icon: LinkedinIcon, url: 'https://www.linkedin.com/company/nukehub', newpage: true },

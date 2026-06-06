@@ -8,7 +8,7 @@ ctas:
     variant: "primary"
     icon: "messageCircle"
     external: true
-  - text: "Explore Docs"
-    href: "/about"
+  - text: "Contact Us"
+    href: "/contact"
     variant: "secondary"
-    icon: "bookOpen"
+    icon: "mail"

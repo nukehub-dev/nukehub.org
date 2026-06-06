@@ -11,6 +11,7 @@ import {
   FlaskConical,
   Package,
   ExternalLink,
+  Mail,
 } from 'lucide-react';
 
 export interface FooterLink {
@@ -54,6 +55,7 @@ export const footerColumns: FooterColumn[] = [
   {
     title: 'Connect',
     links: [
+      { title: 'Contact', url: '/contact', icon: Mail },
       { title: 'GitHub', url: 'https://github.com/nukehub-dev/', newpage: true, icon: ExternalLink },
       { title: 'LinkedIn', url: 'https://www.linkedin.com/company/nukehub', newpage: true, icon: ExternalLink },
     ],

@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { ContactPageContent } from '@modules/contact/components/ContactPageContent';
+---
+
+<BaseLayout
+  title="Contact Us"
+  description="Get in touch with the NukeHub team. We will get back to you within 24 hours."
+  permalink="/contact"
+>
+  <ContactPageContent client:load />
+</BaseLayout>
