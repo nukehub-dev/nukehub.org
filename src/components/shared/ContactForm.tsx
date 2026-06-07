@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Send, AlertCircle, Loader2, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
+import { Turnstile } from '@marsidev/react-turnstile';
 import { cn } from '@lib/utils';
 
 export interface ContactFormProps {
@@ -129,6 +130,7 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [status, setStatus] = React.useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [messageExpanded, setMessageExpanded] = React.useState(false);
+  const [turnstileToken, setTurnstileToken] = React.useState('');
 
   React.useEffect(() => {
     setFormData((prev) => ({ ...prev, inquiryType: defaultInquiryType }));
@@ -155,7 +157,7 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstileToken }),
       });
 
       const data = await response.json();
@@ -209,7 +211,7 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
-          <label htmlFor="contact-name" className="block text-sm font-medium text-foreground mb-2">
+          <label htmlFor="contact-name" className="block text-sm font-medium text-foreground mb-2 pl-4">
             Name *
           </label>
           <input
@@ -229,7 +231,7 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
         </div>
 
         <div>
-          <label htmlFor="contact-email" className="block text-sm font-medium text-foreground mb-2">
+          <label htmlFor="contact-email" className="block text-sm font-medium text-foreground mb-2 pl-4">
             Email *
           </label>
           <input
@@ -249,7 +251,7 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
         </div>
 
         <div>
-          <label htmlFor="contact-org" className="block text-sm font-medium text-foreground mb-2">
+          <label htmlFor="contact-org" className="block text-sm font-medium text-foreground mb-2 pl-4">
             Organization
           </label>
           <input
@@ -263,7 +265,7 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2 pl-4">
             Inquiry Type *
           </label>
           <CustomSelect
@@ -286,7 +288,7 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
         )}
       >
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <label htmlFor="contact-message" className="text-sm font-semibold text-foreground">
+          <label htmlFor="contact-message" className="text-sm font-semibold text-foreground pl-4">
             Message *
           </label>
           <span className="tabular-nums text-xs text-muted-foreground">
@@ -350,6 +352,22 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
         </div>
 
         {errors.message && <p className="mt-2 text-xs text-red-500">{errors.message}</p>}
+      </div>
+
+      <div className="flex flex-col items-center gap-2">
+        <Turnstile
+          siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
+          onSuccess={setTurnstileToken}
+          onError={() => setTurnstileToken('')}
+          onExpire={() => setTurnstileToken('')}
+          options={{
+            theme: 'dark',
+            size: 'flexible',
+          }}
+        />
+        {errors.turnstile && (
+          <p className="text-xs text-red-500">{errors.turnstile}</p>
+        )}
       </div>
 
       {status === 'error' && (
