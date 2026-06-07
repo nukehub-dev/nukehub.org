@@ -18,6 +18,13 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
+      include: [
+        '@fullcalendar/react',
+        '@fullcalendar/daygrid',
+        '@fullcalendar/timegrid',
+        '@fullcalendar/list',
+        '@fullcalendar/interaction',
+      ],
       esbuildOptions: {
         define: {
           'process.env.NODE_ENV': '"development"',

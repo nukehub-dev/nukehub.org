@@ -41,10 +41,8 @@ function EventContent({ info, onEventClick }: { info: EventContentArg; onEventCl
   const timeText = info.timeText;
   const isList = info.view.type === 'listMonth' || info.view.type.startsWith('list');
 
-  // For list view, FullCalendar handles the layout — just return null to use default
   if (isList) return null;
 
-  // Build tooltip content
   const venue = event.extendedProps.venue as string | undefined;
   const tooltipContent = (
     <div className="max-w-[200px]">
@@ -88,7 +86,7 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
   const calendarRef = React.useRef<FullCalendar>(null);
   const [isDark, setIsDark] = React.useState(false);
 
-  // Sync dark mode with our theme system
+  // Sync dark mode
   React.useEffect(() => {
     const html = document.documentElement;
     const checkTheme = () => {
@@ -105,42 +103,6 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
   const getApi = (): CalendarApi | null => {
     return calendarRef.current?.getApi() ?? null;
   };
-
-  // Strip native title attributes from FullCalendar elements to prevent ugly browser tooltips
-  React.useEffect(() => {
-    const calendarEl = (calendarRef.current?.getApi() as any)?.el as HTMLElement | undefined;
-    if (!calendarEl) return;
-
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'title') {
-          const target = mutation.target as HTMLElement;
-          if (target.hasAttribute('title')) {
-            target.removeAttribute('title');
-          }
-        }
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((node) => {
-            if (node instanceof HTMLElement) {
-              node.querySelectorAll('[title]').forEach((el: Element) => el.removeAttribute('title'));
-            }
-          });
-        }
-      }
-    });
-
-    observer.observe(calendarEl, {
-      attributes: true,
-      attributeFilter: ['title'],
-      childList: true,
-      subtree: true,
-    });
-
-    // Initial cleanup
-    calendarEl.querySelectorAll('[title]').forEach((el: Element) => el.removeAttribute('title'));
-
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <div className={cn(isDark ? 'fc-dark' : '')}>
