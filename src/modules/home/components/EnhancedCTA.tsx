@@ -14,15 +14,15 @@ export function EnhancedCTA({ data }: EnhancedCTAProps) {
   const { badge, headline, subtitle, ctas } = data;
 
   return (
-    <section
-      className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section"
-      style={{
-        maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
-      }}
-    >
+    <section className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section">
       {/* Three.js energy field background */}
-      <div className="absolute inset-0 -z-20">
+      <div
+        className="absolute inset-0 -z-20"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+        }}
+      >
         <CTACanvas />
       </div>
 

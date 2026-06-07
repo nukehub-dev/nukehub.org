@@ -157,16 +157,16 @@ export function InstitutionsSection({
     const totalSponsors = sponsors.length;
 
     return (
-        <section
-            className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-20 snap-section"
-            style={{
-                maskImage:
-                    "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
-                WebkitMaskImage:
-                    "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
-            }}
-        >
-            <div className="absolute inset-0 -z-20 opacity-30 dark:opacity-100 pointer-events-none transition-opacity duration-700">
+        <section className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-20 snap-section">
+            <div
+                className="absolute inset-0 -z-20 opacity-30 dark:opacity-100 pointer-events-none transition-opacity duration-700"
+                style={{
+                    maskImage:
+                        "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+                    WebkitMaskImage:
+                        "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+                }}
+            >
                 <InstitutionsCanvas />
             </div>
 

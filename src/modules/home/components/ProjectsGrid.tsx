@@ -34,13 +34,16 @@ export function ProjectsGrid({ projects, totalCount, viewAllHref }: ProjectsGrid
     <section
       ref={sectionRef}
       className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden py-16 snap-section"
-      style={{
-        maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
-      }}
     >
       {/* 3D Background Canvas with parallax */}
-      <motion.div className="absolute inset-0 -z-20" style={{ y: backgroundY }}>
+      <motion.div
+        className="absolute inset-0 -z-20"
+        style={{
+          y: backgroundY,
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+        }}
+      >
         <ProjectsCanvas />
       </motion.div>
 

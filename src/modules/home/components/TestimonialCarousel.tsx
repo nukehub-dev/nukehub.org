@@ -14,7 +14,7 @@ interface TestimonialCarouselProps {
 }
 
 /* ------------------------------------------------------------------ */
-// 3D position values for each card based on offset from active index
+// Position values — translateX + scale only (no rotateY so blur works)
 /* ------------------------------------------------------------------ */
 function getCardTransform(offset: number, isMobile = false) {
   const absOffset = Math.abs(offset);
@@ -22,7 +22,6 @@ function getCardTransform(offset: number, isMobile = false) {
   if (absOffset > 2) {
     return {
       x: offset > 0 ? 700 : -700,
-      rotateY: offset > 0 ? -50 : 50,
       scale: 0.5,
       opacity: 0,
       zIndex: 0,
@@ -30,7 +29,7 @@ function getCardTransform(offset: number, isMobile = false) {
   }
 
   if (offset === 0) {
-    return { x: 0, rotateY: 0, scale: 1, opacity: 1, zIndex: 10 };
+    return { x: 0, scale: 1, opacity: 1, zIndex: 10 };
   }
 
   const dir = offset > 0 ? 1 : -1;
@@ -38,7 +37,6 @@ function getCardTransform(offset: number, isMobile = false) {
   const stepX = isMobile ? 120 : 180;
   return {
     x: dir * (baseX + (absOffset - 1) * stepX),
-    rotateY: dir * -32 * absOffset,
     scale: 1 - absOffset * 0.14,
     opacity: 1 - absOffset * 0.4,
     zIndex: 5 - absOffset,
@@ -46,7 +44,7 @@ function getCardTransform(offset: number, isMobile = false) {
 }
 
 /* ------------------------------------------------------------------ */
-// Single card
+// Single card with strong glassmorphism
 /* ------------------------------------------------------------------ */
 function CarouselCard({
   testimonial,
@@ -65,56 +63,47 @@ function CarouselCard({
   return (
     <div
       onClick={onClick}
-      className="absolute left-1/2 top-1/2 -ml-[42.5vw] -mt-[190px] w-[85vw] cursor-pointer sm:w-[400px] sm:-ml-[200px] sm:-mt-[200px]"
+      className={`bubble absolute left-1/2 top-1/2 -ml-[42.5vw] -mt-[190px] w-[85vw] cursor-pointer overflow-hidden rounded-2xl border transition-all duration-500 sm:w-[400px] sm:-ml-[200px] sm:-mt-[200px] ${
+        isActive
+          ? 'border-border/60 shadow-2xl shadow-primary/[0.08]'
+          : 'border-border/20 shadow-lg'
+      }`}
       style={{
         zIndex: t.zIndex,
-        transform: `translateX(${t.x}px) rotateY(${t.rotateY}deg) scale(${t.scale})`,
+        transform: `translateX(${t.x}px) scale(${t.scale})`,
         opacity: t.opacity,
         transition: 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.55s ease',
-        transformStyle: 'preserve-3d',
         willChange: 'transform, opacity',
         pointerEvents: t.opacity > 0.3 ? 'auto' : 'none',
+        height: isMobile ? '380px' : '400px',
+        backdropFilter: 'blur(12px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(150%)',
+        backgroundColor: 'color-mix(in oklch, var(--glass-base, var(--bg-surface)) 35%, transparent)',
       }}
     >
-      <div
-        className={`bubble relative flex h-[380px] flex-col overflow-hidden rounded-2xl border bg-card/60 transition-all duration-500 sm:h-[400px] ${
-          isActive
-            ? 'border-border/60 shadow-2xl shadow-primary/[0.06]'
-            : 'border-border/30 shadow-lg'
-        }`}
-      >
-        {/* Top edge highlight */}
-        <div
-          className={`absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent transition-opacity duration-500 ${
-            isActive ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
+      {/* Content */}
+      <div className="relative flex h-full flex-col p-6 sm:p-8">
+        {/* Quote icon */}
+        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+          <Quote className="h-5 w-5" strokeWidth={1.5} />
+        </div>
 
-        {/* Quote watermark */}
-        <span className="pointer-events-none absolute right-2 top-1 select-none text-[5rem] font-extrabold leading-none text-foreground/[0.02] sm:text-[6rem]">
-          &ldquo;
-        </span>
+        {/* Quote text */}
+        <p className="mb-auto flex-1 text-sm leading-relaxed text-foreground/90 sm:text-base/[1.7]">
+          {testimonial.quote}
+        </p>
 
-        <div className="flex flex-1 flex-col p-6 sm:p-8">
-          {/* Quote icon */}
-          <div className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/[0.08] text-primary ring-1 ring-primary/15">
-            <Quote className="h-4 w-4" strokeWidth={1.5} />
+        {/* Divider */}
+        <div className="my-5 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
+
+        {/* Author */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary ring-1 ring-primary/20">
+            {testimonial.avatar}
           </div>
-
-          {/* Quote text */}
-          <p className="mb-auto flex-1 text-sm leading-relaxed text-foreground/85 sm:text-base/[1.7]">
-            {testimonial.quote}
-          </p>
-
-          {/* Author */}
-          <div className="mt-6 flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/[0.08] text-xs font-bold text-primary">
-              {testimonial.avatar}
-            </div>
-            <div className="min-w-0">
-              <div className="truncate text-sm font-semibold text-foreground">{testimonial.author}</div>
-              <div className="truncate text-xs text-muted-foreground">{testimonial.role}</div>
-            </div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold text-foreground">{testimonial.author}</div>
+            <div className="truncate text-xs text-muted-foreground">{testimonial.role}</div>
           </div>
         </div>
       </div>
@@ -181,12 +170,9 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 3D Stage */}
-      <div
-        className="relative mx-auto h-[420px] sm:h-[460px]"
-        style={{ perspective: '1400px' }}
-      >
-        <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d' }}>
+      {/* Stage */}
+      <div className="relative mx-auto h-[420px] sm:h-[460px]">
+        <div className="absolute inset-0">
           {testimonials.map((t, i) => {
             const offset = i - activeIndex;
             return (
@@ -202,17 +188,17 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
         </div>
       </div>
 
-      {/* Navigation arrows — hidden on mobile (swipe + dots are enough) */}
+      {/* Navigation arrows */}
       <button
         onClick={goPrev}
-        className="absolute left-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:block sm:left-4 lg:-left-14"
+        className="absolute left-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:block sm:left-4 lg:-left-24 xl:-left-40"
         aria-label="Previous"
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
       <button
         onClick={goNext}
-        className="absolute right-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:block sm:right-4 lg:-right-14"
+        className="absolute right-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-border/40 bg-background/60 p-2.5 text-muted-foreground backdrop-blur-md transition-all hover:border-primary/30 hover:text-primary sm:block sm:right-4 lg:-right-24 xl:-right-40"
         aria-label="Next"
       >
         <ChevronRight className="h-5 w-5" />

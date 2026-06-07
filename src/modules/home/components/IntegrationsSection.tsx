@@ -21,15 +21,15 @@ export function IntegrationsSection({ data, integrations, totalCount, viewAllHre
   const { sectionTitle, sectionSubtitle, badge } = data;
 
   return (
-    <section
-      className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section"
-      style={{
-        maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
-      }}
-    >
+    <section className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section">
       {/* Three.js background — visible in both modes, text protected by gradients */}
-      <div className="absolute inset-0 -z-20 opacity-100 pointer-events-none">
+      <div
+        className="absolute inset-0 -z-20 opacity-100 pointer-events-none"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
+        }}
+      >
         <TokamakCanvas />
       </div>
 

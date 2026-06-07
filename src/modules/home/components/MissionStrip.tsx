@@ -49,9 +49,9 @@ function PillarCard({ pillar, index }: { pillar: MissionData['pillars'][0]; inde
         delay: index * 0.12,
         ease: [0.215, 0.61, 0.355, 1],
       }}
-      className="group relative h-full"
+      className="group bubble relative h-full flex flex-col overflow-hidden p-7 shadow-lg shadow-black/[0.06] transition-all duration-500 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/[0.08] dark:shadow-sm dark:hover:border-primary/20 dark:hover:shadow-2xl dark:hover:shadow-primary/[0.04] sm:p-9"
     >
-      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-lg shadow-black/[0.06] transition-all duration-500 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/[0.08] dark:border-border/25 dark:bg-card/40 dark:shadow-sm dark:hover:border-primary/20 dark:hover:bg-card/50 dark:hover:shadow-2xl dark:hover:shadow-primary/[0.04] sm:p-9">
+      <div className="relative flex h-full flex-col">
 
         {/* Subtle brand tint gradient */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-transparent dark:from-primary/[0.02]" />
@@ -94,15 +94,15 @@ export function MissionStrip({ data }: MissionStripProps) {
   const gridClass = gridClasses(pillars.length);
 
   return (
-    <section
-      className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section"
-      style={{
-        maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
-      }}
-    >
-      {/* Ambient background */}
-      <div className="absolute inset-0 -z-10">
+    <section className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-16 snap-section">
+      {/* Ambient background — masked separately so cards can blur it */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)',
+        }}
+      >
         <MissionCanvas />
       </div>
 
