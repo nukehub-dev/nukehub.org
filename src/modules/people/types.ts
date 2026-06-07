@@ -17,6 +17,7 @@ export interface Person {
   organization?: string;
   role?: string;
   location?: string;
+  bio?: string;
   email: string;
   phone?: string;
   url?: string;

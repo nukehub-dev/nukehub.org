@@ -175,6 +175,23 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
                 </motion.div>
               </div>
 
+              {/* Bio section */}
+              {person.bio && (
+                <motion.div
+                  initial={{ y: 8, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.16 }}
+                  className="px-6 py-4 border-b border-border/40"
+                >
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                    About
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {person.bio}
+                  </p>
+                </motion.div>
+              )}
+
               {/* Links section — 2-col grid on desktop */}
               {socials.length > 0 && (
                 <motion.div

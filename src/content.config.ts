@@ -97,6 +97,7 @@ const people = defineCollection({
     x: z.string().optional(),
     twitch: z.string().optional(),
     reddit: z.string().optional(),
+    bio: z.string().optional(),
     category: z.string(),
   }),
 });
