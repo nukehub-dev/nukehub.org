@@ -1,9 +1,17 @@
 import type { APIRoute } from 'astro';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 export const prerender = false;
 
-const resend = new Resend(import.meta.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: import.meta.env.SMTP_HOST,
+  port: Number(import.meta.env.SMTP_PORT) || 587,
+  secure: import.meta.env.SMTP_SECURE === 'true',
+  auth: {
+    user: import.meta.env.SMTP_USER,
+    pass: import.meta.env.SMTP_PASS,
+  },
+});
 
 interface ContactFormData {
   name: string;
@@ -57,7 +65,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Send email via Resend
+    // Send email via SMTP
     const toEmail = import.meta.env.CONTACT_TO_EMAIL;
 
     if (!toEmail) {
@@ -67,24 +75,24 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const { error } = await resend.emails.send({
-      from: 'NukeHub <contact@nukehub.org>',
-      to: toEmail,
-      subject: `[${inquiryType}] Message from ${name}`,
-      replyTo: email,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Organization:</strong> ${organization || 'N/A'}</p>
-        <p><strong>Inquiry Type:</strong> ${inquiryType}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, '<br>')}</p>
-      `,
-    });
-
-    if (error) {
-      console.error('Resend error:', error);
+    try {
+      await transporter.sendMail({
+        from: `NukeHub <${import.meta.env.SMTP_USER}>`,
+        to: toEmail,
+        subject: `[${inquiryType}] Message from ${name}`,
+        replyTo: email,
+        html: `
+          <h2 style="font-family: sans-serif;">New Contact Form Submission</h2>
+          <p style="font-family: sans-serif;"><strong style="font-family: sans-serif;">Name:</strong> ${name}</p>
+          <p style="font-family: sans-serif;"><strong style="font-family: sans-serif;">Email:</strong> ${email}</p>
+          <p style="font-family: sans-serif;"><strong style="font-family: sans-serif;">Organization:</strong> ${organization || 'N/A'}</p>
+          <p style="font-family: sans-serif;"><strong style="font-family: sans-serif;">Inquiry Type:</strong> ${inquiryType}</p>
+          <p style="font-family: sans-serif;"><strong style="font-family: sans-serif;">Message:</strong></p>
+          <p style="font-family: sans-serif;">${message.replace(/\n/g, '<br>')}</p>
+        `,
+      });
+    } catch (sendError) {
+      console.error('SMTP error:', sendError);
       return new Response(
         JSON.stringify({ success: false, message: 'Failed to send email. Please try again.' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }

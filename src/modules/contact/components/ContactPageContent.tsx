@@ -41,7 +41,7 @@ export function ContactPageContent() {
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</p>
-                  <p className="mt-1 text-base font-semibold text-foreground">hello@nukehub.org</p>
+                  <p className="mt-1 text-base font-semibold text-foreground">contact@nukehub.org</p>
                 </div>
               </div>
             </div>
