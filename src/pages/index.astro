@@ -18,9 +18,9 @@ import type {
   MissionData,
   IntegrationsData,
   TestimonialsSectionData,
-  TrustData,
   CTAData,
 } from '@modules/home/types';
+import type { Sponsor } from '@modules/home/types/sponsor';
 
 // Load homepage data from YAML
 const heroData = loadYaml<HeroData>('home/data/hero.yml');
@@ -28,7 +28,7 @@ const missionData = loadYaml<MissionData>('home/data/mission.yml');
 
 const integrationsData = loadYaml<IntegrationsData>('home/data/integrations.yml');
 const testimonialsSectionData = loadYaml<TestimonialsSectionData>('home/data/testimonials.yml');
-const trustData = loadYaml<TrustData>('home/data/trust.yml');
+const trustData = loadYaml<{ badge: { text: string; showLiveDot?: boolean }; sectionTitle: string; subtitle: string }>('home/data/trust.yml');
 const ctaData = loadYaml<CTAData>('home/data/cta.yml');
 
 // Load projects from content collection
@@ -52,6 +52,16 @@ const testimonials = testimonialEntries.map((entry) => entry.data);
 const integrationEntries = await getCollection('integrations');
 const allIntegrations = integrationEntries.map((entry) => entry.data);
 const integrations = allIntegrations.slice(0, 12);
+
+// Load sponsors from content collection
+const sponsorEntries = await getCollection('sponsors');
+const sponsors: Sponsor[] = sponsorEntries.map((entry) => ({
+  name: entry.data.name,
+  image: entry.data.image,
+  url: entry.data.url,
+  acknowledgment: entry.data.acknowledgment,
+  tier: entry.data.tier,
+}));
 ---
 
 <BaseLayout
@@ -84,7 +94,13 @@ const integrations = allIntegrations.slice(0, 12);
 
   <TestimonialsSection client:load data={testimonialsSectionData} testimonials={testimonials} />
 
-  <InstitutionsSection client:load data={trustData} />
+  <InstitutionsSection
+    client:load
+    badge={trustData.badge}
+    title={trustData.sectionTitle}
+    subtitle={trustData.subtitle}
+    sponsors={sponsors}
+  />
 
   <EnhancedCTA client:load data={ctaData} />
 

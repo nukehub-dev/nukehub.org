@@ -1,9 +1,6 @@
-sectionTitle: "Supported by leading institutions"
+badge:
+  text: "Our Network"
+  showLiveDot: false
 
-institutions:
-  - "MIT"
-  - "EPFL"
-  - "Argonne National Lab"
-  - "ORNL"
-  - "IAEA"
-  - "NEI"
+sectionTitle: "Our Constellation"
+subtitle: "Organizations across the nuclear landscape joining forces"
