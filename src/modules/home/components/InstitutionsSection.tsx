@@ -200,7 +200,7 @@ export function InstitutionsSection({
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={viewportOnce}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary"
+                        className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-md"
                     >
                         {badge.showLiveDot && (
                             <span className="relative flex h-2 w-2">
@@ -227,12 +227,12 @@ export function InstitutionsSection({
                     viewport={viewportOnce}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-          {totalSponsors <= 3 ? (
-            // Static centered layout for few sponsors
-            <div className="py-8 sm:py-12">
-              <StaticRow sponsors={sponsors} />
-            </div>
-          ) : (
+                    {totalSponsors <= 3 ? (
+                        // Static centered layout for few sponsors
+                        <div className="py-8 sm:py-12">
+                            <StaticRow sponsors={sponsors} />
+                        </div>
+                    ) : (
                         // Marquee for many sponsors
                         <div className="space-y-1 sm:space-y-2">
                             {TIER_ORDER.map((tier) => {

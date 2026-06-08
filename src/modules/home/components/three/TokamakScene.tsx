@@ -67,9 +67,11 @@ function CameraRig({
       const eased = 1 - Math.pow(1 - progress, 3);
 
       // Spiral path: top view → orbit around → frontal
-      const angle = -eased * 2.5 * Math.PI;             // 1.25 clockwise rotations
-      const y = 0.3 + 6.7 * Math.pow(1 - eased, 1.5);  // ease-out descent
-      const radius = 0.5 + 4.5 * Math.pow(eased, 0.7); // ease-out zoom out
+      const endAngle = Math.atan2(endPos.x, endPos.z);
+      const endRadius = Math.sqrt(endPos.x * endPos.x + endPos.z * endPos.z);
+      const angle = eased * (2 * Math.PI + endAngle);              // 1 CCW rotation, end facing front
+      const y = 0.3 + 6.7 * Math.pow(1 - eased, 1.5);              // ease-out descent
+      const radius = 0.5 + (endRadius - 0.5) * Math.pow(eased, 0.7); // ease-out zoom out
 
       const x = Math.sin(angle) * radius;
       const z = Math.cos(angle) * radius;

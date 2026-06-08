@@ -58,7 +58,7 @@ export function IntegrationsShowcase({ integrations }: IntegrationsShowcaseProps
             viewport={viewportOnce}
             transition={{ duration: 0.6 }}
           >
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
               <Layers size={14} />
               Powered By
             </div>

@@ -22,7 +22,7 @@ export function ProjectsHero({ projectCount, integrationCount }: ProjectsHeroPro
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
         >
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
             <Atom size={14} />
             Open Source Ecosystem
           </div>

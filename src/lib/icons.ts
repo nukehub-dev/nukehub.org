@@ -10,6 +10,7 @@ import {
   BookOpen,
   Quote,
   Mail,
+  Zap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -25,6 +26,7 @@ export const iconMap: Record<string, LucideIcon> = {
   bookOpen: BookOpen,
   quote: Quote,
   mail: Mail,
+  zap: Zap,
 };
 
 export function getIcon(name: string): LucideIcon | undefined {
