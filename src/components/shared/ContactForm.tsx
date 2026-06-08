@@ -154,7 +154,8 @@ export function ContactForm({ defaultInquiryType = '', onSuccess, successContent
     setErrors({});
 
     try {
-      const response = await fetch('/api/contact', {
+      const apiUrl = import.meta.env.PUBLIC_CONTACT_API_URL || '/api/contact';
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, turnstileToken }),

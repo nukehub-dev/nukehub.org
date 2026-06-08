@@ -54,6 +54,10 @@ archive/
 # Debug pages (generated during dev)
 src/pages/debug/
 
+# Go binaries
+contact-server/contact-server
+*.exe
+
 # Misc
 *.tgz
 *.tar.gz
