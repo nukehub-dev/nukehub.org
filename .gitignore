@@ -51,6 +51,9 @@ archive/
 # Migration planning
 .phases/
 
+# Debug pages (generated during dev)
+src/pages/debug/
+
 # Misc
 *.tgz
 *.tar.gz

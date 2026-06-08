@@ -1,12 +1,12 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { HeroDebug } from '@modules/home/components/three/HeroDebug';
+import { HeroDebug } from '@modules/debug/components/three/HeroDebug';
 ---
 
 <BaseLayout
   title="Hero Scene Debug"
   description="Three.js hero scene debug view"
-  permalink="/hero"
+  permalink="/debug/hero"
 >
   <HeroDebug client:load />
 </BaseLayout>

@@ -1,12 +1,12 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { ParticlesDebug } from '@modules/home/components/three/ParticlesDebug';
+import { ParticlesDebug } from '@modules/debug/components/three/ParticlesDebug';
 ---
 
 <BaseLayout
   title="Interactive Particles Debug"
   description="Three.js interactive particles scene debug view"
-  permalink="/particles"
+  permalink="/debug/particles"
 >
   <ParticlesDebug client:only="react" />
 </BaseLayout>

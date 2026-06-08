@@ -4,9 +4,9 @@
   "description": "NukeHub flagship brand site — Astro + React Islands + Tailwind v4",
   "type": "module",
   "scripts": {
-    "dev": "rm -rf node_modules/.vite && astro dev --host",
-    "dev:fast": "astro dev --host",
-    "build": "astro build",
+    "dev": "rm -rf node_modules/.vite && node scripts/debug-pages.js --enable && astro dev --host",
+    "dev:fast": "node scripts/debug-pages.js --enable && astro dev --host",
+    "build": "node scripts/debug-pages.js --disable && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

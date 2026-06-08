@@ -1,0 +1,72 @@
+---
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+interface DebugPage {
+  title: string;
+  description: string;
+  permalink: string;
+}
+
+function parseFrontmatter(raw: string): Partial<DebugPage> {
+  const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) return {};
+  const fm = match[1];
+  const title = fm.match(/title:\s*["'](.+?)["']/)?.[1] ?? '';
+  const description = fm.match(/description:\s*["'](.+?)["']/)?.[1] ?? '';
+  const permalink = fm.match(/permalink:\s*["'](.+?)["']/)?.[1] ?? '';
+  return { title, description, permalink };
+}
+
+const debugDir = join(process.cwd(), 'src/pages/debug');
+const files = readdirSync(debugDir)
+  .filter((f) => f.endsWith('.astro') && f !== 'index.astro')
+  .sort();
+
+const pages: DebugPage[] = files.map((f) => {
+  const raw = readFileSync(join(debugDir, f), 'utf-8');
+  const fm = parseFrontmatter(raw);
+  return {
+    title: fm.title || f.replace('.astro', ''),
+    description: fm.description || '',
+    permalink: fm.permalink || `/debug/${f.replace('.astro', '')}`,
+  };
+});
+---
+
+<BaseLayout
+  title="Debug Hub"
+  description="Development and debugging tools for NukeHub"
+  permalink="/debug"
+>
+  <main class="min-h-screen px-6 py-16 max-w-4xl mx-auto">
+    <div class="space-y-8">
+      <header class="space-y-2">
+        <h1 class="text-4xl font-bold tracking-tight text-foreground">Debug Hub</h1>
+        <p class="text-lg text-muted-foreground">
+          Development tools and scene debug views — {pages.length} pages available.
+        </p>
+      </header>
+
+      <section class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {pages.map((page) => (
+            <a
+              href={page.permalink}
+              class="group rounded-xl border border-border/50 bg-card p-6 hover:border-primary/50 transition-colors"
+            >
+              <h3 class="font-semibold text-foreground group-hover:text-primary transition-colors">
+                {page.title}
+              </h3>
+              {page.description && (
+                <p class="text-sm text-muted-foreground mt-1">{page.description}</p>
+              )}
+              <p class="text-xs font-mono text-muted-foreground/60 mt-3">{page.permalink}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+</BaseLayout>

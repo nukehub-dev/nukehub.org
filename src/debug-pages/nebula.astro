@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { NebulaDebug } from '@modules/debug/components/three/NebulaDebug';
+---
+
+<BaseLayout
+  title="Nebula Background Debug"
+  description="Three.js nebula background debug view"
+  permalink="/debug/nebula"
+>
+  <NebulaDebug client:only="react" />
+</BaseLayout>
