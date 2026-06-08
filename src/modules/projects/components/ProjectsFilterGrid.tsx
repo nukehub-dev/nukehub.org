@@ -127,6 +127,8 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                     <img
                       src={project.image}
                       alt={project.title}
+                      width="100%"
+                      height="100%"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />

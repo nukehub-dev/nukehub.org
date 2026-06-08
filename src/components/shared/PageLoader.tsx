@@ -8,11 +8,23 @@ export function PageLoader() {
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const timer = setTimeout(
-      () => setIsLoading(false),
-      prefersReducedMotion ? 0 : 1000
-    );
-    return () => clearTimeout(timer);
+    if (prefersReducedMotion || document.readyState === 'complete') {
+      setIsLoading(false);
+      return;
+    }
+
+    const onLoad = () => {
+      // Minimum splash duration so the loader doesn't flash in/out
+      setTimeout(() => setIsLoading(false), 250);
+    };
+
+    window.addEventListener('load', onLoad);
+    // Fallback if load already fired or stalls
+    const timer = setTimeout(onLoad, 1200);
+    return () => {
+      window.removeEventListener('load', onLoad);
+      clearTimeout(timer);
+    };
   }, []);
 
   return (

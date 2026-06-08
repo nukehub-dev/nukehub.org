@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
+import { useWebGL } from '@lib/useWebGL';
 import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const NucleusScene = lazy(() =>
@@ -62,6 +63,7 @@ export function HeroCanvas() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const isVisible = useCanvasVisibility('hero-canvas-anchor');
   const shouldRender = useDelayedUnmount(isVisible, 3000);
+  const webglSupported = useWebGL();
 
   useEffect(() => {
     // Check prefers-reduced-motion
@@ -101,8 +103,8 @@ export function HeroCanvas() {
     };
   }, []);
 
-  // If reduced motion, always show static fallback
-  if (reducedMotion) {
+  // If reduced motion or no WebGL, show static fallback
+  if (reducedMotion || !webglSupported) {
     return <StaticFallback />;
   }
 

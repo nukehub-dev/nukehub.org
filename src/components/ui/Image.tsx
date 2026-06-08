@@ -92,6 +92,8 @@ export function Image({
           ref={imgRef}
           src={src}
           alt={alt}
+          width={imgProps.width ?? '100%'}
+          height={imgProps.height ?? '100%'}
           className={cn(
             'h-full w-full object-cover',
             status === 'loaded' ? 'opacity-100' : 'opacity-0',

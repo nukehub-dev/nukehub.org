@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
+import { useWebGL } from '@lib/useWebGL';
 import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const TokamakScene = lazy(() =>
@@ -71,7 +72,7 @@ export function TokamakCanvas() {
     };
   }, []);
 
-  if (reducedMotion) return <StaticFallback />;
+  if (reducedMotion || !useWebGL()) return <StaticFallback />;
 
   return (
     <div className="absolute inset-0" id="tech-canvas-anchor">

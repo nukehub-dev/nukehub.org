@@ -33,7 +33,7 @@ methods:
     description: >
       Become a sponsor and gain visibility within the NukeHub community, or
       donate to specific projects that align with your interests.
-      cta: View Sponsorship Tiers
+    cta: View Sponsorship Tiers
     inquiryType: ""
   - icon: Server
     title: Resource Donations

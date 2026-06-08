@@ -24,6 +24,7 @@
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
     "@astrojs/react": "^5.0.5",
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@fullcalendar/daygrid": "^6.1.20",
     "@fullcalendar/interaction": "^6.1.20",

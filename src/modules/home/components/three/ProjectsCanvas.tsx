@@ -1,10 +1,10 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Canvas } from "@react-three/fiber";
 import { getPrimaryColor } from "@lib/themeColors";
+import { useWebGL } from "@lib/useWebGL";
 import { useCanvasVisibility, useDelayedUnmount } from "./useCanvasVisibility";
 
-const ShowcaseScene = lazy(() =>
-  import("./ProjectEmblems").then((mod) => ({ default: mod.ShowcaseScene })),
+const ProjectsScene = lazy(() =>
+  import("./ProjectsScene").then((mod) => ({ default: mod.ProjectsScene })),
 );
 
 function StaticFallback() {
@@ -64,7 +64,7 @@ export function ProjectsCanvas() {
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  if (reducedMotion) return <StaticFallback />;
+  if (reducedMotion || !useWebGL()) return <StaticFallback />;
 
   return (
     <div
@@ -77,19 +77,7 @@ export function ProjectsCanvas() {
         {hasLoaded && shouldRender && (
           <Suspense fallback={null}>
             <div className="absolute inset-0 animate-fade-in">
-              <Canvas
-                dpr={[1, 1]}
-                camera={{ position: [0, 0, 5], fov: 50, near: 0.1, far: 50 }}
-                frameloop={isVisible ? "always" : "never"}
-                gl={{
-                  antialias: true,
-                  alpha: true,
-                  powerPreference: "high-performance",
-                }}
-                style={{ background: "transparent" }}
-              >
-                <ShowcaseScene visible={isVisible} />
-              </Canvas>
+              <ProjectsScene isVisible={isVisible} />
             </div>
           </Suspense>
         )}

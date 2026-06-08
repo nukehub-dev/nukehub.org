@@ -204,19 +204,23 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
         <ChevronRight className="h-5 w-5" />
       </button>
 
-      {/* Pagination dots */}
-      <div className="flex items-center justify-center gap-2">
+      {/* Pagination dots — min 24x24 touch target with visible indicator inside */}
+      <div className="flex items-center justify-center gap-1">
         {testimonials.map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === activeIndex
-                ? 'w-6 bg-primary'
-                : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-            }`}
-            aria-label={`Go to ${i + 1}`}
-          />
+            className="inline-flex h-6 w-6 items-center justify-center rounded-full"
+            aria-label={`Go to testimonial ${i + 1}`}
+          >
+            <span
+              className={`block h-2 rounded-full transition-all duration-300 ${
+                i === activeIndex
+                  ? 'w-6 bg-primary'
+                  : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>

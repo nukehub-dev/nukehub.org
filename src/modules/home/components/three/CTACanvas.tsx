@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
+import { useWebGL } from '@lib/useWebGL';
 import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
 
 const AtomicOrbitalsScene = lazy(() =>
@@ -60,7 +61,7 @@ export function CTACanvas() {
     return () => mq.removeEventListener('change', handleChange);
   }, []);
 
-  if (reducedMotion) return <StaticFallback />;
+  if (reducedMotion || !useWebGL()) return <StaticFallback />;
 
   return (
     <div className="absolute inset-0" id="cta-canvas-anchor">

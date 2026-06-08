@@ -303,6 +303,8 @@ export function UserAuthMenu() {
                     <img
                         src={avatarUrl}
                         alt={user?.username}
+                        width={24}
+                        height={24}
                         className="h-6 w-6 rounded-full object-cover ring-1 ring-border"
                     />
                 ) : (

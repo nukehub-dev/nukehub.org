@@ -168,6 +168,8 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
                               <img
                                 src={sponsor.image}
                                 alt={sponsor.name}
+                                width="100%"
+                                height="100%"
                                 className="max-h-full max-w-[80%] object-contain transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy"
                               />

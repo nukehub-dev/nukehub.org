@@ -15,7 +15,7 @@ ctas:
     href: "/projects"
     variant: "primary"
     icon: "arrowRight"
-  - text: "Learn More"
+  - text: "About NukeHub"
     href: "/about"
     variant: "secondary"
 

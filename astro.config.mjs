@@ -8,6 +8,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://nukehub.org',
   output: 'static',
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: 'hover',
+  },
+  image: {
+    domains: ['github.com', 'avatars.githubusercontent.com'],
+  },
   integrations: [
     react(),
     mdx(),
@@ -37,6 +44,7 @@ export default defineConfig({
         '@styles': '/src/styles',
         '@lib': '/src/lib',
         '@content': '/src/content',
+        '@modules': '/src/modules',
       },
     },
   },

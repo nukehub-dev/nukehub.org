@@ -4,6 +4,7 @@ import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { getPrimaryColor } from '@lib/themeColors';
+import { useWebGL } from '@lib/useWebGL';
 
 /* ======================================================================== */
 // Fragment shader — flowing aurora nebula with stars
@@ -250,6 +251,7 @@ export function SupportBackground() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const webglSupported = useWebGL();
 
   useEffect(() => {
     const update = () => {
@@ -309,19 +311,30 @@ export function SupportBackground() {
       className="fixed inset-0 z-0"
       style={{ pointerEvents: 'none' }}
     >
-      <Canvas
-        dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)]}
-        camera={{ position: [0, 0, 1] }}
-        frameloop={frameLoop}
-        gl={{
-          antialias: false,
-          powerPreference: 'high-performance',
-          alpha: false,
-        }}
-        style={{ width: '100%', height: '100%' }}
-      >
-        <AuroraPlane primaryColor={color} isLight={isLight} />
-      </Canvas>
+      {reducedMotion || !webglSupported ? (
+        <div
+          className="absolute inset-0"
+          style={{
+            background: isLight
+              ? `radial-gradient(ellipse at 50% 0%, ${color}22 0%, transparent 60%)`
+              : `radial-gradient(ellipse at 50% 0%, ${color}33 0%, transparent 60%), radial-gradient(circle at 80% 20%, ${color}18 0%, transparent 40%)`,
+          }}
+        />
+      ) : (
+        <Canvas
+          dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)]}
+          camera={{ position: [0, 0, 1] }}
+          frameloop={frameLoop}
+          gl={{
+            antialias: false,
+            powerPreference: 'high-performance',
+            alpha: false,
+          }}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <AuroraPlane primaryColor={color} isLight={isLight} />
+        </Canvas>
+      )}
     </div>
   );
 }
