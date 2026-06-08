@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -194,6 +195,7 @@ func sendEmail(to, replyTo, subject, htmlBody, textBody string) error {
 	smtpPort := getEnv("SMTP_PORT", "587")
 	smtpUser := getEnv("SMTP_USER", "")
 	smtpPass := getEnv("SMTP_PASS", "")
+	smtpSecure := getEnv("SMTP_SECURE", "false") == "true"
 
 	from := fmt.Sprintf("NukeHub <%s>", smtpUser)
 
@@ -217,6 +219,51 @@ func sendEmail(to, replyTo, subject, htmlBody, textBody string) error {
 	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
 	auth := smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
 
+	if smtpSecure {
+		// TLS connection (port 465)
+		tlsConfig := &tls.Config{
+			ServerName: smtpHost,
+		}
+		conn, err := tls.Dial("tcp", addr, tlsConfig)
+		if err != nil {
+			return fmt.Errorf("TLS dial failed: %w", err)
+		}
+		defer conn.Close()
+
+		client, err := smtp.NewClient(conn, smtpHost)
+		if err != nil {
+			return fmt.Errorf("SMTP client failed: %w", err)
+		}
+		defer client.Close()
+
+		if err := client.Auth(auth); err != nil {
+			return fmt.Errorf("SMTP auth failed: %w", err)
+		}
+
+		if err := client.Mail(smtpUser); err != nil {
+			return fmt.Errorf("SMTP mail failed: %w", err)
+		}
+		if err := client.Rcpt(to); err != nil {
+			return fmt.Errorf("SMTP rcpt failed: %w", err)
+		}
+
+		w, err := client.Data()
+		if err != nil {
+			return fmt.Errorf("SMTP data failed: %w", err)
+		}
+		_, err = w.Write(msg.Bytes())
+		if err != nil {
+			return fmt.Errorf("SMTP write failed: %w", err)
+		}
+		err = w.Close()
+		if err != nil {
+			return fmt.Errorf("SMTP close failed: %w", err)
+		}
+
+		return client.Quit()
+	}
+
+	// STARTTLS connection (port 587)
 	return smtp.SendMail(addr, auth, smtpUser, []string{to}, msg.Bytes())
 }
 
