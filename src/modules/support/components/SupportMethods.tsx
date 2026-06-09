@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import * as Icons from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Banknote, Server, HandHeart, Circle, type LucideIcon } from 'lucide-react';
+
+const iconMap: Record<string, LucideIcon> = {
+  Banknote,
+  Server,
+  HandHeart,
+};
 
 interface SupportMethod {
   icon: string;
@@ -17,7 +22,7 @@ interface Props {
 }
 
 function resolveIcon(name: string): LucideIcon {
-  return (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Circle;
+  return iconMap[name] || Circle;
 }
 
 export function SupportMethods({ methods, onContactClick }: Props) {

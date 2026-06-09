@@ -44,7 +44,7 @@ export function KeycloakProvider({
 }: KeycloakProviderProps) {
     const [keycloak] = useState(() => new Keycloak({ url, realm, clientId }));
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState<AuthUser | null>(null);
 
     const accountUrl = `${url}/realms/${realm}/account`;
@@ -52,26 +52,60 @@ export function KeycloakProvider({
     useEffect(() => {
         let mounted = true;
 
-        keycloak
-            .init({
-                onLoad: "check-sso",
-                silentCheckSsoRedirectUri:
-                    window.location.origin + "/silent-check-sso.html",
+        const init = () => {
+            if (!mounted) return;
+            setIsLoading(true);
+
+            // Cap Keycloak init so a slow/unreachable auth server doesn't
+            // delay page interactivity or skew local Lighthouse scores.
+            const KEYCLOAK_INIT_TIMEOUT = 5000;
+            // Skip silent SSO iframe on localhost/127.0.0.1 because the auth
+            // redirect target is the production domain and will fail/timeout.
+            const isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(
+                window.location.hostname,
+            );
+            const initPromise = keycloak.init({
+                onLoad: isLocalhost ? undefined : "check-sso",
+                silentCheckSsoRedirectUri: isLocalhost
+                    ? undefined
+                    : window.location.origin + "/silent-check-sso.html",
                 pkceMethod: "S256",
                 enableLogging: process.env.NODE_ENV === "development",
-            })
-            .then((authenticated) => {
-                if (!mounted) return;
-
-                setIsAuthenticated(authenticated);
-                setUser(authenticated ? mapUser(keycloak) : null);
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                if (!mounted) return;
-                console.error("Keycloak init failed:", error);
-                setIsLoading(false);
             });
+            const timeoutPromise = new Promise<boolean>((_, reject) => {
+                const id = window.setTimeout(
+                    () => reject(new Error("Keycloak init timeout")),
+                    KEYCLOAK_INIT_TIMEOUT,
+                );
+                initPromise
+                    .then(() => window.clearTimeout(id))
+                    .catch(() => window.clearTimeout(id));
+            });
+
+            Promise.race([initPromise, timeoutPromise])
+                .then((authenticated) => {
+                    if (!mounted) return;
+
+                    setIsAuthenticated(authenticated);
+                    setUser(authenticated ? mapUser(keycloak) : null);
+                    setIsLoading(false);
+                })
+                .catch((error) => {
+                    if (!mounted) return;
+                    console.error("Keycloak init failed:", error);
+                    setIsAuthenticated(false);
+                    setUser(null);
+                    setIsLoading(false);
+                });
+        };
+
+        // Defer Keycloak init until the page has finished initial render
+        // to avoid blocking LCP on auth checks.
+        if (document.readyState === "complete") {
+            init();
+        } else {
+            window.addEventListener("load", init, { once: true });
+        }
 
         keycloak.onAuthSuccess = () => {
             setIsAuthenticated(true);

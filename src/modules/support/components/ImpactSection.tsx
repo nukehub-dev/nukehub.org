@@ -1,7 +1,13 @@
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import * as Icons from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Zap, Code, GraduationCap, Users, Circle, type LucideIcon } from 'lucide-react';
+
+const iconMap: Record<string, LucideIcon> = {
+  Zap,
+  Code,
+  GraduationCap,
+  Users,
+};
 
 interface ImpactItem {
   icon: string;
@@ -14,7 +20,7 @@ interface Props {
 }
 
 function resolveIcon(name: string): LucideIcon {
-  return (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Circle;
+  return iconMap[name] || Circle;
 }
 
 export function ImpactSection({ items }: Props) {

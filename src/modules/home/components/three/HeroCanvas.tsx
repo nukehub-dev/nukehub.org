@@ -1,11 +1,8 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
 import { useWebGL } from '@lib/useWebGL';
 import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
-
-const NucleusScene = lazy(() =>
-  import('./NucleusScene').then((mod) => ({ default: mod.NucleusScene }))
-);
+import { NucleusScene } from './NucleusScene';
 
 function StaticFallback() {
   const [primary, setPrimary] = useState('#f37524');
@@ -49,20 +46,13 @@ function StaticFallback() {
   );
 }
 
-function CanvasLoader() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
-    </div>
-  );
-}
-
 export function HeroCanvas() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
+  // Hero is above the fold — render immediately without lazy-loading
+  const [hasLoaded] = useState(true);
   const isVisible = useCanvasVisibility('hero-canvas-anchor');
-  const shouldRender = useDelayedUnmount(isVisible, 3000);
+  const shouldRender = useDelayedUnmount(isVisible, 0);
   const webglSupported = useWebGL();
 
   useEffect(() => {
@@ -80,23 +70,6 @@ export function HeroCanvas() {
     checkMobile();
     window.addEventListener('resize', checkMobile, { passive: true });
 
-    // Trigger lazy load once when hero is near viewport
-    const hero = document.getElementById('hero-canvas-anchor');
-    if (hero) {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setHasLoaded(true);
-            observer.disconnect();
-          }
-        },
-        { rootMargin: '200px' }
-      );
-      observer.observe(hero);
-    } else {
-      setHasLoaded(true);
-    }
-
     return () => {
       mq.removeEventListener('change', handleChange);
       window.removeEventListener('resize', checkMobile);
@@ -112,15 +85,13 @@ export function HeroCanvas() {
     <div className="absolute inset-0" id="hero-canvas-anchor">
       <StaticFallback />
       {hasLoaded && shouldRender && (
-        <Suspense fallback={<CanvasLoader />}>
-          <div className="absolute inset-0 animate-fade-in">
-            <NucleusScene
-              mobile={isMobile}
-              reducedMotion={reducedMotion}
-              frameloop={isVisible ? 'always' : 'never'}
-            />
-          </div>
-        </Suspense>
+        <div className="absolute inset-0 animate-fade-in">
+          <NucleusScene
+            mobile={isMobile}
+            reducedMotion={reducedMotion}
+            frameloop="always"
+          />
+        </div>
       )}
     </div>
   );

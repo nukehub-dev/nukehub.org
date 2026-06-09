@@ -2,8 +2,14 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import * as Icons from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Globe, Users, Lightbulb, Shield, Circle, type LucideIcon } from 'lucide-react';
+
+const iconMap: Record<string, LucideIcon> = {
+  Globe,
+  Users,
+  Lightbulb,
+  Shield,
+};
 
 interface Value {
   icon: string;
@@ -18,7 +24,7 @@ interface Props {
 }
 
 function resolveIcon(name: string): LucideIcon {
-  return (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Circle;
+  return iconMap[name] || Circle;
 }
 
 const cardStyles = [

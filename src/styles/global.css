@@ -488,6 +488,68 @@
     background: var(--foreground) !important;
 }
 
+/* Generic fade-in-up animation (replaces Framer Motion for critical path) */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.6s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+/* PageLoader animations (no JS framework) */
+@keyframes pulse-scale {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+}
+
+.animate-pulse-scale {
+    animation: pulse-scale 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-scale-reverse {
+    0%,
+    100% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse-scale-reverse {
+    animation: pulse-scale-reverse 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-bar {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+.animate-progress-bar {
+    animation: progress-bar 0.9s ease-in-out forwards;
+}
+
 /* Keyframes */
 @keyframes live-pulse {
     0%,

@@ -1,7 +1,11 @@
 import { motion } from 'framer-motion';
 import { fadeInUp, viewportOnce } from '@lib/animations';
-import * as Icons from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Mail, ArrowRight, Circle, type LucideIcon } from 'lucide-react';
+
+const iconMap: Record<string, LucideIcon> = {
+  Mail,
+  ArrowRight,
+};
 
 interface Props {
   title: string;
@@ -14,7 +18,7 @@ interface Props {
 }
 
 function resolveIcon(name: string): LucideIcon {
-  return (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Circle;
+  return iconMap[name] || Circle;
 }
 
 export function ContactCTA({ title, description, icon = 'Mail', primaryText, secondaryText, secondaryHref, onContactClick }: Props) {

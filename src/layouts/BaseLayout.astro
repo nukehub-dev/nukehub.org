@@ -154,10 +154,10 @@ const canonicalUrl = `${siteUrl}${permalink}`;
     </head>
 
     <body class={`min-h-screen flex flex-col ${bodyClass || ""}`}>
-        <ScrollProgress client:load />
-        <CustomCursor client:load />
-        <GlobalContextMenu client:load />
-        <PerformanceMonitor client:load />
+        <ScrollProgress client:idle />
+        <CustomCursor client:idle />
+        <GlobalContextMenu client:idle />
+        <PerformanceMonitor client:idle />
         <GrainOverlay />
 
         <AuthHeader

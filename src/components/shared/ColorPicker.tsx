@@ -50,6 +50,7 @@ export function ColorPicker({ className, showLabels = false }: ColorPickerProps)
             <button
               role="radio"
               aria-checked={active}
+              aria-label={swatch.label}
               onClick={() => handleSelect(swatch.name)}
               className={cn(
                 'relative h-5 w-5 rounded-full border-2 transition-transform',

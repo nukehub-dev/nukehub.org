@@ -75,34 +75,34 @@ const sponsors: Sponsor[] = sponsorEntries.map((entry) => ({
 
   <HeroSection client:load data={heroData} />
 
-  <MissionStrip client:load data={missionData} />
+  <MissionStrip client:visible data={missionData} />
 
   <ProjectsGrid
-    client:load
+    client:visible
     projects={projects}
     totalCount={allProjects.length}
     viewAllHref="/projects"
   />
 
   <IntegrationsSection
-    client:load
+    client:visible
     data={integrationsData}
     integrations={integrations}
     totalCount={allIntegrations.length}
     viewAllHref="/projects"
   />
 
-  <TestimonialsSection client:load data={testimonialsSectionData} testimonials={testimonials} />
+  <TestimonialsSection client:visible data={testimonialsSectionData} testimonials={testimonials} />
 
   <InstitutionsSection
-    client:load
+    client:visible
     badge={trustData.badge}
     title={trustData.sectionTitle}
     subtitle={trustData.subtitle}
     sponsors={sponsors}
   />
 
-  <EnhancedCTA client:load data={ctaData} />
+  <EnhancedCTA client:visible data={ctaData} />
 
   {/* Homepage footer section — snap target so users can reach the footer */}
   <section class="relative flex min-h-[60dvh] flex-col justify-center overflow-hidden snap-section">
