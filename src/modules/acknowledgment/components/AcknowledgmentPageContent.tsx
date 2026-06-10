@@ -76,7 +76,7 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
             </div>
             <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
               Standing on the
-              <span className="text-primary"> Shoulders of Giants</span>
+              <span className="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block"> Shoulders of Giants</span>
             </h1>
             <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               NukeHub exists because of the generosity, expertise, and passion of a global community. We are deeply grateful for every contribution.

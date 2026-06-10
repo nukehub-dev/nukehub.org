@@ -26,7 +26,7 @@ export function ContactPageContent() {
                         </div>
                         <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
                             Let&apos;s Start a{" "}
-                            <span className="text-primary">Conversation</span>
+                            <span className="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block">Conversation</span>
                         </h1>
                         <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                             Have a question, idea, or just want to say hello? We
