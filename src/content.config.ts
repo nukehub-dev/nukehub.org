@@ -1,9 +1,9 @@
-import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
-import { z } from 'astro/zod';
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 const manual = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.mdx', base: './src/content/manual' }),
+  loader: glob({ pattern: "**/[^_]*.mdx", base: "./src/content/manual" }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -13,7 +13,7 @@ const manual = defineCollection({
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.mdx', base: './src/content/projects' }),
+  loader: glob({ pattern: "**/[^_]*.mdx", base: "./src/content/projects" }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -28,7 +28,10 @@ const projects = defineCollection({
 });
 
 const events = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/events' }),
+  loader: glob({
+    pattern: "**/[^_]*.{yml,yaml}",
+    base: "./src/content/events",
+  }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -45,25 +48,39 @@ const events = defineCollection({
     meetingUrl: z.string().url().optional(),
     backgroundColor: z.string().optional(),
     textColor: z.string().optional(),
-    recurrence: z.discriminatedUnion('type', [
-      z.object({ type: z.literal('monthly-date'), day: z.number().min(1).max(31) }),
-      z.object({
-        type: z.literal('monthly-weekday'),
-        weekday: z.number().min(0).max(6),
-        occurrence: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(-1)]),
-      }),
-      z.object({ type: z.literal('weekly'), weekday: z.number().min(0).max(6) }),
-      z.object({
-        type: z.literal('biweekly'),
-        weekday: z.number().min(0).max(6),
-        anchorDate: z.string(),
-      }),
-    ]).optional(),
+    recurrence: z
+      .discriminatedUnion("type", [
+        z.object({
+          type: z.literal("monthly-date"),
+          day: z.number().min(1).max(31),
+        }),
+        z.object({
+          type: z.literal("monthly-weekday"),
+          weekday: z.number().min(0).max(6),
+          occurrence: z.union([
+            z.literal(1),
+            z.literal(2),
+            z.literal(3),
+            z.literal(4),
+            z.literal(-1),
+          ]),
+        }),
+        z.object({
+          type: z.literal("weekly"),
+          weekday: z.number().min(0).max(6),
+        }),
+        z.object({
+          type: z.literal("biweekly"),
+          weekday: z.number().min(0).max(6),
+          anchorDate: z.string(),
+        }),
+      ])
+      .optional(),
   }),
 });
 
 const people = defineCollection({
-  loader: glob({ pattern: '[^_]*.{yml,yaml}', base: './src/content/people' }),
+  loader: glob({ pattern: "[^_]*.{yml,yaml}", base: "./src/content/people" }),
   schema: z.object({
     name: z.string(),
     image: z.string(),
@@ -103,7 +120,10 @@ const people = defineCollection({
 });
 
 const peopleCategories = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/people/categories' }),
+  loader: glob({
+    pattern: "**/[^_]*.{yml,yaml}",
+    base: "./src/content/people/categories",
+  }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -112,18 +132,24 @@ const peopleCategories = defineCollection({
 });
 
 const sponsors = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/sponsors' }),
+  loader: glob({
+    pattern: "**/[^_]*.{yml,yaml}",
+    base: "./src/content/sponsors",
+  }),
   schema: z.object({
     name: z.string(),
     image: z.string(),
     url: z.string().url(),
     acknowledgment: z.string(),
-    tier: z.enum(['platinum', 'gold', 'silver', 'bronze']).default('bronze'),
+    tier: z.enum(["platinum", "gold", "silver", "bronze"]).default("bronze"),
   }),
 });
 
 const testimonials = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/testimonials' }),
+  loader: glob({
+    pattern: "**/[^_]*.{yml,yaml}",
+    base: "./src/content/testimonials",
+  }),
   schema: z.object({
     quote: z.string(),
     author: z.string(),
@@ -133,13 +159,31 @@ const testimonials = defineCollection({
 });
 
 const integrations = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{yml,yaml}', base: './src/content/integrations' }),
+  loader: glob({
+    pattern: "**/[^_]*.{yml,yaml}",
+    base: "./src/content/integrations",
+  }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
     url: z.string().url(),
-    category: z.enum(['Simulation', 'Geometry', 'Data Processing', 'Plasma Physics', 'Fusion']),
+    category: z.enum([
+      "Simulation",
+      "Geometry",
+      "Data Processing",
+      "Plasma Physics",
+      "Fusion",
+    ]),
   }),
 });
 
-export const collections = { manual, projects, events, people, peopleCategories, sponsors, testimonials, integrations };
+export const collections = {
+  manual,
+  projects,
+  events,
+  people,
+  peopleCategories,
+  sponsors,
+  testimonials,
+  integrations,
+};

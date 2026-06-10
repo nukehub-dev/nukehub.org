@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@lib/utils';
+import * as React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@lib/utils";
 
 interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   /** Text to show as initials fallback if the image fails to load. */
@@ -8,9 +8,9 @@ interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   /** Optional wrapper className. */
   wrapperClassName?: string;
   /** Aspect ratio container or not. */
-  aspect?: 'square' | 'video' | 'portrait' | 'auto';
+  aspect?: "square" | "video" | "portrait" | "auto";
   /** Rounded style. */
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  rounded?: "none" | "sm" | "md" | "lg" | "xl" | "full";
 }
 
 export function Image({
@@ -19,15 +19,16 @@ export function Image({
   fallback,
   wrapperClassName,
   className,
-  aspect = 'auto',
-  rounded = 'lg',
+  aspect = "auto",
+  rounded = "lg",
   ...imgProps
 }: ImageProps) {
-  const [status, setStatus] = React.useState<'loading' | 'loaded' | 'error'>(() =>
-    !src ? 'error' : 'loading'
+  const [status, setStatus] = React.useState<"loading" | "loaded" | "error">(
+    () => (!src ? "error" : "loading"),
   );
   const imgRef = React.useRef<HTMLImageElement>(null);
-  const initial = fallback?.charAt(0).toUpperCase() || alt?.charAt(0).toUpperCase() || '?';
+  const initial =
+    fallback?.charAt(0).toUpperCase() || alt?.charAt(0).toUpperCase() || "?";
 
   // If the image is already cached and valid, skip the shimmer entirely.
   // Must check naturalWidth > 0 to avoid treating broken/missing images as loaded.
@@ -36,78 +37,78 @@ export function Image({
     if (!img) return;
     if (img.complete) {
       if (img.naturalWidth > 0) {
-        setStatus('loaded');
+        setStatus("loaded");
       } else {
-        setStatus('error');
+        setStatus("error");
       }
     }
   }, [src]);
 
   const aspectClass = {
-    square: 'aspect-square',
-    video: 'aspect-video',
-    portrait: 'aspect-[3/4]',
-    auto: '',
+    square: "aspect-square",
+    video: "aspect-video",
+    portrait: "aspect-[3/4]",
+    auto: "",
   };
 
   const roundedClass = {
-    none: 'rounded-none',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    xl: 'rounded-xl',
-    full: 'rounded-full',
+    none: "rounded-none",
+    sm: "rounded-sm",
+    md: "rounded-md",
+    lg: "rounded-lg",
+    xl: "rounded-xl",
+    full: "rounded-full",
   };
 
   return (
     <div
       className={cn(
-        'relative overflow-hidden bg-muted',
+        "relative overflow-hidden bg-muted",
         aspectClass[aspect],
         roundedClass[rounded],
-        wrapperClassName
+        wrapperClassName,
       )}
     >
       {/* Shimmer placeholder — only shown when truly loading */}
       <AnimatePresence>
-        {status === 'loading' && (
+        {status === "loading" && (
           <motion.div
             key="shimmer"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'absolute inset-0 z-10',
-              'bg-gradient-to-r from-muted via-muted-foreground/10 to-muted',
-              'bg-[length:200%_100%]',
-              'animate-shimmer'
+              "absolute inset-0 z-10",
+              "bg-gradient-to-r from-muted via-muted-foreground/10 to-muted",
+              "bg-[length:200%_100%]",
+              "animate-shimmer",
             )}
           />
         )}
       </AnimatePresence>
 
       {/* Actual image */}
-      {status !== 'error' && (
+      {status !== "error" && (
         <img
           ref={imgRef}
           src={src}
           alt={alt}
-          width={imgProps.width ?? '100%'}
-          height={imgProps.height ?? '100%'}
+          width={imgProps.width ?? "100%"}
+          height={imgProps.height ?? "100%"}
           className={cn(
-            'h-full w-full object-cover',
-            status === 'loaded' ? 'opacity-100' : 'opacity-0',
-            'transition-opacity duration-300',
-            className
+            "h-full w-full object-cover",
+            status === "loaded" ? "opacity-100" : "opacity-0",
+            "transition-opacity duration-300",
+            className,
           )}
-          onLoad={() => setStatus('loaded')}
-          onError={() => setStatus('error')}
+          onLoad={() => setStatus("loaded")}
+          onError={() => setStatus("error")}
           {...imgProps}
         />
       )}
 
       {/* Initials fallback */}
-      {status === 'error' && (
+      {status === "error" && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
           <span className="text-2xl font-bold text-muted-foreground select-none">
             {initial}

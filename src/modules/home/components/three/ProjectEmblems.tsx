@@ -1,13 +1,17 @@
-import { useRef, useEffect, useMemo } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { EffectComposer, ChromaticAberration, Bloom } from '@react-three/postprocessing';
-import { getPrimaryColor } from '@lib/themeColors';
-import * as THREE from 'three';
+import { useRef, useEffect, useMemo } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import {
+  EffectComposer,
+  ChromaticAberration,
+  Bloom,
+} from "@react-three/postprocessing";
+import { getPrimaryColor } from "@lib/themeColors";
+import * as THREE from "three";
 
 /* ------------------------------------------------------------------ */
 // Config
 /* ------------------------------------------------------------------ */
-const IMAGE_URL = '/assets/images/nukehub.png';
+const IMAGE_URL = "/assets/images/nukehub.png";
 const THRESHOLD = 120;
 const MAX_TEXTURE_SIZE = 160;
 
@@ -203,10 +207,10 @@ class TouchTexture {
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
-    this.canvas = document.createElement('canvas');
+    this.canvas = document.createElement("canvas");
     this.canvas.width = width;
     this.canvas.height = height;
-    this.ctx = this.canvas.getContext('2d')!;
+    this.ctx = this.canvas.getContext("2d")!;
     this.texture = new THREE.CanvasTexture(this.canvas);
     this.texture.minFilter = THREE.LinearFilter;
     this.texture.magFilter = THREE.LinearFilter;
@@ -229,7 +233,7 @@ class TouchTexture {
   update() {
     const { ctx, width, height, trail, maxAge, radius } = this;
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, width, height);
 
     for (let i = trail.length - 1; i >= 0; i--) {
@@ -245,11 +249,15 @@ class TouchTexture {
       const r = radius * (0.5 + 0.5 * alpha);
 
       const grd = ctx.createRadialGradient(
-        p.x * width, (1.0 - p.y) * height, 0,
-        p.x * width, (1.0 - p.y) * height, r
+        p.x * width,
+        (1.0 - p.y) * height,
+        0,
+        p.x * width,
+        (1.0 - p.y) * height,
+        r,
       );
-      grd.addColorStop(0, 'rgba(255, 255, 255, ' + (alpha * 0.9) + ')');
-      grd.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      grd.addColorStop(0, "rgba(255, 255, 255, " + alpha * 0.9 + ")");
+      grd.addColorStop(1, "rgba(255, 255, 255, 0)");
 
       ctx.fillStyle = grd;
       ctx.beginPath();
@@ -282,9 +290,9 @@ function ParticleCloud() {
 
     const plane = new THREE.Mesh(
       new THREE.PlaneGeometry(10, 10),
-      new THREE.MeshBasicMaterial({ visible: false })
+      new THREE.MeshBasicMaterial({ visible: false }),
     );
-    plane.name = 'touchPlane';
+    plane.name = "touchPlane";
     group.add(plane);
     planeRef.current = plane;
 
@@ -302,19 +310,23 @@ function ParticleCloud() {
         onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
       }
     };
-    const onDocEnter = () => { mouseActive.current = true; };
-    const onDocLeave = () => { mouseActive.current = false; };
+    const onDocEnter = () => {
+      mouseActive.current = true;
+    };
+    const onDocLeave = () => {
+      mouseActive.current = false;
+    };
 
-    window.addEventListener('mousemove', onMouseMove, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
-    document.addEventListener('mouseenter', onDocEnter);
-    document.addEventListener('mouseleave', onDocLeave);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    document.addEventListener("mouseenter", onDocEnter);
+    document.addEventListener("mouseleave", onDocLeave);
 
     let disposed = false;
     let particleMesh: THREE.Mesh | null = null;
 
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    img.crossOrigin = "anonymous";
     img.src = IMAGE_URL;
 
     img.onload = () => {
@@ -328,10 +340,10 @@ function ParticleCloud() {
         h = Math.floor(h * ratio);
       }
 
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext("2d")!;
       ctx.scale(1, -1);
       ctx.drawImage(img, 0, 0, w, h * -1);
       const imgData = ctx.getImageData(0, 0, w, h);
@@ -371,16 +383,18 @@ function ParticleCloud() {
       positions.setXYZ(1, 0.5, 0.5, 0.0);
       positions.setXYZ(2, -0.5, -0.5, 0.0);
       positions.setXYZ(3, 0.5, -0.5, 0.0);
-      geometry.setAttribute('position', positions);
+      geometry.setAttribute("position", positions);
 
       const uvs = new THREE.BufferAttribute(new Float32Array(4 * 2), 2);
       uvs.setXY(0, 0.0, 0.0);
       uvs.setXY(1, 1.0, 0.0);
       uvs.setXY(2, 0.0, 1.0);
       uvs.setXY(3, 1.0, 1.0);
-      geometry.setAttribute('uv', uvs);
+      geometry.setAttribute("uv", uvs);
 
-      geometry.setIndex(new THREE.BufferAttribute(new Uint16Array([0, 2, 1, 2, 3, 1]), 1));
+      geometry.setIndex(
+        new THREE.BufferAttribute(new Uint16Array([0, 2, 1, 2, 3, 1]), 1),
+      );
 
       const indices = new Uint16Array(numVisible);
       const offsets = new Float32Array(numVisible * 3);
@@ -406,12 +420,27 @@ function ParticleCloud() {
         j++;
       }
 
-      geometry.setAttribute('pindex', new THREE.InstancedBufferAttribute(indices, 1, false));
-      geometry.setAttribute('offset', new THREE.InstancedBufferAttribute(offsets, 3, false));
-      geometry.setAttribute('angle', new THREE.InstancedBufferAttribute(angles, 1, false));
-      geometry.setAttribute('aSize', new THREE.InstancedBufferAttribute(sizes, 1, false));
+      geometry.setAttribute(
+        "pindex",
+        new THREE.InstancedBufferAttribute(indices, 1, false),
+      );
+      geometry.setAttribute(
+        "offset",
+        new THREE.InstancedBufferAttribute(offsets, 3, false),
+      );
+      geometry.setAttribute(
+        "angle",
+        new THREE.InstancedBufferAttribute(angles, 1, false),
+      );
+      geometry.setAttribute(
+        "aSize",
+        new THREE.InstancedBufferAttribute(sizes, 1, false),
+      );
 
-      const touchSize = Math.max(64, Math.min(128, Math.floor(Math.max(w, h) * 0.5)));
+      const touchSize = Math.max(
+        64,
+        Math.min(128, Math.floor(Math.max(w, h) * 0.5)),
+      );
       const touchTexture = new TouchTexture(touchSize, touchSize);
       touchTextureRef.current = touchTexture;
 
@@ -449,10 +478,10 @@ function ParticleCloud() {
 
     return () => {
       disposed = true;
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('touchmove', onTouchMove);
-      document.removeEventListener('mouseenter', onDocEnter);
-      document.removeEventListener('mouseleave', onDocLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("touchmove", onTouchMove);
+      document.removeEventListener("mouseenter", onDocEnter);
+      document.removeEventListener("mouseleave", onDocLeave);
 
       if (particleMesh) {
         group.remove(particleMesh);
@@ -479,7 +508,7 @@ function ParticleCloud() {
     const observer = new MutationObserver(updateColor);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-accent', 'data-theme'],
+      attributeFilter: ["data-accent", "data-theme"],
     });
     return () => observer.disconnect();
   }, []);
@@ -494,32 +523,42 @@ function ParticleCloud() {
     const material = materialRef.current;
 
     const targetSize = 0.022;
-    material.uniforms.uSize.value += (targetSize - material.uniforms.uSize.value) * 0.04;
+    material.uniforms.uSize.value +=
+      (targetSize - material.uniforms.uSize.value) * 0.04;
     material.uniforms.uTime.value = time;
 
     const targetX = mouseActive.current ? mouseRef.current.x : 0;
     const targetY = mouseActive.current ? mouseRef.current.y : 0;
     const lerpFactor = mouseActive.current ? 0.12 : 0.06;
-    material.uniforms.uMouse.value.x += (targetX - material.uniforms.uMouse.value.x) * lerpFactor;
-    material.uniforms.uMouse.value.y += (targetY - material.uniforms.uMouse.value.y) * lerpFactor;
+    material.uniforms.uMouse.value.x +=
+      (targetX - material.uniforms.uMouse.value.x) * lerpFactor;
+    material.uniforms.uMouse.value.y +=
+      (targetY - material.uniforms.uMouse.value.y) * lerpFactor;
 
     // Only raycast when mouse has actually moved — skip 60×/sec redundant work
     if (mouseActive.current) {
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-      const moved = Math.abs(mx - lastMouseX.current) > 0.0001 || Math.abs(my - lastMouseY.current) > 0.0001;
+      const moved =
+        Math.abs(mx - lastMouseX.current) > 0.0001 ||
+        Math.abs(my - lastMouseY.current) > 0.0001;
       if (moved) {
         lastMouseX.current = mx;
         lastMouseY.current = my;
         raycasterRef.current.setFromCamera(mouseRef.current, camera);
         if (planeRef.current) {
-          const intersects = raycasterRef.current.intersectObject(planeRef.current);
+          const intersects = raycasterRef.current.intersectObject(
+            planeRef.current,
+          );
           if (intersects.length > 0) {
             const point = intersects[0].point;
             material.uniforms.uMousePos.value.set(point.x, point.y);
             material.uniforms.uMouseHover.value = 1.0;
             if (intersects[0].uv) {
-              touchTextureRef.current?.addPoint(intersects[0].uv.x, intersects[0].uv.y);
+              touchTextureRef.current?.addPoint(
+                intersects[0].uv.x,
+                intersects[0].uv.y,
+              );
             }
           } else {
             material.uniforms.uMouseHover.value = 0.0;
@@ -562,21 +601,22 @@ function DustField() {
   useEffect(() => {
     const updateColor = () => {
       if (!matRef.current) return;
-      const isDark = document.documentElement.classList.contains('dark') ||
-        document.documentElement.getAttribute('data-theme') === 'dark';
+      const isDark =
+        document.documentElement.classList.contains("dark") ||
+        document.documentElement.getAttribute("data-theme") === "dark";
       if (isDark) {
         const accent = new THREE.Color(getPrimaryColor());
         accent.multiplyScalar(0.45);
         matRef.current.color.copy(accent);
       } else {
-        matRef.current.color.set('#a0a0a0');
+        matRef.current.color.set("#a0a0a0");
       }
     };
     updateColor();
     const observer = new MutationObserver(updateColor);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['class', 'data-theme'],
+      attributeFilter: ["class", "data-theme"],
     });
     return () => observer.disconnect();
   }, []);
@@ -607,7 +647,12 @@ function DustField() {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <circleGeometry args={[1, 6]} />
-      <meshBasicMaterial ref={matRef} transparent opacity={0.3} depthWrite={false} />
+      <meshBasicMaterial
+        ref={matRef}
+        transparent
+        opacity={0.3}
+        depthWrite={false}
+      />
     </instancedMesh>
   );
 }

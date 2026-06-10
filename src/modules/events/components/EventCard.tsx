@@ -1,23 +1,27 @@
-import * as React from 'react';
-import { motion } from 'framer-motion';
-import { MapPin, Clock } from 'lucide-react';
-import { Badge } from '@components/ui/Badge';
-import { cn } from '@lib/utils';
-import type { CalendarEvent } from '@modules/events/types';
+import * as React from "react";
+import { motion } from "framer-motion";
+import { MapPin, Clock } from "lucide-react";
+import { Badge } from "@components/ui/Badge";
+import { cn } from "@lib/utils";
+import type { CalendarEvent } from "@modules/events/types";
 
 // ============================================================================
 // Date helpers
 // ============================================================================
 
-function getEventStatus(startIso: string): 'today' | 'upcoming' | 'past' {
+function getEventStatus(startIso: string): "today" | "upcoming" | "past" {
   const start = new Date(startIso);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const startDay = new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate(),
+  );
 
-  if (startDay.getTime() === today.getTime()) return 'today';
-  if (start > now) return 'upcoming';
-  return 'past';
+  if (startDay.getTime() === today.getTime()) return "today";
+  if (start > now) return "upcoming";
+  return "past";
 }
 
 function formatDay(iso: string): string {
@@ -25,7 +29,9 @@ function formatDay(iso: string): string {
 }
 
 function formatMonth(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  return new Date(iso)
+    .toLocaleString("en-US", { month: "short" })
+    .toUpperCase();
 }
 
 function formatTimeRange(startIso: string, endIso?: string): string {
@@ -38,17 +44,23 @@ function formatTimeRange(startIso: string, endIso?: string): string {
     start.getMonth() === end.getMonth() &&
     start.getDate() === end.getDate();
 
-  const timeFmt: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit' };
+  const timeFmt: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "2-digit",
+  };
 
   if (sameDay) {
-    return `${start.toLocaleTimeString('en-US', timeFmt)} – ${end.toLocaleTimeString('en-US', timeFmt)}`;
+    return `${start.toLocaleTimeString("en-US", timeFmt)} – ${end.toLocaleTimeString("en-US", timeFmt)}`;
   }
 
-  const dateFmt: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+  const dateFmt: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "numeric",
+  };
   if (end) {
-    return `${start.toLocaleDateString('en-US', dateFmt)} – ${end.toLocaleDateString('en-US', dateFmt)}`;
+    return `${start.toLocaleDateString("en-US", dateFmt)} – ${end.toLocaleDateString("en-US", dateFmt)}`;
   }
-  return start.toLocaleDateString('en-US', { ...dateFmt, year: 'numeric' });
+  return start.toLocaleDateString("en-US", { ...dateFmt, year: "numeric" });
 }
 
 // ============================================================================
@@ -65,28 +77,32 @@ export function EventCard({ event, index = 0, onClick }: EventCardProps) {
   const status = getEventStatus(event.start);
 
   const statusConfig = {
-    today: { label: 'Today', variant: 'default' as const },
-    upcoming: { label: 'Upcoming', variant: 'secondary' as const },
-    past: { label: 'Past', variant: 'ghost' as const },
+    today: { label: "Today", variant: "default" as const },
+    upcoming: { label: "Upcoming", variant: "secondary" as const },
+    past: { label: "Past", variant: "ghost" as const },
   };
 
   const { label, variant } = statusConfig[status];
-  const accentColor = event.backgroundColor || 'var(--primary)';
+  const accentColor = event.backgroundColor || "var(--primary)";
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.05, ease: [0.4, 0, 0.2, 1] }}
+      transition={{
+        duration: 0.35,
+        delay: index * 0.05,
+        ease: [0.4, 0, 0.2, 1],
+      }}
       whileHover={{ y: -2, transition: { duration: 0.2 } }}
       className="group cursor-pointer h-full"
       onClick={() => onClick(event)}
     >
       <div
         className={cn(
-          'bubble relative flex items-stretch rounded-xl border border-border/40 overflow-hidden',
-          'shadow-sm transition-shadow duration-200',
-          'group-hover:shadow-md h-full'
+          "bubble relative flex items-stretch rounded-xl border border-border/40 overflow-hidden",
+          "shadow-sm transition-shadow duration-200",
+          "group-hover:shadow-md h-full",
         )}
       >
         {/* Color accent strip */}
@@ -111,14 +127,19 @@ export function EventCard({ event, index = 0, onClick }: EventCardProps) {
             <h3 className="font-semibold text-sm sm:text-base leading-tight truncate pr-1">
               {event.title}
             </h3>
-            <Badge variant={variant} className="shrink-0 text-[10px] sm:text-xs whitespace-nowrap">
+            <Badge
+              variant={variant}
+              className="shrink-0 text-[10px] sm:text-xs whitespace-nowrap"
+            >
               {label}
             </Badge>
           </div>
 
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
             <Clock size={12} className="shrink-0" />
-            <span className="truncate">{formatTimeRange(event.start, event.end)}</span>
+            <span className="truncate">
+              {formatTimeRange(event.start, event.end)}
+            </span>
           </div>
 
           {event.venue && (

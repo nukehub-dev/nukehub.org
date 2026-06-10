@@ -1,21 +1,27 @@
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Briefcase, Mail, Globe, ArrowUpRight } from 'lucide-react';
-import { Badge } from '@components/ui/Badge';
-import { Image } from '@components/ui/Image';
-import { SocialIcon } from '@components/ui/SocialIcon';
-import { cn } from '@lib/utils';
-import { type Person, type SocialLink, SOCIAL_FIELDS, extractSocialLinks } from '@modules/people/types';
+import * as React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, MapPin, Briefcase, Mail, Globe, ArrowUpRight } from "lucide-react";
+import { Badge } from "@components/ui/Badge";
+import { Image } from "@components/ui/Image";
+import { SocialIcon } from "@components/ui/SocialIcon";
+import { cn } from "@lib/utils";
+import {
+  type Person,
+  type SocialLink,
+  SOCIAL_FIELDS,
+  extractSocialLinks,
+} from "@modules/people/types";
 
 // ============================================================================
 // Social link extraction with handles
 // ============================================================================
 
-const HEADER_SOCIALS = new Set(['email', 'url', 'website']);
+const HEADER_SOCIALS = new Set(["email", "url", "website"]);
 
 function getModalSocials(person: Person): SocialLink[] {
-  return extractSocialLinks(person)
-    .filter((s) => !HEADER_SOCIALS.has(s.platform));
+  return extractSocialLinks(person).filter(
+    (s) => !HEADER_SOCIALS.has(s.platform),
+  );
 }
 
 // ============================================================================
@@ -31,18 +37,20 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
   React.useEffect(() => {
     if (person) {
       const original = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = original; };
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = original;
+      };
     }
   }, [person]);
 
   React.useEffect(() => {
     if (!person) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [person, onClose]);
 
   const socials = person ? getModalSocials(person) : [];
@@ -69,16 +77,16 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
           {/* Modal */}
           <motion.div
             className={cn(
-              'relative w-full rounded-2xl border border-border/60',
-              'bg-background/95 dark:bg-background/90',
-              'shadow-2xl',
-              'max-w-md md:max-w-xl lg:max-w-3xl',
-              'max-h-[85vh] flex flex-col overflow-hidden'
+              "relative w-full rounded-2xl border border-border/60",
+              "bg-background/95 dark:bg-background/90",
+              "shadow-2xl",
+              "max-w-md md:max-w-xl lg:max-w-3xl",
+              "max-h-[85vh] flex flex-col overflow-hidden",
             )}
             initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 8 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+            transition={{ type: "spring", stiffness: 400, damping: 32 }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
@@ -97,7 +105,7 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
                 <motion.div
                   initial={{ scale: 0.85, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.08, type: 'spring', stiffness: 200 }}
+                  transition={{ delay: 0.08, type: "spring", stiffness: 200 }}
                   className="shrink-0"
                 >
                   <Image
@@ -147,9 +155,9 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
                       <a
                         href={`mailto:${person.email}`}
                         className={cn(
-                          'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5',
-                          'bg-primary text-primary-foreground text-sm font-medium',
-                          'hover:brightness-110 transition-all shadow-sm'
+                          "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5",
+                          "bg-primary text-primary-foreground text-sm font-medium",
+                          "hover:brightness-110 transition-all shadow-sm",
                         )}
                       >
                         <Mail size={14} />
@@ -162,9 +170,9 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={cn(
-                          'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5',
-                          'bg-muted text-foreground text-sm font-medium',
-                          'hover:bg-accent transition-colors border border-border'
+                          "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5",
+                          "bg-muted text-foreground text-sm font-medium",
+                          "hover:bg-accent transition-colors border border-border",
                         )}
                       >
                         <Globe size={14} />
@@ -215,10 +223,10 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.22 + idx * 0.02 }}
                         className={cn(
-                          'flex items-center gap-3 rounded-xl px-3.5 py-3',
-                          'bg-muted/40 hover:bg-primary/8',
-                          'border border-transparent hover:border-primary/15',
-                          'transition-all group'
+                          "flex items-center gap-3 rounded-xl px-3.5 py-3",
+                          "bg-muted/40 hover:bg-primary/8",
+                          "border border-transparent hover:border-primary/15",
+                          "transition-all group",
                         )}
                       >
                         <SocialIcon
@@ -228,9 +236,7 @@ export function ProfileModal({ person, onClose }: ProfileModalProps) {
                         />
 
                         <div className="min-w-0 flex-1 text-left">
-                          <p className="text-sm font-medium">
-                            {social.handle}
-                          </p>
+                          <p className="text-sm font-medium">{social.handle}</p>
                           <p className="text-xs text-muted-foreground">
                             {social.label}
                           </p>

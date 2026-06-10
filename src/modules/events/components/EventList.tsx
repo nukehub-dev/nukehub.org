@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CalendarX2, ChevronDown } from 'lucide-react';
-import { SearchInput } from '@components/ui/SearchInput';
-import { cn } from '@lib/utils';
-import type { CalendarEvent } from '@modules/events/types';
-import { EventCard } from './EventCard';
+import * as React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CalendarX2, ChevronDown } from "lucide-react";
+import { SearchInput } from "@components/ui/SearchInput";
+import { cn } from "@lib/utils";
+import type { CalendarEvent } from "@modules/events/types";
+import { EventCard } from "./EventCard";
 
 // ============================================================================
 // Constants
@@ -16,23 +16,27 @@ const PAGE_SIZE = 20;
 // Date helpers
 // ============================================================================
 
-function getEventCategory(startIso: string): 'upcoming' | 'past' {
+function getEventCategory(startIso: string): "upcoming" | "past" {
   const start = new Date(startIso);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  return startDay.getTime() >= today.getTime() ? 'upcoming' : 'past';
+  const startDay = new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate(),
+  );
+  return startDay.getTime() >= today.getTime() ? "upcoming" : "past";
 }
 
 function getMonthKey(iso: string): string {
   const d = new Date(iso);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function formatMonthLabel(key: string): string {
-  const [year, month] = key.split('-');
+  const [year, month] = key.split("-");
   const date = new Date(Number(year), Number(month) - 1);
-  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  return date.toLocaleString("en-US", { month: "long", year: "numeric" });
 }
 
 function groupByMonth(events: CalendarEvent[]): Map<string, CalendarEvent[]> {
@@ -48,10 +52,11 @@ function groupByMonth(events: CalendarEvent[]): Map<string, CalendarEvent[]> {
 function filterEvents(events: CalendarEvent[], query: string): CalendarEvent[] {
   const q = query.trim().toLowerCase();
   if (!q) return events;
-  return events.filter((e) =>
-    e.title.toLowerCase().includes(q) ||
-    (e.venue?.toLowerCase() || '').includes(q) ||
-    (e.description?.toLowerCase() || '').includes(q)
+  return events.filter(
+    (e) =>
+      e.title.toLowerCase().includes(q) ||
+      (e.venue?.toLowerCase() || "").includes(q) ||
+      (e.description?.toLowerCase() || "").includes(q),
   );
 }
 
@@ -59,7 +64,7 @@ function filterEvents(events: CalendarEvent[], query: string): CalendarEvent[] {
 // Event List
 // ============================================================================
 
-type TabKey = 'upcoming' | 'past' | 'all';
+type TabKey = "upcoming" | "past" | "all";
 
 interface EventListProps {
   events: CalendarEvent[];
@@ -67,8 +72,8 @@ interface EventListProps {
 }
 
 export function EventList({ events, onEventClick }: EventListProps) {
-  const [activeTab, setActiveTab] = React.useState<TabKey>('upcoming');
-  const [query, setQuery] = React.useState('');
+  const [activeTab, setActiveTab] = React.useState<TabKey>("upcoming");
+  const [query, setQuery] = React.useState("");
   const [page, setPage] = React.useState(1);
 
   // Categorize events
@@ -76,15 +81,19 @@ export function EventList({ events, onEventClick }: EventListProps) {
     const upcoming: CalendarEvent[] = [];
     const past: CalendarEvent[] = [];
     for (const e of events) {
-      if (getEventCategory(e.start) === 'upcoming') {
+      if (getEventCategory(e.start) === "upcoming") {
         upcoming.push(e);
       } else {
         past.push(e);
       }
     }
     // Upcoming: soonest first. Past: most recent first.
-    upcoming.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-    past.sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
+    upcoming.sort(
+      (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+    );
+    past.sort(
+      (a, b) => new Date(b.start).getTime() - new Date(a.start).getTime(),
+    );
     return { upcoming, past, all: [...upcoming, ...past] };
   }, [events]);
 
@@ -99,16 +108,19 @@ export function EventList({ events, onEventClick }: EventListProps) {
     setPage(1);
   }, [activeTab, query]);
 
-  const paginated = React.useMemo(() => pool.slice(0, page * PAGE_SIZE), [pool, page]);
+  const paginated = React.useMemo(
+    () => pool.slice(0, page * PAGE_SIZE),
+    [pool, page],
+  );
   const hasMore = paginated.length < pool.length;
 
   const groups = React.useMemo(() => groupByMonth(paginated), [paginated]);
   const monthKeys = React.useMemo(() => Array.from(groups.keys()), [groups]);
 
   const tabs: { key: TabKey; label: string; count: number }[] = [
-    { key: 'upcoming', label: 'Upcoming', count: categorized.upcoming.length },
-    { key: 'past', label: 'Past', count: categorized.past.length },
-    { key: 'all', label: 'All', count: events.length },
+    { key: "upcoming", label: "Upcoming", count: categorized.upcoming.length },
+    { key: "past", label: "Past", count: categorized.past.length },
+    { key: "all", label: "All", count: events.length },
   ];
 
   return (
@@ -122,22 +134,24 @@ export function EventList({ events, onEventClick }: EventListProps) {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                'relative px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                "relative px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
                 activeTab === tab.key
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="event-tab-indicator"
                   className="absolute inset-0 bg-background rounded-md shadow-sm border border-border/40"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               <span className="relative z-10 flex items-center gap-1.5">
                 {tab.label}
-                <span className="text-[10px] tabular-nums opacity-60">{tab.count}</span>
+                <span className="text-[10px] tabular-nums opacity-60">
+                  {tab.count}
+                </span>
               </span>
             </button>
           ))}
@@ -147,7 +161,7 @@ export function EventList({ events, onEventClick }: EventListProps) {
         <SearchInput
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onClear={() => setQuery('')}
+          onClear={() => setQuery("")}
           placeholder="Search events..."
           className="w-full lg:w-72"
         />
@@ -200,14 +214,16 @@ export function EventList({ events, onEventClick }: EventListProps) {
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   className={cn(
-                    'inline-flex items-center gap-1.5 rounded-lg px-5 py-2.5',
-                    'bg-muted text-sm font-medium text-foreground',
-                    'hover:bg-accent transition-colors border border-border/60'
+                    "inline-flex items-center gap-1.5 rounded-lg px-5 py-2.5",
+                    "bg-muted text-sm font-medium text-foreground",
+                    "hover:bg-accent transition-colors border border-border/60",
                   )}
                 >
                   <ChevronDown size={16} />
                   Load more
-                  <span className="text-muted-foreground text-xs">({pool.length - paginated.length} left)</span>
+                  <span className="text-muted-foreground text-xs">
+                    ({pool.length - paginated.length} left)
+                  </span>
                 </button>
               </div>
             )}
@@ -227,7 +243,7 @@ export function EventList({ events, onEventClick }: EventListProps) {
             <p className="text-sm text-muted-foreground max-w-xs">
               {query
                 ? `No events match "${query}". Try a different search term.`
-                : 'No events in this category.'}
+                : "No events in this category."}
             </p>
           </motion.div>
         )}

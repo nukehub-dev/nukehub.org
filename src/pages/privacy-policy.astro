@@ -1,8 +1,8 @@
 ---
-import ManualPage from '@modules/manual/components/ManualPage.astro';
-import { getEntry, render } from 'astro:content';
+import ManualPage from "@modules/manual/components/ManualPage.astro";
+import { getEntry, render } from "astro:content";
 
-const entry = await getEntry('manual', 'privacy');
+const entry = await getEntry("manual", "privacy");
 if (!entry) {
   throw new Error('Manual entry "privacy" not found');
 }

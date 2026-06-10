@@ -21,7 +21,7 @@ export interface SupportTier {
   name: string;
   price: string;
   period: string;
-  tier: 'platinum' | 'gold' | 'silver' | 'bronze';
+  tier: "platinum" | "gold" | "silver" | "bronze";
   description: string;
   features: string[];
   cta: string;

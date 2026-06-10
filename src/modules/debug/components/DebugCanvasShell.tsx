@@ -1,4 +1,4 @@
-import { Suspense, type ReactNode } from 'react';
+import { Suspense, type ReactNode } from "react";
 
 interface DebugCanvasShellProps {
   children: ReactNode;
@@ -6,7 +6,11 @@ interface DebugCanvasShellProps {
   infoBadge?: ReactNode;
 }
 
-export function DebugCanvasShell({ children, hud, infoBadge }: DebugCanvasShellProps) {
+export function DebugCanvasShell({
+  children,
+  hud,
+  infoBadge,
+}: DebugCanvasShellProps) {
   return (
     <div className="relative h-screen w-full bg-background">
       <Suspense

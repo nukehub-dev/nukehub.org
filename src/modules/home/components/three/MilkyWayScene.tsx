@@ -1,7 +1,7 @@
-import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { getPrimaryColor } from '@lib/themeColors';
+import { useRef, useMemo, useEffect, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { getPrimaryColor } from "@lib/themeColors";
 
 /* ------------------------------------------------------------------ */
 // Galaxy shaders
@@ -134,9 +134,17 @@ function GalaxyStars({
       if (isBulge) {
         starColor = colorRoll < 0.5 ? cCore : cBright;
       } else if (distFromCenter < 1.2) {
-        starColor = colorRoll < 0.45 ? cArm1 : colorRoll < 0.8 ? cCore : cBright;
+        starColor =
+          colorRoll < 0.45 ? cArm1 : colorRoll < 0.8 ? cCore : cBright;
       } else if (distFromCenter < 3.0) {
-        starColor = colorRoll < 0.4 ? cArm1 : colorRoll < 0.7 ? cArm2 : colorRoll < 0.85 ? cBright : cDust;
+        starColor =
+          colorRoll < 0.4
+            ? cArm1
+            : colorRoll < 0.7
+              ? cArm2
+              : colorRoll < 0.85
+                ? cBright
+                : cDust;
       } else {
         starColor = colorRoll < 0.6 ? cDust : cArm2;
       }
@@ -157,7 +165,7 @@ function GalaxyStars({
       uTheme: { value: isLight ? 1.0 : 0.0 },
       uGlobalScale: { value: 1.0 },
     }),
-    [isLight]
+    [isLight],
   );
 
   useFrame((state) => {
@@ -174,22 +182,10 @@ function GalaxyStars({
   return (
     <points ref={pointsRef} rotation={[0.25, 0, 0]}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-color"
-          args={[colors, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-aSize"
-          args={[sizes, 1]}
-        />
-        <bufferAttribute
-          attach="attributes-aPhase"
-          args={[phases, 1]}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
+        <bufferAttribute attach="attributes-aSize" args={[sizes, 1]} />
+        <bufferAttribute attach="attributes-aPhase" args={[phases, 1]} />
       </bufferGeometry>
       <shaderMaterial
         ref={materialRef}
@@ -224,15 +220,15 @@ function CoreGlow({
   });
 
   const texture = useMemo(() => {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = 256;
     canvas.height = 256;
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext("2d")!;
     const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    grad.addColorStop(0, 'rgba(255,255,255,0.85)');
-    grad.addColorStop(0.2, 'rgba(255,255,255,0.35)');
-    grad.addColorStop(0.5, 'rgba(255,255,255,0.08)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    grad.addColorStop(0, "rgba(255,255,255,0.85)");
+    grad.addColorStop(0.2, "rgba(255,255,255,0.35)");
+    grad.addColorStop(0.5, "rgba(255,255,255,0.08)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 256, 256);
     return new THREE.CanvasTexture(canvas);
@@ -272,14 +268,14 @@ function OuterHalo({
   });
 
   const texture = useMemo(() => {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = 256;
     canvas.height = 256;
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext("2d")!;
     const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    grad.addColorStop(0, 'rgba(255,255,255,0.15)');
-    grad.addColorStop(0.4, 'rgba(255,255,255,0.04)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    grad.addColorStop(0, "rgba(255,255,255,0.15)");
+    grad.addColorStop(0.4, "rgba(255,255,255,0.04)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 256, 256);
     return new THREE.CanvasTexture(canvas);
@@ -313,8 +309,8 @@ function InteractiveGroup({ children }: { children: React.ReactNode }) {
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
       mouseRef.current = { x: x * 0.5, y: y * 0.3 };
     };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   useFrame(() => {
@@ -357,13 +353,15 @@ export function MilkyWayScene({ isVisible }: { isVisible: boolean }) {
   useEffect(() => {
     const update = () => {
       setColor(getPrimaryColor());
-      setIsLight(document.documentElement.getAttribute('data-theme') === 'light');
+      setIsLight(
+        document.documentElement.getAttribute("data-theme") === "light",
+      );
     };
     update();
     const observer = new MutationObserver(update);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-accent', 'data-theme'],
+      attributeFilter: ["data-accent", "data-theme"],
     });
     return () => observer.disconnect();
   }, []);
@@ -372,13 +370,13 @@ export function MilkyWayScene({ isVisible }: { isVisible: boolean }) {
     <Canvas
       dpr={[1, 1.5]}
       camera={{ position: [0, 1.8, 5.5], fov: 50 }}
-      frameloop={isVisible ? 'always' : 'never'}
+      frameloop={isVisible ? "always" : "never"}
       gl={{
         alpha: true,
         antialias: false,
-        powerPreference: 'high-performance',
+        powerPreference: "high-performance",
       }}
-      style={{ background: 'transparent' }}
+      style={{ background: "transparent" }}
     >
       <Scene primaryColor={color} isLight={isLight} />
     </Canvas>

@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ExternalLink, Layers } from 'lucide-react';
-import { SearchInput } from '@components/ui/SearchInput';
-import { viewportOnce } from '@lib/animations';
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, ExternalLink, Layers } from "lucide-react";
+import { SearchInput } from "@components/ui/SearchInput";
+import { viewportOnce } from "@lib/animations";
 
 interface Integration {
   name: string;
@@ -15,16 +15,39 @@ interface IntegrationsFilterProps {
   integrations: Integration[];
 }
 
-const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
-  Simulation: { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20' },
-  Geometry: { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/20' },
-  'Data Processing': { bg: 'bg-amber-500/10', text: 'text-amber-500', border: 'border-amber-500/20' },
-  'Plasma Physics': { bg: 'bg-purple-500/10', text: 'text-purple-500', border: 'border-purple-500/20' },
-  Fusion: { bg: 'bg-rose-500/10', text: 'text-rose-500', border: 'border-rose-500/20' },
+const categoryColors: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  Simulation: {
+    bg: "bg-blue-500/10",
+    text: "text-blue-500",
+    border: "border-blue-500/20",
+  },
+  Geometry: {
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-500",
+    border: "border-emerald-500/20",
+  },
+  "Data Processing": {
+    bg: "bg-amber-500/10",
+    text: "text-amber-500",
+    border: "border-amber-500/20",
+  },
+  "Plasma Physics": {
+    bg: "bg-purple-500/10",
+    text: "text-purple-500",
+    border: "border-purple-500/20",
+  },
+  Fusion: {
+    bg: "bg-rose-500/10",
+    text: "text-rose-500",
+    border: "border-rose-500/20",
+  },
 };
 
 export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   // Get categories with counts
@@ -46,7 +69,8 @@ export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesCategory = !activeCategory || item.category === activeCategory;
+      const matchesCategory =
+        !activeCategory || item.category === activeCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -71,7 +95,8 @@ export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
             Industry Standard Integrations
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            {filtered.length} of {integrations.length} tools ready to run in the cloud.
+            {filtered.length} of {integrations.length} tools ready to run in the
+            cloud.
           </p>
         </motion.div>
 
@@ -87,7 +112,7 @@ export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
             <SearchInput
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onClear={() => setSearchQuery('')}
+              onClear={() => setSearchQuery("")}
               placeholder="Search integrations..."
             />
           </div>
@@ -98,17 +123,17 @@ export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
               onClick={() => setActiveCategory(null)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                 !activeCategory
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               }`}
             >
               All ({integrations.length})
             </button>
             {categories.map(({ name, count }) => {
               const colors = categoryColors[name] || {
-                bg: 'bg-muted',
-                text: 'text-muted-foreground',
-                border: 'border-border',
+                bg: "bg-muted",
+                text: "text-muted-foreground",
+                border: "border-border",
               };
               const isActive = activeCategory === name;
               return (
@@ -118,7 +143,7 @@ export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                     isActive
                       ? `${colors.bg} ${colors.text} ${colors.border}`
-                      : 'border-border bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      : "border-border bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   }`}
                 >
                   {name}
@@ -134,9 +159,9 @@ export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
           <AnimatePresence mode="popLayout">
             {filtered.map((integration, i) => {
               const colors = categoryColors[integration.category] || {
-                bg: 'bg-muted',
-                text: 'text-muted-foreground',
-                border: 'border-border',
+                bg: "bg-muted",
+                text: "text-muted-foreground",
+                border: "border-border",
               };
               return (
                 <motion.a
@@ -188,8 +213,13 @@ export function IntegrationsFilter({ integrations }: IntegrationsFilterProps) {
             animate={{ opacity: 1 }}
             className="py-20 text-center"
           >
-            <Search size={48} className="mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="text-lg font-semibold text-foreground">No integrations found</h3>
+            <Search
+              size={48}
+              className="mx-auto mb-4 text-muted-foreground/50"
+            />
+            <h3 className="text-lg font-semibold text-foreground">
+              No integrations found
+            </h3>
             <p className="mt-2 text-muted-foreground">
               Try adjusting your search or category filter.
             </p>

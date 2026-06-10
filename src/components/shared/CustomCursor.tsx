@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 const R = 0.5;
 
@@ -20,13 +20,17 @@ export function CustomCursor() {
   const rafRef = useRef(0);
 
   useEffect(() => {
-    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasFinePointer = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     if (!hasFinePointer || prefersReducedMotion) return;
 
     setVisible(true);
-    document.body.classList.add('custom-cursor-active');
+    document.body.classList.add("custom-cursor-active");
 
     let active = true;
 
@@ -37,7 +41,9 @@ export function CustomCursor() {
     const handleOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (
-        target.closest('a, button, [role="button"], input, textarea, select, [data-cursor-hover], .cursor-pointer')
+        target.closest(
+          'a, button, [role="button"], input, textarea, select, [data-cursor-hover], .cursor-pointer',
+        )
       ) {
         setHovering(true);
       }
@@ -46,7 +52,9 @@ export function CustomCursor() {
     const handleOut = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (
-        target.closest('a, button, [role="button"], input, textarea, select, [data-cursor-hover], .cursor-pointer')
+        target.closest(
+          'a, button, [role="button"], input, textarea, select, [data-cursor-hover], .cursor-pointer',
+        )
       ) {
         setHovering(false);
       }
@@ -58,8 +66,10 @@ export function CustomCursor() {
       const kCursor = 0.35;
       const kTrail = 0.08;
 
-      cursorPos.current.x += (targetPos.current.x - cursorPos.current.x) * kCursor;
-      cursorPos.current.y += (targetPos.current.y - cursorPos.current.y) * kCursor;
+      cursorPos.current.x +=
+        (targetPos.current.x - cursorPos.current.x) * kCursor;
+      cursorPos.current.y +=
+        (targetPos.current.y - cursorPos.current.y) * kCursor;
       trailPos.current.x += (cursorPos.current.x - trailPos.current.x) * kTrail;
       trailPos.current.y += (cursorPos.current.y - trailPos.current.y) * kTrail;
 
@@ -73,27 +83,31 @@ export function CustomCursor() {
       rafRef.current = requestAnimationFrame(step);
     };
 
-    window.addEventListener('mousemove', moveCursor);
-    document.addEventListener('mouseover', handleOver);
-    document.addEventListener('mouseout', handleOut);
-    window.addEventListener('mousedown', () => setClicking(true));
-    window.addEventListener('mouseup', () => setClicking(false));
-    document.body.addEventListener('mouseleave', () => setInViewport(false));
-    document.body.addEventListener('mouseenter', () => setInViewport(true));
+    window.addEventListener("mousemove", moveCursor);
+    document.addEventListener("mouseover", handleOver);
+    document.addEventListener("mouseout", handleOut);
+    window.addEventListener("mousedown", () => setClicking(true));
+    window.addEventListener("mouseup", () => setClicking(false));
+    document.body.addEventListener("mouseleave", () => setInViewport(false));
+    document.body.addEventListener("mouseenter", () => setInViewport(true));
 
     rafRef.current = requestAnimationFrame(step);
 
     return () => {
       active = false;
       cancelAnimationFrame(rafRef.current);
-      window.removeEventListener('mousemove', moveCursor);
-      document.removeEventListener('mouseover', handleOver);
-      document.removeEventListener('mouseout', handleOut);
-      window.removeEventListener('mousedown', () => setClicking(true));
-      window.removeEventListener('mouseup', () => setClicking(false));
-      document.body.removeEventListener('mouseleave', () => setInViewport(false));
-      document.body.removeEventListener('mouseenter', () => setInViewport(true));
-      document.body.classList.remove('custom-cursor-active');
+      window.removeEventListener("mousemove", moveCursor);
+      document.removeEventListener("mouseover", handleOver);
+      document.removeEventListener("mouseout", handleOut);
+      window.removeEventListener("mousedown", () => setClicking(true));
+      window.removeEventListener("mouseup", () => setClicking(false));
+      document.body.removeEventListener("mouseleave", () =>
+        setInViewport(false),
+      );
+      document.body.removeEventListener("mouseenter", () =>
+        setInViewport(true),
+      );
+      document.body.classList.remove("custom-cursor-active");
     };
   }, []);
 
@@ -115,16 +129,18 @@ export function CustomCursor() {
         ref={trailRef}
         className="fixed top-0 left-0 pointer-events-none z-[9999] hidden md:block"
         style={{
-          translate: '0 0',
-          mixBlendMode: 'difference',
-          willChange: 'transform',
+          translate: "0 0",
+          mixBlendMode: "difference",
+          willChange: "transform",
         }}
       >
-        <div style={{ transform: `scale(${R})`, transformOrigin: 'center center' }}>
+        <div
+          style={{ transform: `scale(${R})`, transformOrigin: "center center" }}
+        >
           <div
             className="rounded-full transition-all duration-300 ease-out"
             style={{
-              border: '2px solid white',
+              border: "2px solid white",
               width: ringSize,
               height: ringSize,
               opacity: ringOpacity,
@@ -137,16 +153,19 @@ export function CustomCursor() {
         ref={cursorRef}
         className="fixed top-0 left-0 pointer-events-none z-[10000] hidden md:block"
         style={{
-          translate: '0 0',
-          mixBlendMode: 'difference',
-          willChange: 'transform',
+          translate: "0 0",
+          mixBlendMode: "difference",
+          willChange: "transform",
         }}
       >
-        <div style={{ transform: `scale(${R})`, transformOrigin: 'center center' }}>
+        <div
+          style={{ transform: `scale(${R})`, transformOrigin: "center center" }}
+        >
           <div
             className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out"
             style={{
-              background: 'radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)',
+              background:
+                "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)",
               width: glowSize,
               height: glowSize,
               opacity: glowOpacity,
@@ -155,11 +174,11 @@ export function CustomCursor() {
           <div
             className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out"
             style={{
-              border: '3px solid rgba(255,255,255,0.9)',
+              border: "3px solid rgba(255,255,255,0.9)",
               boxShadow:
-                '0 0 0 2px rgba(255,255,255,0.12), ' +
-                '0 0 48px 6px rgba(255,255,255,0.15), ' +
-                'inset 0 0 24px rgba(255,255,255,0.08)',
+                "0 0 0 2px rgba(255,255,255,0.12), " +
+                "0 0 48px 6px rgba(255,255,255,0.15), " +
+                "inset 0 0 24px rgba(255,255,255,0.08)",
               width: glassSize,
               height: glassSize,
               opacity: glassOpacity,
@@ -168,7 +187,7 @@ export function CustomCursor() {
           <div
             className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out"
             style={{
-              border: '2px solid rgba(255,255,255,0.55)',
+              border: "2px solid rgba(255,255,255,0.55)",
               width: innerSize,
               height: innerSize,
               opacity: innerOpacity,
@@ -178,8 +197,8 @@ export function CustomCursor() {
             className="rounded-full bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out"
             style={{
               boxShadow:
-                '0 0 16px 6px rgba(255,255,255,0.55), ' +
-                '0 0 36px 14px rgba(255,255,255,0.28)',
+                "0 0 16px 6px rgba(255,255,255,0.55), " +
+                "0 0 36px 14px rgba(255,255,255,0.28)",
               width: dotSize,
               height: dotSize,
             }}

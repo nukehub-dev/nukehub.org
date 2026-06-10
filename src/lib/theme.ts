@@ -10,9 +10,9 @@
  *   - data-accent="<name>"
  */
 
-export type ThemePreference = 'light' | 'dark' | 'system';
-export type ResolvedTheme = 'light' | 'dark';
-export type AccentColor = 'red' | 'orange' | 'green' | 'cyan' | 'purple';
+export type ThemePreference = "light" | "dark" | "system";
+export type ResolvedTheme = "light" | "dark";
+export type AccentColor = "red" | "orange" | "green" | "cyan" | "purple";
 
 export interface AccentSwatch {
   name: AccentColor;
@@ -21,23 +21,25 @@ export interface AccentSwatch {
 }
 
 export const ACCENT_SWATCHES: AccentSwatch[] = [
-  { name: 'red', hue: 27, label: 'Red' },
-  { name: 'orange', hue: 48, label: 'Orange' },
-  { name: 'green', hue: 144, label: 'Green' },
-  { name: 'cyan', hue: 211, label: 'Cyan' },
-  { name: 'purple', hue: 321, label: 'Purple' },
+  { name: "red", hue: 27, label: "Red" },
+  { name: "orange", hue: 48, label: "Orange" },
+  { name: "green", hue: 144, label: "Green" },
+  { name: "cyan", hue: 211, label: "Cyan" },
+  { name: "purple", hue: 321, label: "Purple" },
 ];
 
-const THEME_KEY = 'theme';
-const ACCENT_KEY = 'accent';
+const THEME_KEY = "theme";
+const ACCENT_KEY = "accent";
 
 /**
  * Resolve a theme preference to an actual light/dark value.
  */
 export function resolveTheme(preference: ThemePreference): ResolvedTheme {
-  if (preference === 'system' || !preference) {
-    if (typeof window === 'undefined') return 'light';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  if (preference === "system" || !preference) {
+    if (typeof window === "undefined") return "light";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   }
   return preference;
 }
@@ -46,12 +48,12 @@ export function resolveTheme(preference: ThemePreference): ResolvedTheme {
  * Read the user's stored theme preference (may be 'system').
  */
 export function getThemePreference(): ThemePreference {
-  if (typeof window === 'undefined') return 'system';
+  if (typeof window === "undefined") return "system";
   const stored = localStorage.getItem(THEME_KEY);
-  if (stored === 'light' || stored === 'dark' || stored === 'system') {
+  if (stored === "light" || stored === "dark" || stored === "system") {
     return stored;
   }
-  return 'system';
+  return "system";
 }
 
 /**
@@ -66,9 +68,9 @@ export function getResolvedTheme(): ResolvedTheme {
  * Stores the preference and updates data-theme with the resolved value.
  */
 export function setThemePreference(preference: ThemePreference): void {
-  if (typeof document === 'undefined') return;
+  if (typeof document === "undefined") return;
   const resolved = resolveTheme(preference);
-  document.documentElement.setAttribute('data-theme', resolved);
+  document.documentElement.setAttribute("data-theme", resolved);
   localStorage.setItem(THEME_KEY, preference);
   updateMetaThemeColor();
 }
@@ -77,21 +79,21 @@ export function setThemePreference(preference: ThemePreference): void {
  * Read the stored accent color.
  */
 export function getAccentColor(): AccentColor {
-  if (typeof window === 'undefined') return 'orange';
+  if (typeof window === "undefined") return "orange";
   const stored = localStorage.getItem(ACCENT_KEY);
-  const valid: AccentColor[] = ['red', 'orange', 'green', 'cyan', 'purple'];
+  const valid: AccentColor[] = ["red", "orange", "green", "cyan", "purple"];
   if (valid.includes(stored as AccentColor)) {
     return stored as AccentColor;
   }
-  return 'orange';
+  return "orange";
 }
 
 /**
  * Apply an accent color to the document.
  */
 export function setAccentColor(color: AccentColor): void {
-  if (typeof document === 'undefined') return;
-  document.documentElement.setAttribute('data-accent', color);
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-accent", color);
   localStorage.setItem(ACCENT_KEY, color);
   updateMetaThemeColor();
 }
@@ -100,7 +102,7 @@ export function setAccentColor(color: AccentColor): void {
  * Cycle through themes: light → dark → system → light
  */
 export function cycleTheme(current: ThemePreference): ThemePreference {
-  const order: ThemePreference[] = ['light', 'dark', 'system'];
+  const order: ThemePreference[] = ["light", "dark", "system"];
   const idx = order.indexOf(current);
   return order[(idx + 1) % order.length];
 }
@@ -110,22 +112,25 @@ export function cycleTheme(current: ThemePreference): ThemePreference {
  * resolved theme and accent color.
  */
 export function updateMetaThemeColor(): void {
-  if (typeof document === 'undefined') return;
+  if (typeof document === "undefined") return;
 
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const accent = document.documentElement.getAttribute('data-accent') || 'orange';
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  const accent =
+    document.documentElement.getAttribute("data-accent") || "orange";
 
   // Map accent to a dark-mode-aware hex fallback for the theme-color meta tag.
   const accentMap: Record<string, { light: string; dark: string }> = {
-    red: { light: '#e03131', dark: '#c92a2a' },
-    orange: { light: '#f37524', dark: '#d65a0f' },
-    green: { light: '#40c057', dark: '#2f9e44' },
-    cyan: { light: '#15aabf', dark: '#1098ad' },
-    purple: { light: '#be4bdb', dark: '#9c36b5' },
+    red: { light: "#e03131", dark: "#c92a2a" },
+    orange: { light: "#f37524", dark: "#d65a0f" },
+    green: { light: "#40c057", dark: "#2f9e44" },
+    cyan: { light: "#15aabf", dark: "#1098ad" },
+    purple: { light: "#be4bdb", dark: "#9c36b5" },
   };
 
-  const color = accentMap[accent]?.[isDark ? 'dark' : 'light'] || '#000000';
-  const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+  const color = accentMap[accent]?.[isDark ? "dark" : "light"] || "#000000";
+  const meta = document.querySelector(
+    'meta[name="theme-color"]',
+  ) as HTMLMetaElement | null;
   if (meta) {
     meta.content = color;
   }
@@ -135,12 +140,14 @@ export function updateMetaThemeColor(): void {
  * Subscribe to system-level dark-mode changes.
  * Returns an unsubscribe function.
  */
-export function watchSystemTheme(callback: (resolved: ResolvedTheme) => void): () => void {
-  if (typeof window === 'undefined') return () => {};
-  const mql = window.matchMedia('(prefers-color-scheme: dark)');
+export function watchSystemTheme(
+  callback: (resolved: ResolvedTheme) => void,
+): () => void {
+  if (typeof window === "undefined") return () => {};
+  const mql = window.matchMedia("(prefers-color-scheme: dark)");
   const handler = (e: MediaQueryListEvent | MediaQueryList) => {
-    callback(e.matches ? 'dark' : 'light');
+    callback(e.matches ? "dark" : "light");
   };
-  mql.addEventListener('change', handler);
-  return () => mql.removeEventListener('change', handler);
+  mql.addEventListener("change", handler);
+  return () => mql.removeEventListener("change", handler);
 }

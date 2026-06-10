@@ -1,17 +1,23 @@
-import { useRef, useEffect, useMemo } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { ReactorLattice } from './ReactorLattice';
-import * as THREE from 'three';
+import { useRef, useEffect, useMemo } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import { ReactorLattice } from "./ReactorLattice";
+import * as THREE from "three";
 
 interface SceneProps {
   mobile?: boolean;
   reducedMotion?: boolean;
   orbitControls?: boolean;
-  frameloop?: 'always' | 'never';
+  frameloop?: "always" | "never";
 }
 
-function CameraController({ reducedMotion, orbitControls }: { reducedMotion?: boolean; orbitControls?: boolean }) {
+function CameraController({
+  reducedMotion,
+  orbitControls,
+}: {
+  reducedMotion?: boolean;
+  orbitControls?: boolean;
+}) {
   const { camera } = useThree();
   const scrollRef = useRef(0);
   const timeRef = useRef(0);
@@ -23,8 +29,8 @@ function CameraController({ reducedMotion, orbitControls }: { reducedMotion?: bo
       scrollRef.current = window.scrollY / window.innerHeight;
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [reducedMotion, orbitControls]);
 
   useEffect(() => {
@@ -44,8 +50,8 @@ function CameraController({ reducedMotion, orbitControls }: { reducedMotion?: bo
     // Cinematic "breathing" dolly: very slow, subtle drift.
     // Camera stays in front (z > 4.5) so it never clips through geometry.
     const orbitX = Math.sin(t * 0.025) * 1.8;
-    const orbitZ = 5.0 + Math.sin(t * 0.018 + 1.0) * 0.7;   // 4.3 to 5.7
-    const orbitY = 0.35 + Math.sin(t * 0.015) * 0.25;       // 0.1 to 0.6
+    const orbitZ = 5.0 + Math.sin(t * 0.018 + 1.0) * 0.7; // 4.3 to 5.7
+    const orbitY = 0.35 + Math.sin(t * 0.015) * 0.25; // 0.1 to 0.6
 
     const lerpFactor = 1 - Math.exp(-delta * 0.8);
     camera.position.x += (orbitX - camera.position.x) * lerpFactor;
@@ -75,16 +81,18 @@ function SceneContent({ mobile, reducedMotion, orbitControls }: SceneProps) {
       mouseRef.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [reducedMotion, orbitControls]);
 
   useFrame((_, delta) => {
     if (!groupRef.current || reducedMotion || orbitControls) return;
 
     const lerpFactor = 1 - Math.exp(-delta * 3);
-    targetRef.current.x += (mouseRef.current.x * 0.12 - targetRef.current.x) * lerpFactor;
-    targetRef.current.y += (mouseRef.current.y * 0.08 - targetRef.current.y) * lerpFactor;
+    targetRef.current.x +=
+      (mouseRef.current.x * 0.12 - targetRef.current.x) * lerpFactor;
+    targetRef.current.y +=
+      (mouseRef.current.y * 0.08 - targetRef.current.y) * lerpFactor;
 
     groupRef.current.rotation.y = targetRef.current.x;
     groupRef.current.rotation.x = targetRef.current.y * 0.15;
@@ -100,7 +108,12 @@ function SceneContent({ mobile, reducedMotion, orbitControls }: SceneProps) {
   );
 }
 
-export function NucleusScene({ mobile, reducedMotion, orbitControls, frameloop = 'always' }: SceneProps) {
+export function NucleusScene({
+  mobile,
+  reducedMotion,
+  orbitControls,
+  frameloop = "always",
+}: SceneProps) {
   return (
     <Canvas
       dpr={[1, 1]}
@@ -109,12 +122,19 @@ export function NucleusScene({ mobile, reducedMotion, orbitControls, frameloop =
       gl={{
         antialias: true,
         alpha: true,
-        powerPreference: 'high-performance',
+        powerPreference: "high-performance",
       }}
-      style={{ background: 'transparent' }}
+      style={{ background: "transparent" }}
     >
-      <CameraController reducedMotion={reducedMotion} orbitControls={orbitControls} />
-      <SceneContent mobile={mobile} reducedMotion={reducedMotion} orbitControls={orbitControls} />
+      <CameraController
+        reducedMotion={reducedMotion}
+        orbitControls={orbitControls}
+      />
+      <SceneContent
+        mobile={mobile}
+        reducedMotion={reducedMotion}
+        orbitControls={orbitControls}
+      />
       {orbitControls && (
         <OrbitControls
           enablePan={true}

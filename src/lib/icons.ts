@@ -11,8 +11,8 @@ import {
   Quote,
   Mail,
   Zap,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export const iconMap: Record<string, LucideIcon> = {
   atom: Atom,

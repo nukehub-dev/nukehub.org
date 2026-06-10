@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
+import BaseLayout from "@layouts/BaseLayout.astro";
 ---
 
 <BaseLayout
@@ -8,13 +8,16 @@ import BaseLayout from '@layouts/BaseLayout.astro';
   permalink="/404"
   showFooter={false}
 >
-  <section class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 text-center">
+  <section
+    class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 text-center"
+  >
     {/* Subtle radial glow behind the message */}
     <div
       class="pointer-events-none absolute inset-0 opacity-[0.06]"
       aria-hidden="true"
       style="background: radial-gradient(circle at 50% 55%, var(--primary) 0%, transparent 60%);"
-    />
+    >
+    </div>
 
     {/* Core */}
     <div class="relative z-10 mb-8">
@@ -23,18 +26,15 @@ import BaseLayout from '@layouts/BaseLayout.astro';
         <span
           class="absolute h-40 w-40 rounded-full border border-primary/20 animate-ping"
           style="animation-duration: 3s;"
-          aria-hidden="true"
-        />
+          aria-hidden="true"></span>
         <span
           class="absolute h-28 w-28 rounded-full border border-primary/30 animate-ping"
           style="animation-duration: 2.2s; animation-delay: 0.4s;"
-          aria-hidden="true"
-        />
+          aria-hidden="true"></span>
         <span
           class="absolute h-16 w-16 rounded-full border border-primary/40 animate-ping"
           style="animation-duration: 1.6s; animation-delay: 0.8s;"
-          aria-hidden="true"
-        />
+          aria-hidden="true"></span>
 
         {/* Numeric code */}
         <span
@@ -47,27 +47,44 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     </div>
 
     {/* Message */}
-    <h1 class="relative z-10 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+    <h1
+      class="relative z-10 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+    >
       Lost in the reactor
     </h1>
-    <p class="relative z-10 mt-3 max-w-md text-base text-muted-foreground sm:text-lg">
-      The magnetic containment field couldn't locate this page. It may have drifted into an unstable orbit.
+    <p
+      class="relative z-10 mt-3 max-w-md text-base text-muted-foreground sm:text-lg"
+    >
+      The magnetic containment field couldn't locate this page. It may have
+      drifted into an unstable orbit.
     </p>
 
     {/* Status indicators */}
-    <div class="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-medium text-muted-foreground">
-      <span class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1">
-        <span class="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" aria-hidden="true" />
+    <div
+      class="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-medium text-muted-foreground"
+    >
+      <span
+        class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1"
+      >
+        <span
+          class="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse"
+          aria-hidden="true"></span>
         Plasma unstable
       </span>
-      <span class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1">
-        <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
+      <span
+        class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1"
+      >
+        <span
+          class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+          aria-hidden="true"></span>
         Re-routing available
       </span>
     </div>
 
     {/* CTA */}
-    <div class="relative z-10 mt-10 flex flex-col items-center gap-3 sm:flex-row">
+    <div
+      class="relative z-10 mt-10 flex flex-col items-center gap-3 sm:flex-row"
+    >
       <a
         href="/"
         class="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
@@ -83,24 +100,29 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     </div>
 
     {/* Decorative particles */}
-    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {Array.from({ length: 24 }).map((_, i) => {
-        const left = 10 + (i * 37) % 80;
-        const top = 15 + (i * 53) % 70;
-        const delay = (i * 0.12) % 3;
-        const duration = 2 + (i * 0.23) % 3;
-        return (
-          <span
-            class="absolute h-1 w-1 rounded-full bg-primary/30"
-            style={{
-              left: `${left}%`,
-              top: `${top}%`,
-              animation: `pulse-slow ${duration}s ease-in-out infinite`,
-              animationDelay: `${delay}s`,
-            }}
-          />
-        );
-      })}
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        Array.from({ length: 24 }).map((_, i) => {
+          const left = 10 + ((i * 37) % 80);
+          const top = 15 + ((i * 53) % 70);
+          const delay = (i * 0.12) % 3;
+          const duration = 2 + ((i * 0.23) % 3);
+          return (
+            <span
+              class="absolute h-1 w-1 rounded-full bg-primary/30"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                animation: `pulse-slow ${duration}s ease-in-out infinite`,
+                animationDelay: `${delay}s`,
+              }}
+            />
+          );
+        })
+      }
     </div>
   </section>
 </BaseLayout>

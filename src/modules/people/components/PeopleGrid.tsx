@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Search, ChevronDown, UserPlus } from 'lucide-react';
-import { ProfileCard } from './ProfileCard';
-import { ProfileModal } from './ProfileModal';
-import { cn } from '@lib/utils';
-import type { Person, PeopleCategory } from '@modules/people/types';
+import * as React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Users, Search, ChevronDown, UserPlus } from "lucide-react";
+import { ProfileCard } from "./ProfileCard";
+import { ProfileModal } from "./ProfileModal";
+import { cn } from "@lib/utils";
+import type { Person, PeopleCategory } from "@modules/people/types";
 
 // ============================================================================
 // Filter logic
@@ -28,7 +28,7 @@ interface FilteredCategory {
 
 function filterCategories(
   categories: PeopleCategory[],
-  query: string
+  query: string,
 ): FilteredCategory[] {
   const q = query.toLowerCase().trim();
   if (!q) {
@@ -51,19 +51,23 @@ interface PeopleGridProps {
 }
 
 export function PeopleGrid({ categories }: PeopleGridProps) {
-  const [query, setQuery] = React.useState('');
-  const [selectedPerson, setSelectedPerson] = React.useState<Person | null>(null);
-  const [expanded, setExpanded] = React.useState<Record<string, boolean>>(() => {
-    const init: Record<string, boolean> = {};
-    categories.forEach((c) => {
-      init[c.title] = true;
-    });
-    return init;
-  });
+  const [query, setQuery] = React.useState("");
+  const [selectedPerson, setSelectedPerson] = React.useState<Person | null>(
+    null,
+  );
+  const [expanded, setExpanded] = React.useState<Record<string, boolean>>(
+    () => {
+      const init: Record<string, boolean> = {};
+      categories.forEach((c) => {
+        init[c.title] = true;
+      });
+      return init;
+    },
+  );
 
   const filtered = React.useMemo(
     () => filterCategories(categories, query),
-    [categories, query]
+    [categories, query],
   );
 
   const toggleCategory = (title: string) => {
@@ -90,16 +94,16 @@ export function PeopleGrid({ categories }: PeopleGridProps) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name, role, or organization..."
             className={cn(
-              'w-full rounded-xl border border-border/50 bg-card/60 pl-10 pr-4 py-2.5',
-              'text-sm text-foreground placeholder:text-muted-foreground/50',
-              'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30',
-              'transition-all duration-200',
-              'hover:bg-card/80 hover:border-border/70'
+              "w-full rounded-xl border border-border/50 bg-card/60 pl-10 pr-4 py-2.5",
+              "text-sm text-foreground placeholder:text-muted-foreground/50",
+              "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30",
+              "transition-all duration-200",
+              "hover:bg-card/80 hover:border-border/70",
             )}
           />
           {query && (
             <button
-              onClick={() => setQuery('')}
+              onClick={() => setQuery("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground hover:text-foreground uppercase tracking-wide transition-colors"
               type="button"
             >
@@ -112,9 +116,8 @@ export function PeopleGrid({ categories }: PeopleGridProps) {
           <Users size={12} />
           <span>
             {query
-              ? `${filtered.reduce((s, c) => s + c.people.length, 0)} result${filtered.reduce((s, c) => s + c.people.length, 0) !== 1 ? 's' : ''}`
-              : `${categories.reduce((s, c) => s + c.children.length, 0)} members across ${categories.filter(c => c.children.length > 0).length} teams`
-            }
+              ? `${filtered.reduce((s, c) => s + c.people.length, 0)} result${filtered.reduce((s, c) => s + c.people.length, 0) !== 1 ? "s" : ""}`
+              : `${categories.reduce((s, c) => s + c.children.length, 0)} members across ${categories.filter((c) => c.children.length > 0).length} teams`}
           </span>
         </div>
       </motion.div>
@@ -163,8 +166,8 @@ export function PeopleGrid({ categories }: PeopleGridProps) {
                   <ChevronDown
                     size={16}
                     className={cn(
-                      'text-muted-foreground transition-transform duration-200 shrink-0',
-                      expanded[category.title] ? 'rotate-180' : ''
+                      "text-muted-foreground transition-transform duration-200 shrink-0",
+                      expanded[category.title] ? "rotate-180" : "",
                     )}
                   />
                 </button>
@@ -180,7 +183,7 @@ export function PeopleGrid({ categories }: PeopleGridProps) {
                   {expanded[category.title] && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
+                      animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.25 }}
                       className="overflow-hidden"
@@ -199,7 +202,10 @@ export function PeopleGrid({ categories }: PeopleGridProps) {
                       ) : (
                         <div className="py-10 text-center">
                           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted/50 mb-3">
-                            <UserPlus size={20} className="text-muted-foreground/40" />
+                            <UserPlus
+                              size={20}
+                              className="text-muted-foreground/40"
+                            />
                           </div>
                           <p className="text-sm text-muted-foreground">
                             No members yet in this category

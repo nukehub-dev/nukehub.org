@@ -1,14 +1,14 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
-import { getPrimaryColor } from '@lib/themeColors';
-import { useWebGL } from '@lib/useWebGL';
-import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
+import { Suspense, lazy, useEffect, useState } from "react";
+import { getPrimaryColor } from "@lib/themeColors";
+import { useWebGL } from "@lib/useWebGL";
+import { useCanvasVisibility, useDelayedUnmount } from "./useCanvasVisibility";
 
 const NucleusScene = lazy(() =>
-  import('./NucleusScene').then((mod) => ({ default: mod.NucleusScene }))
+  import("./NucleusScene").then((mod) => ({ default: mod.NucleusScene })),
 );
 
 function StaticFallback() {
-  const [primary, setPrimary] = useState('#f37524');
+  const [primary, setPrimary] = useState("#f37524");
 
   useEffect(() => {
     setPrimary(getPrimaryColor());
@@ -18,7 +18,7 @@ function StaticFallback() {
     });
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-accent', 'data-theme'],
+      attributeFilter: ["data-accent", "data-theme"],
     });
     return () => observer.disconnect();
   }, []);
@@ -54,28 +54,29 @@ export function HeroCanvas() {
   const [isMobile, setIsMobile] = useState(false);
   // Hero is above the fold — render immediately without lazy-loading
   const [hasLoaded] = useState(true);
-  const isVisible = useCanvasVisibility('hero-canvas-anchor');
+  const isVisible = useCanvasVisibility("hero-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 0);
   const webglSupported = useWebGL();
 
   useEffect(() => {
     // Check prefers-reduced-motion
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(mq.matches);
 
-    const handleChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mq.addEventListener('change', handleChange);
+    const handleChange = (e: MediaQueryListEvent) =>
+      setReducedMotion(e.matches);
+    mq.addEventListener("change", handleChange);
 
     // Check mobile (reduce particles)
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile, { passive: true });
+    window.addEventListener("resize", checkMobile, { passive: true });
 
     return () => {
-      mq.removeEventListener('change', handleChange);
-      window.removeEventListener('resize', checkMobile);
+      mq.removeEventListener("change", handleChange);
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 

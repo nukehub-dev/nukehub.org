@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 import {
   Info,
   Award,
@@ -12,7 +12,7 @@ import {
   Package,
   ExternalLink,
   Mail,
-} from 'lucide-react';
+} from "lucide-react";
 
 export interface FooterLink {
   title: string;
@@ -28,47 +28,72 @@ export interface FooterColumn {
 
 export const footerColumns: FooterColumn[] = [
   {
-    title: 'Projects',
+    title: "Projects",
     links: [
-      { title: 'NRMS', url: '/nrms', newpage: true, icon: Factory },
-      { title: 'NukeAnalytics', url: '/nuke-analytics', newpage: true, icon: BarChart3 },
-      { title: 'NukeLab', url: '/nuke-lab', newpage: true, icon: FlaskConical },
-      { title: 'NukeBox', url: 'https://nukebox.readthedocs.io/', newpage: true, icon: Package },
+      { title: "NRMS", url: "/nrms", newpage: true, icon: Factory },
+      {
+        title: "NukeAnalytics",
+        url: "/nuke-analytics",
+        newpage: true,
+        icon: BarChart3,
+      },
+      { title: "NukeLab", url: "/nuke-lab", newpage: true, icon: FlaskConical },
+      {
+        title: "NukeBox",
+        url: "https://nukebox.readthedocs.io/",
+        newpage: true,
+        icon: Package,
+      },
     ],
   },
   {
-    title: 'Manual',
+    title: "Manual",
     links: [
-      { title: 'About Us', url: '/about', icon: Info },
-      { title: 'Acknowledgment', url: '/acknowledgment', icon: Award },
-      { title: 'Support Us', url: '/support', icon: Heart },
+      { title: "About Us", url: "/about", icon: Info },
+      { title: "Acknowledgment", url: "/acknowledgment", icon: Award },
+      { title: "Support Us", url: "/support", icon: Heart },
     ],
   },
   {
-    title: 'Community',
+    title: "Community",
     links: [
-      { title: 'People', url: '/people', icon: User },
-      { title: 'Events', url: '/events', icon: Calendar },
-      { title: 'NukeTalk', url: 'https://talk.nukehub.org', newpage: true, icon: MessageSquare },
+      { title: "People", url: "/people", icon: User },
+      { title: "Events", url: "/events", icon: Calendar },
+      {
+        title: "NukeTalk",
+        url: "https://talk.nukehub.org",
+        newpage: true,
+        icon: MessageSquare,
+      },
     ],
   },
   {
-    title: 'Connect',
+    title: "Connect",
     links: [
-      { title: 'Contact', url: '/contact', icon: Mail },
-      { title: 'GitHub', url: 'https://github.com/nukehub-dev/', newpage: true, icon: ExternalLink },
-      { title: 'LinkedIn', url: 'https://www.linkedin.com/company/nukehub', newpage: true, icon: ExternalLink },
+      { title: "Contact", url: "/contact", icon: Mail },
+      {
+        title: "GitHub",
+        url: "https://github.com/nukehub-dev/",
+        newpage: true,
+        icon: ExternalLink,
+      },
+      {
+        title: "LinkedIn",
+        url: "https://www.linkedin.com/company/nukehub",
+        newpage: true,
+        icon: ExternalLink,
+      },
     ],
   },
 ];
 
 export const footerLegal = [
-  { title: 'Privacy', url: '/privacy-policy' },
-  { title: 'Terms', url: '/terms-of-service' },
-  { title: 'Code of Conduct', url: '/code-of-conduct' },
+  { title: "Privacy", url: "/privacy-policy" },
+  { title: "Terms", url: "/terms-of-service" },
+  { title: "Code of Conduct", url: "/code-of-conduct" },
 ];
 
 export const socialLinks = [
-  { name: 'github', url: 'https://github.com/nukehub-dev' },
-  { name: 'linkedin', url: 'https://www.linkedin.com/company/nukehub' },
+  { name: "github", url: "https://github.com/nukehub-dev" },
+  { name: "linkedin", url: "https://www.linkedin.com/company/nukehub" },
 ] as const;

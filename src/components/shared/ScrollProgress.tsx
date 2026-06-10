@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export function ScrollProgress() {
   const barRef = useRef<HTMLDivElement>(null);
@@ -11,7 +11,8 @@ export function ScrollProgress() {
 
     const update = () => {
       const target =
-        window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        window.scrollY /
+        (document.documentElement.scrollHeight - window.innerHeight);
       current += (target - current) * 0.12;
       if (barRef.current) {
         barRef.current.style.transform = `scaleX(${Math.max(0, Math.min(1, current))})`;

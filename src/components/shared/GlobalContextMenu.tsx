@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Link, ArrowUp } from 'lucide-react';
-import { navItems } from '@data/nav';
+import React from "react";
+import { Link, ArrowUp } from "lucide-react";
+import { navItems } from "@data/nav";
 import {
   GlassContextMenu,
   ContextMenuItem,
   ContextMenuSub,
   ContextMenuSeparator,
-} from './GlassContextMenu';
+} from "./GlassContextMenu";
 
 export function GlobalContextMenu() {
   return (
@@ -22,7 +22,7 @@ export function GlobalContextMenu() {
       </ContextMenuItem>
       <ContextMenuItem
         icon={ArrowUp}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         shortcut="Home"
       >
         Back to top
@@ -48,8 +48,8 @@ export function GlobalContextMenu() {
                 key={child.title}
                 icon={child.icon}
                 href={child.url}
-                target={child.newpage ? '_blank' : undefined}
-                rel={child.newpage ? 'noopener noreferrer' : undefined}
+                target={child.newpage ? "_blank" : undefined}
+                rel={child.newpage ? "noopener noreferrer" : undefined}
               >
                 {child.title}
               </ContextMenuItem>

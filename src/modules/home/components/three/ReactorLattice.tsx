@@ -1,7 +1,7 @@
-import { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { useAccentColor } from './useAccentColor';
+import { useRef, useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { useAccentColor } from "./useAccentColor";
 
 /* -------------------------------------------------------------------------- */
 /*  Procedural cladding texture — subtle axial ridges for zircaloy realism    */
@@ -10,12 +10,12 @@ import { useAccentColor } from './useAccentColor';
 let _claddingTexture: THREE.CanvasTexture | null = null;
 function getCladdingTexture(): THREE.CanvasTexture {
   if (_claddingTexture) return _claddingTexture;
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = 128;
   canvas.height = 1024;
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext("2d")!;
 
-  ctx.fillStyle = '#808080';
+  ctx.fillStyle = "#808080";
   ctx.fillRect(0, 0, 128, 1024);
 
   for (let x = 0; x < 128; x += 2) {
@@ -26,7 +26,7 @@ function getCladdingTexture(): THREE.CanvasTexture {
   }
 
   for (let y = 0; y < 1024; y += 48) {
-    ctx.fillStyle = 'rgba(100,100,100,0.4)';
+    ctx.fillStyle = "rgba(100,100,100,0.4)";
     ctx.fillRect(0, y, 128, 1);
   }
 
@@ -55,14 +55,20 @@ interface HexCell {
 }
 
 function hexDistance(q1: number, r1: number, q2: number, r2: number): number {
-  return (Math.abs(q1 - q2) + Math.abs(r1 - r2) + Math.abs(q1 + r1 - q2 - r2)) / 2;
+  return (
+    (Math.abs(q1 - q2) + Math.abs(r1 - r2) + Math.abs(q1 + r1 - q2 - r2)) / 2
+  );
 }
 
 function generateHexGrid(radius: number): HexCell[] {
   const cells: HexCell[] = [];
   let idx = 0;
   for (let q = -radius; q <= radius; q++) {
-    for (let r = Math.max(-radius, -q - radius); r <= Math.min(radius, -q + radius); r++) {
+    for (
+      let r = Math.max(-radius, -q - radius);
+      r <= Math.min(radius, -q + radius);
+      r++
+    ) {
       const x = SPACING * (q + r / 2);
       const z = SPACING * SQRT3_2 * r;
       const dist = hexDistance(q, r, 0, 0);
@@ -120,21 +126,13 @@ function FuelRod({
       {/* Bottom end plug */}
       <mesh position={[0, 0.03, 0]}>
         <cylinderGeometry args={[radius * 0.95, radius * 1.08, 0.06, 8]} />
-        <meshStandardMaterial
-          color="#9a9aa0"
-          roughness={0.3}
-          metalness={0.9}
-        />
+        <meshStandardMaterial color="#9a9aa0" roughness={0.3} metalness={0.9} />
       </mesh>
 
       {/* Top end plug */}
       <mesh position={[0, height + 0.03, 0]}>
         <cylinderGeometry args={[radius * 1.08, radius * 0.95, 0.06, 8]} />
-        <meshStandardMaterial
-          color="#9a9aa0"
-          roughness={0.3}
-          metalness={0.9}
-        />
+        <meshStandardMaterial color="#9a9aa0" roughness={0.3} metalness={0.9} />
       </mesh>
     </group>
   );
@@ -168,11 +166,7 @@ function GuideThimble({
       {/* Top rim ring */}
       <mesh position={[0, height + 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[radius * 0.85, radius * 1.15, 12]} />
-        <meshStandardMaterial
-          color="#888890"
-          roughness={0.3}
-          metalness={0.9}
-        />
+        <meshStandardMaterial color="#888890" roughness={0.3} metalness={0.9} />
       </mesh>
     </group>
   );
@@ -209,11 +203,11 @@ function ControlRodSpider({
 
   const avgX = useMemo(
     () => guidePositions.reduce((s, p) => s + p[0], 0) / guidePositions.length,
-    [guidePositions]
+    [guidePositions],
   );
   const avgZ = useMemo(
     () => guidePositions.reduce((s, p) => s + p[1], 0) / guidePositions.length,
-    [guidePositions]
+    [guidePositions],
   );
 
   // Radial arms from center hub to each control rod
@@ -238,7 +232,11 @@ function ControlRodSpider({
       {/* Central hub disc */}
       <mesh position={[avgX, 0.08, avgZ]}>
         <cylinderGeometry args={[0.12, 0.14, 0.06, 8]} />
-        <meshStandardMaterial color="#4a4a50" roughness={0.35} metalness={0.9} />
+        <meshStandardMaterial
+          color="#4a4a50"
+          roughness={0.35}
+          metalness={0.9}
+        />
       </mesh>
 
       {/* Radial arms — one to each control rod, sloping down like umbrella ribs */}
@@ -247,24 +245,24 @@ function ControlRodSpider({
         const start = new THREE.Vector3(
           avgX + (arm.dx / arm.dist) * hubOffset,
           0.15,
-          avgZ + (arm.dz / arm.dist) * hubOffset
+          avgZ + (arm.dz / arm.dist) * hubOffset,
         );
-        const end = new THREE.Vector3(
-          avgX + arm.dx,
-          0.13,
-          avgZ + arm.dz
-        );
+        const end = new THREE.Vector3(avgX + arm.dx, 0.13, avgZ + arm.dz);
         const mid = new THREE.Vector3().lerpVectors(start, end, 0.5);
         const dir = new THREE.Vector3().subVectors(end, start).normalize();
         const armLen = start.distanceTo(end);
         const quat = new THREE.Quaternion().setFromUnitVectors(
           new THREE.Vector3(0, 1, 0),
-          dir
+          dir,
         );
         return (
           <mesh key={i} position={mid} quaternion={quat}>
             <cylinderGeometry args={[0.02, 0.018, armLen, 6]} />
-            <meshStandardMaterial color="#3a3a42" roughness={0.35} metalness={0.85} />
+            <meshStandardMaterial
+              color="#3a3a42"
+              roughness={0.35}
+              metalness={0.85}
+            />
           </mesh>
         );
       })}
@@ -273,7 +271,11 @@ function ControlRodSpider({
       {guidePositions.map(([x, z], i) => (
         <mesh key={`conn-${i}`} position={[x, 0.12, z]}>
           <cylinderGeometry args={[0.05, 0.05, 0.02, 8]} />
-          <meshStandardMaterial color="#4a4a50" roughness={0.35} metalness={0.85} />
+          <meshStandardMaterial
+            color="#4a4a50"
+            roughness={0.35}
+            metalness={0.85}
+          />
         </mesh>
       ))}
 
@@ -292,7 +294,11 @@ function ControlRodSpider({
           {/* Rod tip — tapered */}
           <mesh position={[0, -rodHeight - 0.02, 0]}>
             <cylinderGeometry args={[0.03, 0.04, 0.04, 8]} />
-            <meshStandardMaterial color="#3a3a40" roughness={0.4} metalness={0.7} />
+            <meshStandardMaterial
+              color="#3a3a40"
+              roughness={0.4}
+              metalness={0.7}
+            />
           </mesh>
         </group>
       ))}
@@ -304,7 +310,11 @@ function ControlRodSpider({
 /*  Guide Tubes — thin vertical posts at hexagonal frame corners              */
 /* -------------------------------------------------------------------------- */
 
-function GuideTubes({ radius, topY, bottomY }: {
+function GuideTubes({
+  radius,
+  topY,
+  bottomY,
+}: {
   radius: number;
   topY: number;
   bottomY: number;
@@ -342,7 +352,15 @@ function GuideTubes({ radius, topY, bottomY }: {
 /*  Lower Nozzle Plate — perforated hex disc rods sit on                      */
 /* -------------------------------------------------------------------------- */
 
-function LowerNozzlePlate({ cells, radius, guideIndices }: { cells: HexCell[]; radius: number; guideIndices: number[] }) {
+function LowerNozzlePlate({
+  cells,
+  radius,
+  guideIndices,
+}: {
+  cells: HexCell[];
+  radius: number;
+  guideIndices: number[];
+}) {
   const geometry = useMemo(() => {
     const outerR = radius + 0.6;
     const shape = new THREE.Shape();
@@ -381,11 +399,7 @@ function LowerNozzlePlate({ cells, radius, guideIndices }: { cells: HexCell[]; r
 
   return (
     <mesh geometry={geometry} position={[0, 0, 0]}>
-      <meshStandardMaterial
-        color="#909098"
-        roughness={0.45}
-        metalness={0.8}
-      />
+      <meshStandardMaterial color="#909098" roughness={0.45} metalness={0.8} />
     </mesh>
   );
 }
@@ -394,7 +408,12 @@ function LowerNozzlePlate({ cells, radius, guideIndices }: { cells: HexCell[]; r
 /*  Upper Nozzle Plate — perforated hex disc with lifting bail                */
 /* -------------------------------------------------------------------------- */
 
-function UpperNozzlePlate({ cells, radius, y, guideIndices }: {
+function UpperNozzlePlate({
+  cells,
+  radius,
+  y,
+  guideIndices,
+}: {
   cells: HexCell[];
   radius: number;
   y: number;
@@ -457,7 +476,12 @@ function UpperNozzlePlate({ cells, radius, y, guideIndices }: {
 /*  Spacer Grid — thin Inconel honeycomb structure that holds rods in place   */
 /* -------------------------------------------------------------------------- */
 
-function SpacerGrid({ cells, radius, y, guideIndices }: {
+function SpacerGrid({
+  cells,
+  radius,
+  y,
+  guideIndices,
+}: {
   cells: HexCell[];
   radius: number;
   y: number;
@@ -499,11 +523,7 @@ function SpacerGrid({ cells, radius, y, guideIndices }: {
 
   return (
     <mesh geometry={geometry}>
-      <meshStandardMaterial
-        color="#6a6a70"
-        roughness={0.5}
-        metalness={0.85}
-      />
+      <meshStandardMaterial color="#6a6a70" roughness={0.5} metalness={0.85} />
     </mesh>
   );
 }
@@ -512,7 +532,10 @@ function SpacerGrid({ cells, radius, y, guideIndices }: {
 /*  Heat Shimmer — cool blue-white particles rising above hot rods            */
 /* -------------------------------------------------------------------------- */
 
-function HeatShimmer({ hotPositions, count }: {
+function HeatShimmer({
+  hotPositions,
+  count,
+}: {
   hotPositions: [number, number, number][];
   count: number;
 }) {
@@ -521,7 +544,8 @@ function HeatShimmer({ hotPositions, count }: {
 
   const particles = useMemo(() => {
     return Array.from({ length: count }, () => {
-      const base = hotPositions[Math.floor(Math.random() * hotPositions.length)];
+      const base =
+        hotPositions[Math.floor(Math.random() * hotPositions.length)];
       return {
         baseX: base[0],
         baseZ: base[2],
@@ -615,11 +639,7 @@ function HexRing({ radius, y }: { radius: number; y: number }) {
 
   return (
     <mesh geometry={geometry}>
-      <meshStandardMaterial
-        color="#888890"
-        roughness={0.35}
-        metalness={0.9}
-      />
+      <meshStandardMaterial color="#888890" roughness={0.35} metalness={0.9} />
     </mesh>
   );
 }
@@ -646,7 +666,9 @@ function InstrumentThimbles({
   maxRodHeight: number;
 }) {
   const thimblePositions = useMemo(() => {
-    const outer = cells.filter((c) => c.dist >= 3 && !guideIndices.includes(c.idx));
+    const outer = cells.filter(
+      (c) => c.dist >= 3 && !guideIndices.includes(c.idx),
+    );
     const picks = [outer[2], outer[8], outer[15]].filter(Boolean);
     return picks.map((c) => [c.x, c.z] as [number, number]);
   }, [cells, guideIndices]);
@@ -737,12 +759,19 @@ function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
     progress: 0,
   });
 
-  const fromPos = useMemo(() => new THREE.Vector3(cells[startIdx].x, 0, cells[startIdx].z), [cells, startIdx]);
-  const toPos = useMemo(() => new THREE.Vector3(
-    cells[stateRef.current.to].x,
-    0,
-    cells[stateRef.current.to].z
-  ), [cells]);
+  const fromPos = useMemo(
+    () => new THREE.Vector3(cells[startIdx].x, 0, cells[startIdx].z),
+    [cells, startIdx],
+  );
+  const toPos = useMemo(
+    () =>
+      new THREE.Vector3(
+        cells[stateRef.current.to].x,
+        0,
+        cells[stateRef.current.to].z,
+      ),
+    [cells],
+  );
 
   const currentFrom = useRef(fromPos.clone());
   const currentTo = useRef(toPos.clone());
@@ -750,7 +779,10 @@ function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
   const maxTrail = 25;
   const trailLine = useMemo(() => {
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(maxTrail * 3), 3));
+    geo.setAttribute(
+      "position",
+      new THREE.BufferAttribute(new Float32Array(maxTrail * 3), 3),
+    );
     const mat = new THREE.LineBasicMaterial({
       color: accent,
       transparent: true,
@@ -772,7 +804,11 @@ function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
     if (stateRef.current.progress >= 1) {
       const neighbors = adj[stateRef.current.to];
       const next = neighbors[Math.floor(Math.random() * neighbors.length)];
-      currentFrom.current.set(cells[stateRef.current.to].x, 0, cells[stateRef.current.to].z);
+      currentFrom.current.set(
+        cells[stateRef.current.to].x,
+        0,
+        cells[stateRef.current.to].z,
+      );
       currentTo.current.set(cells[next].x, 0, cells[next].z);
       stateRef.current.from = stateRef.current.to;
       stateRef.current.to = next;
@@ -784,7 +820,11 @@ function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
     const p = stateRef.current.progress;
     const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
 
-    const pos = new THREE.Vector3().lerpVectors(currentFrom.current, currentTo.current, eased);
+    const pos = new THREE.Vector3().lerpVectors(
+      currentFrom.current,
+      currentTo.current,
+      eased,
+    );
     pos.y += Math.sin(eased * Math.PI) * 0.45;
 
     meshRef.current.position.copy(pos);
@@ -845,7 +885,10 @@ function NeutronFlux({
     const centerIdx = cells.findIndex((c) => c.dist === 0);
     return Array.from({ length: count }, (_, i) => ({
       id: i,
-      idx: centerIdx >= 0 && i === 0 ? centerIdx : Math.floor(Math.random() * cells.length),
+      idx:
+        centerIdx >= 0 && i === 0
+          ? centerIdx
+          : Math.floor(Math.random() * cells.length),
     }));
   }, [cells, count]);
 
@@ -886,7 +929,7 @@ function FissionSparks({ accent }: { accent: string }) {
   useMemo(() => {
     geoRef.current = new THREE.SphereGeometry(1, 6, 6);
     matRef.current = new THREE.MeshBasicMaterial({
-      color: '#ffffff',
+      color: "#ffffff",
       transparent: true,
       opacity: 0.9,
       blending: THREE.AdditiveBlending,
@@ -910,7 +953,7 @@ function FissionSparks({ accent }: { accent: string }) {
       const pos = new THREE.Vector3(
         Math.cos(angle) * r,
         0.8 + Math.random() * 0.8,
-        Math.sin(angle) * r
+        Math.sin(angle) * r,
       );
 
       const mesh = new THREE.Mesh(geo, mat);
@@ -933,7 +976,11 @@ function FissionSparks({ accent }: { accent: string }) {
       const life = 1 - age / 0.6;
       const scale = Math.sin(life * Math.PI) * 0.12;
       spark.mesh.scale.setScalar(Math.max(0, scale));
-      spark.mesh.position.set(spark.pos.x, spark.pos.y + age * 0.3, spark.pos.z);
+      spark.mesh.position.set(
+        spark.pos.x,
+        spark.pos.y + age * 0.3,
+        spark.pos.z,
+      );
       spark.light.intensity = life * 2;
 
       alive.push(spark);
@@ -971,7 +1018,7 @@ function CoolantFlow({ count }: { count: number }) {
       dummy.position.set(
         Math.cos(p.angle) * p.radius,
         y,
-        Math.sin(p.angle) * p.radius
+        Math.sin(p.angle) * p.radius,
       );
       dummy.scale.setScalar(p.size);
       dummy.updateMatrix();
@@ -1000,7 +1047,13 @@ function CoolantFlow({ count }: { count: number }) {
 /*  Ambient floating particles                                                */
 /* -------------------------------------------------------------------------- */
 
-function AmbientParticles({ count, accent }: { count: number; accent: string }) {
+function AmbientParticles({
+  count,
+  accent,
+}: {
+  count: number;
+  accent: string;
+}) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -1021,7 +1074,7 @@ function AmbientParticles({ count, accent }: { count: number; accent: string }) 
       dummy.position.set(
         p.x + Math.sin(t * p.speed + p.phase) * 0.6,
         p.y + Math.sin(t * p.speed * 0.7 + p.phase) * 0.4,
-        p.z + Math.cos(t * p.speed + p.phase) * 0.6
+        p.z + Math.cos(t * p.speed + p.phase) * 0.6,
       );
       const s = 0.02 + Math.sin(t * 0.8 + p.phase) * 0.01;
       dummy.scale.setScalar(Math.max(0.008, s));
@@ -1050,7 +1103,13 @@ function AmbientParticles({ count, accent }: { count: number; accent: string }) 
 /*  Reaction Point Light — dims when control rods insert                      */
 /* -------------------------------------------------------------------------- */
 
-function ReactionPointLight({ insertionRef, accent }: { insertionRef: React.MutableRefObject<number>; accent: string }) {
+function ReactionPointLight({
+  insertionRef,
+  accent,
+}: {
+  insertionRef: React.MutableRefObject<number>;
+  accent: string;
+}) {
   const lightRef = useRef<THREE.PointLight>(null);
 
   useFrame(() => {
@@ -1111,7 +1170,15 @@ function CoreGlow({ accent }: { accent: string }) {
 /*  Water Surface — visible coolant level with subtle ripple                  */
 /* -------------------------------------------------------------------------- */
 
-function WaterSurface({ radius, y, accent }: { radius: number; y: number; accent: string }) {
+function WaterSurface({
+  radius,
+  y,
+  accent,
+}: {
+  radius: number;
+  y: number;
+  accent: string;
+}) {
   const meshRef = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshStandardMaterial>(null);
 
@@ -1143,7 +1210,15 @@ function WaterSurface({ radius, y, accent }: { radius: number; y: number; accent
 /*  Coolant Water Volume — translucent blue cylinder surrounding assembly     */
 /* -------------------------------------------------------------------------- */
 
-function CoolantWater({ maxRodHeight, assemblyRadius, accent }: { maxRodHeight: number; assemblyRadius: number; accent: string }) {
+function CoolantWater({
+  maxRodHeight,
+  assemblyRadius,
+  accent,
+}: {
+  maxRodHeight: number;
+  assemblyRadius: number;
+  accent: string;
+}) {
   const meshRef = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshStandardMaterial>(null);
 
@@ -1161,7 +1236,9 @@ function CoolantWater({ maxRodHeight, assemblyRadius, accent }: { maxRodHeight: 
   return (
     <group>
       <mesh ref={meshRef} position={[0, waterCenterY, 0]}>
-        <cylinderGeometry args={[assemblyRadius + 0.6, assemblyRadius + 0.6, waterHeight, 48]} />
+        <cylinderGeometry
+          args={[assemblyRadius + 0.6, assemblyRadius + 0.6, waterHeight, 48]}
+        />
         <meshStandardMaterial
           ref={matRef}
           color={accent}
@@ -1182,7 +1259,17 @@ function CoolantWater({ maxRodHeight, assemblyRadius, accent }: { maxRodHeight: 
 /*  Cherenkov Radiation Glow — ambient blue glow in water between rods        */
 /* -------------------------------------------------------------------------- */
 
-function CherenkovGlow({ maxRodHeight, cells, insertionRef, accent }: { maxRodHeight: number; cells: HexCell[]; insertionRef: React.MutableRefObject<number>; accent: string }) {
+function CherenkovGlow({
+  maxRodHeight,
+  cells,
+  insertionRef,
+  accent,
+}: {
+  maxRodHeight: number;
+  cells: HexCell[];
+  insertionRef: React.MutableRefObject<number>;
+  accent: string;
+}) {
   const lightRef = useRef<THREE.PointLight>(null);
   const centerGlowRef = useRef<THREE.MeshBasicMaterial>(null);
   const ringRef = useRef<THREE.MeshBasicMaterial>(null);
@@ -1218,20 +1305,25 @@ function CherenkovGlow({ maxRodHeight, cells, insertionRef, accent }: { maxRodHe
       </mesh>
 
       {/* Scattered glow volumes around inner rods */}
-      {cells.filter((c) => c.dist === 1 || c.dist === 2).slice(0, 6).map((cell, i) => (
-        <mesh key={i} position={[cell.x, maxRodHeight * 0.5, cell.z]}>
-          <cylinderGeometry args={[0.25, 0.25, maxRodHeight * 0.5, 16, 1, true]} />
-          <meshBasicMaterial
-            color={accent}
-            transparent
-            opacity={0.015}
-            side={THREE.DoubleSide}
-            depthWrite={false}
-            blending={THREE.AdditiveBlending}
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
+      {cells
+        .filter((c) => c.dist === 1 || c.dist === 2)
+        .slice(0, 6)
+        .map((cell, i) => (
+          <mesh key={i} position={[cell.x, maxRodHeight * 0.5, cell.z]}>
+            <cylinderGeometry
+              args={[0.25, 0.25, maxRodHeight * 0.5, 16, 1, true]}
+            />
+            <meshBasicMaterial
+              color={accent}
+              transparent
+              opacity={0.015}
+              side={THREE.DoubleSide}
+              depthWrite={false}
+              blending={THREE.AdditiveBlending}
+              toneMapped={false}
+            />
+          </mesh>
+        ))}
 
       {/* Cherenkov point light — cool blue, dims when rods insert */}
       <pointLight
@@ -1244,7 +1336,10 @@ function CherenkovGlow({ maxRodHeight, cells, insertionRef, accent }: { maxRodHe
       />
 
       {/* Faint blue glow on rod surfaces (inner ring) */}
-      <mesh position={[0, maxRodHeight * 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh
+        position={[0, maxRodHeight * 0.5, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
         <ringGeometry args={[0.4, 1.4, 48]} />
         <meshBasicMaterial
           ref={ringRef}
@@ -1264,7 +1359,15 @@ function CherenkovGlow({ maxRodHeight, cells, insertionRef, accent }: { maxRodHe
 /*  Coolant Bubbles — small white spheres rising through water                */
 /* -------------------------------------------------------------------------- */
 
-function CoolantBubbles({ count, assemblyRadius, maxRodHeight }: { count: number; assemblyRadius: number; maxRodHeight: number }) {
+function CoolantBubbles({
+  count,
+  assemblyRadius,
+  maxRodHeight,
+}: {
+  count: number;
+  assemblyRadius: number;
+  maxRodHeight: number;
+}) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -1327,7 +1430,10 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
 
   const cells = useMemo(() => generateHexGrid(4), []);
   const adj = useMemo(() => buildAdjacencies(cells), [cells]);
-  const centerIdx = useMemo(() => cells.findIndex((c) => c.dist === 0), [cells]);
+  const centerIdx = useMemo(
+    () => cells.findIndex((c) => c.dist === 0),
+    [cells],
+  );
 
   // Pick 6 outer cells as guide thimbles (evenly spaced around perimeter)
   const guideThimbleIndices = useMemo(() => {
@@ -1335,12 +1441,21 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
       .filter((c) => c.dist === 4)
       .sort((a, b) => Math.atan2(a.z, a.x) - Math.atan2(b.z, b.x))
       .map((c) => c.idx);
-    return [outer[0], outer[4], outer[8], outer[12], outer[16], outer[20]].filter((i) => i !== undefined);
+    return [
+      outer[0],
+      outer[4],
+      outer[8],
+      outer[12],
+      outer[16],
+      outer[20],
+    ].filter((i) => i !== undefined);
   }, [cells]);
 
   const assemblyRadius = useMemo(
-    () => Math.max(...cells.map((c) => Math.sqrt(c.x * c.x + c.z * c.z))) + SPACING * 0.3,
-    [cells]
+    () =>
+      Math.max(...cells.map((c) => Math.sqrt(c.x * c.x + c.z * c.z))) +
+      SPACING * 0.3,
+    [cells],
   );
 
   // Rod heights — uniform so all rods reach the top plate cleanly
@@ -1356,9 +1471,9 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
   // Fresh zircaloy color gradient: subtle variation, all silver/grey
   const rodColors = useMemo(() => {
     return cells.map((cell) => {
-      if (guideThimbleIndices.includes(cell.idx)) return '#a0a0a8'; // guide thimbles
-      if (cell.dist <= 2) return '#b8b8c0'; // inner rings
-      return '#b0b0b8'; // outer ring
+      if (guideThimbleIndices.includes(cell.idx)) return "#a0a0a8"; // guide thimbles
+      if (cell.dist <= 2) return "#b8b8c0"; // inner rings
+      return "#b0b0b8"; // outer ring
     });
   }, [cells, guideThimbleIndices]);
 
@@ -1385,9 +1500,18 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
     <group ref={groupRef}>
       {/* Lighting */}
       {/* Key light — strong warm white from front-above */}
-      <directionalLight position={[4, 6, 5]} intensity={2.5} color="#e8ecf0" castShadow={false} />
+      <directionalLight
+        position={[4, 6, 5]}
+        intensity={2.5}
+        color="#e8ecf0"
+        castShadow={false}
+      />
       {/* Rim light — cool blue from behind to define edges */}
-      <directionalLight position={[-3, 2, -6]} intensity={1.2} color="#aabbdd" />
+      <directionalLight
+        position={[-3, 2, -6]}
+        intensity={1.2}
+        color="#aabbdd"
+      />
       {/* Fill — soft warm from opposite side */}
       <directionalLight position={[-5, 4, 3]} intensity={0.6} color="#ccd0d8" />
       {/* Under fill — prevents bottom from going pure black */}
@@ -1400,14 +1524,23 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
       <CoreGlow accent={accent} />
 
       {/* Lower nozzle plate — rods rest on this */}
-      <LowerNozzlePlate cells={cells} radius={assemblyRadius} guideIndices={guideThimbleIndices} />
+      <LowerNozzlePlate
+        cells={cells}
+        radius={assemblyRadius}
+        guideIndices={guideThimbleIndices}
+      />
 
       {/* Top & bottom hexagonal frame rings */}
       <HexRing radius={assemblyRadius} y={maxRodHeight + 0.1} />
       <HexRing radius={assemblyRadius} y={0} />
 
       {/* Upper nozzle plate with lifting bail */}
-      <UpperNozzlePlate cells={cells} radius={assemblyRadius} y={maxRodHeight + 0.02} guideIndices={guideThimbleIndices} />
+      <UpperNozzlePlate
+        cells={cells}
+        radius={assemblyRadius}
+        y={maxRodHeight + 0.02}
+        guideIndices={guideThimbleIndices}
+      />
 
       {/* Spacer grids — Inconel honeycomb structures that hold rods in place */}
       {[0.55, 1.25, 1.95, 2.65].map((gy, i) => (
@@ -1421,7 +1554,11 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
       ))}
 
       {/* Water surface — visible coolant meniscus at the top of the water column */}
-      <WaterSurface radius={assemblyRadius + 0.6} y={maxRodHeight + 0.55} accent={accent} />
+      <WaterSurface
+        radius={assemblyRadius + 0.6}
+        y={maxRodHeight + 0.55}
+        accent={accent}
+      />
 
       {/* In-core instrument thimbles */}
       <InstrumentThimbles
@@ -1492,7 +1629,12 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
       />
 
       {/* Neutron flux */}
-      <NeutronFlux cells={cells} adj={adj} count={neutronCount} accent={accent} />
+      <NeutronFlux
+        cells={cells}
+        adj={adj}
+        count={neutronCount}
+        accent={accent}
+      />
 
       {/* Coolant flow */}
       <CoolantFlow count={coolantCount} />
@@ -1504,12 +1646,19 @@ export function ReactorLattice({ mobile, reducedMotion }: ReactorLatticeProps) {
       <AmbientParticles count={ambientCount} accent={accent} />
 
       {/* Coolant water volume */}
-      <CoolantWater maxRodHeight={maxRodHeight} assemblyRadius={assemblyRadius} accent={accent} />
+      <CoolantWater
+        maxRodHeight={maxRodHeight}
+        assemblyRadius={assemblyRadius}
+        accent={accent}
+      />
 
       {/* Cherenkov radiation glow — ambient blue between rods, dims when control rods insert */}
-      <CherenkovGlow maxRodHeight={maxRodHeight} cells={cells} insertionRef={insertionRef} accent={accent} />
-
-
+      <CherenkovGlow
+        maxRodHeight={maxRodHeight}
+        cells={cells}
+        insertionRef={insertionRef}
+        accent={accent}
+      />
     </group>
   );
 }

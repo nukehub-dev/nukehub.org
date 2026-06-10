@@ -1,15 +1,15 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
-import { SupportPageContent } from '@modules/support/components/SupportPageContent';
-import { SupportBackground } from '@modules/support/components/SupportBackground';
-import { FloatingShapes } from '@modules/support/components/decorations/FloatingShapes';
-import { FloatingHexagons } from '@modules/support/components/decorations/FloatingHexagons';
-import { AtomicLattice } from '@modules/support/components/decorations/AtomicLattice';
-import { SingularityAura } from '@modules/support/components/decorations/SingularityAura';
-import { loadYaml } from '@lib/loadYaml';
-import type { SupportData } from '@modules/support/types';
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { SupportPageContent } from "@modules/support/components/SupportPageContent";
+import { SupportBackground } from "@modules/support/components/SupportBackground";
+import { FloatingShapes } from "@modules/support/components/decorations/FloatingShapes";
+import { FloatingHexagons } from "@modules/support/components/decorations/FloatingHexagons";
+import { AtomicLattice } from "@modules/support/components/decorations/AtomicLattice";
+import { SingularityAura } from "@modules/support/components/decorations/SingularityAura";
+import { loadYaml } from "@lib/loadYaml";
+import type { SupportData } from "@modules/support/types";
 
-const data = loadYaml<SupportData>('support/data/page.yml');
+const data = loadYaml<SupportData>("support/data/page.yml");
 ---
 
 <BaseLayout
@@ -23,20 +23,44 @@ const data = loadYaml<SupportData>('support/data/page.yml');
   {/* ===== HERO ===== */}
   <section class="relative overflow-hidden">
     <FloatingShapes client:visible />
-    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent"
+    >
+    </div>
 
     <div class="relative z-10 pt-28 pb-16 px-4 sm:px-6 lg:px-8 text-center">
       <div class="mx-auto max-w-4xl">
-        <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        <div
+          class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+            ></path>
           </svg>
           Support Us
         </div>
-        <h1 class="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-          Fuel Our <span class="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block">Mission</span>
+        <h1
+          class="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+        >
+          Fuel Our <span
+            class="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block"
+            >Mission</span
+          >
         </h1>
-        <p class="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p
+          class="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+        >
           {data.hero.description}
         </p>
       </div>

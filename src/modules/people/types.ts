@@ -8,7 +8,7 @@
  * ============================================================================
  */
 
-import { getSocialUrl } from '@components/ui/SocialIcon';
+import { getSocialUrl } from "@components/ui/SocialIcon";
 
 export interface Person {
   id: string;
@@ -65,46 +65,50 @@ export interface SocialLink {
   url: string;
 }
 
-export const SOCIAL_FIELDS: Array<{ key: keyof Person; label: string; platform: string }> = [
-  { key: 'url', label: 'Website', platform: 'website' },
-  { key: 'email', label: 'Email', platform: 'email' },
-  { key: 'phone', label: 'Phone', platform: 'phone' },
-  { key: 'whatsapp', label: 'WhatsApp', platform: 'whatsapp' },
-  { key: 'signal', label: 'Signal', platform: 'signal' },
-  { key: 'linkedin', label: 'LinkedIn', platform: 'linkedin' },
-  { key: 'x', label: 'X', platform: 'x' },
-  { key: 'facebook', label: 'Facebook', platform: 'facebook' },
-  { key: 'instagram', label: 'Instagram', platform: 'instagram' },
-  { key: 'github', label: 'GitHub', platform: 'github' },
-  { key: 'gitlab', label: 'GitLab', platform: 'gitlab' },
-  { key: 'bitbucket', label: 'Bitbucket', platform: 'bitbucket' },
-  { key: 'stackoverflow', label: 'Stack Overflow', platform: 'stackoverflow' },
-  { key: 'scholar', label: 'Google Scholar', platform: 'scholar' },
-  { key: 'orcid', label: 'ORCID', platform: 'orcid' },
-  { key: 'researchgate', label: 'ResearchGate', platform: 'researchgate' },
-  { key: 'zotero', label: 'Zotero', platform: 'zotero' },
-  { key: 'youtube', label: 'YouTube', platform: 'youtube' },
-  { key: 'mastodon', label: 'Mastodon', platform: 'mastodon' },
-  { key: 'bluesky', label: 'Bluesky', platform: 'bluesky' },
-  { key: 'discord', label: 'Discord', platform: 'discord' },
-  { key: 'telegram', label: 'Telegram', platform: 'telegram' },
-  { key: 'medium', label: 'Medium', platform: 'medium' },
-  { key: 'tiktok', label: 'TikTok', platform: 'tiktok' },
-  { key: 'threads', label: 'Threads', platform: 'threads' },
-  { key: 'twitch', label: 'Twitch', platform: 'twitch' },
-  { key: 'reddit', label: 'Reddit', platform: 'reddit' },
+export const SOCIAL_FIELDS: Array<{
+  key: keyof Person;
+  label: string;
+  platform: string;
+}> = [
+  { key: "url", label: "Website", platform: "website" },
+  { key: "email", label: "Email", platform: "email" },
+  { key: "phone", label: "Phone", platform: "phone" },
+  { key: "whatsapp", label: "WhatsApp", platform: "whatsapp" },
+  { key: "signal", label: "Signal", platform: "signal" },
+  { key: "linkedin", label: "LinkedIn", platform: "linkedin" },
+  { key: "x", label: "X", platform: "x" },
+  { key: "facebook", label: "Facebook", platform: "facebook" },
+  { key: "instagram", label: "Instagram", platform: "instagram" },
+  { key: "github", label: "GitHub", platform: "github" },
+  { key: "gitlab", label: "GitLab", platform: "gitlab" },
+  { key: "bitbucket", label: "Bitbucket", platform: "bitbucket" },
+  { key: "stackoverflow", label: "Stack Overflow", platform: "stackoverflow" },
+  { key: "scholar", label: "Google Scholar", platform: "scholar" },
+  { key: "orcid", label: "ORCID", platform: "orcid" },
+  { key: "researchgate", label: "ResearchGate", platform: "researchgate" },
+  { key: "zotero", label: "Zotero", platform: "zotero" },
+  { key: "youtube", label: "YouTube", platform: "youtube" },
+  { key: "mastodon", label: "Mastodon", platform: "mastodon" },
+  { key: "bluesky", label: "Bluesky", platform: "bluesky" },
+  { key: "discord", label: "Discord", platform: "discord" },
+  { key: "telegram", label: "Telegram", platform: "telegram" },
+  { key: "medium", label: "Medium", platform: "medium" },
+  { key: "tiktok", label: "TikTok", platform: "tiktok" },
+  { key: "threads", label: "Threads", platform: "threads" },
+  { key: "twitch", label: "Twitch", platform: "twitch" },
+  { key: "reddit", label: "Reddit", platform: "reddit" },
 ];
 
 export function extractSocialLinks(person: Person): SocialLink[] {
-  return SOCIAL_FIELDS
-    .filter(({ key }) => person[key])
-    .map(({ key, label, platform }) => {
+  return SOCIAL_FIELDS.filter(({ key }) => person[key]).map(
+    ({ key, label, platform }) => {
       const handle = person[key] as string;
       return {
         platform,
         label,
         handle,
-        url: key === 'url' ? handle : getSocialUrl(platform, handle),
+        url: key === "url" ? handle : getSocialUrl(platform, handle),
       };
-    });
+    },
+  );
 }

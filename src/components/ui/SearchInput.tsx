@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Search } from 'lucide-react';
-import { cn } from '@lib/utils';
+import * as React from "react";
+import { Search } from "lucide-react";
+import { cn } from "@lib/utils";
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string;
@@ -14,12 +14,12 @@ export function SearchInput({
   value,
   onChange,
   onClear,
-  placeholder = 'Search...',
+  placeholder = "Search...",
   className,
   ...props
 }: SearchInputProps) {
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn("relative", className)}>
       <Search
         size={15}
         className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
@@ -30,10 +30,10 @@ export function SearchInput({
         onChange={onChange}
         placeholder={placeholder}
         className={cn(
-          'w-full rounded-lg border border-border/60 bg-background/80 pl-9 pr-4 py-2',
-          'text-sm text-foreground placeholder:text-muted-foreground/70',
-          'focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40',
-          'transition-colors'
+          "w-full rounded-lg border border-border/60 bg-background/80 pl-9 pr-4 py-2",
+          "text-sm text-foreground placeholder:text-muted-foreground/70",
+          "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40",
+          "transition-colors",
         )}
         {...props}
       />

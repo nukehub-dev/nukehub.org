@@ -1,7 +1,7 @@
-import { footerColumns, footerLegal, socialLinks } from '@data/footer';
-import { Logo } from '@components/ui/Logo';
-import { BrandIcon } from '@components/ui/BrandIcon';
-import { ArrowUpRight } from 'lucide-react';
+import { footerColumns, footerLegal, socialLinks } from "@data/footer";
+import { Logo } from "@components/ui/Logo";
+import { BrandIcon } from "@components/ui/BrandIcon";
+import { ArrowUpRight } from "lucide-react";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -21,7 +21,8 @@ export function Footer() {
               <span>NukeHub</span>
             </a>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Empowering Nuclear Innovation through open-source collaboration, education, and community.
+              Empowering Nuclear Innovation through open-source collaboration,
+              education, and community.
             </p>
 
             {/* Social icons */}
@@ -55,17 +56,25 @@ export function Footer() {
                       <li key={link.title}>
                         <a
                           href={link.url}
-                          target={link.newpage ? '_blank' : undefined}
-                          rel={link.newpage ? 'noopener noreferrer' : undefined}
+                          target={link.newpage ? "_blank" : undefined}
+                          rel={link.newpage ? "noopener noreferrer" : undefined}
                           className="group inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
                         >
-                          {Icon && <Icon size={14} className="opacity-60 transition-opacity group-hover:opacity-100" />}
+                          {Icon && (
+                            <Icon
+                              size={14}
+                              className="opacity-60 transition-opacity group-hover:opacity-100"
+                            />
+                          )}
                           <span className="relative">
                             {link.title}
                             <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
                           </span>
                           {link.newpage && (
-                            <ArrowUpRight size={12} className="opacity-40 transition-opacity group-hover:opacity-100" />
+                            <ArrowUpRight
+                              size={12}
+                              className="opacity-40 transition-opacity group-hover:opacity-100"
+                            />
                           )}
                         </a>
                       </li>

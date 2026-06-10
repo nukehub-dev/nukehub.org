@@ -1,12 +1,18 @@
-import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { getPrimaryColor } from '@lib/themeColors';
+import { useRef, useMemo, useEffect, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { getPrimaryColor } from "@lib/themeColors";
 
 /* ------------------------------------------------------------------ */
 // Drifting particle field
 /* ------------------------------------------------------------------ */
-function ParticleField({ color, isLight }: { color: string; isLight: boolean }) {
+function ParticleField({
+  color,
+  isLight,
+}: {
+  color: string;
+  isLight: boolean;
+}) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const count = 80;
 
@@ -45,7 +51,9 @@ function ParticleField({ color, isLight }: { color: string; isLight: boolean }) 
 
       const pulse = 0.5 + 0.5 * Math.sin(t * 0.6 + phases[i]);
       dummy.position.set(positions[ix], positions[ix + 1], positions[ix + 2]);
-      dummy.scale.setScalar((isLight ? 0.008 : 0.015) + pulse * (isLight ? 0.006 : 0.01));
+      dummy.scale.setScalar(
+        (isLight ? 0.008 : 0.015) + pulse * (isLight ? 0.006 : 0.01),
+      );
       dummy.updateMatrix();
       meshRef.current.setMatrixAt(i, dummy.matrix);
     }
@@ -55,7 +63,12 @@ function ParticleField({ color, isLight }: { color: string; isLight: boolean }) 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <circleGeometry args={[1, 8]} />
-      <meshBasicMaterial color={color} transparent opacity={isLight ? 0.12 : 0.3} depthWrite={false} />
+      <meshBasicMaterial
+        color={color}
+        transparent
+        opacity={isLight ? 0.12 : 0.3}
+        depthWrite={false}
+      />
     </instancedMesh>
   );
 }
@@ -72,7 +85,7 @@ function OrbitalRings({ color, isLight }: { color: string; isLight: boolean }) {
       { radius: 3.4, speed: 0.5, phase: 2.1, tilt: -0.15 },
       { radius: 4.6, speed: 0.35, phase: 4.2, tilt: 0.1 },
     ],
-    []
+    [],
   );
 
   const baseOpacity = isLight ? 0.35 : 0.15;
@@ -129,14 +142,14 @@ function CentralGlow({ color, isLight }: { color: string; isLight: boolean }) {
   });
 
   const texture = useMemo(() => {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = 128;
     canvas.height = 128;
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext("2d")!;
     const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    grad.addColorStop(0, 'rgba(255,255,255,0.6)');
-    grad.addColorStop(0.4, 'rgba(255,255,255,0.2)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    grad.addColorStop(0, "rgba(255,255,255,0.6)");
+    grad.addColorStop(0.4, "rgba(255,255,255,0.2)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 128, 128);
     return new THREE.CanvasTexture(canvas);
@@ -159,7 +172,13 @@ function CentralGlow({ color, isLight }: { color: string; isLight: boolean }) {
 /* ------------------------------------------------------------------ */
 // Scene
 /* ------------------------------------------------------------------ */
-function Scene({ primaryColor, isLight }: { primaryColor: string; isLight: boolean }) {
+function Scene({
+  primaryColor,
+  isLight,
+}: {
+  primaryColor: string;
+  isLight: boolean;
+}) {
   const displayColor = primaryColor;
 
   return (
@@ -181,13 +200,15 @@ export function AtomicOrbitalsScene({ isVisible }: { isVisible: boolean }) {
   useEffect(() => {
     const update = () => {
       setColor(getPrimaryColor());
-      setIsLight(document.documentElement.getAttribute('data-theme') === 'light');
+      setIsLight(
+        document.documentElement.getAttribute("data-theme") === "light",
+      );
     };
     update();
     const observer = new MutationObserver(update);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-accent', 'data-theme'],
+      attributeFilter: ["data-accent", "data-theme"],
     });
     return () => observer.disconnect();
   }, []);
@@ -196,13 +217,13 @@ export function AtomicOrbitalsScene({ isVisible }: { isVisible: boolean }) {
     <Canvas
       dpr={[1, 1]}
       camera={{ position: [0, 0, 5], fov: 50 }}
-      frameloop={isVisible ? 'always' : 'never'}
+      frameloop={isVisible ? "always" : "never"}
       gl={{
         alpha: true,
         antialias: true,
-        powerPreference: 'high-performance',
+        powerPreference: "high-performance",
       }}
-      style={{ background: 'transparent' }}
+      style={{ background: "transparent" }}
     >
       <Scene primaryColor={color} isLight={isLight} />
     </Canvas>

@@ -1,7 +1,12 @@
-import * as React from 'react';
-import { cn } from '@lib/utils';
-import { getAccentColor, setAccentColor, ACCENT_SWATCHES, type AccentColor } from '@lib/theme';
-import { Tooltip } from '@components/ui/Tooltip';
+import * as React from "react";
+import { cn } from "@lib/utils";
+import {
+  getAccentColor,
+  setAccentColor,
+  ACCENT_SWATCHES,
+  type AccentColor,
+} from "@lib/theme";
+import { Tooltip } from "@components/ui/Tooltip";
 
 export interface ColorPickerProps {
   className?: string;
@@ -13,8 +18,11 @@ export interface ColorPickerProps {
  * Updates the CSS custom property --hue-accent indirectly via data-accent
  * and persists the choice in localStorage.
  */
-export function ColorPicker({ className, showLabels = false }: ColorPickerProps) {
-  const [accent, setAccentState] = React.useState<AccentColor>('orange');
+export function ColorPicker({
+  className,
+  showLabels = false,
+}: ColorPickerProps) {
+  const [accent, setAccentState] = React.useState<AccentColor>("orange");
 
   // Initialise from DOM / localStorage on mount
   React.useEffect(() => {
@@ -24,12 +32,12 @@ export function ColorPicker({ className, showLabels = false }: ColorPickerProps)
   // Sync across browser tabs
   React.useEffect(() => {
     const handler = (e: StorageEvent) => {
-      if (e.key === 'accent') {
+      if (e.key === "accent") {
         setAccentState(getAccentColor());
       }
     };
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
   }, []);
 
   const handleSelect = (color: AccentColor) => {
@@ -39,7 +47,7 @@ export function ColorPicker({ className, showLabels = false }: ColorPickerProps)
 
   return (
     <div
-      className={cn('flex items-center gap-1.5', className)}
+      className={cn("flex items-center gap-1.5", className)}
       role="radiogroup"
       aria-label="Accent color"
     >
@@ -53,9 +61,9 @@ export function ColorPicker({ className, showLabels = false }: ColorPickerProps)
               aria-label={swatch.label}
               onClick={() => handleSelect(swatch.name)}
               className={cn(
-                'relative h-5 w-5 rounded-full border-2 transition-transform',
-                'hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
-                active ? 'border-foreground' : 'border-transparent'
+                "relative h-5 w-5 rounded-full border-2 transition-transform",
+                "hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
+                active ? "border-foreground" : "border-transparent",
               )}
               style={{ background: `oklch(65% 0.18 ${swatch.hue})` }}
             >

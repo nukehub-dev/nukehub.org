@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { ContactModal } from '@components/shared/ContactModal';
-import { ImpactSection } from '@modules/support/components/ImpactSection';
-import { SupportMethods } from '@modules/support/components/SupportMethods';
-import { SponsorshipTiers } from '@modules/support/components/SponsorshipTiers';
-import { ContactCTA } from '@modules/support/components/ContactCTA';
-import type { SupportData } from '@modules/support/types';
+import * as React from "react";
+import { ContactModal } from "@components/shared/ContactModal";
+import { ImpactSection } from "@modules/support/components/ImpactSection";
+import { SupportMethods } from "@modules/support/components/SupportMethods";
+import { SponsorshipTiers } from "@modules/support/components/SponsorshipTiers";
+import { ContactCTA } from "@modules/support/components/ContactCTA";
+import type { SupportData } from "@modules/support/types";
 
 interface SupportPageContentProps {
   data: SupportData;
@@ -12,9 +12,9 @@ interface SupportPageContentProps {
 
 export function SupportPageContent({ data }: SupportPageContentProps) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [defaultInquiryType, setDefaultInquiryType] = React.useState('');
+  const [defaultInquiryType, setDefaultInquiryType] = React.useState("");
 
-  const openContact = (inquiryType: string = '') => {
+  const openContact = (inquiryType: string = "") => {
     setDefaultInquiryType(inquiryType);
     setIsModalOpen(true);
   };

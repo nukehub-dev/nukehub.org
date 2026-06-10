@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion, useReducedMotion } from 'framer-motion';
-import { useMemo } from 'react';
+import { motion, useReducedMotion } from "framer-motion";
+import { useMemo } from "react";
 
 function mulberry32(seed: number) {
   return function () {
@@ -22,7 +22,13 @@ interface Particle {
   opacity: number;
 }
 
-export function FloatingParticles({ className = '', count = 20 }: { className?: string; count?: number }) {
+export function FloatingParticles({
+  className = "",
+  count = 20,
+}: {
+  className?: string;
+  count?: number;
+}) {
   const shouldReduceMotion = useReducedMotion();
 
   const particles = useMemo(() => {
@@ -39,7 +45,9 @@ export function FloatingParticles({ className = '', count = 20 }: { className?: 
   }, [count]);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+    <div
+      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+    >
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -51,17 +59,25 @@ export function FloatingParticles({ className = '', count = 20 }: { className?: 
             height: p.size,
             opacity: p.opacity,
           }}
-          animate={shouldReduceMotion ? undefined : {
-            y: [0, -30, 0],
-            x: [0, 10, 0],
-            opacity: [p.opacity, p.opacity * 2, p.opacity],
-          }}
-          transition={shouldReduceMotion ? undefined : {
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, -30, 0],
+                  x: [0, 10, 0],
+                  opacity: [p.opacity, p.opacity * 2, p.opacity],
+                }
+          }
+          transition={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  duration: p.duration,
+                  delay: p.delay,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+          }
         />
       ))}
     </div>

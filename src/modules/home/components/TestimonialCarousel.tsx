@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { Quote, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 interface Testimonial {
   quote: string;
   author: string;
@@ -65,20 +65,22 @@ function CarouselCard({
       onClick={onClick}
       className={`bubble absolute left-1/2 top-1/2 -ml-[42.5vw] -mt-[190px] w-[85vw] cursor-pointer overflow-hidden rounded-2xl border transition-all duration-500 sm:w-[400px] sm:-ml-[200px] sm:-mt-[200px] ${
         isActive
-          ? 'border-border/60 shadow-2xl shadow-primary/[0.08]'
-          : 'border-border/20 shadow-lg'
+          ? "border-border/60 shadow-2xl shadow-primary/[0.08]"
+          : "border-border/20 shadow-lg"
       }`}
       style={{
         zIndex: t.zIndex,
         transform: `translateX(${t.x}px) scale(${t.scale})`,
         opacity: t.opacity,
-        transition: 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.55s ease',
-        willChange: 'transform, opacity',
-        pointerEvents: t.opacity > 0.3 ? 'auto' : 'none',
-        height: isMobile ? '380px' : '400px',
-        backdropFilter: 'blur(12px) saturate(150%)',
-        WebkitBackdropFilter: 'blur(12px) saturate(150%)',
-        backgroundColor: 'color-mix(in oklch, var(--glass-base, var(--bg-surface)) 35%, transparent)',
+        transition:
+          "transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.55s ease",
+        willChange: "transform, opacity",
+        pointerEvents: t.opacity > 0.3 ? "auto" : "none",
+        height: isMobile ? "380px" : "400px",
+        backdropFilter: "blur(12px) saturate(150%)",
+        WebkitBackdropFilter: "blur(12px) saturate(150%)",
+        backgroundColor:
+          "color-mix(in oklch, var(--glass-base, var(--bg-surface)) 35%, transparent)",
       }}
     >
       {/* Content */}
@@ -102,8 +104,12 @@ function CarouselCard({
             {testimonial.avatar}
           </div>
           <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-foreground">{testimonial.author}</div>
-            <div className="truncate text-xs text-muted-foreground">{testimonial.role}</div>
+            <div className="truncate text-sm font-semibold text-foreground">
+              {testimonial.author}
+            </div>
+            <div className="truncate text-xs text-muted-foreground">
+              {testimonial.role}
+            </div>
           </div>
         </div>
       </div>
@@ -114,7 +120,9 @@ function CarouselCard({
 /* ------------------------------------------------------------------ */
 // Carousel
 /* ------------------------------------------------------------------ */
-export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
+export function TestimonialCarousel({
+  testimonials,
+}: TestimonialCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -125,15 +133,15 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   const goTo = useCallback(
     (index: number) => {
       setActiveIndex((index + testimonials.length) % testimonials.length);
     },
-    [testimonials.length]
+    [testimonials.length],
   );
 
   const goPrev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
@@ -216,8 +224,8 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
             <span
               className={`block h-2 rounded-full transition-all duration-300 ${
                 i === activeIndex
-                  ? 'w-6 bg-primary'
-                  : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                  ? "w-6 bg-primary"
+                  : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
               }`}
             />
           </button>

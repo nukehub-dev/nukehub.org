@@ -1,13 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '@layouts/BaseLayout.astro';
-import { EventsContainer } from '@modules/events/components/EventsContainer';
-import { EventsFloatingDots } from '@modules/events/components/decorations/EventsFloatingDots';
-import { expandEvents } from '@modules/events/types';
-import type { CalendarEvent } from '@modules/events/types';
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { EventsContainer } from "@modules/events/components/EventsContainer";
+import { EventsFloatingDots } from "@modules/events/components/decorations/EventsFloatingDots";
+import { expandEvents } from "@modules/events/types";
+import type { CalendarEvent } from "@modules/events/types";
 
 // Load events from YAML files in src/content/events/
-const entries = await getCollection('events');
+const entries = await getCollection("events");
 
 // Map content collection entries to CalendarEvent (filename = id)
 const baseEvents: CalendarEvent[] = entries.map((entry) => ({
@@ -23,16 +23,18 @@ const baseEvents: CalendarEvent[] = entries.map((entry) => ({
   meetingUrl: entry.data.meetingUrl,
   backgroundColor: entry.data.backgroundColor,
   textColor: entry.data.textColor,
-  recurrence: entry.data.recurrence as CalendarEvent['recurrence'],
+  recurrence: entry.data.recurrence as CalendarEvent["recurrence"],
 }));
 
 // Expand recurring templates into individual instances
 const events = expandEvents(baseEvents);
 
-const title = 'Events';
-const description = 'Discover upcoming nuclear technology events, workshops, hackathons, and community gatherings hosted by NukeHub.';
-const keywords = 'nukehub, events, calendar, nuclear, workshops, hackathons, summits, conferences';
-const permalink = '/events';
+const title = "Events";
+const description =
+  "Discover upcoming nuclear technology events, workshops, hackathons, and community gatherings hosted by NukeHub.";
+const keywords =
+  "nukehub, events, calendar, nuclear, workshops, hackathons, summits, conferences";
+const permalink = "/events";
 ---
 
 <BaseLayout
@@ -44,24 +46,47 @@ const permalink = '/events';
   <!-- Hero -->
   <section class="relative pt-28 pb-16 text-center overflow-hidden">
     <EventsFloatingDots client:visible />
-    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent"
+    >
+    </div>
 
     <div class="relative z-10 px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-4xl">
-        <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
+        <div
+          class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
           Events
         </div>
-        <h1 class="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-          Upcoming <span class="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block">Gatherings</span>
+        <h1
+          class="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+        >
+          Upcoming <span
+            class="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block"
+            >Gatherings</span
+          >
         </h1>
-        <p class="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Discover nuclear technology events, workshops, hackathons, and community gatherings.
+        <p
+          class="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+        >
+          Discover nuclear technology events, workshops, hackathons, and
+          community gatherings.
         </p>
       </div>
     </div>

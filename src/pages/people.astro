@@ -1,13 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '@layouts/BaseLayout.astro';
-import { PeopleGrid } from '@modules/people/components/PeopleGrid';
-import { PeopleFloatingDots } from '@modules/people/components/decorations/PeopleFloatingDots';
-import type { Person, PeopleCategory } from '@modules/people/types';
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { PeopleGrid } from "@modules/people/components/PeopleGrid";
+import { PeopleFloatingDots } from "@modules/people/components/decorations/PeopleFloatingDots";
+import type { Person, PeopleCategory } from "@modules/people/types";
 
 // Load people and categories from YAML files
-const peopleEntries = await getCollection('people');
-const categoryEntries = await getCollection('peopleCategories');
+const peopleEntries = await getCollection("people");
+const categoryEntries = await getCollection("peopleCategories");
 
 // Map to typed objects
 const people: Person[] = peopleEntries.map((entry) => ({
@@ -66,10 +66,12 @@ const peopleCategories: PeopleCategory[] = categoryEntries
     children: peopleByCategory.get(entry.data.title) || [],
   }));
 
-const title = 'People';
-const description = 'Meet the people behind NukeHub — researchers, engineers, and enthusiasts advancing nuclear technology.';
-const keywords = 'nukehub, people, team, members, nuclear, community, researchers, engineers';
-const permalink = '/people';
+const title = "People";
+const description =
+  "Meet the people behind NukeHub — researchers, engineers, and enthusiasts advancing nuclear technology.";
+const keywords =
+  "nukehub, people, team, members, nuclear, community, researchers, engineers";
+const permalink = "/people";
 ---
 
 <BaseLayout
@@ -81,24 +83,47 @@ const permalink = '/people';
   <!-- Hero -->
   <section class="relative pt-28 pb-16 text-center overflow-hidden">
     <PeopleFloatingDots client:visible />
-    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent"
+    >
+    </div>
 
     <div class="relative z-10 px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-4xl">
-        <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        <div
+          class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
           Our Community
         </div>
-        <h1 class="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-          Meet the <span class="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block">People</span>
+        <h1
+          class="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+        >
+          Meet the <span
+            class="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block"
+            >People</span
+          >
         </h1>
-        <p class="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Researchers, engineers, and enthusiasts driving nuclear technology forward at NukeHub.
+        <p
+          class="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+        >
+          Researchers, engineers, and enthusiasts driving nuclear technology
+          forward at NukeHub.
         </p>
       </div>
     </div>

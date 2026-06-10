@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import { Award, Heart, ArrowUpRight, Globe, ExternalLink } from 'lucide-react';
-import { AcknowledgmentFloatingDots } from './decorations/AcknowledgmentFloatingDots';
+import { motion } from "framer-motion";
+import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
+import { Award, Heart, ArrowUpRight, Globe, ExternalLink } from "lucide-react";
+import { AcknowledgmentFloatingDots } from "./decorations/AcknowledgmentFloatingDots";
 
 export interface Sponsor {
   id: string;
@@ -11,7 +11,7 @@ export interface Sponsor {
   image: string;
   url: string;
   acknowledgment: string;
-  tier: 'platinum' | 'gold' | 'silver' | 'bronze';
+  tier: "platinum" | "gold" | "silver" | "bronze";
 }
 
 interface AcknowledgmentPageContentProps {
@@ -20,28 +20,34 @@ interface AcknowledgmentPageContentProps {
 
 const tierConfig = {
   platinum: {
-    label: 'Platinum',
-    badgeClass: 'bg-primary text-primary-foreground',
-    description: 'Foundational partners whose vision makes everything possible.',
+    label: "Platinum",
+    badgeClass: "bg-primary text-primary-foreground",
+    description:
+      "Foundational partners whose vision makes everything possible.",
   },
   gold: {
-    label: 'Gold',
-    badgeClass: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
-    description: 'Major supporters who power our infrastructure and growth.',
+    label: "Gold",
+    badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+    description: "Major supporters who power our infrastructure and growth.",
   },
   silver: {
-    label: 'Silver',
-    badgeClass: 'bg-slate-400/15 text-slate-600 dark:text-slate-400',
-    description: 'Valued contributors who help us expand our reach.',
+    label: "Silver",
+    badgeClass: "bg-slate-400/15 text-slate-600 dark:text-slate-400",
+    description: "Valued contributors who help us expand our reach.",
   },
   bronze: {
-    label: 'Bronze',
-    badgeClass: 'bg-orange-700/15 text-orange-700 dark:text-orange-400',
-    description: 'Friends of the project who champion our mission.',
+    label: "Bronze",
+    badgeClass: "bg-orange-700/15 text-orange-700 dark:text-orange-400",
+    description: "Friends of the project who champion our mission.",
   },
 };
 
-const tierOrder: Array<keyof typeof tierConfig> = ['platinum', 'gold', 'silver', 'bronze'];
+const tierOrder: Array<keyof typeof tierConfig> = [
+  "platinum",
+  "gold",
+  "silver",
+  "bronze",
+];
 
 function groupByTier(sponsors: Sponsor[]) {
   const groups = new Map<string, Sponsor[]>();
@@ -56,7 +62,9 @@ function groupByTier(sponsors: Sponsor[]) {
   return groups;
 }
 
-export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageContentProps) {
+export function AcknowledgmentPageContent({
+  sponsors,
+}: AcknowledgmentPageContentProps) {
   const groups = groupByTier(sponsors);
   const hasSponsors = sponsors.length > 0;
 
@@ -76,10 +84,15 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
             </div>
             <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
               Standing on the
-              <span className="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block"> Shoulders of Giants</span>
+              <span className="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block">
+                {" "}
+                Shoulders of Giants
+              </span>
             </h1>
             <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              NukeHub exists because of the generosity, expertise, and passion of a global community. We are deeply grateful for every contribution.
+              NukeHub exists because of the generosity, expertise, and passion
+              of a global community. We are deeply grateful for every
+              contribution.
             </p>
           </div>
         </div>
@@ -94,9 +107,11 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
                 <Globe size={22} />
               </div>
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Open Source</h2>
+                <h2 className="text-2xl font-semibold text-foreground">
+                  Open Source
+                </h2>
                 <p className="mt-3 text-muted-foreground leading-relaxed">
-                  NukeHub itself operates under the{' '}
+                  NukeHub itself operates under the{" "}
                   <a
                     href="https://opensource.org/licenses/BSD-2-Clause"
                     target="_blank"
@@ -106,7 +121,9 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
                     BSD-2-Clause license
                     <ExternalLink size={14} />
                   </a>
-                  , and we stand on the shoulders of countless open-source projects. We thank the developers and maintainers of the libraries, frameworks, and tools that make our work possible.
+                  , and we stand on the shoulders of countless open-source
+                  projects. We thank the developers and maintainers of the
+                  libraries, frameworks, and tools that make our work possible.
                 </p>
               </div>
             </div>
@@ -124,9 +141,12 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-12">
-              <h2 className="text-3xl font-semibold tracking-tight text-foreground">Our Sponsors</h2>
+              <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+                Our Sponsors
+              </h2>
               <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
-                We extend our sincere gratitude to the organizations that make NukeHub possible.
+                We extend our sincere gratitude to the organizations that make
+                NukeHub possible.
               </p>
             </motion.div>
 
@@ -138,18 +158,25 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
 
                 return (
                   <div key={tier} className="mb-12">
-                    <motion.div variants={fadeInUp} className="flex flex-col items-center text-center mb-6">
-                      <span className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-semibold ${config.badgeClass}`}>
+                    <motion.div
+                      variants={fadeInUp}
+                      className="flex flex-col items-center text-center mb-6"
+                    >
+                      <span
+                        className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-semibold ${config.badgeClass}`}
+                      >
                         {config.label}
                       </span>
-                      <p className="mt-2 text-sm text-muted-foreground">{config.description}</p>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {config.description}
+                      </p>
                     </motion.div>
 
                     <div
                       className={
                         list.length === 1
-                          ? 'flex justify-center'
-                          : 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'
+                          ? "flex justify-center"
+                          : "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
                       }
                     >
                       {list.map((sponsor) => (
@@ -160,7 +187,7 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
                           rel="noopener noreferrer"
                           variants={fadeInUp}
                           className={`group block bubble p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 ${
-                            list.length === 1 ? 'w-full max-w-md' : ''
+                            list.length === 1 ? "w-full max-w-md" : ""
                           }`}
                         >
                           <div className="flex flex-col h-full">
@@ -200,8 +227,12 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
                 <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted/50 mb-4">
                   <Heart size={28} className="text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">No sponsors yet</h3>
-                <p className="mt-2 text-muted-foreground">Be the first to support our mission.</p>
+                <h3 className="text-lg font-semibold text-foreground">
+                  No sponsors yet
+                </h3>
+                <p className="mt-2 text-muted-foreground">
+                  Be the first to support our mission.
+                </p>
               </motion.div>
             )}
           </motion.div>
@@ -222,11 +253,19 @@ export function AcknowledgmentPageContent({ sponsors }: AcknowledgmentPageConten
                   <Heart size={20} />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-foreground">Become a Sponsor</p>
-                  <p className="text-sm text-muted-foreground">Support our mission and gain visibility in the nuclear community.</p>
+                  <p className="text-base font-semibold text-foreground">
+                    Become a Sponsor
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Support our mission and gain visibility in the nuclear
+                    community.
+                  </p>
                 </div>
               </div>
-              <ArrowUpRight size={20} className="text-muted-foreground transition-colors group-hover:text-primary" />
+              <ArrowUpRight
+                size={20}
+                className="text-muted-foreground transition-colors group-hover:text-primary"
+              />
             </a>
           </motion.div>
         </div>

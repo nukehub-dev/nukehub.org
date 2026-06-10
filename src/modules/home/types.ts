@@ -14,7 +14,7 @@ export interface HeroData {
   ctas: {
     text: string;
     href: string;
-    variant: 'primary' | 'secondary';
+    variant: "primary" | "secondary";
     icon?: string;
   }[];
   stats: {
@@ -68,7 +68,7 @@ export interface CTAData {
   ctas: {
     text: string;
     href: string;
-    variant: 'primary' | 'secondary';
+    variant: "primary" | "secondary";
     icon?: string;
     external?: boolean;
   }[];

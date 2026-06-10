@@ -1,6 +1,6 @@
-import { useRef, useMemo, useLayoutEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import { useRef, useMemo, useLayoutEffect } from "react";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 
 /* ------------------------------------------------------------------ */
 // Smooth D-Curve for Toroidal Field Coils (Flat inner edge)
@@ -15,7 +15,9 @@ class PiecewiseLinearCurve extends THREE.Curve<THREE.Vector3> {
     this.points = points;
     this.lengths = [0];
     for (let i = 1; i < points.length; i++) {
-      this.lengths.push(this.lengths[i - 1] + points[i].distanceTo(points[i - 1]));
+      this.lengths.push(
+        this.lengths[i - 1] + points[i].distanceTo(points[i - 1]),
+      );
     }
     this.totalLength = this.lengths[this.lengths.length - 1];
   }
@@ -30,7 +32,11 @@ class PiecewiseLinearCurve extends THREE.Curve<THREE.Vector3> {
     const segEnd = this.lengths[i];
     const segLen = segEnd - segStart;
     const segT = segLen < 1e-10 ? 0 : (targetLen - segStart) / segLen;
-    return new THREE.Vector3().lerpVectors(this.points[i - 1], this.points[i], segT);
+    return new THREE.Vector3().lerpVectors(
+      this.points[i - 1],
+      this.points[i],
+      segT,
+    );
   }
 }
 
@@ -38,18 +44,43 @@ function createDPoints(R: number, r: number): THREE.Vector3[] {
   const pts: THREE.Vector3[] = [];
   const innerStraightHeight = R * 1.2;
 
-  for (let i = 0; i <= 20; i++) pts.push(new THREE.Vector3(0, -innerStraightHeight + (i / 20) * 2 * innerStraightHeight, 0));
+  for (let i = 0; i <= 20; i++)
+    pts.push(
+      new THREE.Vector3(
+        0,
+        -innerStraightHeight + (i / 20) * 2 * innerStraightHeight,
+        0,
+      ),
+    );
   for (let i = 1; i <= 16; i++) {
     const a = -Math.PI / 2 + (i / 16) * (Math.PI / 2);
-    pts.push(new THREE.Vector3(Math.cos(a) * r, innerStraightHeight + Math.sin(a) * r, 0));
+    pts.push(
+      new THREE.Vector3(
+        Math.cos(a) * r,
+        innerStraightHeight + Math.sin(a) * r,
+        0,
+      ),
+    );
   }
   for (let i = 1; i <= 40; i++) {
     const a = Math.PI / 2 - (i / 40) * Math.PI;
-    pts.push(new THREE.Vector3(r + Math.cos(a) * R, Math.sin(a) * innerStraightHeight, 0));
+    pts.push(
+      new THREE.Vector3(
+        r + Math.cos(a) * R,
+        Math.sin(a) * innerStraightHeight,
+        0,
+      ),
+    );
   }
   for (let i = 1; i <= 16; i++) {
     const a = (i / 16) * (Math.PI / 2);
-    pts.push(new THREE.Vector3(Math.cos(a) * r, -innerStraightHeight + Math.sin(a) * r, 0));
+    pts.push(
+      new THREE.Vector3(
+        Math.cos(a) * r,
+        -innerStraightHeight + Math.sin(a) * r,
+        0,
+      ),
+    );
   }
   pts.push(pts[0].clone());
   return pts;
@@ -78,7 +109,7 @@ function setWorldMatrix(
   parentRot: [number, number, number],
   localPos: [number, number, number],
   localRot: [number, number, number],
-  localScale?: [number, number, number]
+  localScale?: [number, number, number],
 ) {
   _parentObj.position.set(...parentPos);
   _parentObj.rotation.set(...parentRot);
@@ -93,27 +124,46 @@ function setWorldMatrix(
 // 1. Central Solenoid — instanced coil segments
 /* ------------------------------------------------------------------ */
 export function CentralSolenoid({ mobile }: { mobile?: boolean }) {
-  const matSteel = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL, metalness: 0.8, roughness: 0.4,
-  }), []);
-  const matCoil = useMemo(() => new THREE.MeshStandardMaterial({
-    color: COPPER, metalness: 0.9, roughness: 0.25,
-  }), []);
+  const matSteel = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL,
+        metalness: 0.8,
+        roughness: 0.4,
+      }),
+    [],
+  );
+  const matCoil = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: COPPER,
+        metalness: 0.9,
+        roughness: 0.25,
+      }),
+    [],
+  );
 
   const height = 1.9;
   const segments = mobile ? 12 : 24;
   const segmentHeight = height / segments;
   const cylSeg = mobile ? 16 : 32;
 
-  const coilGeo = useMemo(() => new THREE.CylinderGeometry(0.43, 0.43, segmentHeight * 0.75, cylSeg), [segmentHeight, cylSeg]);
+  const coilGeo = useMemo(
+    () => new THREE.CylinderGeometry(0.43, 0.43, segmentHeight * 0.75, cylSeg),
+    [segmentHeight, cylSeg],
+  );
   const instancedRef = useRef<THREE.InstancedMesh>(null);
 
   useLayoutEffect(() => {
     if (!instancedRef.current) return;
     for (let i = 0; i < segments; i++) {
-      setWorldMatrix(instancedRef.current, i,
-        [0, 0, 0], [0, 0, 0],
-        [0, -height / 2 + (i + 0.5) * segmentHeight, 0], [0, 0, 0]
+      setWorldMatrix(
+        instancedRef.current,
+        i,
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, -height / 2 + (i + 0.5) * segmentHeight, 0],
+        [0, 0, 0],
       );
     }
     instancedRef.current.instanceMatrix.needsUpdate = true;
@@ -141,25 +191,68 @@ export function CentralSolenoid({ mobile }: { mobile?: boolean }) {
 /* ------------------------------------------------------------------ */
 // 2. Plasma — Electric Blue Fusion core
 /* ------------------------------------------------------------------ */
-export function Plasma({ mobile, reducedMotion, accent }: { mobile?: boolean; reducedMotion?: boolean; accent?: string }) {
+export function Plasma({
+  mobile,
+  reducedMotion,
+  accent,
+}: {
+  mobile?: boolean;
+  reducedMotion?: boolean;
+  accent?: string;
+}) {
   const ref = useRef<THREE.Group>(null);
 
-  const matOuter = useMemo(() => new THREE.MeshBasicMaterial({
-    color: accent || '#3366ff',
-    transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
-  }), [accent]);
+  const matOuter = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: accent || "#3366ff",
+        transparent: true,
+        opacity: 0.6,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+      }),
+    [accent],
+  );
 
-  const matInner = useMemo(() => new THREE.MeshBasicMaterial({
-    color: '#ffffff',
-    transparent: true, opacity: 0.9, toneMapped: false,
-  }), []);
+  const matInner = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: "#ffffff",
+        transparent: true,
+        opacity: 0.9,
+        toneMapped: false,
+      }),
+    [],
+  );
 
-  const matGlow1 = useMemo(() => new THREE.MeshBasicMaterial({
-    color: accent || '#3366ff', transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
-  }), [accent]);
-  const matGlow2 = useMemo(() => new THREE.MeshBasicMaterial({
-    color: accent || '#4488ff', transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
-  }), [accent]);
+  const matGlow1 = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: accent || "#3366ff",
+        transparent: true,
+        opacity: 0.25,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+      }),
+    [accent],
+  );
+  const matGlow2 = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: accent || "#4488ff",
+        transparent: true,
+        opacity: 0.1,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+      }),
+    [accent],
+  );
 
   useFrame((state) => {
     if (!ref.current || reducedMotion) return;
@@ -199,10 +292,19 @@ export function Plasma({ mobile, reducedMotion, accent }: { mobile?: boolean; re
 // 3. Vacuum Vessel
 /* ------------------------------------------------------------------ */
 export function VacuumVessel({ mobile }: { mobile?: boolean }) {
-  const matGlass = useMemo(() => new THREE.MeshStandardMaterial({
-    color: GLASS, metalness: 0.3, roughness: 0.1,
-    transparent: true, opacity: 0.15, side: THREE.BackSide, depthWrite: false,
-  }), []);
+  const matGlass = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: GLASS,
+        metalness: 0.3,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.15,
+        side: THREE.BackSide,
+        depthWrite: false,
+      }),
+    [],
+  );
 
   const seg = mobile ? 32 : 64;
 
@@ -227,8 +329,18 @@ export function ToroidalCoils({ mobile }: { mobile?: boolean }) {
     const tubeRadius = 0.05;
     const pts = createDPoints(curveR, filletR);
     const curve = new PiecewiseLinearCurve(pts);
-    const geo = new THREE.TubeGeometry(curve, mobile ? 32 : 64, tubeRadius, mobile ? 8 : 16, false);
-    const mat = new THREE.MeshStandardMaterial({ color: STEEL, metalness: 0.85, roughness: 0.2 });
+    const geo = new THREE.TubeGeometry(
+      curve,
+      mobile ? 32 : 64,
+      tubeRadius,
+      mobile ? 8 : 16,
+      false,
+    );
+    const mat = new THREE.MeshStandardMaterial({
+      color: STEEL,
+      metalness: 0.85,
+      roughness: 0.2,
+    });
     return { geo, mat };
   }, [mobile]);
 
@@ -238,11 +350,14 @@ export function ToroidalCoils({ mobile }: { mobile?: boolean }) {
     if (!instancedRef.current) return;
     for (let i = 0; i < coilCount; i++) {
       const angle = (i / coilCount) * Math.PI * 2;
-      setWorldMatrix(instancedRef.current, i,
-        [0, 0, 0], [0, 0, 0],
+      setWorldMatrix(
+        instancedRef.current,
+        i,
+        [0, 0, 0],
+        [0, 0, 0],
         [Math.cos(angle) * positionR, 0, Math.sin(angle) * positionR],
         [0, -angle, 0],
-        [1, 1, 2.5]
+        [1, 1, 2.5],
       );
     }
     instancedRef.current.instanceMatrix.needsUpdate = true;
@@ -255,9 +370,15 @@ export function ToroidalCoils({ mobile }: { mobile?: boolean }) {
 // 5. Divertor Base Ring
 /* ------------------------------------------------------------------ */
 export function Divertor({ mobile }: { mobile?: boolean }) {
-  const matSteel = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL_DARK, metalness: 0.9, roughness: 0.3,
-  }), []);
+  const matSteel = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL_DARK,
+        metalness: 0.9,
+        roughness: 0.3,
+      }),
+    [],
+  );
 
   const seg = mobile ? 8 : 16;
   const tubeSeg = mobile ? 32 : 64;
@@ -276,11 +397,23 @@ export function Divertor({ mobile }: { mobile?: boolean }) {
 // 6. Poloidal Coils — instanced spokes
 /* ------------------------------------------------------------------ */
 export function PoloidalCoils({ mobile }: { mobile?: boolean }) {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL, metalness: 0.5, roughness: 0.4,
-  }), []);
+  const mat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL,
+        metalness: 0.5,
+        roughness: 0.4,
+      }),
+    [],
+  );
 
-  const defs = useMemo(() => [{ y: 1.05, r: 1.52 }, { y: -1.05, r: 1.52 }], []);
+  const defs = useMemo(
+    () => [
+      { y: 1.05, r: 1.52 },
+      { y: -1.05, r: 1.52 },
+    ],
+    [],
+  );
   const torusSeg = mobile ? 16 : 32;
   const tubeSeg = mobile ? 32 : 64;
   const cylSeg = mobile ? 16 : 32;
@@ -288,9 +421,18 @@ export function PoloidalCoils({ mobile }: { mobile?: boolean }) {
   const spokeCount = 8;
   const totalSpokes = defs.length * spokeCount;
 
-  const geoThin = useMemo(() => new THREE.CylinderGeometry(0.025, 0.025, 0.2, cylSeg), [cylSeg]);
-  const geoMed = useMemo(() => new THREE.CylinderGeometry(0.04, 0.04, 0.06, cylSeg), [cylSeg]);
-  const geoThick = useMemo(() => new THREE.CylinderGeometry(0.06, 0.06, 0.12, cylSeg), [cylSeg]);
+  const geoThin = useMemo(
+    () => new THREE.CylinderGeometry(0.025, 0.025, 0.2, cylSeg),
+    [cylSeg],
+  );
+  const geoMed = useMemo(
+    () => new THREE.CylinderGeometry(0.04, 0.04, 0.06, cylSeg),
+    [cylSeg],
+  );
+  const geoThick = useMemo(
+    () => new THREE.CylinderGeometry(0.06, 0.06, 0.12, cylSeg),
+    [cylSeg],
+  );
 
   const refThin = useRef<THREE.InstancedMesh>(null);
   const refMed = useRef<THREE.InstancedMesh>(null);
@@ -309,9 +451,13 @@ export function PoloidalCoils({ mobile }: { mobile?: boolean }) {
       for (const d of defs) {
         for (let j = 0; j < spokeCount; j++) {
           const angle = (j / spokeCount) * Math.PI * 2;
-          setWorldMatrix(ref.current, idx++,
-            [0, d.y, 0], [0, 0, 0],
-            [pos, 0, 0], [0, 0, Math.PI / 2]
+          setWorldMatrix(
+            ref.current,
+            idx++,
+            [0, d.y, 0],
+            [0, 0, 0],
+            [pos, 0, 0],
+            [0, 0, Math.PI / 2],
           );
         }
       }
@@ -341,9 +487,15 @@ export function PoloidalCoils({ mobile }: { mobile?: boolean }) {
 // 7. Coil Bracing
 /* ------------------------------------------------------------------ */
 export function CoilBracing({ mobile }: { mobile?: boolean }) {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL_DARK, metalness: 0.8, roughness: 0.6,
-  }), []);
+  const mat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL_DARK,
+        metalness: 0.8,
+        roughness: 0.6,
+      }),
+    [],
+  );
 
   const seg = mobile ? 8 : 16;
   const tubeSeg = mobile ? 32 : 64;
@@ -364,21 +516,39 @@ export function CoilBracing({ mobile }: { mobile?: boolean }) {
 // 8. Access Ports — instanced
 /* ------------------------------------------------------------------ */
 export function AccessPorts({ mobile }: { mobile?: boolean }) {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL, metalness: 0.7, roughness: 0.3,
-  }), []);
+  const mat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL,
+        metalness: 0.7,
+        roughness: 0.3,
+      }),
+    [],
+  );
 
   const portCount = 8;
   const pipeStart = 0.91;
   const pipeEnd = 1.78;
   const pipeLen = pipeEnd - pipeStart;
-  const pipeCenter = pipeStart + (pipeLen / 2);
+  const pipeCenter = pipeStart + pipeLen / 2;
   const cylSeg = mobile ? 16 : 32;
 
-  const geoPipe = useMemo(() => new THREE.CylinderGeometry(0.035, 0.035, pipeLen, cylSeg), [pipeLen, cylSeg]);
-  const geoCollarSmall = useMemo(() => new THREE.CylinderGeometry(0.06, 0.06, 0.04, cylSeg), [cylSeg]);
-  const geoCollarMed = useMemo(() => new THREE.CylinderGeometry(0.08, 0.08, 0.12, cylSeg), [cylSeg]);
-  const geoCap = useMemo(() => new THREE.CylinderGeometry(0.05, 0.05, 0.04, cylSeg), [cylSeg]);
+  const geoPipe = useMemo(
+    () => new THREE.CylinderGeometry(0.035, 0.035, pipeLen, cylSeg),
+    [pipeLen, cylSeg],
+  );
+  const geoCollarSmall = useMemo(
+    () => new THREE.CylinderGeometry(0.06, 0.06, 0.04, cylSeg),
+    [cylSeg],
+  );
+  const geoCollarMed = useMemo(
+    () => new THREE.CylinderGeometry(0.08, 0.08, 0.12, cylSeg),
+    [cylSeg],
+  );
+  const geoCap = useMemo(
+    () => new THREE.CylinderGeometry(0.05, 0.05, 0.04, cylSeg),
+    [cylSeg],
+  );
 
   const refPipe = useRef<THREE.InstancedMesh>(null);
   const refCollarSmall = useRef<THREE.InstancedMesh>(null);
@@ -396,10 +566,14 @@ export function AccessPorts({ mobile }: { mobile?: boolean }) {
     configs.forEach(({ ref, pos }) => {
       if (!ref.current) return;
       for (let i = 0; i < portCount; i++) {
-        const angle = (i / portCount) * Math.PI * 2 + (Math.PI / 16);
-        setWorldMatrix(ref.current, i,
-          [0, 0, 0], [0, angle, 0],
-          [pos, 0, 0], [0, 0, -Math.PI / 2]
+        const angle = (i / portCount) * Math.PI * 2 + Math.PI / 16;
+        setWorldMatrix(
+          ref.current,
+          i,
+          [0, 0, 0],
+          [0, angle, 0],
+          [pos, 0, 0],
+          [0, 0, -Math.PI / 2],
         );
       }
       ref.current.instanceMatrix.needsUpdate = true;
@@ -409,7 +583,10 @@ export function AccessPorts({ mobile }: { mobile?: boolean }) {
   return (
     <group>
       <instancedMesh ref={refPipe} args={[geoPipe, mat, portCount]} />
-      <instancedMesh ref={refCollarSmall} args={[geoCollarSmall, mat, portCount]} />
+      <instancedMesh
+        ref={refCollarSmall}
+        args={[geoCollarSmall, mat, portCount]}
+      />
       <instancedMesh ref={refCollarMed} args={[geoCollarMed, mat, portCount]} />
       <instancedMesh ref={refCap} args={[geoCap, mat, portCount]} />
     </group>
@@ -420,13 +597,25 @@ export function AccessPorts({ mobile }: { mobile?: boolean }) {
 // 9. Exoskeleton & Containment Belts — instanced struts + joints
 /* ------------------------------------------------------------------ */
 export function Exoskeleton({ mobile }: { mobile?: boolean }) {
-  const matStrut = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL, metalness: 0.8, roughness: 0.5,
-  }), []);
+  const matStrut = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL,
+        metalness: 0.8,
+        roughness: 0.5,
+      }),
+    [],
+  );
 
-  const matBelt = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL_DARK, metalness: 0.8, roughness: 0.2,
-  }), []);
+  const matBelt = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL_DARK,
+        metalness: 0.8,
+        roughness: 0.2,
+      }),
+    [],
+  );
 
   const strutCount = 8;
   const radius = 1.65;
@@ -437,8 +626,14 @@ export function Exoskeleton({ mobile }: { mobile?: boolean }) {
   const tubeSeg = mobile ? 32 : 64;
   const cylSeg = mobile ? 16 : 32;
 
-  const strutGeo = useMemo(() => new THREE.BoxGeometry(0.08, height, 0.08), [height]);
-  const jointGeo = useMemo(() => new THREE.CylinderGeometry(0.09, 0.09, 0.14, cylSeg), [cylSeg]);
+  const strutGeo = useMemo(
+    () => new THREE.BoxGeometry(0.08, height, 0.08),
+    [height],
+  );
+  const jointGeo = useMemo(
+    () => new THREE.CylinderGeometry(0.09, 0.09, 0.14, cylSeg),
+    [cylSeg],
+  );
 
   const refStrut = useRef<THREE.InstancedMesh>(null);
   const refJoint = useRef<THREE.InstancedMesh>(null);
@@ -448,9 +643,13 @@ export function Exoskeleton({ mobile }: { mobile?: boolean }) {
     if (refStrut.current) {
       for (let i = 0; i < strutCount; i++) {
         const angle = (i / strutCount) * Math.PI * 2;
-        setWorldMatrix(refStrut.current, i,
-          [Math.cos(angle) * radius, 0, Math.sin(angle) * radius], [0, -angle, 0],
-          [0, 0, 0], [0, 0, 0]
+        setWorldMatrix(
+          refStrut.current,
+          i,
+          [Math.cos(angle) * radius, 0, Math.sin(angle) * radius],
+          [0, -angle, 0],
+          [0, 0, 0],
+          [0, 0, 0],
         );
       }
       refStrut.current.instanceMatrix.needsUpdate = true;
@@ -462,9 +661,13 @@ export function Exoskeleton({ mobile }: { mobile?: boolean }) {
       for (let i = 0; i < strutCount; i++) {
         const angle = (i / strutCount) * Math.PI * 2;
         for (const y of jointHeights) {
-          setWorldMatrix(refJoint.current, idx++,
-            [Math.cos(angle) * radius, 0, Math.sin(angle) * radius], [0, -angle, 0],
-            [0, y, 0], [Math.PI / 2, 0, 0]
+          setWorldMatrix(
+            refJoint.current,
+            idx++,
+            [Math.cos(angle) * radius, 0, Math.sin(angle) * radius],
+            [0, -angle, 0],
+            [0, y, 0],
+            [Math.PI / 2, 0, 0],
           );
         }
       }
@@ -476,13 +679,21 @@ export function Exoskeleton({ mobile }: { mobile?: boolean }) {
     <group>
       {/* Horizontal Rings (Belts) */}
       {[-1.25, 1.25].map((y, i) => (
-        <mesh key={`belt-${i}`} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh
+          key={`belt-${i}`}
+          position={[0, y, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+        >
           <torusGeometry args={[radius, 0.04, beltSeg, tubeSeg]} />
           <primitive object={matBelt} attach="material" />
         </mesh>
       ))}
       {[0, -1.8].map((y, i) => (
-        <mesh key={`ring-${i}`} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh
+          key={`ring-${i}`}
+          position={[0, y, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+        >
           <torusGeometry args={[radius, 0.045, beltSeg, tubeSeg]} />
           <primitive object={matStrut} attach="material" />
         </mesh>
@@ -490,7 +701,10 @@ export function Exoskeleton({ mobile }: { mobile?: boolean }) {
 
       {/* Instanced Struts & Joints */}
       <instancedMesh ref={refStrut} args={[strutGeo, matStrut, strutCount]} />
-      <instancedMesh ref={refJoint} args={[jointGeo, matStrut, strutCount * jointHeights.length]} />
+      <instancedMesh
+        ref={refJoint}
+        args={[jointGeo, matStrut, strutCount * jointHeights.length]}
+      />
     </group>
   );
 }
@@ -499,12 +713,24 @@ export function Exoskeleton({ mobile }: { mobile?: boolean }) {
 // 10. Support Pedestal
 /* ------------------------------------------------------------------ */
 export function SupportPedestal({ mobile }: { mobile?: boolean }) {
-  const matConcrete = useMemo(() => new THREE.MeshStandardMaterial({
-    color: CONCRETE, metalness: 0.1, roughness: 0.9,
-  }), []);
-  const matSteel = useMemo(() => new THREE.MeshStandardMaterial({
-    color: STEEL, metalness: 0.8, roughness: 0.4,
-  }), []);
+  const matConcrete = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: CONCRETE,
+        metalness: 0.1,
+        roughness: 0.9,
+      }),
+    [],
+  );
+  const matSteel = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: STEEL,
+        metalness: 0.8,
+        roughness: 0.4,
+      }),
+    [],
+  );
 
   const seg = mobile ? 16 : 32;
   const ringSeg = mobile ? 32 : 64;

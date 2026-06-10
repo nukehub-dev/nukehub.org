@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { motion, useReducedMotion } from 'framer-motion';
-import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import { Zap, Factory, GraduationCap, Handshake, type LucideIcon } from 'lucide-react';
+import { motion, useReducedMotion } from "framer-motion";
+import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
+import {
+  Zap,
+  Factory,
+  GraduationCap,
+  Handshake,
+  type LucideIcon,
+} from "lucide-react";
 
 interface SDG {
   number: string;
@@ -21,7 +27,13 @@ interface Props {
 
 const sdgIcons: LucideIcon[] = [Zap, Factory, GraduationCap, Handshake];
 
-export function SDGsSection({ title, subtitle, description, goals, closingText }: Props) {
+export function SDGsSection({
+  title,
+  subtitle,
+  description,
+  goals,
+  closingText,
+}: Props) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -34,7 +46,9 @@ export function SDGsSection({ title, subtitle, description, goals, closingText }
           variants={staggerContainer}
         >
           <motion.div variants={fadeInUp} className="text-center mb-16">
-            <p className="text-sm font-medium text-primary uppercase tracking-wider">{subtitle}</p>
+            <p className="text-sm font-medium text-primary uppercase tracking-wider">
+              {subtitle}
+            </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {title}
             </h2>
@@ -52,7 +66,7 @@ export function SDGsSection({ title, subtitle, description, goals, closingText }
                   key={goal.number}
                   variants={fadeInUp}
                   whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/5"
                 >
                   {/* Color-coded left border strip */}
@@ -80,7 +94,9 @@ export function SDGsSection({ title, subtitle, description, goals, closingText }
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold text-foreground">{goal.title}</h3>
+                        <h3 className="text-lg font-semibold text-foreground">
+                          {goal.title}
+                        </h3>
                       </div>
                       <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                         {goal.description}
@@ -106,14 +122,22 @@ export function SDGsSection({ title, subtitle, description, goals, closingText }
               {/* Opening quote mark — floating */}
               <motion.span
                 className="absolute top-1 left-0 sm:-left-4 text-4xl sm:text-5xl text-primary/20 leading-none select-none"
-                animate={shouldReduceMotion ? {} : {
-                  y: [0, -8, 0],
-                }}
-                transition={shouldReduceMotion ? undefined : {
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                animate={
+                  shouldReduceMotion
+                    ? {}
+                    : {
+                        y: [0, -8, 0],
+                      }
+                }
+                transition={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }
+                }
               >
                 &ldquo;
               </motion.span>
@@ -131,15 +155,23 @@ export function SDGsSection({ title, subtitle, description, goals, closingText }
               {/* Closing quote mark — floating */}
               <motion.span
                 className="absolute bottom-1 right-0 sm:-right-4 text-4xl sm:text-5xl text-primary/20 leading-none select-none"
-                animate={shouldReduceMotion ? {} : {
-                  y: [0, -8, 0],
-                }}
-                transition={shouldReduceMotion ? undefined : {
-                  duration: 4,
-                  delay: 2,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                animate={
+                  shouldReduceMotion
+                    ? {}
+                    : {
+                        y: [0, -8, 0],
+                      }
+                }
+                transition={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        duration: 4,
+                        delay: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }
+                }
               >
                 &rdquo;
               </motion.span>

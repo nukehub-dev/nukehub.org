@@ -1,9 +1,9 @@
 ---
-import PageLayout from '@layouts/PageLayout.astro';
-import { format } from 'date-fns';
-import type { CollectionEntry } from 'astro:content';
-import { Badge } from '@components/ui/Badge';
-import { CalendarDays, TableOfContents } from 'lucide-react';
+import PageLayout from "@layouts/PageLayout.astro";
+import { format } from "date-fns";
+import type { CollectionEntry } from "astro:content";
+import { Badge } from "@components/ui/Badge";
+import { CalendarDays, TableOfContents } from "lucide-react";
 
 interface Heading {
   depth: number;
@@ -12,7 +12,7 @@ interface Heading {
 }
 
 interface Props {
-  entry: CollectionEntry<'manual'>;
+  entry: CollectionEntry<"manual">;
   headings: Heading[];
 }
 
@@ -30,7 +30,9 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   <div class="mx-auto max-w-5xl">
     {/* Header */}
     <div class="mb-10 border-b border-border pb-8">
-      <h1 class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+      <h1
+        class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+      >
         {title}
       </h1>
 
@@ -39,7 +41,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
           lastUpdated && (
             <Badge variant="default" className="gap-1.5">
               <CalendarDays size={14} />
-              <span>Last updated {format(lastUpdated, 'MMMM d, yyyy')}</span>
+              <span>Last updated {format(lastUpdated, "MMMM d, yyyy")}</span>
             </Badge>
           )
         }
@@ -63,7 +65,9 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
                       href={`#${h.slug}`}
                       data-toc-link
                       class={`block rounded-md px-2 py-1 leading-snug transition-colors hover:bg-primary/10 ${
-                        h.depth === 3 ? 'pl-4 text-muted-foreground' : 'text-foreground'
+                        h.depth === 3
+                          ? "pl-4 text-muted-foreground"
+                          : "text-foreground"
                       }`}
                     >
                       {h.text}
@@ -101,7 +105,9 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
                           href={`#${h.slug}`}
                           data-toc-link
                           class={`toc-link block rounded-md px-2 py-1 leading-snug transition-colors hover:bg-primary/10 ${
-                            h.depth === 3 ? 'pl-4 text-muted-foreground' : 'text-foreground'
+                            h.depth === 3
+                              ? "pl-4 text-muted-foreground"
+                              : "text-foreground"
                           }`}
                         >
                           {h.text}
@@ -124,12 +130,12 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   {/* Scroll-spy: highlight current section in TOC */}
   <script is:inline>
     (function () {
-      const links = document.querySelectorAll('a[data-toc-link]');
+      const links = document.querySelectorAll("a[data-toc-link]");
       if (!links.length) return;
 
       const map = new Map();
       links.forEach((link) => {
-        const h = document.getElementById(link.getAttribute('href').slice(1));
+        const h = document.getElementById(link.getAttribute("href").slice(1));
         if (h) map.set(h, link);
       });
 
@@ -138,25 +144,31 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
       const clear = () => {
         links.forEach((link) => {
-          link.classList.remove('text-primary', 'font-medium', 'bg-primary/10');
-          link.classList.add(link.classList.contains('pl-4') ? 'text-muted-foreground' : 'text-foreground');
+          link.classList.remove("text-primary", "font-medium", "bg-primary/10");
+          link.classList.add(
+            link.classList.contains("pl-4")
+              ? "text-muted-foreground"
+              : "text-foreground",
+          );
         });
       };
 
       const setActive = (link) => {
-        link.classList.remove('text-muted-foreground', 'text-foreground');
-        link.classList.add('text-primary', 'font-medium', 'bg-primary/10');
+        link.classList.remove("text-muted-foreground", "text-foreground");
+        link.classList.add("text-primary", "font-medium", "bg-primary/10");
       };
 
       const observer = new IntersectionObserver(
         (entries) => {
           const visible = entries
             .filter((e) => e.isIntersecting)
-            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+            .sort(
+              (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
+            );
           clear();
           if (visible.length) setActive(map.get(visible[0].target));
         },
-        { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+        { rootMargin: "-80px 0px -70% 0px", threshold: 0 },
       );
 
       targets.forEach((t) => observer.observe(t));

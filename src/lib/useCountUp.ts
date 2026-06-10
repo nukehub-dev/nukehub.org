@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { useInView } from 'framer-motion';
+import { useEffect, useRef, useState } from "react";
+import { useInView } from "framer-motion";
 
 export function useCountUp(
   endValue: number,
   duration: number = 1.5,
-  suffix: string = ''
+  suffix: string = "",
 ) {
-  const [displayValue, setDisplayValue] = useState('0' + suffix);
+  const [displayValue, setDisplayValue] = useState("0" + suffix);
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-40px' });
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
   const hasAnimated = useRef(false);
 
   useEffect(() => {

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion, useReducedMotion } from 'framer-motion';
-import { Rocket, Users, Globe, type LucideIcon } from 'lucide-react';
-import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
+import { motion, useReducedMotion } from "framer-motion";
+import { Rocket, Users, Globe, type LucideIcon } from "lucide-react";
+import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
 
 interface Milestone {
   year: string;
@@ -18,18 +18,22 @@ interface Props {
 
 const milestoneIcons: LucideIcon[] = [Rocket, Users, Globe];
 
-const dotBgColors = ['bg-amber-500', 'bg-emerald-500', 'bg-sky-500'];
-const dotBorderColors = ['border-amber-600', 'border-emerald-600', 'border-sky-600'];
+const dotBgColors = ["bg-amber-500", "bg-emerald-500", "bg-sky-500"];
+const dotBorderColors = [
+  "border-amber-600",
+  "border-emerald-600",
+  "border-sky-600",
+];
 const dotShadowColors = [
-  'rgba(245,158,11,0.35)',
-  'rgba(16,185,129,0.35)',
-  'rgba(14,165,233,0.35)',
+  "rgba(245,158,11,0.35)",
+  "rgba(16,185,129,0.35)",
+  "rgba(14,165,233,0.35)",
 ];
 
 const milestoneColors = [
-  'from-amber-500/20 to-transparent',
-  'from-emerald-500/20 to-transparent',
-  'from-sky-500/20 to-transparent',
+  "from-amber-500/20 to-transparent",
+  "from-emerald-500/20 to-transparent",
+  "from-sky-500/20 to-transparent",
 ];
 
 export function StoryTimeline({ title, description, milestones }: Props) {
@@ -74,7 +78,7 @@ export function StoryTimeline({ title, description, milestones }: Props) {
                   <div
                     key={milestone.year}
                     className={`relative flex items-start gap-6 sm:gap-0 ${
-                      isLeft ? 'sm:flex-row' : 'sm:flex-row-reverse'
+                      isLeft ? "sm:flex-row" : "sm:flex-row-reverse"
                     }`}
                   >
                     {/* Timeline dot - sits on top of line */}
@@ -83,17 +87,24 @@ export function StoryTimeline({ title, description, milestones }: Props) {
                         className="relative flex items-center justify-center"
                         initial={{ scale: 0 }}
                         whileInView={{ scale: 1 }}
-                        viewport={{ once: true, margin: '-40px' }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        viewport={{ once: true, margin: "-40px" }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 20,
+                        }}
                       >
                         {/* Soft pulse ring - fires once when dot enters view */}
                         {!shouldReduceMotion && (
                           <motion.div
                             className={`absolute rounded-full ${dotBg}`}
                             initial={{ scale: 1, opacity: 0 }}
-                            whileInView={{ scale: [1, 1.3, 1.5], opacity: [0.15, 0.06, 0] }}
+                            whileInView={{
+                              scale: [1, 1.3, 1.5],
+                              opacity: [0.15, 0.06, 0],
+                            }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.8, ease: 'easeOut' }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
                             style={{ width: 48, height: 48 }}
                           />
                         )}
@@ -108,22 +119,32 @@ export function StoryTimeline({ title, description, milestones }: Props) {
                     </div>
 
                     {/* Card */}
-                    <div className={`ml-16 sm:ml-0 sm:w-1/2 ${
-                      isLeft ? 'sm:pr-16 sm:text-right' : 'sm:pl-16'
-                    }`}>
+                    <div
+                      className={`ml-16 sm:ml-0 sm:w-1/2 ${
+                        isLeft ? "sm:pr-16 sm:text-right" : "sm:pl-16"
+                      }`}
+                    >
                       <motion.div
                         initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, margin: '-60px' }}
-                        transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{
+                          duration: 0.5,
+                          ease: [0.25, 0.1, 0.25, 1],
+                          delay: 0.1,
+                        }}
                         whileHover={shouldReduceMotion ? {} : { y: -4 }}
                       >
                         <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20">
                           {/* Gradient accent */}
-                          <div className={`absolute top-0 ${isLeft ? 'right-0' : 'left-0'} w-32 h-32 bg-gradient-to-br ${colorClass} rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity`} />
+                          <div
+                            className={`absolute top-0 ${isLeft ? "right-0" : "left-0"} w-32 h-32 bg-gradient-to-br ${colorClass} rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity`}
+                          />
 
                           <div className="relative z-10">
-                            <span className={`inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary ${isLeft ? 'sm:ml-auto' : ''}`}>
+                            <span
+                              className={`inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary ${isLeft ? "sm:ml-auto" : ""}`}
+                            >
                               {milestone.year}
                             </span>
                             <h3 className="mt-4 text-xl font-semibold text-foreground">

@@ -1,5 +1,5 @@
-import { useCountUp } from '@lib/useCountUp';
-import { getIcon } from '@lib/icons';
+import { useCountUp } from "@lib/useCountUp";
+import { getIcon } from "@lib/icons";
 
 interface HeroStatCardProps {
   iconName: string;
@@ -9,9 +9,16 @@ interface HeroStatCardProps {
   index?: number;
 }
 
-export function HeroStatCard({ iconName, label, value, numericValue, index = 0 }: HeroStatCardProps) {
+export function HeroStatCard({
+  iconName,
+  label,
+  value,
+  numericValue,
+  index = 0,
+}: HeroStatCardProps) {
   const Icon = getIcon(iconName);
-  const suffix = numericValue !== undefined ? value.replace(String(numericValue), '') : '';
+  const suffix =
+    numericValue !== undefined ? value.replace(String(numericValue), "") : "";
   const { displayValue, ref } = useCountUp(numericValue || 0, 1.5, suffix);
   const isNumeric = numericValue !== undefined;
 
@@ -28,9 +35,7 @@ export function HeroStatCard({ iconName, label, value, numericValue, index = 0 }
         <div className="text-lg font-semibold tracking-tight text-foreground">
           {isNumeric ? displayValue : value}
         </div>
-        <div className="text-xs font-medium text-muted-foreground">
-          {label}
-        </div>
+        <div className="text-xs font-medium text-muted-foreground">{label}</div>
       </div>
     </div>
   );

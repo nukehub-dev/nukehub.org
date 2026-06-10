@@ -1,7 +1,7 @@
-import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { getPrimaryColor } from '@lib/themeColors';
+import { useRef, useMemo, useEffect, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { getPrimaryColor } from "@lib/themeColors";
 
 const VERT = `
 varying vec2 vUv;
@@ -200,7 +200,13 @@ void main() {
 }
 `;
 
-function NebulaPlane({ primaryColor, isLight }: { primaryColor: string; isLight: boolean }) {
+function NebulaPlane({
+  primaryColor,
+  isLight,
+}: {
+  primaryColor: string;
+  isLight: boolean;
+}) {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
@@ -224,7 +230,7 @@ function NebulaPlane({ primaryColor, isLight }: { primaryColor: string; isLight:
       uResolution: { value: new THREE.Vector2(1, 1) },
       uTheme: { value: isLight ? 1.0 : 0.0 },
     }),
-    [colors, isLight]
+    [colors, isLight],
   );
 
   const accRef = useRef(0);
@@ -257,13 +263,15 @@ export function NebulaScene({ isVisible }: { isVisible: boolean }) {
   useEffect(() => {
     const update = () => {
       setColor(getPrimaryColor());
-      setIsLight(document.documentElement.getAttribute('data-theme') === 'light');
+      setIsLight(
+        document.documentElement.getAttribute("data-theme") === "light",
+      );
     };
     update();
     const observer = new MutationObserver(update);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-accent', 'data-theme'],
+      attributeFilter: ["data-accent", "data-theme"],
     });
     return () => observer.disconnect();
   }, []);
@@ -272,13 +280,13 @@ export function NebulaScene({ isVisible }: { isVisible: boolean }) {
     <Canvas
       dpr={[1, 1]}
       camera={{ position: [0, 0, 1] }}
-      frameloop={isVisible ? 'always' : 'never'}
+      frameloop={isVisible ? "always" : "never"}
       gl={{
         alpha: false,
         antialias: false,
-        powerPreference: 'high-performance',
+        powerPreference: "high-performance",
       }}
-      style={{ background: 'transparent' }}
+      style={{ background: "transparent" }}
     >
       <NebulaPlane primaryColor={color} isLight={isLight} />
     </Canvas>

@@ -23,10 +23,10 @@ export interface EventOrganizer {
 }
 
 export type RecurrenceType =
-  | { type: 'monthly-date'; day: number }
-  | { type: 'monthly-weekday'; weekday: number; occurrence: 1 | 2 | 3 | 4 | -1 }
-  | { type: 'weekly'; weekday: number }
-  | { type: 'biweekly'; weekday: number; anchorDate: string };
+  | { type: "monthly-date"; day: number }
+  | { type: "monthly-weekday"; weekday: number; occurrence: 1 | 2 | 3 | 4 | -1 }
+  | { type: "weekly"; weekday: number }
+  | { type: "biweekly"; weekday: number; anchorDate: string };
 
 export interface CalendarEvent {
   id: string;
@@ -48,14 +48,14 @@ export interface CalendarEvent {
 // Recurrence engine
 // ============================================================================
 
-const RECUR_START = new Date('2024-10-01T00:00:00Z');
-const RECUR_END = new Date('2026-12-31T23:59:59Z');
+const RECUR_START = new Date("2024-10-01T00:00:00Z");
+const RECUR_END = new Date("2026-12-31T23:59:59Z");
 
 function getNthWeekday(
   year: number,
   month: number,
   weekday: number,
-  occurrence: number
+  occurrence: number,
 ): Date | null {
   if (occurrence > 0) {
     let count = 0;
@@ -94,7 +94,12 @@ function durationMs(start: string, end?: string): number {
   return new Date(end).getTime() - new Date(start).getTime();
 }
 
-function timeOfDay(iso: string): { h: number; m: number; s: number; ms: number } {
+function timeOfDay(iso: string): {
+  h: number;
+  m: number;
+  s: number;
+  ms: number;
+} {
   const d = new Date(iso);
   return {
     h: d.getUTCHours(),
@@ -104,7 +109,10 @@ function timeOfDay(iso: string): { h: number; m: number; s: number; ms: number }
   };
 }
 
-function setDateTime(base: Date, tod: { h: number; m: number; s: number; ms: number }): Date {
+function setDateTime(
+  base: Date,
+  tod: { h: number; m: number; s: number; ms: number },
+): Date {
   const d = new Date(base);
   d.setUTCHours(tod.h, tod.m, tod.s, tod.ms);
   return d;
@@ -120,10 +128,14 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
   let seq = 0;
 
   switch (recur.type) {
-    case 'monthly-date': {
+    case "monthly-date": {
       let cursor = new Date(RECUR_START);
       while (cursor <= RECUR_END) {
-        const candidate = new Date(cursor.getFullYear(), cursor.getMonth(), recur.day);
+        const candidate = new Date(
+          cursor.getFullYear(),
+          cursor.getMonth(),
+          recur.day,
+        );
         if (candidate.getMonth() === cursor.getMonth()) {
           const start = setDateTime(candidate, tod);
           if (start >= RECUR_START && start <= RECUR_END) {
@@ -135,14 +147,14 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
       break;
     }
 
-    case 'monthly-weekday': {
+    case "monthly-weekday": {
       let cursor = new Date(RECUR_START);
       while (cursor <= RECUR_END) {
         const candidate = getNthWeekday(
           cursor.getFullYear(),
           cursor.getMonth(),
           recur.weekday,
-          recur.occurrence
+          recur.occurrence,
         );
         if (candidate) {
           const start = setDateTime(candidate, tod);
@@ -155,7 +167,7 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
       break;
     }
 
-    case 'weekly': {
+    case "weekly": {
       let cursor = new Date(RECUR_START);
       while (cursor.getDay() !== recur.weekday) {
         cursor = addDays(cursor, 1);
@@ -170,8 +182,8 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
       break;
     }
 
-    case 'biweekly': {
-      const anchor = new Date(recur.anchorDate + 'T00:00:00Z');
+    case "biweekly": {
+      const anchor = new Date(recur.anchorDate + "T00:00:00Z");
       let cursor = new Date(anchor);
       while (cursor < RECUR_START) {
         cursor = addDays(cursor, 14);
@@ -193,9 +205,15 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
   return instances;
 }
 
-function makeInstance(base: CalendarEvent, start: Date, dur: number, seq: number): CalendarEvent {
+function makeInstance(
+  base: CalendarEvent,
+  start: Date,
+  dur: number,
+  seq: number,
+): CalendarEvent {
   const startIso = start.toISOString();
-  const endIso = dur > 0 ? new Date(start.getTime() + dur).toISOString() : undefined;
+  const endIso =
+    dur > 0 ? new Date(start.getTime() + dur).toISOString() : undefined;
   return {
     ...base,
     id: `${base.id}--${seq}`,
@@ -210,5 +228,7 @@ export function expandEvents(templates: CalendarEvent[]): CalendarEvent[] {
   for (const template of templates) {
     all.push(...generateInstances(template));
   }
-  return all.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  return all.sort(
+    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+  );
 }

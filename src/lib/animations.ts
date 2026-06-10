@@ -1,4 +1,4 @@
-import type { Transition, Variants } from 'framer-motion';
+import type { Transition, Variants } from "framer-motion";
 
 // ============================================================================
 // Easing curves (from NukeIDE / NukeLab design language)
@@ -32,19 +32,19 @@ export const transitions = {
   } satisfies Transition,
 
   spring: {
-    type: 'spring',
+    type: "spring",
     stiffness: 300,
     damping: 30,
   } satisfies Transition,
 
   springSoft: {
-    type: 'spring',
+    type: "spring",
     stiffness: 200,
     damping: 25,
   } satisfies Transition,
 
   layout: {
-    type: 'spring',
+    type: "spring",
     stiffness: 400,
     damping: 35,
   } satisfies Transition,
@@ -133,10 +133,10 @@ export const slideInRight: Variants = {
 
 export const viewportOnce = {
   once: true,
-  margin: '-80px',
+  margin: "-80px",
 };
 
 export const viewportAlways = {
   once: false,
-  margin: '-40px',
+  margin: "-40px",
 };

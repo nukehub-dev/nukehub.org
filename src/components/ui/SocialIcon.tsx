@@ -1,12 +1,6 @@
-import * as React from 'react';
-import {
-  Phone,
-  Mail,
-  Globe,
-  Video,
-  type LucideProps,
-} from 'lucide-react';
-import { BrandIcon } from './BrandIcon';
+import * as React from "react";
+import { Phone, Mail, Globe, Video, type LucideProps } from "lucide-react";
+import { BrandIcon } from "./BrandIcon";
 
 // ============================================================================
 // Platform name → icon component mapping
@@ -21,30 +15,30 @@ const lucideMap: Record<string, React.ComponentType<LucideProps>> = {
 };
 
 const brandMap: Record<string, string> = {
-  linkedin: 'linkedin',
-  facebook: 'facebook',
-  instagram: 'instagram',
-  github: 'github',
-  gitlab: 'gitlab',
-  bitbucket: 'bitbucket',
-  stackoverflow: 'stackoverflow',
-  youtube: 'youtube',
-  mastodon: 'mastodon',
-  bluesky: 'bluesky',
-  discord: 'discord',
-  telegram: 'telegram',
-  medium: 'medium',
-  tiktok: 'tiktok',
-  threads: 'threads',
-  x: 'x',
-  twitch: 'twitch',
-  reddit: 'reddit',
-  signal: 'signal',
-  whatsapp: 'whatsapp',
-  scholar: 'googlescholar',
-  orcid: 'orcid',
-  researchgate: 'researchgate',
-  zotero: 'zotero',
+  linkedin: "linkedin",
+  facebook: "facebook",
+  instagram: "instagram",
+  github: "github",
+  gitlab: "gitlab",
+  bitbucket: "bitbucket",
+  stackoverflow: "stackoverflow",
+  youtube: "youtube",
+  mastodon: "mastodon",
+  bluesky: "bluesky",
+  discord: "discord",
+  telegram: "telegram",
+  medium: "medium",
+  tiktok: "tiktok",
+  threads: "threads",
+  x: "x",
+  twitch: "twitch",
+  reddit: "reddit",
+  signal: "signal",
+  whatsapp: "whatsapp",
+  scholar: "googlescholar",
+  orcid: "orcid",
+  researchgate: "researchgate",
+  zotero: "zotero",
 };
 
 interface SocialIconProps extends LucideProps {
@@ -52,7 +46,7 @@ interface SocialIconProps extends LucideProps {
 }
 
 export function SocialIcon({ platform, ...props }: SocialIconProps) {
-  const key = platform.toLowerCase().replace(/[^a-z]/g, '');
+  const key = platform.toLowerCase().replace(/[^a-z]/g, "");
 
   if (brandMap[key]) {
     return <BrandIcon name={brandMap[key] as any} {...props} />;
@@ -60,7 +54,7 @@ export function SocialIcon({ platform, ...props }: SocialIconProps) {
 
   const LucideIcon = lucideMap[key];
   if (!LucideIcon) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       console.warn(`[SocialIcon] Unknown platform: "${platform}"`);
     }
     return <Globe {...props} />;
@@ -85,16 +79,28 @@ export function getSocialUrl(platform: string, handle: string): string {
     researchgate: `https://www.researchgate.net/profile/${handle}`,
     zotero: `https://www.zotero.org/${handle}`,
     youtube: `https://youtube.com/channel/${handle}`,
-    mastodon: handle.startsWith('http') ? handle : `https://mastodon.social/@${handle}`,
-    bluesky: handle.startsWith('http') ? handle : `https://bsky.app/profile/${handle}`,
+    mastodon: handle.startsWith("http")
+      ? handle
+      : `https://mastodon.social/@${handle}`,
+    bluesky: handle.startsWith("http")
+      ? handle
+      : `https://bsky.app/profile/${handle}`,
     discord: handle,
-    telegram: handle.startsWith('http') ? handle : `https://t.me/${handle}`,
-    medium: handle.startsWith('http') ? handle : `https://medium.com/@${handle}`,
-    tiktok: handle.startsWith('http') ? handle : `https://tiktok.com/@${handle}`,
-    threads: handle.startsWith('http') ? handle : `https://threads.net/@${handle}`,
-    x: handle.startsWith('http') ? handle : `https://x.com/${handle}`,
-    twitch: handle.startsWith('http') ? handle : `https://twitch.tv/${handle}`,
-    reddit: handle.startsWith('http') ? handle : `https://reddit.com/user/${handle}`,
+    telegram: handle.startsWith("http") ? handle : `https://t.me/${handle}`,
+    medium: handle.startsWith("http")
+      ? handle
+      : `https://medium.com/@${handle}`,
+    tiktok: handle.startsWith("http")
+      ? handle
+      : `https://tiktok.com/@${handle}`,
+    threads: handle.startsWith("http")
+      ? handle
+      : `https://threads.net/@${handle}`,
+    x: handle.startsWith("http") ? handle : `https://x.com/${handle}`,
+    twitch: handle.startsWith("http") ? handle : `https://twitch.tv/${handle}`,
+    reddit: handle.startsWith("http")
+      ? handle
+      : `https://reddit.com/user/${handle}`,
     signal: handle,
   };
   return urls[platform.toLowerCase()] || handle;

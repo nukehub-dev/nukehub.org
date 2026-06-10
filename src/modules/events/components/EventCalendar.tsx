@@ -1,13 +1,13 @@
-import * as React from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
-import interactionPlugin from '@fullcalendar/interaction';
-import type { CalendarApi, EventContentArg } from '@fullcalendar/core';
-import { cn } from '@lib/utils';
-import { Tooltip } from '@components/ui/Tooltip';
-import type { CalendarEvent } from '@modules/events/types';
+import * as React from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import listPlugin from "@fullcalendar/list";
+import interactionPlugin from "@fullcalendar/interaction";
+import type { CalendarApi, EventContentArg } from "@fullcalendar/core";
+import { cn } from "@lib/utils";
+import { Tooltip } from "@components/ui/Tooltip";
+import type { CalendarEvent } from "@modules/events/types";
 
 // ============================================================================
 // Event conversion
@@ -36,10 +36,17 @@ function convertEvent(event: CalendarEvent) {
 // Custom event render — replaces native browser tooltip with our Tooltip
 // ============================================================================
 
-function EventContent({ info, onEventClick }: { info: EventContentArg; onEventClick: (event: CalendarEvent) => void }) {
+function EventContent({
+  info,
+  onEventClick,
+}: {
+  info: EventContentArg;
+  onEventClick: (event: CalendarEvent) => void;
+}) {
   const event = info.event;
   const timeText = info.timeText;
-  const isList = info.view.type === 'listMonth' || info.view.type.startsWith('list');
+  const isList =
+    info.view.type === "listMonth" || info.view.type.startsWith("list");
 
   if (isList) return null;
 
@@ -56,8 +63,8 @@ function EventContent({ info, onEventClick }: { info: EventContentArg; onEventCl
     <Tooltip content={tooltipContent} position="top" delay={200}>
       <div
         className={cn(
-          'fc-event-main-frame w-full overflow-hidden',
-          info.isMirror && 'opacity-50'
+          "fc-event-main-frame w-full overflow-hidden",
+          info.isMirror && "opacity-50",
         )}
       >
         {info.isStart && (
@@ -66,7 +73,7 @@ function EventContent({ info, onEventClick }: { info: EventContentArg; onEventCl
           </div>
         )}
         <div className="fc-event-title text-[11px] font-medium truncate leading-tight">
-          {info.isStart ? event.title : ''}
+          {info.isStart ? event.title : ""}
         </div>
       </div>
     </Tooltip>
@@ -90,11 +97,14 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
   React.useEffect(() => {
     const html = document.documentElement;
     const checkTheme = () => {
-      setIsDark(html.getAttribute('data-theme') === 'dark');
+      setIsDark(html.getAttribute("data-theme") === "dark");
     };
     checkTheme();
     const observer = new MutationObserver(checkTheme);
-    observer.observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+    observer.observe(html, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
     return () => observer.disconnect();
   }, []);
 
@@ -105,15 +115,15 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
   };
 
   return (
-    <div className={cn(isDark ? 'fc-dark' : '')}>
+    <div className={cn(isDark ? "fc-dark" : "")}>
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
         }}
         events={fcEvents}
         eventContent={(info) => (
@@ -127,9 +137,9 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
           }
         }}
         eventTimeFormat={{
-          hour: 'numeric',
-          minute: '2-digit',
-          meridiem: 'short',
+          hour: "numeric",
+          minute: "2-digit",
+          meridiem: "short",
         }}
         height="auto"
         dayMaxEvents={3}
@@ -138,7 +148,7 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
         navLinkDayClick={(date) => {
           const api = getApi();
           if (api) {
-            api.changeView('timeGridDay', date);
+            api.changeView("timeGridDay", date);
           }
         }}
         selectable={false}
@@ -146,11 +156,11 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
         locale="en"
         firstDay={1}
         buttonText={{
-          today: 'Today',
-          month: 'Month',
-          week: 'Week',
-          day: 'Day',
-          list: 'List',
+          today: "Today",
+          month: "Month",
+          week: "Week",
+          day: "Day",
+          list: "List",
         }}
       />
     </div>

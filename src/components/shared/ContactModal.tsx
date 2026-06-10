@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle } from 'lucide-react';
-import { cn } from '@lib/utils';
-import { ContactForm } from './ContactForm';
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, CheckCircle } from "lucide-react";
+import { cn } from "@lib/utils";
+import { ContactForm } from "./ContactForm";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -11,7 +11,11 @@ interface ContactModalProps {
   defaultInquiryType?: string;
 }
 
-export function ContactModal({ isOpen, onClose, defaultInquiryType = '' }: ContactModalProps) {
+export function ContactModal({
+  isOpen,
+  onClose,
+  defaultInquiryType = "",
+}: ContactModalProps) {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => setMounted(true), []);
@@ -19,17 +23,19 @@ export function ContactModal({ isOpen, onClose, defaultInquiryType = '' }: Conta
   React.useEffect(() => {
     if (!isOpen) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [isOpen, onClose]);
 
   React.useEffect(() => {
     if (!isOpen) return;
     const original = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = original; };
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
   }, [isOpen]);
 
   if (!mounted) return null;
@@ -56,15 +62,15 @@ export function ContactModal({ isOpen, onClose, defaultInquiryType = '' }: Conta
           {/* Modal */}
           <motion.div
             className={cn(
-              'relative w-full overflow-hidden rounded-2xl border shadow-2xl',
-              'bg-background/95 backdrop-blur-2xl border-border/60',
-              'dark:bg-black/50 dark:border-white/10 dark:shadow-black/40',
-              'max-w-[56rem] max-h-[92vh] flex flex-col'
+              "relative w-full overflow-hidden rounded-2xl border shadow-2xl",
+              "bg-background/95 backdrop-blur-2xl border-border/60",
+              "dark:bg-black/50 dark:border-white/10 dark:shadow-black/40",
+              "max-w-[56rem] max-h-[92vh] flex flex-col",
             )}
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 12 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top glow */}
@@ -102,7 +108,9 @@ export function ContactModal({ isOpen, onClose, defaultInquiryType = '' }: Conta
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10">
                       <CheckCircle size={32} className="text-emerald-500" />
                     </div>
-                    <h3 className="mt-5 text-lg font-semibold text-foreground">Message Sent!</h3>
+                    <h3 className="mt-5 text-lg font-semibold text-foreground">
+                      Message Sent!
+                    </h3>
                     <p className="mt-2 text-sm text-muted-foreground max-w-xs">
                       Thank you for reaching out. We will get back to you soon.
                     </p>
@@ -120,6 +128,6 @@ export function ContactModal({ isOpen, onClose, defaultInquiryType = '' }: Conta
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }

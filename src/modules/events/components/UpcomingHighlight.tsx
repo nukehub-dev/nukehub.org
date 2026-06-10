@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { motion } from 'framer-motion';
-import { MapPin, ArrowRight, Calendar } from 'lucide-react';
-import { Card } from '@components/ui/Card';
-import { Badge } from '@components/ui/Badge';
-import { cn } from '@lib/utils';
-import type { CalendarEvent } from '@modules/events/types';
+import * as React from "react";
+import { motion } from "framer-motion";
+import { MapPin, ArrowRight, Calendar } from "lucide-react";
+import { Card } from "@components/ui/Card";
+import { Badge } from "@components/ui/Badge";
+import { cn } from "@lib/utils";
+import type { CalendarEvent } from "@modules/events/types";
 
 // ============================================================================
 // Date helpers
@@ -14,22 +14,26 @@ function isUpcoming(startIso: string): boolean {
   const start = new Date(startIso);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const startDay = new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate(),
+  );
   return startDay.getTime() >= today.getTime();
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
+  return new Date(iso).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
   });
 }
 
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
+  return new Date(iso).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
   });
 }
 
@@ -42,7 +46,10 @@ interface UpcomingHighlightProps {
   onEventClick: (event: CalendarEvent) => void;
 }
 
-export function UpcomingHighlight({ events, onEventClick }: UpcomingHighlightProps) {
+export function UpcomingHighlight({
+  events,
+  onEventClick,
+}: UpcomingHighlightProps) {
   const upcoming = React.useMemo(() => {
     return events
       .filter((e) => isUpcoming(e.start))
@@ -61,14 +68,18 @@ export function UpcomingHighlight({ events, onEventClick }: UpcomingHighlightPro
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {upcoming.map((event, i) => {
-          const accentColor = event.backgroundColor || 'var(--primary)';
+          const accentColor = event.backgroundColor || "var(--primary)";
 
           return (
             <motion.div
               key={event.id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: i * 0.08, ease: [0.4, 0, 0.2, 1] }}
+              transition={{
+                duration: 0.35,
+                delay: i * 0.08,
+                ease: [0.4, 0, 0.2, 1],
+              }}
             >
               <Card
                 variant="bubble"
@@ -77,7 +88,10 @@ export function UpcomingHighlight({ events, onEventClick }: UpcomingHighlightPro
                 onClick={() => onEventClick(event)}
               >
                 {/* Top accent bar */}
-                <div className="h-1 w-full" style={{ backgroundColor: accentColor }} />
+                <div
+                  className="h-1 w-full"
+                  style={{ backgroundColor: accentColor }}
+                />
 
                 <div className="p-4 sm:p-5 flex flex-col h-full">
                   {/* Date badge */}

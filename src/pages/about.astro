@@ -1,21 +1,21 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
-import { AboutHero } from '@modules/about/components/AboutHero';
-import { StoryTimeline } from '@modules/about/components/StoryTimeline';
-import { MissionSection } from '@modules/about/components/MissionSection';
-import { ValuesGrid } from '@modules/about/components/ValuesGrid';
-import { SDGsSection } from '@modules/about/components/SDGsSection';
-import { AboutCTA } from '@modules/about/components/AboutCTA';
-import { AboutBackground } from '@modules/about/components/AboutBackground';
-import { OrbitRings } from '@modules/about/components/decorations/OrbitRings';
-import { FloatingParticles } from '@modules/about/components/decorations/FloatingParticles';
-import { GradientOrbs } from '@modules/about/components/decorations/GradientOrbs';
-import { ConnectingNodes } from '@modules/about/components/decorations/ConnectingNodes';
-import { StarBurst } from '@modules/about/components/decorations/StarBurst';
-import { loadYaml } from '@lib/loadYaml';
-import type { AboutData } from '@modules/about/types';
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { AboutHero } from "@modules/about/components/AboutHero";
+import { StoryTimeline } from "@modules/about/components/StoryTimeline";
+import { MissionSection } from "@modules/about/components/MissionSection";
+import { ValuesGrid } from "@modules/about/components/ValuesGrid";
+import { SDGsSection } from "@modules/about/components/SDGsSection";
+import { AboutCTA } from "@modules/about/components/AboutCTA";
+import { AboutBackground } from "@modules/about/components/AboutBackground";
+import { OrbitRings } from "@modules/about/components/decorations/OrbitRings";
+import { FloatingParticles } from "@modules/about/components/decorations/FloatingParticles";
+import { GradientOrbs } from "@modules/about/components/decorations/GradientOrbs";
+import { ConnectingNodes } from "@modules/about/components/decorations/ConnectingNodes";
+import { StarBurst } from "@modules/about/components/decorations/StarBurst";
+import { loadYaml } from "@lib/loadYaml";
+import type { AboutData } from "@modules/about/types";
 
-const data = loadYaml<AboutData>('about/data/page.yml');
+const data = loadYaml<AboutData>("about/data/page.yml");
 ---
 
 <BaseLayout

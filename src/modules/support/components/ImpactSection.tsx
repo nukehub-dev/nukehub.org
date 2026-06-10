@@ -1,6 +1,13 @@
-import { motion } from 'framer-motion';
-import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import { Zap, Code, GraduationCap, Users, Circle, type LucideIcon } from 'lucide-react';
+import { motion } from "framer-motion";
+import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
+import {
+  Zap,
+  Code,
+  GraduationCap,
+  Users,
+  Circle,
+  type LucideIcon,
+} from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
   Zap,
@@ -56,8 +63,12 @@ export function ImpactSection({ items }: Props) {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon size={22} />
                   </div>
-                  <h3 className="mt-4 text-base font-medium text-foreground">{item.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                  <h3 className="mt-4 text-base font-medium text-foreground">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
                 </div>
               </motion.div>
             );

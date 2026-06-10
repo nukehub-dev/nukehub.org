@@ -1,14 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function PageLoader() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion || document.readyState === 'complete') {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReducedMotion || document.readyState === "complete") {
       setIsFading(true);
       setTimeout(() => setIsLoading(false), 300);
       return;
@@ -21,10 +23,10 @@ export function PageLoader() {
       }, 150);
     };
 
-    window.addEventListener('load', onLoad);
+    window.addEventListener("load", onLoad);
     const timer = setTimeout(onLoad, 1200);
     return () => {
-      window.removeEventListener('load', onLoad);
+      window.removeEventListener("load", onLoad);
       clearTimeout(timer);
     };
   }, []);
@@ -34,9 +36,9 @@ export function PageLoader() {
   return (
     <div
       className={`fixed inset-0 z-[10001] flex items-center justify-center bg-background transition-opacity duration-300 ${
-        isFading ? 'opacity-0' : 'opacity-100'
+        isFading ? "opacity-0" : "opacity-100"
       }`}
-      aria-hidden={isFading ? 'true' : 'false'}
+      aria-hidden={isFading ? "true" : "false"}
     >
       <div className="flex flex-col items-center gap-5">
         {/* Animated atom-like spinner */}

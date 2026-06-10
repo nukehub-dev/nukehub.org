@@ -1,31 +1,31 @@
-import * as React from 'react';
+import * as React from "react";
 
 interface BrandIconProps extends React.SVGProps<SVGSVGElement> {
   name:
-    | 'github'
-    | 'linkedin'
-    | 'facebook'
-    | 'instagram'
-    | 'youtube'
-    | 'gitlab'
-    | 'bitbucket'
-    | 'stackoverflow'
-    | 'reddit'
-    | 'mastodon'
-    | 'bluesky'
-    | 'discord'
-    | 'telegram'
-    | 'medium'
-    | 'tiktok'
-    | 'threads'
-    | 'x'
-    | 'twitch'
-    | 'signal'
-    | 'whatsapp'
-    | 'googlescholar'
-    | 'orcid'
-    | 'researchgate'
-    | 'zotero';
+    | "github"
+    | "linkedin"
+    | "facebook"
+    | "instagram"
+    | "youtube"
+    | "gitlab"
+    | "bitbucket"
+    | "stackoverflow"
+    | "reddit"
+    | "mastodon"
+    | "bluesky"
+    | "discord"
+    | "telegram"
+    | "medium"
+    | "tiktok"
+    | "threads"
+    | "x"
+    | "twitch"
+    | "signal"
+    | "whatsapp"
+    | "googlescholar"
+    | "orcid"
+    | "researchgate"
+    | "zotero";
   size?: string | number;
 }
 
@@ -155,11 +155,17 @@ const icons: Record<string, React.FC<React.SVGProps<SVGSVGElement>>> = {
 export function BrandIcon({ name, size = 20, ...props }: BrandIconProps) {
   const Icon = icons[name];
   if (!Icon) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       console.warn(`[BrandIcon] Unknown brand: "${name}"`);
     }
     return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        {...props}
+      >
         <circle cx="12" cy="12" r="10" />
       </svg>
     );

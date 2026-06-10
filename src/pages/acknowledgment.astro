@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
-import { AcknowledgmentPageContent } from '@modules/acknowledgment/components/AcknowledgmentPageContent';
-import { getCollection } from 'astro:content';
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { AcknowledgmentPageContent } from "@modules/acknowledgment/components/AcknowledgmentPageContent";
+import { getCollection } from "astro:content";
 
-const sponsorEntries = await getCollection('sponsors');
+const sponsorEntries = await getCollection("sponsors");
 const sponsors = sponsorEntries.map((entry) => ({
   id: entry.id,
   name: entry.data.name,

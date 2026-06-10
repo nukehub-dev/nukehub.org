@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { getPrimaryColor } from '@lib/themeColors';
-import { useWebGL } from '@lib/useWebGL';
+import { useRef, useMemo, useEffect, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { getPrimaryColor } from "@lib/themeColors";
+import { useWebGL } from "@lib/useWebGL";
 
 /* ======================================================================== */
 // Fragment shader — flowing aurora nebula with stars
@@ -193,7 +193,13 @@ void main() {
 /* ======================================================================== */
 // Full-screen shader plane
 /* ======================================================================== */
-function AuroraPlane({ primaryColor, isLight }: { primaryColor: string; isLight: boolean }) {
+function AuroraPlane({
+  primaryColor,
+  isLight,
+}: {
+  primaryColor: string;
+  isLight: boolean;
+}) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   const colors = useMemo(() => {
@@ -216,7 +222,7 @@ function AuroraPlane({ primaryColor, isLight }: { primaryColor: string; isLight:
       uTheme: { value: isLight ? 1.0 : 0.0 },
       uResolution: { value: new THREE.Vector2(1, 1) },
     }),
-    [colors, isLight]
+    [colors, isLight],
   );
 
   useFrame((state) => {
@@ -224,7 +230,7 @@ function AuroraPlane({ primaryColor, isLight }: { primaryColor: string; isLight:
     materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
     materialRef.current.uniforms.uResolution.value.set(
       state.size.width * state.viewport.dpr,
-      state.size.height * state.viewport.dpr
+      state.size.height * state.viewport.dpr,
     );
   });
 
@@ -256,27 +262,30 @@ export function SupportBackground() {
   useEffect(() => {
     const update = () => {
       setColor(getPrimaryColor());
-      setIsLight(document.documentElement.getAttribute('data-theme') === 'light');
+      setIsLight(
+        document.documentElement.getAttribute("data-theme") === "light",
+      );
     };
     update();
 
     const observer = new MutationObserver(update);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-accent', 'data-theme'],
+      attributeFilter: ["data-accent", "data-theme"],
     });
 
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(mq.matches);
-    const handleMotion = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mq.addEventListener('change', handleMotion);
+    const handleMotion = (e: MediaQueryListEvent) =>
+      setReducedMotion(e.matches);
+    mq.addEventListener("change", handleMotion);
 
     // IntersectionObserver: pause rendering when not in viewport
     const io = new IntersectionObserver(
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
       },
-      { threshold: 0 }
+      { threshold: 0 },
     );
     if (containerRef.current) io.observe(containerRef.current);
 
@@ -287,29 +296,27 @@ export function SupportBackground() {
         // Restore visibility based on intersection
         if (containerRef.current) {
           const rect = containerRef.current.getBoundingClientRect();
-          setIsVisible(
-            rect.top < window.innerHeight && rect.bottom > 0
-          );
+          setIsVisible(rect.top < window.innerHeight && rect.bottom > 0);
         }
       }
     };
-    document.addEventListener('visibilitychange', handleVisibility);
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       observer.disconnect();
-      mq.removeEventListener('change', handleMotion);
+      mq.removeEventListener("change", handleMotion);
       io.disconnect();
-      document.removeEventListener('visibilitychange', handleVisibility);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 
-  const frameLoop = reducedMotion || !isVisible ? 'never' : 'always';
+  const frameLoop = reducedMotion || !isVisible ? "never" : "always";
 
   return (
     <div
       ref={containerRef}
       className="fixed inset-0 z-0"
-      style={{ pointerEvents: 'none' }}
+      style={{ pointerEvents: "none" }}
     >
       {reducedMotion || !webglSupported ? (
         <div
@@ -322,15 +329,21 @@ export function SupportBackground() {
         />
       ) : (
         <Canvas
-          dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)]}
+          dpr={[
+            1,
+            Math.min(
+              typeof window !== "undefined" ? window.devicePixelRatio : 1,
+              1.5,
+            ),
+          ]}
           camera={{ position: [0, 0, 1] }}
           frameloop={frameLoop}
           gl={{
             antialias: false,
-            powerPreference: 'high-performance',
+            powerPreference: "high-performance",
             alpha: false,
           }}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         >
           <AuroraPlane primaryColor={color} isLight={isLight} />
         </Canvas>

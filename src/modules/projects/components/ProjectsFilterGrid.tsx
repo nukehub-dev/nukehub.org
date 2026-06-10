@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Tag, ArrowUpRight } from 'lucide-react';
-import { Badge } from '@components/ui/Badge';
-import { SearchInput } from '@components/ui/SearchInput';
-import { viewportOnce } from '@lib/animations';
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Tag, ArrowUpRight } from "lucide-react";
+import { Badge } from "@components/ui/Badge";
+import { SearchInput } from "@components/ui/SearchInput";
+import { viewportOnce } from "@lib/animations";
 
 export interface Project {
   title: string;
@@ -21,7 +21,7 @@ interface ProjectsFilterGridProps {
 }
 
 export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
   // Extract all unique tags
@@ -38,7 +38,9 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
         !searchQuery ||
         project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        project.tags?.some((t) =>
+          t.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
 
       const matchesTag = !activeTag || project.tags?.includes(activeTag);
 
@@ -64,7 +66,7 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
               </h2>
               <p className="mt-2 text-muted-foreground">
                 {filteredProjects.length} of {projects.length} projects
-                {activeTag ? ` tagged "${activeTag}"` : ''}
+                {activeTag ? ` tagged "${activeTag}"` : ""}
               </p>
             </div>
 
@@ -72,7 +74,7 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
               <SearchInput
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onClear={() => setSearchQuery('')}
+                onClear={() => setSearchQuery("")}
                 placeholder="Search projects..."
               />
             </div>
@@ -85,8 +87,8 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
               onClick={() => setActiveTag(null)}
               className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
                 !activeTag
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               }`}
             >
               All
@@ -97,8 +99,8 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                 onClick={() => setActiveTag(tag === activeTag ? null : tag)}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
                   tag === activeTag
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`}
               >
                 {tag}
@@ -146,7 +148,11 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                 <div className="flex flex-1 flex-col p-5">
                   <div className="mb-3 flex flex-wrap gap-1.5">
                     {project.tags?.map((tag) => (
-                      <Badge key={tag} variant="default" className="text-[10px]">
+                      <Badge
+                        key={tag}
+                        variant="default"
+                        className="text-[10px]"
+                      >
                         {tag}
                       </Badge>
                     ))}
@@ -161,16 +167,12 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                   </p>
 
                   <div className="mt-5 flex items-center gap-3">
-                    <span
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
-                    >
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
                       View Details
                       <ArrowUpRight size={12} />
                     </span>
-                    <span
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-muted-foreground"
-                    >
-                      {project.tags?.[0] || 'Project'}
+                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-muted-foreground">
+                      {project.tags?.[0] || "Project"}
                     </span>
                   </div>
                 </div>
@@ -186,8 +188,13 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
             animate={{ opacity: 1 }}
             className="py-20 text-center"
           >
-            <Search size={48} className="mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="text-lg font-semibold text-foreground">No projects found</h3>
+            <Search
+              size={48}
+              className="mx-auto mb-4 text-muted-foreground/50"
+            />
+            <h3 className="text-lg font-semibold text-foreground">
+              No projects found
+            </h3>
             <p className="mt-2 text-muted-foreground">
               Try adjusting your search or filters.
             </p>

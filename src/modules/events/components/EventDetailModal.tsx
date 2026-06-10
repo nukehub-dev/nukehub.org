@@ -1,10 +1,20 @@
-import * as React from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Calendar, Clock, Users, Mail, Link2, ArrowUpRight, Video } from 'lucide-react';
-import { Badge } from '@components/ui/Badge';
-import { cn } from '@lib/utils';
-import type { CalendarEvent } from '@modules/events/types';
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X,
+  MapPin,
+  Calendar,
+  Clock,
+  Users,
+  Mail,
+  Link2,
+  ArrowUpRight,
+  Video,
+} from "lucide-react";
+import { Badge } from "@components/ui/Badge";
+import { cn } from "@lib/utils";
+import type { CalendarEvent } from "@modules/events/types";
 
 // ============================================================================
 // Date formatting helper
@@ -12,14 +22,14 @@ import type { CalendarEvent } from '@modules/events/types';
 
 function formatDateTime(iso: string): string {
   const date = new Date(iso);
-  return date.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZoneName: 'short',
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
   });
 }
 
@@ -34,22 +44,22 @@ function formatTimeRange(start: string, end?: string): string {
     startDate.getDate() === endDate.getDate();
 
   if (sameDay) {
-    const startStr = startDate.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
+    const startStr = startDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
     });
-    const endStr = endDate.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
+    const endStr = endDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
     });
-    return `${startDate.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
+    return `${startDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
     })} · ${startStr} – ${endStr}`;
   }
 
-  return `${formatDateTime(start)}${end ? ' – ' + formatDateTime(end) : ''}`;
+  return `${formatDateTime(start)}${end ? " – " + formatDateTime(end) : ""}`;
 }
 
 // ============================================================================
@@ -68,17 +78,19 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
   React.useEffect(() => {
     if (!mounted || !event) return;
     const original = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = original; };
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
   }, [mounted, event]);
 
   React.useEffect(() => {
     if (!mounted || !event) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [mounted, event, onClose]);
 
   if (!mounted) return null;
@@ -105,19 +117,21 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
           {/* Modal */}
           <motion.div
             className={cn(
-              'bubble relative w-full max-w-lg overflow-hidden',
-              'max-h-[85vh] flex flex-col'
+              "bubble relative w-full max-w-lg overflow-hidden",
+              "max-h-[85vh] flex flex-col",
             )}
             initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 8 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+            transition={{ type: "spring", stiffness: 400, damping: 32 }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top color bar */}
             <div
               className="h-1.5 w-full shrink-0"
-              style={{ backgroundColor: event.backgroundColor || 'var(--primary)' }}
+              style={{
+                backgroundColor: event.backgroundColor || "var(--primary)",
+              }}
             />
 
             {/* Close button */}
@@ -253,9 +267,9 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
-                        'inline-flex items-center gap-2 rounded-lg px-4 py-2',
-                        'bg-primary text-primary-foreground text-sm font-medium',
-                        'hover:brightness-110 transition-all shadow-sm'
+                        "inline-flex items-center gap-2 rounded-lg px-4 py-2",
+                        "bg-primary text-primary-foreground text-sm font-medium",
+                        "hover:brightness-110 transition-all shadow-sm",
                       )}
                     >
                       <Video size={15} />
@@ -269,11 +283,11 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
-                        'inline-flex items-center gap-2 rounded-lg px-4 py-2',
+                        "inline-flex items-center gap-2 rounded-lg px-4 py-2",
                         event.meetingUrl
-                          ? 'bg-muted text-foreground hover:bg-accent border border-border'
-                          : 'bg-primary text-primary-foreground hover:brightness-110 shadow-sm',
-                        'text-sm font-medium transition-all'
+                          ? "bg-muted text-foreground hover:bg-accent border border-border"
+                          : "bg-primary text-primary-foreground hover:brightness-110 shadow-sm",
+                        "text-sm font-medium transition-all",
                       )}
                     >
                       <Link2 size={15} />
@@ -284,12 +298,12 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
                   {event.organizer && event.organizer[0] && (
                     <a
                       href={`mailto:${event.organizer[0].email}?subject=${encodeURIComponent(
-                        `Question about: ${event.title}`
+                        `Question about: ${event.title}`,
                       )}`}
                       className={cn(
-                        'inline-flex items-center gap-2 rounded-lg px-4 py-2',
-                        'bg-muted text-foreground text-sm font-medium',
-                        'hover:bg-accent transition-colors border border-border'
+                        "inline-flex items-center gap-2 rounded-lg px-4 py-2",
+                        "bg-muted text-foreground text-sm font-medium",
+                        "hover:bg-accent transition-colors border border-border",
                       )}
                     >
                       <Mail size={15} />
@@ -303,6 +317,6 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }

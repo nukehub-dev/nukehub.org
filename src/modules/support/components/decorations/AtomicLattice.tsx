@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion, useReducedMotion } from 'framer-motion';
-import { useMemo } from 'react';
+import { motion, useReducedMotion } from "framer-motion";
+import { useMemo } from "react";
 
 interface Node {
   id: number;
@@ -24,7 +24,7 @@ function mulberry32(seed: number) {
   };
 }
 
-export function AtomicLattice({ className = '' }: { className?: string }) {
+export function AtomicLattice({ className = "" }: { className?: string }) {
   const shouldReduceMotion = useReducedMotion();
 
   const nodes = useMemo(() => {
@@ -42,23 +42,36 @@ export function AtomicLattice({ className = '' }: { className?: string }) {
   }, []);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
-      <svg className="w-full h-full opacity-20 dark:opacity-15" xmlns="http://www.w3.org/2000/svg">
+    <div
+      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+    >
+      <svg
+        className="w-full h-full opacity-20 dark:opacity-15"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         {nodes.map((node, i) => (
           <motion.g
             key={node.id}
             initial={{ opacity: 0 }}
-            animate={shouldReduceMotion ? { opacity: 0.25 } : {
-              opacity: [0.15, 0.35, 0.15],
-              x: [0, node.offsetX, 0],
-              y: [0, node.offsetY, 0],
-            }}
-            transition={shouldReduceMotion ? undefined : {
-              duration: node.duration,
-              repeat: Infinity,
-              delay: node.delay,
-              ease: 'easeInOut',
-            }}
+            animate={
+              shouldReduceMotion
+                ? { opacity: 0.25 }
+                : {
+                    opacity: [0.15, 0.35, 0.15],
+                    x: [0, node.offsetX, 0],
+                    y: [0, node.offsetY, 0],
+                  }
+            }
+            transition={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    duration: node.duration,
+                    repeat: Infinity,
+                    delay: node.delay,
+                    ease: "easeInOut",
+                  }
+            }
           >
             {nodes.slice(i + 1, i + 2).map((other) => (
               <line

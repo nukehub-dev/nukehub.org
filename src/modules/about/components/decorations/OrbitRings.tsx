@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from "framer-motion";
 
-export function OrbitRings({ className = '' }: { className?: string }) {
+export function OrbitRings({ className = "" }: { className?: string }) {
   const shouldReduceMotion = useReducedMotion();
 
   const rings = [
@@ -12,7 +12,9 @@ export function OrbitRings({ className = '' }: { className?: string }) {
   ];
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+    <div
+      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+    >
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         {rings.map((ring, i) => (
           <motion.div
@@ -26,33 +28,49 @@ export function OrbitRings({ className = '' }: { className?: string }) {
               opacity: ring.opacity,
               borderWidth: ring.strokeWidth,
             }}
-            animate={shouldReduceMotion ? undefined : {
-              rotate: [0, 360],
-            }}
-            transition={shouldReduceMotion ? undefined : {
-              duration: ring.duration,
-              delay: ring.delay,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    rotate: [0, 360],
+                  }
+            }
+            transition={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    duration: ring.duration,
+                    delay: ring.delay,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }
+            }
           >
             {/* Orbiting dot */}
             <motion.div
               className="absolute w-1.5 h-1.5 rounded-full bg-primary"
               style={{
                 top: -3,
-                left: '50%',
+                left: "50%",
                 marginLeft: -3,
               }}
-              animate={shouldReduceMotion ? undefined : {
-                scale: [1, 1.5, 1],
-                opacity: [0.4, 0.8, 0.4],
-              }}
-              transition={shouldReduceMotion ? undefined : {
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
+              animate={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      scale: [1, 1.5, 1],
+                      opacity: [0.4, 0.8, 0.4],
+                    }
+              }
+              transition={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }
+              }
             />
           </motion.div>
         ))}
@@ -61,8 +79,9 @@ export function OrbitRings({ className = '' }: { className?: string }) {
         <div
           className="absolute w-32 h-32 rounded-full -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 opacity-10"
           style={{
-            background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)',
-            filter: 'blur(20px)',
+            background:
+              "radial-gradient(circle, var(--primary) 0%, transparent 70%)",
+            filter: "blur(20px)",
           }}
         />
       </div>

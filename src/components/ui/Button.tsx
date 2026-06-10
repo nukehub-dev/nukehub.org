@@ -1,37 +1,42 @@
-import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@lib/utils';
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@lib/utils";
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap ' +
-  'transition-all duration-100 hover:-translate-y-[1px] active:translate-y-[1px] ' +
-  'disabled:pointer-events-none disabled:opacity-50 ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
+  "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap " +
+    "transition-all duration-100 hover:-translate-y-[1px] active:translate-y-[1px] " +
+    "disabled:pointer-events-none disabled:opacity-50 " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:brightness-110',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:brightness-110',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:brightness-110',
+        default:
+          "bg-primary text-primary-foreground hover:bg-primary/90 hover:brightness-110",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:brightness-110",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:brightness-110",
       },
       size: {
-        default: 'h-9 px-4 py-2',
-        sm: 'h-8 rounded-md px-3',
-        lg: 'h-10 rounded-md px-5',
-        icon: 'h-9 w-9',
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3",
+        lg: "h-10 rounded-md px-5",
+        icon: "h-9 w-9",
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: "default",
+      size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   loading?: boolean;
 }
@@ -40,7 +45,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, loading = false, children, ...props }, ref) => {
     return (
       <button
-        className={cn(buttonVariants({ variant, size, className }), 'relative overflow-hidden')}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          "relative overflow-hidden",
+        )}
         ref={ref}
         disabled={props.disabled || loading}
         {...props}
@@ -69,13 +77,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </svg>
           </span>
         )}
-        <span className={cn('inline-flex items-center gap-2', loading && 'opacity-0')}>
+        <span
+          className={cn(
+            "inline-flex items-center gap-2",
+            loading && "opacity-0",
+          )}
+        >
           {children}
         </span>
       </button>
     );
-  }
+  },
 );
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export { Button, buttonVariants };

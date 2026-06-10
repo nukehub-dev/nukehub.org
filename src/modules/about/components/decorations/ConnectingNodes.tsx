@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion, useReducedMotion } from 'framer-motion';
-import { useMemo } from 'react';
+import { motion, useReducedMotion } from "framer-motion";
+import { useMemo } from "react";
 
 function mulberry32(seed: number) {
   return function () {
@@ -21,7 +21,7 @@ interface Node {
   delay: number;
 }
 
-export function ConnectingNodes({ className = '' }: { className?: string }) {
+export function ConnectingNodes({ className = "" }: { className?: string }) {
   const shouldReduceMotion = useReducedMotion();
 
   const nodes = useMemo(() => {
@@ -38,7 +38,13 @@ export function ConnectingNodes({ className = '' }: { className?: string }) {
 
   // Create connections between nearby nodes
   const connections = useMemo(() => {
-    const conns: { x1: number; y1: number; x2: number; y2: number; opacity: number }[] = [];
+    const conns: {
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+      opacity: number;
+    }[] = [];
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const dx = nodes[i].x - nodes[j].x;
@@ -59,7 +65,9 @@ export function ConnectingNodes({ className = '' }: { className?: string }) {
   }, [nodes]);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+    <div
+      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+    >
       <svg className="w-full h-full">
         {connections.map((conn, i) => (
           <line
@@ -84,16 +92,24 @@ export function ConnectingNodes({ className = '' }: { className?: string }) {
             fill="currentColor"
             className="text-primary"
             style={{ opacity: 0.2 }}
-            animate={shouldReduceMotion ? undefined : {
-              opacity: [0.15, 0.35, 0.15],
-              r: [node.size, node.size * 1.3, node.size],
-            }}
-            transition={shouldReduceMotion ? undefined : {
-              duration: node.duration,
-              delay: node.delay,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    opacity: [0.15, 0.35, 0.15],
+                    r: [node.size, node.size * 1.3, node.size],
+                  }
+            }
+            transition={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    duration: node.duration,
+                    delay: node.delay,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }
+            }
           />
         ))}
       </svg>

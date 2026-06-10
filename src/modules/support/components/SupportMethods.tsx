@@ -1,6 +1,12 @@
-import { motion } from 'framer-motion';
-import { fadeInUp, staggerContainer, viewportOnce } from '@lib/animations';
-import { Banknote, Server, HandHeart, Circle, type LucideIcon } from 'lucide-react';
+import { motion } from "framer-motion";
+import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
+import {
+  Banknote,
+  Server,
+  HandHeart,
+  Circle,
+  type LucideIcon,
+} from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
   Banknote,
@@ -39,7 +45,8 @@ export function SupportMethods({ methods, onContactClick }: Props) {
             How to Support Us
           </h2>
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-            Choose the way that works best for you — every form of support makes a difference.
+            Choose the way that works best for you — every form of support makes
+            a difference.
           </p>
         </motion.div>
 
@@ -58,7 +65,9 @@ export function SupportMethods({ methods, onContactClick }: Props) {
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon size={22} />
                   </div>
-                  <h3 className="mt-4 text-lg font-medium text-foreground">{method.title}</h3>
+                  <h3 className="mt-4 text-lg font-medium text-foreground">
+                    {method.title}
+                  </h3>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">
                     {method.description}
                   </p>

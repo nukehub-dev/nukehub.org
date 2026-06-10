@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
-import { fadeInUp, viewportOnce } from '@lib/animations';
-import { Mail, ArrowRight, Circle, type LucideIcon } from 'lucide-react';
+import { motion } from "framer-motion";
+import { fadeInUp, viewportOnce } from "@lib/animations";
+import { Mail, ArrowRight, Circle, type LucideIcon } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
   Mail,
@@ -21,9 +21,17 @@ function resolveIcon(name: string): LucideIcon {
   return iconMap[name] || Circle;
 }
 
-export function ContactCTA({ title, description, icon = 'Mail', primaryText, secondaryText, secondaryHref, onContactClick }: Props) {
+export function ContactCTA({
+  title,
+  description,
+  icon = "Mail",
+  primaryText,
+  secondaryText,
+  secondaryHref,
+  onContactClick,
+}: Props) {
   const Icon = resolveIcon(icon);
-  const PrimaryIcon = resolveIcon('ArrowRight');
+  const PrimaryIcon = resolveIcon("ArrowRight");
 
   return (
     <motion.div
@@ -37,7 +45,8 @@ export function ContactCTA({ title, description, icon = 'Mail', primaryText, sec
         <div
           className="absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-40"
           style={{
-            background: 'radial-gradient(circle, color-mix(in oklch, var(--primary) 30%, transparent) 0%, transparent 70%)',
+            background:
+              "radial-gradient(circle, color-mix(in oklch, var(--primary) 30%, transparent) 0%, transparent 70%)",
           }}
         />
 

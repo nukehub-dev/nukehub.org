@@ -1,16 +1,17 @@
-import * as React from 'react';
-import { EventCalendar } from './EventCalendar';
-import { UpcomingHighlight } from './UpcomingHighlight';
-import { EventList } from './EventList';
-import { EventDetailModal } from './EventDetailModal';
-import type { CalendarEvent } from '@modules/events/types';
+import * as React from "react";
+import { EventCalendar } from "./EventCalendar";
+import { UpcomingHighlight } from "./UpcomingHighlight";
+import { EventList } from "./EventList";
+import { EventDetailModal } from "./EventDetailModal";
+import type { CalendarEvent } from "@modules/events/types";
 
 interface EventsContainerProps {
   events: CalendarEvent[];
 }
 
 export function EventsContainer({ events }: EventsContainerProps) {
-  const [selectedEvent, setSelectedEvent] = React.useState<CalendarEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] =
+    React.useState<CalendarEvent | null>(null);
 
   return (
     <div className="space-y-8">
@@ -26,7 +27,10 @@ export function EventsContainer({ events }: EventsContainerProps) {
       <EventList events={events} onEventClick={setSelectedEvent} />
 
       {/* Shared detail modal */}
-      <EventDetailModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+      <EventDetailModal
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
     </div>
   );
 }

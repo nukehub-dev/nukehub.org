@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type RefObject } from 'react';
+import { useState, useEffect, useRef, type RefObject } from "react";
 
 interface VisibilityState {
   inViewport: boolean;
@@ -14,7 +14,7 @@ interface VisibilityState {
  */
 export function useCanvasVisibility(
   anchorId: string,
-  options?: { rootMargin?: string; threshold?: number }
+  options?: { rootMargin?: string; threshold?: number },
 ): boolean {
   const [state, setState] = useState<VisibilityState>({
     inViewport: false,
@@ -34,20 +34,20 @@ export function useCanvasVisibility(
         setState((s) => ({ ...s, inViewport: entry.isIntersecting }));
       },
       {
-        rootMargin: options?.rootMargin ?? '-20%',
+        rootMargin: options?.rootMargin ?? "-20%",
         threshold: options?.threshold ?? 0,
-      }
+      },
     );
     observerRef.current.observe(el);
 
     const handleTab = () => {
       setState((s) => ({ ...s, tabActive: !document.hidden }));
     };
-    document.addEventListener('visibilitychange', handleTab);
+    document.addEventListener("visibilitychange", handleTab);
 
     return () => {
       observerRef.current?.disconnect();
-      document.removeEventListener('visibilitychange', handleTab);
+      document.removeEventListener("visibilitychange", handleTab);
     };
   }, [anchorId, options?.rootMargin, options?.threshold]);
 

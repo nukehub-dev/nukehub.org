@@ -1,10 +1,16 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
-import { Button } from '@components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/Card';
-import { Badge } from '@components/ui/Badge';
-import { Mail, ArrowRight } from 'lucide-react';
-import { BrandIcon } from '@components/ui/BrandIcon';
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Button } from "@components/ui/Button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@components/ui/Card";
+import { Badge } from "@components/ui/Badge";
+import { Mail, ArrowRight } from "lucide-react";
+import { BrandIcon } from "@components/ui/BrandIcon";
 ---
 
 <BaseLayout
@@ -13,27 +19,44 @@ import { BrandIcon } from '@components/ui/BrandIcon';
   permalink="/debug/sandbox"
 >
   <main class="min-h-screen px-6 py-16 max-w-5xl mx-auto space-y-20">
-
     <!-- Typography -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Typography</h2>
+      <h2
+        class="text-sm font-mono uppercase tracking-widest text-muted-foreground"
+      >
+        Typography
+      </h2>
       <div class="space-y-4">
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-foreground">Display H1</h1>
-        <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-foreground">Heading H2</h2>
-        <h3 class="text-2xl md:text-3xl font-semibold text-foreground">Heading H3</h3>
+        <h1
+          class="text-5xl md:text-7xl font-bold tracking-tight text-foreground"
+        >
+          Display H1
+        </h1>
+        <h2
+          class="text-4xl md:text-5xl font-semibold tracking-tight text-foreground"
+        >
+          Heading H2
+        </h2>
+        <h3 class="text-2xl md:text-3xl font-semibold text-foreground">
+          Heading H3
+        </h3>
         <p class="text-lg leading-relaxed max-w-2xl text-foreground">
-          Body text uses Geist at 16–18px with relaxed line-height for comfortable reading.
-          The quick brown fox jumps over the lazy dog.
+          Body text uses Geist at 16–18px with relaxed line-height for
+          comfortable reading. The quick brown fox jumps over the lazy dog.
         </p>
         <p class="font-mono text-sm text-muted-foreground">
-          Mono text: const nucleus = {'{ protons: 92, neutrons: 146 }'};
+          Mono text: const nucleus = {"{ protons: 92, neutrons: 146 }"};
         </p>
       </div>
     </section>
 
     <!-- Buttons -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Buttons</h2>
+      <h2
+        class="text-sm font-mono uppercase tracking-widest text-muted-foreground"
+      >
+        Buttons
+      </h2>
       <div class="flex flex-wrap gap-4 items-center">
         <Button client:load>Default</Button>
         <Button client:load variant="secondary">Secondary</Button>
@@ -45,7 +68,9 @@ import { BrandIcon } from '@components/ui/BrandIcon';
         <Button client:load size="sm">Small</Button>
         <Button client:load size="default">Default</Button>
         <Button client:load size="lg">Large</Button>
-        <Button client:load size="icon"><ArrowRight className="h-4 w-4" /></Button>
+        <Button client:load size="icon"
+          ><ArrowRight className="h-4 w-4" /></Button
+        >
       </div>
       <div class="flex flex-wrap gap-4 items-center">
         <Button client:load loading>Loading</Button>
@@ -55,35 +80,51 @@ import { BrandIcon } from '@components/ui/BrandIcon';
 
     <!-- Cards -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Cards</h2>
+      <h2
+        class="text-sm font-mono uppercase tracking-widest text-muted-foreground"
+      >
+        Cards
+      </h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Default Card</CardTitle>
-            <CardDescription>Standard elevated card with border.</CardDescription>
+            <CardDescription
+              >Standard elevated card with border.</CardDescription
+            >
           </CardHeader>
           <CardContent>
-            <p class="text-sm text-muted-foreground">Uses bg-card and border-border/50 tokens.</p>
+            <p class="text-sm text-muted-foreground">
+              Uses bg-card and border-border/50 tokens.
+            </p>
           </CardContent>
         </Card>
 
         <Card variant="bubble">
           <CardHeader>
             <CardTitle>Bubble Card</CardTitle>
-            <CardDescription>Glassmorphism with radial gradient tint.</CardDescription>
+            <CardDescription
+              >Glassmorphism with radial gradient tint.</CardDescription
+            >
           </CardHeader>
           <CardContent>
-            <p class="text-sm text-muted-foreground">Uses the .bubble utility from NukeLab.</p>
+            <p class="text-sm text-muted-foreground">
+              Uses the .bubble utility from NukeLab.
+            </p>
           </CardContent>
         </Card>
 
         <Card variant="outlined">
           <CardHeader>
             <CardTitle>Outlined Card</CardTitle>
-            <CardDescription>Transparent background, visible border.</CardDescription>
+            <CardDescription
+              >Transparent background, visible border.</CardDescription
+            >
           </CardHeader>
           <CardContent>
-            <p class="text-sm text-muted-foreground">Minimal card for secondary content.</p>
+            <p class="text-sm text-muted-foreground">
+              Minimal card for secondary content.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -91,7 +132,11 @@ import { BrandIcon } from '@components/ui/BrandIcon';
 
     <!-- Badges -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Badges</h2>
+      <h2
+        class="text-sm font-mono uppercase tracking-widest text-muted-foreground"
+      >
+        Badges
+      </h2>
       <div class="flex flex-wrap gap-3">
         <Badge>Default</Badge>
         <Badge variant="secondary">Secondary</Badge>
@@ -102,7 +147,11 @@ import { BrandIcon } from '@components/ui/BrandIcon';
 
     <!-- Icons -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Icons</h2>
+      <h2
+        class="text-sm font-mono uppercase tracking-widest text-muted-foreground"
+      >
+        Icons
+      </h2>
       <div class="flex flex-wrap gap-4 text-muted-foreground">
         <div class="flex items-center gap-2 text-sm">
           <BrandIcon name="github" size={20} />
@@ -122,24 +171,36 @@ import { BrandIcon } from '@components/ui/BrandIcon';
         </div>
       </div>
       <p class="text-sm text-muted-foreground">
-        React components <code class="font-mono">Icon</code> and <code class="font-mono">SocialIcon</code> are available in <code class="font-mono">src/components/ui/</code>.
+        React components <code class="font-mono">Icon</code> and <code
+          class="font-mono">SocialIcon</code
+        > are available in <code class="font-mono">src/components/ui/</code>.
       </p>
     </section>
 
     <!-- Semantic Tokens -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Semantic Tokens</h2>
+      <h2
+        class="text-sm font-mono uppercase tracking-widest text-muted-foreground"
+      >
+        Semantic Tokens
+      </h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="h-24 rounded-xl border p-4 text-sm bg-background border-border text-foreground">
+        <div
+          class="h-24 rounded-xl border p-4 text-sm bg-background border-border text-foreground"
+        >
           background
         </div>
-        <div class="h-24 rounded-xl border p-4 text-sm bg-card border-border/50 text-card-foreground shadow-sm">
+        <div
+          class="h-24 rounded-xl border p-4 text-sm bg-card border-border/50 text-card-foreground shadow-sm"
+        >
           card
         </div>
         <div class="h-24 rounded-xl p-4 text-sm bg-muted text-muted-foreground">
           muted
         </div>
-        <div class="h-24 rounded-xl p-4 text-sm bg-primary text-primary-foreground">
+        <div
+          class="h-24 rounded-xl p-4 text-sm bg-primary text-primary-foreground"
+        >
           primary
         </div>
       </div>
@@ -147,29 +208,42 @@ import { BrandIcon } from '@components/ui/BrandIcon';
 
     <!-- Animation Demo -->
     <section class="space-y-6">
-      <h2 class="text-sm font-mono uppercase tracking-widest text-muted-foreground">Animation Presets</h2>
+      <h2
+        class="text-sm font-mono uppercase tracking-widest text-muted-foreground"
+      >
+        Animation Presets
+      </h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="p-4 rounded-xl border text-center text-sm border-border">
-          <code class="font-mono text-xs text-muted-foreground block mb-2">fadeIn</code>
-          <div class="h-8 rounded bg-primary/20" />
+          <code class="font-mono text-xs text-muted-foreground block mb-2"
+            >fadeIn</code
+          >
+          <div class="h-8 rounded bg-primary/20"></div>
         </div>
         <div class="p-4 rounded-xl border text-center text-sm border-border">
-          <code class="font-mono text-xs text-muted-foreground block mb-2">fadeInUp</code>
-          <div class="h-8 rounded bg-primary/30" />
+          <code class="font-mono text-xs text-muted-foreground block mb-2"
+            >fadeInUp</code
+          >
+          <div class="h-8 rounded bg-primary/30"></div>
         </div>
         <div class="p-4 rounded-xl border text-center text-sm border-border">
-          <code class="font-mono text-xs text-muted-foreground block mb-2">spring</code>
-          <div class="h-8 rounded bg-primary/40" />
+          <code class="font-mono text-xs text-muted-foreground block mb-2"
+            >spring</code
+          >
+          <div class="h-8 rounded bg-primary/40"></div>
         </div>
         <div class="p-4 rounded-xl border text-center text-sm border-border">
-          <code class="font-mono text-xs text-muted-foreground block mb-2">stagger</code>
-          <div class="h-8 rounded bg-primary/50" />
+          <code class="font-mono text-xs text-muted-foreground block mb-2"
+            >stagger</code
+          >
+          <div class="h-8 rounded bg-primary/50"></div>
         </div>
       </div>
       <p class="text-sm text-muted-foreground">
-        Framer Motion variants are defined in <code class="font-mono">src/lib/animations.ts</code>.
+        Framer Motion variants are defined in <code class="font-mono"
+          >src/lib/animations.ts</code
+        >.
       </p>
     </section>
-
   </main>
 </BaseLayout>
