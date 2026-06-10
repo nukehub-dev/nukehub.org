@@ -63,6 +63,9 @@ function HexGrid({
 
         if (dist > 5.5) continue;
 
+        // Cut corners for an octagonal shape
+        if (Math.abs(x) > 3.5 && Math.abs(y) > 2.0) continue;
+
         const distFade = 1 - smoothstep(2, 5, dist);
         const isActive = Math.random() > 0.92;
 
