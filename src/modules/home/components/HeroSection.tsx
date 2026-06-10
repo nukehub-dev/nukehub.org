@@ -27,22 +27,25 @@ export function HeroSection({ data }: HeroSectionProps) {
             <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-4 pt-24 pb-8 sm:pt-28 sm:pb-12 lg:pt-32">
                 <div className="flex w-full flex-col items-center text-center">
                     {/* Badge */}
-                    <div className="animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-                        <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-md sm:mb-8">
-                            {badge.showLiveDot && (
-                                <span className="relative flex h-2 w-2">
-                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-                                    <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-                                </span>
-                            )}
-                            {badge.text}
-                        </span>
-                    </div>
+                    <span
+                        className="animate-fade-in-up mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-md sm:mb-8"
+                        style={{ animationDelay: "0.1s" }}
+                    >
+                        {badge.showLiveDot && (
+                            <span className="relative flex h-2 w-2">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+                            </span>
+                        )}
+                        {badge.text}
+                    </span>
 
                     {/* Headline */}
                     <h1 className="perspective-text max-w-5xl text-5xl font-extrabold tracking-tighter text-foreground sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl">
                         <span className="block">
-                            <span className="inline-block">{headline.line1.prefix}</span>{" "}
+                            <span className="inline-block">
+                                {headline.line1.prefix}
+                            </span>{" "}
                             <span className="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block">
                                 {headline.line1.highlight}
                             </span>
@@ -85,6 +88,41 @@ export function HeroSection({ data }: HeroSectionProps) {
                                 </a>
                             );
                         })}
+                    </div>
+
+                    {/* Scroll Indicator */}
+                    <div
+                        className="mt-12 animate-fade-in-up"
+                        style={{ animationDelay: "1.2s" }}
+                    >
+                        <button
+                            onClick={() => {
+                                const nextSection = document.querySelector('.snap-section:nth-of-type(2)');
+                                nextSection?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className="group flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
+                            aria-label="Scroll down to explore more"
+                        >
+                            <span className="text-xs font-medium tracking-wider uppercase opacity-70 group-hover:opacity-100 transition-opacity">
+                                Scroll to explore
+                            </span>
+                            <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-current/20 bg-background/50 backdrop-blur-sm transition-all group-hover:scale-110 group-hover:border-primary/40">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="animate-bounce"
+                                >
+                                    <path d="M12 5v14M19 12l-7 7-7-7" />
+                                </svg>
+                            </span>
+                        </button>
                     </div>
 
                     {/* Stats Row */}

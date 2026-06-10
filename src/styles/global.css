@@ -1036,7 +1036,7 @@ html.homepage {
 
 @media (min-width: 640px) {
     html.homepage {
-        scroll-snap-type: y mandatory;
+        scroll-snap-type: y proximity;
     }
 }
 
