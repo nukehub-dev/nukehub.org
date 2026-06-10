@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { getPrimaryColor } from '@lib/themeColors';
 import { useWebGL } from '@lib/useWebGL';
 import { useCanvasVisibility, useDelayedUnmount } from './useCanvasVisibility';
-import { NucleusScene } from './NucleusScene';
+
+const NucleusScene = lazy(() =>
+  import('./NucleusScene').then((mod) => ({ default: mod.NucleusScene }))
+);
 
 function StaticFallback() {
   const [primary, setPrimary] = useState('#f37524');
@@ -86,11 +89,13 @@ export function HeroCanvas() {
       <StaticFallback />
       {hasLoaded && shouldRender && (
         <div className="absolute inset-0 animate-fade-in">
-          <NucleusScene
-            mobile={isMobile}
-            reducedMotion={reducedMotion}
-            frameloop="always"
-          />
+          <Suspense fallback={null}>
+            <NucleusScene
+              mobile={isMobile}
+              reducedMotion={reducedMotion}
+              frameloop="always"
+            />
+          </Suspense>
         </div>
       )}
     </div>
