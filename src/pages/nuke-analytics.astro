@@ -1,0 +1,34 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { NukeAnalyticsPage } from "@modules/projects/nuke-analytics/components/NukeAnalyticsPage";
+import type { NukeAnalyticsData } from "@modules/projects/nuke-analytics/types";
+import { loadYaml } from "@lib/loadYaml";
+import { getCollection } from "astro:content";
+
+const data = loadYaml<NukeAnalyticsData>("projects/nuke-analytics/data/page.yml");
+
+const projectEntries = await getCollection("projects");
+const entry = projectEntries.find((e) => e.id === "nuke-analytics");
+
+const title = entry?.data.title ?? "NukeAnalytics";
+const description =
+  entry?.data.description ??
+  "Explore nuclear data with SQL Lab and craft insightful charts and dashboards.";
+const permalink = entry?.data.permalink ?? "/nuke-analytics";
+const image = entry?.data.image ?? "/assets/images/nuke-analytics.png";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  permalink={permalink}
+  image={image}
+>
+  <NukeAnalyticsPage
+    client:load
+    data={data}
+    title="Nuke"
+    titleHighlight="Analytics"
+    description={description}
+  />
+</BaseLayout>

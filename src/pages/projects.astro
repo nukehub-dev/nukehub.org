@@ -5,9 +5,12 @@ import { ProjectsFilterGrid } from "@modules/projects/components/ProjectsFilterG
 import { IntegrationsFilter } from "@modules/projects/components/IntegrationsFilter";
 import { getCollection } from "astro:content";
 
-// Load projects from content collection
+// Load projects from content collection and sort by order
 const projectEntries = await getCollection("projects");
-const projects = projectEntries.map((entry) => ({
+const sortedEntries = projectEntries.sort(
+  (a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity)
+);
+const projects = sortedEntries.map((entry) => ({
   title: entry.data.title,
   description: entry.data.description || "",
   url: entry.data.url || "",

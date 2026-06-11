@@ -1,0 +1,34 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { NrmsPage } from "@modules/projects/nrms/components/NrmsPage";
+import type { NrmsData } from "@modules/projects/nrms/types";
+import { loadYaml } from "@lib/loadYaml";
+import { getCollection } from "astro:content";
+
+const data = loadYaml<NrmsData>("projects/nrms/data/page.yml");
+
+const projectEntries = await getCollection("projects");
+const entry = projectEntries.find((e) => e.id === "nrms");
+
+const title = entry?.data.title ?? "NRMS";
+const description =
+  entry?.data.description ??
+  "Access the PRIS database and visualize nuclear reactor data.";
+const permalink = entry?.data.permalink ?? "/nrms";
+const image = entry?.data.image ?? "/assets/images/nrms-overview.png";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  permalink={permalink}
+  image={image}
+>
+  <NrmsPage
+    client:load
+    data={data}
+    title=""
+    titleHighlight="NRMS"
+    description={description}
+  />
+</BaseLayout>

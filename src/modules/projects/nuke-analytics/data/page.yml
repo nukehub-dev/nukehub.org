@@ -1,0 +1,64 @@
+hero:
+  badge:
+    text: "Data Analytics Platform"
+    icon: "BarChart3"
+  ctas:
+    - text: "Try NukeAnalytics"
+      href: "https://analytics.nukehub.org"
+      variant: "primary"
+      icon: "external"
+      external: true
+    - text: "View on GitHub"
+      href: "https://github.com/nukehub-dev/nukeanalytics"
+      variant: "secondary"
+      icon: "github"
+      external: true
+  heroImage: "/assets/images/nuke-analytics.png"
+  heroImageAlt: "NukeAnalytics dashboard showing nuclear data visualizations"
+
+features:
+  title: "Powered by Apache Superset"
+  description: "Explore nuclear data with SQL Lab, craft insightful charts, and build interactive dashboards."
+  items:
+    - icon: "BarChart3"
+      title: "Rich Visualizations"
+      description: "Diverse set of charts, graphs, tables, and maps powered by D3.js and Plotly."
+      color: "amber"
+    - icon: "LayoutDashboard"
+      title: "Interactive Dashboards"
+      description: "Drag-and-drop canvas for building dynamic dashboards with multiple charts and filters."
+      color: "emerald"
+    - icon: "Database"
+      title: "SQL Lab"
+      description: "Write SQL queries directly within the interface for flexible data exploration and analysis."
+      color: "sky"
+    - icon: "Table"
+      title: "Custom Datasets"
+      description: "Add custom tables and datasets alongside the built-in PRIS nuclear reactor database."
+      color: "violet"
+
+dataSources:
+  title: "Data Sources"
+  description: "NukeAnalytics connects to authoritative nuclear data sources."
+  items:
+    - name: "Power Reactor Information System"
+      url: "https://pris.iaea.org/"
+      description: "IAEA's comprehensive database of nuclear power reactors worldwide."
+    - name: "Reference Data Series No. 1"
+      url: "https://www.iaea.org/publications/15268/energy-electricity-and-nuclear-power-estimates-for-the-period-up-to-2050"
+      description: "Energy, electricity, and nuclear power estimates through 2050."
+    - name: "Reference Data Series No. 2"
+      url: "https://www.iaea.org/publications/15211/nuclear-power-reactors-in-the-world"
+      description: "Comprehensive data on nuclear power reactors globally."
+
+cta:
+  title: "Start Analyzing Nuclear Data"
+  description: "Connect to the PRIS database and uncover insights with interactive visualizations."
+  primary:
+    text: "Try NukeAnalytics"
+    href: "https://analytics.nukehub.org"
+    icon: "external"
+  secondary:
+    text: "GitHub"
+    href: "https://github.com/nukehub-dev/nukeanalytics"
+    icon: "github"

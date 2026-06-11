@@ -1,0 +1,64 @@
+hero:
+  badge:
+    text: "Reactor Monitoring System"
+    icon: "Radar"
+  ctas:
+    - text: "Try NRMS"
+      href: "https://nrms.nukehub.org"
+      variant: "primary"
+      icon: "external"
+      external: true
+    - text: "View on GitHub"
+      href: "https://github.com/nukehub-dev/nrms"
+      variant: "secondary"
+      icon: "github"
+      external: true
+  heroImage: "/assets/images/nrms-overview.png"
+  heroImageAlt: "NRMS dashboard showing global nuclear reactor map and statistics"
+
+features:
+  title: "Monitor the World's Nuclear Fleet"
+  description: "Access the IAEA PRIS database and visualize nuclear reactor data in an intuitive, user-friendly interface."
+  items:
+    - icon: "Globe"
+      title: "Global Map"
+      description: "Visualize the geographical distribution of nuclear power plants worldwide for strategic planning."
+      color: "amber"
+    - icon: "TrendingUp"
+      title: "Trends & Projections"
+      description: "Explore historical statistics and future scenarios with predictive analytics."
+      color: "emerald"
+    - icon: "Scale"
+      title: "Benchmarking"
+      description: "Compare reactors operating under different conditions and assess efficiency and safety."
+      color: "sky"
+    - icon: "Table2"
+      title: "Reactor Database"
+      description: "Comprehensive list of all reactors worldwide with filtering, sorting, and detailed specs."
+      color: "violet"
+
+dataSources:
+  title: "Data Sources"
+  description: "NRMS connects to authoritative nuclear data sources."
+  items:
+    - name: "Power Reactor Information System"
+      url: "https://pris.iaea.org/"
+      description: "IAEA's comprehensive database of nuclear power reactors worldwide."
+    - name: "Reference Data Series No. 1"
+      url: "https://www.iaea.org/publications/15268/energy-electricity-and-nuclear-power-estimates-for-the-period-up-to-2050"
+      description: "Energy, electricity, and nuclear power estimates through 2050."
+    - name: "Reference Data Series No. 2"
+      url: "https://www.iaea.org/publications/15211/nuclear-power-reactors-in-the-world"
+      description: "Comprehensive data on nuclear power reactors globally."
+
+cta:
+  title: "Explore the Global Nuclear Landscape"
+  description: "Access comprehensive reactor data, visualize trends, and make informed decisions."
+  primary:
+    text: "Try NRMS"
+    href: "https://nrms.nukehub.org"
+    icon: "external"
+  secondary:
+    text: "GitHub"
+    href: "https://github.com/nukehub-dev/nrms"
+    icon: "github"

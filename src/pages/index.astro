@@ -39,9 +39,12 @@ const trustData = loadYaml<{
 }>("home/data/trust.yml");
 const ctaData = loadYaml<CTAData>("home/data/cta.yml");
 
-// Load projects from content collection
+// Load projects from content collection and sort by order
 const projectEntries = await getCollection("projects");
-const allProjects = projectEntries.map((entry) => ({
+const sortedEntries = projectEntries.sort(
+  (a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity)
+);
+const allProjects = sortedEntries.map((entry) => ({
   title: entry.data.title,
   description: entry.data.description || "",
   url: entry.data.url || "",
