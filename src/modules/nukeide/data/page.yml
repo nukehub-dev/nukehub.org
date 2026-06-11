@@ -1,0 +1,189 @@
+hero:
+  badge:
+    text: "Integrated Development Environment"
+    icon: "Code2"
+  title: "Nuke"
+  titleHighlight: "IDE"
+  subtitle: "An open-source IDE specifically designed for nuclear simulation and engineering. Built on Eclipse Theia with extensions for OpenMC, 3D visualization, and robust environment management."
+  ctas:
+    - text: "Get Started"
+      href: "#getting-started"
+      variant: "primary"
+      icon: "arrowRight"
+    - text: "View on GitHub"
+      href: "https://github.com/nukehub-dev/nuke-ide"
+      variant: "secondary"
+      icon: "github"
+      external: true
+  heroImage: "/assets/images/projects/nukeide/hero.png"
+  heroImageAlt: "NukeIDE Overview showing OpenMC Studio with tokamak visualization"
+
+stats:
+  - value: "3"
+    label: "Core Extensions"
+  - value: "7+"
+    label: "Theia Extensions"
+  - value: "2"
+    label: "Deployment Modes"
+  - value: "6"
+    label: "Custom Themes"
+
+features:
+  title: "Built for Nuclear Engineering"
+  description: "Everything you need for computational physics, reactor design, and radiation transport in one unified workspace."
+  items:
+    - icon: "Code2"
+      title: "Full-Featured IDE"
+      description: "Monaco-based code editor with syntax highlighting, IntelliSense, and debugging powered by Eclipse Theia."
+      color: "amber"
+    - icon: "Puzzle"
+      title: "Extensible Architecture"
+      description: "Easily extendable with custom Theia extensions for specialized nuclear engineering workflows."
+      color: "emerald"
+    - icon: "Globe"
+      title: "Browser & Desktop"
+      description: "Run as a Progressive Web App in the browser or as a native Electron desktop application."
+      color: "sky"
+    - icon: "Monitor"
+      title: "Python Integration"
+      description: "Auto-detect and manage conda, venv, poetry environments. Install packages with live terminal output."
+      color: "violet"
+
+extensions:
+  title: "Core Extensions"
+  description: "Purpose-built extensions that bring nuclear simulation capabilities directly into the IDE."
+  items:
+    - name: "OpenMC Studio"
+      badge: "Flagship Extension"
+      badgeIcon: "FlaskConical"
+      description: "No-code graphical workspace for OpenMC Monte Carlo neutron transport simulations. Build geometries, configure materials, set up tallies, and run simulations — all without writing a single line of code."
+      image: "/assets/images/projects/nukeide/simulation-dashboard.png"
+      imageAlt: "OpenMC Studio Materials tab with DAGMC materials"
+      features:
+        - "Simulation dashboard with live metrics and k-eff plots"
+        - "CSG builder and DAGMC editor with 3D preview"
+        - "Tally configurator with mesh editors and filter builders"
+        - "Parameter sweep optimization framework"
+        - "CAD import (STEP/IGES to DAGMC or CSG)"
+      reversed: false
+
+    - name: "Nuke Visualizer"
+      badge: "Visualization"
+      badgeIcon: "Eye"
+      description: "Advanced 3D and 2D visualization for nuclear engineering data. Inspect OpenMC statepoints, overlay tallies on geometry, and analyze simulation results with interactive plots."
+      images:
+        - src: "/assets/images/projects/nukeide/geometry-viewer.png"
+          alt: "3D stellarator geometry wireframe viewer"
+        - src: "/assets/images/projects/nukeide/statepoint-viewer.png"
+          alt: "OpenMC statepoint viewer with k-effective convergence analysis"
+      features:
+        - "3D mesh viewer for VTK, DAGMC, STL, PLY, OBJ files"
+        - "OpenMC statepoint viewer with k-eff convergence plots"
+        - "Tally visualization with geometry overlay"
+        - "Energy spectrum and 2D heatmap slices"
+        - "Source distribution 3D scatter plots"
+      reversed: true
+      gallery: true
+
+    - name: "Nuke Core"
+      badge: "Foundation"
+      badgeIcon: "Box"
+      description: "The foundational extension for environment management and shared infrastructure. Automatically detects, creates, and manages environments with seamless package installation."
+      features:
+        - "Auto-detect conda, venv, poetry, pyenv environments"
+        - "Install packages with live terminal output"
+        - "Run health checks and diagnostics"
+        - "Context-aware status bar with quick-switcher"
+        - "Workspace auto-detection for environment files"
+      reversed: false
+      noImage: true
+
+deployment:
+  title: "Flexible Architecture"
+  description: "Deploy anywhere. Extend easily. Integrate seamlessly."
+  items:
+    - icon: "Globe"
+      title: "Browser"
+      description: "Run NukeIDE as a Progressive Web App in any modern browser. Perfect for cloud deployments and shared workspaces."
+    - icon: "Monitor"
+      title: "Desktop"
+      description: "Native Electron application for Windows, macOS, and Linux with auto-updater support and secondary windows."
+    - icon: "Cpu"
+      title: "Extensions"
+      description: "Self-contained Theia packages with frontend and backend contributions communicating via JSON-RPC over WebSocket."
+
+gettingStarted:
+  title: "Getting Started"
+  description: "Choose your preferred deployment and get NukeIDE running in minutes."
+  tabs:
+    - id: "browser"
+      label: "Browser"
+      icon: "Globe"
+      description: "Run NukeIDE as a web application in your browser."
+      prerequisites: "Requires Node.js >=22, Yarn >=1.7.0, and Python >=3.12"
+      steps:
+        - number: 1
+          title: "Clone the repository"
+          command: "git clone https://github.com/nukehub-dev/nuke-ide.git"
+        - number: 2
+          title: "Install dependencies"
+          command: "cd nuke-ide && yarn"
+        - number: 3
+          title: "Download Theia plugins"
+          command: "yarn download:plugins"
+        - number: 4
+          title: "Start the browser app"
+          command: "yarn start:browser"
+
+    - id: "electron"
+      label: "Desktop"
+      icon: "Monitor"
+      description: "Download a prebuilt installer, or build the native desktop application from source."
+      prerequisites: "Requires Node.js >=22, Yarn >=1.7.0, Python >=3.12"
+      download:
+        title: "Download the latest release"
+        description: "Grab the installer for Windows, macOS, or Linux from GitHub Releases."
+        href: "https://github.com/nukehub-dev/nuke-ide/releases/latest"
+        text: "Download NukeIDE Desktop"
+        external: true
+      steps:
+        - number: 1
+          title: "Clone the repository"
+          command: "git clone https://github.com/nukehub-dev/nuke-ide.git"
+        - number: 2
+          title: "Install dependencies"
+          command: "cd nuke-ide && yarn"
+        - number: 3
+          title: "Download Theia plugins"
+          command: "yarn download:plugins"
+        - number: 4
+          title: "Start the desktop app"
+          command: "yarn start:electron"
+
+    - id: "docker"
+      label: "Docker"
+      icon: "Container"
+      description: "Deploy with Docker for containerized environments."
+      prerequisites: "Requires Docker and Docker Compose"
+      steps:
+        - number: 1
+          title: "Clone the repository"
+          command: "git clone https://github.com/nukehub-dev/nuke-ide.git"
+        - number: 2
+          title: "Build Docker image"
+          command: "docker build -t nukeide applications/docker/"
+        - number: 3
+          title: "Run container"
+          command: "docker run -p 3000:3000 nukeide"
+
+cta:
+  title: "Ready to Transform Your Workflow?"
+  description: "Join the growing community of nuclear engineers using NukeIDE for simulation, visualization, and analysis."
+  primary:
+    text: "Star on GitHub"
+    href: "https://github.com/nukehub-dev/nuke-ide"
+    icon: "github"
+  secondary:
+    text: "Documentation"
+    href: "https://github.com/nukehub-dev/nuke-ide/issues"
+    icon: "BookOpen"

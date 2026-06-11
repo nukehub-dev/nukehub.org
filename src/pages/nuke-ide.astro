@@ -1,0 +1,23 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { NukeidePage } from "@modules/nukeide/components/NukeidePage";
+import type { NukeideData } from "@modules/nukeide/types";
+import { loadYaml } from "@lib/loadYaml";
+
+const data = loadYaml<NukeideData>("nukeide/data/page.yml");
+
+const title = "NukeIDE";
+const description =
+  "Open-source Integrated Development Environment for nuclear simulation and engineering. Built on Eclipse Theia with extensions for OpenMC, visualization, and Python environment management.";
+const permalink = "/nuke-ide";
+const image = "/assets/images/projects/nukeide/hero.png";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  permalink={permalink}
+  image={image}
+>
+  <NukeidePage client:load data={data} />
+</BaseLayout>
