@@ -24,6 +24,7 @@ const projects = defineCollection({
     newpage: z.boolean().optional(),
     image: z.string().optional(),
     tags: z.array(z.string()).optional(),
+    customPage: z.boolean().optional(),
   }),
 });
 

@@ -1,9 +1,6 @@
 export interface NukeideData {
   hero: {
     badge: { text: string; icon: string };
-    title: string;
-    titleHighlight: string;
-    subtitle: string;
     ctas: Array<{
       text: string;
       href: string;

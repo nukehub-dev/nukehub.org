@@ -5,10 +5,12 @@ import PageLayout from "@layouts/PageLayout.astro";
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
 
-  return projects.map((entry) => ({
-    params: { slug: entry.id },
-    props: { entry },
-  }));
+  return projects
+    .filter((entry) => !entry.data.customPage)
+    .map((entry) => ({
+      params: { slug: entry.id },
+      props: { entry },
+    }));
 }
 
 interface Props {

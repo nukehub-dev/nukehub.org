@@ -96,13 +96,7 @@ function resolveIcon(name: string) {
 }
 
 // ── Animated counter ──
-function AnimatedCounter({
-  value,
-  label,
-}: {
-  value: string;
-  label: string;
-}) {
+function AnimatedCounter({ value, label }: { value: string; label: string }) {
   const [displayValue, setDisplayValue] = useState("0");
   const numericPart = parseInt(value.replace(/\D/g, ""), 10);
   const suffix = value.replace(/[0-9]/g, "");
@@ -133,7 +127,7 @@ function AnimatedCounter({
           observer.disconnect();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
 
     const el = document.getElementById(`stat-${label}`);
@@ -277,8 +271,12 @@ function GettingStartedTabs({
             <Icon className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">{activeTabData.label}</h3>
-            <p className="text-sm text-muted-foreground">{activeTabData.description}</p>
+            <h3 className="font-semibold text-foreground">
+              {activeTabData.label}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {activeTabData.description}
+            </p>
           </div>
         </div>
 
@@ -286,13 +284,21 @@ function GettingStartedTabs({
           <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h4 className="font-medium text-foreground">{activeTabData.download.title}</h4>
-                <p className="text-sm text-muted-foreground">{activeTabData.download.description}</p>
+                <h4 className="font-medium text-foreground">
+                  {activeTabData.download.title}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  {activeTabData.download.description}
+                </p>
               </div>
               <a
                 href={activeTabData.download.href}
                 target={activeTabData.download.external ? "_blank" : undefined}
-                rel={activeTabData.download.external ? "noopener noreferrer" : undefined}
+                rel={
+                  activeTabData.download.external
+                    ? "noopener noreferrer"
+                    : undefined
+                }
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:scale-105"
               >
                 <Download className="h-4 w-4" />
@@ -309,7 +315,9 @@ function GettingStartedTabs({
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                   {step.number}
                 </div>
-                <span className="text-sm font-medium text-foreground">{step.title}</span>
+                <span className="text-sm font-medium text-foreground">
+                  {step.title}
+                </span>
               </div>
               <CodeBlock command={step.command} />
             </div>
@@ -318,7 +326,8 @@ function GettingStartedTabs({
 
         <div className="mt-6 pt-4 border-t border-border/40">
           <p className="text-xs text-muted-foreground">
-            <span className="font-medium">Prerequisites:</span> {activeTabData.prerequisites}
+            <span className="font-medium">Prerequisites:</span>{" "}
+            {activeTabData.prerequisites}
           </p>
         </div>
       </motion.div>
@@ -327,7 +336,17 @@ function GettingStartedTabs({
 }
 
 // ── Main Component ──
-export function NukeidePage({ data }: { data: NukeideData }) {
+export function NukeidePage({
+  data,
+  title,
+  titleHighlight,
+  description,
+}: {
+  data: NukeideData;
+  title: string;
+  titleHighlight: string;
+  description: string;
+}) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -365,9 +384,9 @@ export function NukeidePage({ data }: { data: NukeideData }) {
                 variants={fadeInUp}
                 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
               >
-                {data.hero.title}
+                {title}
                 <span className="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent">
-                  {data.hero.titleHighlight}
+                  {titleHighlight}
                 </span>
               </motion.h1>
 
@@ -375,7 +394,7 @@ export function NukeidePage({ data }: { data: NukeideData }) {
                 variants={fadeInUp}
                 className="mx-auto mt-6 max-w-2xl text-xl text-muted-foreground leading-relaxed"
               >
-                {data.hero.subtitle}
+                {description}
               </motion.p>
 
               <motion.div
@@ -432,10 +451,8 @@ export function NukeidePage({ data }: { data: NukeideData }) {
               </TiltCard>
             </motion.div>
           </div>
-        </section>
+          {/* STATS */}
 
-        {/* ===== STATS ===== */}
-        <section className="relative py-16">
           <div className="mx-auto max-w-4xl px-4">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {data.stats.map((stat) => (
@@ -483,8 +500,7 @@ export function NukeidePage({ data }: { data: NukeideData }) {
             >
               {data.features.items.map((feature, i) => {
                 const Icon = resolveIcon(feature.icon);
-                const style =
-                  colorConfig[feature.color] || colorConfig.amber;
+                const style = colorConfig[feature.color] || colorConfig.amber;
 
                 return (
                   <motion.div
@@ -557,8 +573,7 @@ export function NukeidePage({ data }: { data: NukeideData }) {
             <div className="space-y-32">
               {data.extensions.items.map((ext) => {
                 const BadgeIcon = resolveIcon(ext.badgeIcon);
-                const hasImage =
-                  !ext.noImage && (ext.image || ext.images);
+                const hasImage = !ext.noImage && (ext.image || ext.images);
 
                 return (
                   <motion.div
@@ -700,7 +715,7 @@ export function NukeidePage({ data }: { data: NukeideData }) {
           className="relative py-24 border-t border-border/50"
         >
           <FloatingParticles count={16} />
-          
+
           <div className="relative z-10 mx-auto max-w-4xl px-4">
             <motion.div
               initial="hidden"
@@ -748,49 +763,49 @@ export function NukeidePage({ data }: { data: NukeideData }) {
               <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
 
               <div className="relative z-10">
-              <motion.div variants={fadeInUp} className="mb-6">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                  <Sparkles className="h-8 w-8 text-primary" />
-                </div>
-              </motion.div>
+                <motion.div variants={fadeInUp} className="mb-6">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+                    <Sparkles className="h-8 w-8 text-primary" />
+                  </div>
+                </motion.div>
 
-              <motion.h2
-                variants={fadeInUp}
-                className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
-              >
-                {data.cta.title}
-              </motion.h2>
-
-              <motion.p
-                variants={fadeInUp}
-                className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground"
-              >
-                {data.cta.description}
-              </motion.p>
-
-              <motion.div
-                variants={fadeInUp}
-                className="mt-10 flex flex-wrap items-center justify-center gap-4"
-              >
-                <a
-                  href={data.cta.primary.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
+                <motion.h2
+                  variants={fadeInUp}
+                  className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
                 >
-                  <BrandIcon name="github" size={16} />
-                  {data.cta.primary.text}
-                </a>
-                <a
-                  href={data.cta.secondary.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex h-11 items-center gap-2 rounded-xl border border-input bg-background/60 px-6 text-sm font-semibold text-foreground backdrop-blur-md transition-all hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5"
+                  {data.cta.title}
+                </motion.h2>
+
+                <motion.p
+                  variants={fadeInUp}
+                  className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground"
                 >
-                  <BookOpen className="h-4 w-4" />
-                  {data.cta.secondary.text}
-                </a>
-              </motion.div>
+                  {data.cta.description}
+                </motion.p>
+
+                <motion.div
+                  variants={fadeInUp}
+                  className="mt-10 flex flex-wrap items-center justify-center gap-4"
+                >
+                  <a
+                    href={data.cta.primary.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
+                  >
+                    <BrandIcon name="github" size={16} />
+                    {data.cta.primary.text}
+                  </a>
+                  <a
+                    href={data.cta.secondary.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex h-11 items-center gap-2 rounded-xl border border-input bg-background/60 px-6 text-sm font-semibold text-foreground backdrop-blur-md transition-all hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    {data.cta.secondary.text}
+                  </a>
+                </motion.div>
               </div>
             </motion.div>
           </div>

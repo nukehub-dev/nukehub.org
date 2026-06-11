@@ -1,16 +1,22 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { NukeidePage } from "@modules/nukeide/components/NukeidePage";
-import type { NukeideData } from "@modules/nukeide/types";
+import { NukeidePage } from "@modules/projects/nukeide/components/NukeidePage";
+import type { NukeideData } from "@modules/projects/nukeide/types";
 import { loadYaml } from "@lib/loadYaml";
+import { getCollection } from "astro:content";
 
-const data = loadYaml<NukeideData>("nukeide/data/page.yml");
+const data = loadYaml<NukeideData>("projects/nukeide/data/page.yml");
 
-const title = "NukeIDE";
+// Load project metadata from content collection to avoid duplication
+const projectEntries = await getCollection("projects");
+const nukeideEntry = projectEntries.find((entry) => entry.id === "nukeide");
+
+const title = nukeideEntry?.data.title ?? "NukeIDE";
 const description =
-  "Open-source Integrated Development Environment for nuclear simulation and engineering. Built on Eclipse Theia with extensions for OpenMC, visualization, and Python environment management.";
-const permalink = "/nuke-ide";
-const image = "/assets/images/projects/nukeide/hero.png";
+  nukeideEntry?.data.description ??
+  "Open-source Integrated Development Environment for nuclear simulation and engineering.";
+const permalink = nukeideEntry?.data.permalink ?? "/nuke-ide";
+const image = nukeideEntry?.data.image ?? "/assets/images/projects/nukeide/hero.png";
 ---
 
 <BaseLayout
@@ -19,5 +25,11 @@ const image = "/assets/images/projects/nukeide/hero.png";
   permalink={permalink}
   image={image}
 >
-  <NukeidePage client:load data={data} />
+  <NukeidePage
+    client:load
+    data={data}
+    title="Nuke"
+    titleHighlight="IDE"
+    description={description}
+  />
 </BaseLayout>
