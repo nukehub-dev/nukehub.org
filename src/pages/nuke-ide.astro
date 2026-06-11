@@ -1,15 +1,15 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { NukeidePage } from "@modules/projects/nukeide/components/NukeidePage";
-import type { NukeideData } from "@modules/projects/nukeide/types";
+import { NukeidePage } from "@modules/projects/nuke-ide/components/NukeidePage";
+import type { NukeideData } from "@modules/projects/nuke-ide/types";
 import { loadYaml } from "@lib/loadYaml";
 import { getCollection } from "astro:content";
 
-const data = loadYaml<NukeideData>("projects/nukeide/data/page.yml");
+const data = loadYaml<NukeideData>("projects/nuke-ide/data/page.yml");
 
 // Load project metadata from content collection to avoid duplication
 const projectEntries = await getCollection("projects");
-const nukeideEntry = projectEntries.find((entry) => entry.id === "nukeide");
+const nukeideEntry = projectEntries.find((entry) => entry.id === "nuke-ide");
 
 const title = nukeideEntry?.data.title ?? "NukeIDE";
 const description =
