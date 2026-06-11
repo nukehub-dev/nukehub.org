@@ -1,0 +1,35 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { NukelabPage } from "@modules/projects/nukelab/components/NukelabPage";
+import type { NukelabData } from "@modules/projects/nukelab/types";
+import { loadYaml } from "@lib/loadYaml";
+import { getCollection } from "astro:content";
+
+const data = loadYaml<NukelabData>("projects/nukelab/data/page.yml");
+
+// Load shared metadata from content collection to avoid duplication
+const projectEntries = await getCollection("projects");
+const nukelabEntry = projectEntries.find((entry) => entry.id === "nukelab");
+
+const title = nukelabEntry?.data.title ?? "NukeLab";
+const description =
+  nukelabEntry?.data.description ??
+  "Multi-user scientific computing platform for nuclear engineering.";
+const permalink = nukelabEntry?.data.permalink ?? "/nuke-lab";
+const image = nukelabEntry?.data.image ?? "/assets/images/nuke-lab.png";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  permalink={permalink}
+  image={image}
+>
+  <NukelabPage
+    client:load
+    data={data}
+    title="Nuke"
+    titleHighlight="Lab"
+    description={description}
+  />
+</BaseLayout>

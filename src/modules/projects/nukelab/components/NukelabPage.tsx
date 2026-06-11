@@ -3,32 +3,32 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 import {
-  Code2,
-  Puzzle,
+  Server,
+  Container,
+  Boxes,
+  Users,
+  Activity,
   Globe,
-  Monitor,
-  Box,
-  Eye,
-  FlaskConical,
-  ArrowRight,
-  BookOpen,
+  Zap,
   Cpu,
-  Layers,
+  Database,
+  Clock,
+  Shield,
+  FlaskConical,
+  LogIn,
+  Rocket,
+  Share2,
+  ArrowRight,
   Check,
-  Copy,
-  Terminal,
   Sparkles,
-  Download,
+  ExternalLink,
 } from "lucide-react";
 import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { TiltCard } from "@modules/projects/components/shared/TiltCard";
-import { LaptopMockup } from "@modules/projects/components/shared/LaptopMockup";
-import { ImageGallery } from "@modules/projects/components/shared/ImageGallery";
 import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
-import type { NukeideData } from "../types";
+import type { NukelabData } from "../types";
 
-// ── Color configs ──
 const colorConfig: Record<
   string,
   {
@@ -69,33 +69,32 @@ const colorConfig: Record<
   },
 };
 
-// ── Icon resolver ──
-const iconComponents: Record<
-  string,
-  React.ComponentType<{ className?: string; size?: number }>
-> = {
-  Code2,
-  Puzzle,
+const iconComponents: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
+  Server,
+  Container,
+  Boxes,
+  Users,
+  Activity,
   Globe,
-  Monitor,
-  Box,
-  Eye,
-  FlaskConical,
+  Zap,
   Cpu,
-  Layers,
-  BookOpen,
-  Terminal,
-  Sparkles,
+  Database,
+  Clock,
+  Shield,
+  FlaskConical,
+  LogIn,
+  Rocket,
+  Share2,
+  ArrowRight,
   Check,
-  Copy,
-  Download,
+  Sparkles,
+  ExternalLink,
 };
 
 function resolveIcon(name: string) {
-  return iconComponents[name] || Code2;
+  return iconComponents[name] || Server;
 }
 
-// ── Animated counter ──
 function AnimatedCounter({ value, label }: { value: string; label: string }) {
   const [displayValue, setDisplayValue] = useState("0");
   const numericPart = parseInt(value.replace(/\D/g, ""), 10);
@@ -134,7 +133,7 @@ function AnimatedCounter({ value, label }: { value: string; label: string }) {
     if (el) observer.observe(el);
 
     return () => observer.disconnect();
-  }, [numericPart, suffix, label, shouldReduceMotion]);
+  }, [numericPart, suffix, label, shouldReduceMotion, value]);
 
   return (
     <motion.div
@@ -150,208 +149,28 @@ function AnimatedCounter({ value, label }: { value: string; label: string }) {
         <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent">
           {displayValue}
         </div>
-        <div className="mt-2 text-sm text-muted-foreground font-medium">
-          {label}
-        </div>
+        <div className="mt-2 text-sm text-muted-foreground font-medium">{label}</div>
       </div>
     </motion.div>
   );
 }
 
-// ── Code block with copy ──
-function CodeBlock({ command }: { command: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const copy = useCallback(() => {
-    navigator.clipboard.writeText(command);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [command]);
-
-  return (
-    <div className="relative group">
-      <div className="overflow-x-auto rounded-lg bg-[#0d1117] border border-border/60 p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="h-3 w-3 rounded-full bg-red-500/80" />
-          <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-          <div className="h-3 w-3 rounded-full bg-green-500/80" />
-          <div className="ml-auto">
-            <button
-              onClick={copy}
-              className="inline-flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              {copied ? (
-                <Check className="h-3 w-3" />
-              ) : (
-                <Copy className="h-3 w-3" />
-              )}
-              {copied ? "Copied" : "Copy"}
-            </button>
-          </div>
-        </div>
-        <code className="text-sm font-mono text-[#e6edf3]">
-          <span className="text-[#7ee787]">$</span> {command}
-        </code>
-      </div>
-    </div>
-  );
-}
-
-// ── Browser mockup frame ──
-function BrowserMockup({
-  children,
-  url = "localhost:3000",
-}: {
-  children: React.ReactNode;
-  url?: string;
-}) {
-  return (
-    <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-2xl shadow-black/10 dark:shadow-black/20">
-      <div className="flex items-center gap-2 border-b border-border/40 bg-muted/50 px-3 py-2.5 backdrop-blur-sm">
-        <div className="flex gap-1.5">
-          <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
-          <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
-          <div className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
-        </div>
-        <div className="mx-auto flex items-center gap-1.5 rounded-md bg-background/80 border border-border/30 px-3 py-1 text-[11px] text-muted-foreground font-mono">
-          <Globe className="h-3 w-3" />
-          {url}
-        </div>
-        <div className="w-16" />
-      </div>
-      <div className="relative bg-background">{children}</div>
-    </div>
-  );
-}
-
-// ── Tabbed Getting Started ──
-function GettingStartedTabs({
-  tabs,
-}: {
-  tabs: NukeideData["gettingStarted"]["tabs"];
-}) {
-  const [activeTab, setActiveTab] = useState(0);
-  const activeTabData = tabs[activeTab];
-  const Icon = resolveIcon(activeTabData.icon);
-
-  return (
-    <div className="space-y-6">
-      {/* Tab buttons */}
-      <div className="flex flex-wrap justify-center gap-2">
-        {tabs.map((tab, idx) => {
-          const TabIcon = resolveIcon(tab.icon);
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(idx)}
-              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-                idx === activeTab
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                  : "bg-card/50 text-muted-foreground hover:text-foreground border border-border/60 hover:border-primary/30"
-              }`}
-            >
-              <TabIcon className="h-4 w-4" />
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tab content */}
-      <motion.div
-        key={activeTabData.id}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm p-6"
-      >
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-            <Icon className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground">
-              {activeTabData.label}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {activeTabData.description}
-            </p>
-          </div>
-        </div>
-
-        {activeTabData.download && (
-          <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h4 className="font-medium text-foreground">
-                  {activeTabData.download.title}
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  {activeTabData.download.description}
-                </p>
-              </div>
-              <a
-                href={activeTabData.download.href}
-                target={activeTabData.download.external ? "_blank" : undefined}
-                rel={
-                  activeTabData.download.external
-                    ? "noopener noreferrer"
-                    : undefined
-                }
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:scale-105"
-              >
-                <Download className="h-4 w-4" />
-                {activeTabData.download.text}
-              </a>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-4">
-          {activeTabData.steps.map((step) => (
-            <div key={step.number}>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                  {step.number}
-                </div>
-                <span className="text-sm font-medium text-foreground">
-                  {step.title}
-                </span>
-              </div>
-              <CodeBlock command={step.command} />
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 pt-4 border-t border-border/40">
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium">Prerequisites:</span>{" "}
-            {activeTabData.prerequisites}
-          </p>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-// ── Main Component ──
-export function NukeidePage({
+export function NukelabPage({
   data,
   title,
   titleHighlight,
   description,
 }: {
-  data: NukeideData;
+  data: NukelabData;
   title: string;
   titleHighlight: string;
   description: string;
 }) {
   const shouldReduceMotion = useReducedMotion();
+  const BadgeIcon = resolveIcon(data.hero.badge.icon);
 
   return (
     <div className="relative">
-      {/* Background */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
         style={{
@@ -364,7 +183,7 @@ export function NukeidePage({
       />
 
       <div className="relative z-10">
-        {/* ===== HERO ===== */}
+        {/* HERO */}
         <section className="relative overflow-hidden">
           <div className="relative z-10 mx-auto max-w-7xl px-4 pt-32 pb-20">
             <motion.div
@@ -375,7 +194,7 @@ export function NukeidePage({
             >
               <motion.div variants={fadeInUp} className="mb-8">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-md">
-                  <Code2 className="h-4 w-4" />
+                  <BadgeIcon className="h-4 w-4" />
                   {data.hero.badge.text}
                 </div>
               </motion.div>
@@ -417,8 +236,8 @@ export function NukeidePage({
                     >
                       {cta.icon === "github" ? (
                         <BrandIcon name="github" size={16} />
-                      ) : cta.icon === "download" ? (
-                        <Download className="h-4 w-4" />
+                      ) : cta.icon === "external" ? (
+                        <ExternalLink className="h-4 w-4" />
                       ) : (
                         <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                       )}
@@ -429,7 +248,6 @@ export function NukeidePage({
               </motion.div>
             </motion.div>
 
-            {/* Hero Screenshot with laptop mockup */}
             <motion.div
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
@@ -439,34 +257,46 @@ export function NukeidePage({
               <TiltCard className="mx-auto max-w-5xl" tiltAmount={4}>
                 <div className="relative">
                   <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 blur-2xl opacity-40" />
-                  <LaptopMockup>
-                    <img
-                      src={data.hero.heroImage}
-                      alt={data.hero.heroImageAlt}
-                      className="w-full"
-                      loading="eager"
-                    />
-                  </LaptopMockup>
+                  <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-2xl shadow-black/10 dark:shadow-black/20">
+                    <div className="flex items-center gap-2 border-b border-border/40 bg-muted/50 px-3 py-2.5 backdrop-blur-sm">
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+                        <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
+                        <div className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
+                      </div>
+                      <div className="mx-auto flex items-center gap-1.5 rounded-md bg-background/80 border border-border/30 px-3 py-1 text-[11px] text-muted-foreground font-mono">
+                        <Globe className="h-3 w-3" />
+                        lab.nukehub.org
+                      </div>
+                      <div className="w-16" />
+                    </div>
+                    <div className="relative bg-background">
+                      <img
+                        src={data.hero.heroImage}
+                        alt={data.hero.heroImageAlt}
+                        className="w-full"
+                        loading="eager"
+                      />
+                    </div>
+                  </div>
                 </div>
               </TiltCard>
             </motion.div>
           </div>
-          {/* STATS */}
+        </section>
 
+        {/* STATS */}
+        <section className="relative py-16">
           <div className="mx-auto max-w-4xl px-4">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {data.stats.map((stat) => (
-                <AnimatedCounter
-                  key={stat.label}
-                  value={stat.value}
-                  label={stat.label}
-                />
+                <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
               ))}
             </div>
           </div>
         </section>
 
-        {/* ===== FEATURES ===== */}
+        {/* FEATURES */}
         <section className="relative py-24">
           <FloatingParticles count={12} />
           <div className="relative z-10 mx-auto max-w-7xl px-4">
@@ -531,12 +361,8 @@ export function NukeidePage({
                       >
                         <Icon size={22} />
                       </div>
-                      <h3 className="mt-4 text-lg font-semibold text-foreground">
-                        {feature.title}
-                      </h3>
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                        {feature.description}
-                      </p>
+                      <h3 className="mt-4 text-lg font-semibold text-foreground">{feature.title}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                     </div>
                   </motion.div>
                 );
@@ -545,7 +371,7 @@ export function NukeidePage({
           </div>
         </section>
 
-        {/* ===== EXTENSIONS ===== */}
+        {/* ENVIRONMENTS */}
         <section className="relative py-24 border-t border-border/50">
           <FloatingParticles count={10} />
           <div className="relative z-10 mx-auto max-w-7xl px-4">
@@ -560,52 +386,44 @@ export function NukeidePage({
                 variants={fadeInUp}
                 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
               >
-                {data.extensions.title}
+                {data.environments.title}
               </motion.h2>
               <motion.p
                 variants={fadeInUp}
                 className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground"
               >
-                {data.extensions.description}
+                {data.environments.description}
               </motion.p>
             </motion.div>
 
-            <div className="space-y-32">
-              {data.extensions.items.map((ext) => {
-                const BadgeIcon = resolveIcon(ext.badgeIcon);
-                const hasImage = !ext.noImage && (ext.image || ext.images);
+            <div className="space-y-24">
+              {data.environments.items.map((env) => {
+                const BadgeIcon = env.badgeIcon
+                  ? resolveIcon(env.badgeIcon)
+                  : FlaskConical;
 
                 return (
                   <motion.div
-                    key={ext.name}
+                    key={env.name}
                     initial="hidden"
                     whileInView="visible"
                     viewport={viewportOnce}
                     variants={fadeInUp}
                     className={`grid gap-10 items-center ${
-                      hasImage ? "lg:grid-cols-2" : ""
+                      env.image ? "lg:grid-cols-2" : ""
                     }`}
                   >
-                    {/* Text content */}
-                    <div
-                      className={
-                        ext.reversed
-                          ? "order-2 lg:order-1"
-                          : "order-2 lg:order-1"
-                      }
-                    >
-                      <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-4">
-                        <BadgeIcon className="h-4 w-4" />
-                        {ext.badge}
-                      </div>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-                        {ext.name}
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
-                        {ext.description}
-                      </p>
+                    <div className={env.reversed ? "order-2" : "order-2 lg:order-1"}>
+                      {env.badge && (
+                        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-4">
+                          <BadgeIcon className="h-4 w-4" />
+                          {env.badge}
+                        </div>
+                      )}
+                      <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">{env.name}</h3>
+                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">{env.description}</p>
                       <ul className="space-y-3">
-                        {ext.features.map((feat) => (
+                        {env.features.map((feat) => (
                           <li
                             key={feat}
                             className="flex items-start gap-3 text-muted-foreground"
@@ -617,33 +435,34 @@ export function NukeidePage({
                       </ul>
                     </div>
 
-                    {/* Image content */}
-                    {hasImage && (
+                    {env.image && (
                       <motion.div
                         variants={fadeInUp}
-                        className={
-                          ext.reversed
-                            ? "order-1 lg:order-2"
-                            : "order-1 lg:order-2"
-                        }
+                        className={env.reversed ? "order-1" : "order-1 lg:order-2"}
                       >
-                        {ext.gallery && ext.images ? (
-                          <ImageGallery images={ext.images} />
-                        ) : ext.image ? (
-                          <TiltCard tiltAmount={3}>
-                            <div className="relative group">
-                              <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/5 to-primary/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
-                              <BrowserMockup>
+                        <TiltCard tiltAmount={3}>
+                          <div className="relative group">
+                            <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/5 to-primary/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                            <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-2xl shadow-black/10 dark:shadow-black/20">
+                              <div className="flex items-center gap-2 border-b border-border/40 bg-muted/50 px-3 py-2.5">
+                                <div className="flex gap-1.5">
+                                  <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+                                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
+                                  <div className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
+                                </div>
+                                <div className="w-16" />
+                              </div>
+                              <div className="relative bg-background">
                                 <img
-                                  src={ext.image}
-                                  alt={ext.imageAlt || ""}
+                                  src={env.image}
+                                  alt={env.imageAlt || env.name}
                                   className="w-full"
                                   loading="lazy"
                                 />
-                              </BrowserMockup>
+                              </div>
                             </div>
-                          </TiltCard>
-                        ) : null}
+                          </div>
+                        </TiltCard>
                       </motion.div>
                     )}
                   </motion.div>
@@ -653,7 +472,7 @@ export function NukeidePage({
           </div>
         </section>
 
-        {/* ===== ARCHITECTURE ===== */}
+        {/* ARCHITECTURE */}
         <section className="relative py-24 border-t border-border/50">
           <div className="mx-auto max-w-7xl px-4">
             <motion.div
@@ -667,13 +486,13 @@ export function NukeidePage({
                 variants={fadeInUp}
                 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
               >
-                {data.deployment.title}
+                {data.architecture.title}
               </motion.h2>
               <motion.p
                 variants={fadeInUp}
                 className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground"
               >
-                {data.deployment.description}
+                {data.architecture.description}
               </motion.p>
             </motion.div>
 
@@ -682,26 +501,22 @@ export function NukeidePage({
               whileInView="visible"
               viewport={viewportOnce}
               variants={staggerContainer}
-              className="grid gap-6 sm:grid-cols-3"
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
-              {data.deployment.items.map((item) => {
+              {data.architecture.items.map((item) => {
                 const Icon = resolveIcon(item.icon);
                 return (
                   <motion.div
                     key={item.title}
                     variants={fadeInUp}
-                    className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 backdrop-blur-sm text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
+                    className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
                   >
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
                     <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
                       <Icon className="h-7 w-7 text-primary" />
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {item.description}
-                    </p>
+                    <h3 className="text-lg font-semibold text-foreground mb-2 text-center">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed text-center">{item.description}</p>
                   </motion.div>
                 );
               })}
@@ -709,45 +524,127 @@ export function NukeidePage({
           </div>
         </section>
 
-        {/* ===== GETTING STARTED ===== */}
-        <section
-          id="getting-started"
-          className="relative py-24 border-t border-border/50"
-        >
-          <FloatingParticles count={16} />
-
-          <div className="relative z-10 mx-auto max-w-4xl px-4">
+        {/* PLANS */}
+        <section className="relative py-24 border-t border-border/50">
+          <div className="mx-auto max-w-7xl px-4">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={viewportOnce}
               variants={staggerContainer}
-              className="text-center mb-12"
+              className="text-center mb-16"
             >
-              <motion.div variants={fadeInUp} className="mb-6">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-                  <Terminal className="h-7 w-7 text-primary" />
-                </div>
-              </motion.div>
               <motion.h2
                 variants={fadeInUp}
-                className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
+                className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
               >
-                {data.gettingStarted.title}
+                {data.plans.title}
               </motion.h2>
               <motion.p
                 variants={fadeInUp}
-                className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground"
+                className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground"
               >
-                {data.gettingStarted.description}
+                {data.plans.description}
               </motion.p>
             </motion.div>
 
-            <GettingStartedTabs tabs={data.gettingStarted.tabs} />
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              variants={staggerContainer}
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+            >
+              {data.plans.items.map((plan) => (
+                <motion.div
+                  key={plan.name}
+                  variants={fadeInUp}
+                  className={`relative overflow-hidden rounded-2xl border p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+                    plan.highlighted
+                      ? "border-primary/50 bg-primary/5 shadow-primary/10"
+                      : "border-border/60 bg-card/50 hover:border-primary/20 hover:shadow-primary/5"
+                  }`}
+                >
+                  {plan.highlighted && (
+                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-bl-lg">
+                      Popular
+                    </div>
+                  )}
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+                  <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+                  <div className="mt-4 text-3xl font-bold text-primary">{plan.cost}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">per hour</div>
+                  <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-center gap-2">
+                      <Cpu className="h-4 w-4 text-primary" /> {plan.cpu} CPU
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Database className="h-4 w-4 text-primary" /> {plan.memory} RAM
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Server className="h-4 w-4 text-primary" /> {plan.disk} Disk
+                    </li>
+                  </ul>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
-        {/* ===== CTA ===== */}
+        {/* WORKFLOW */}
+        <section className="relative py-24 border-t border-border/50">
+          <FloatingParticles count={14} />
+          <div className="relative z-10 mx-auto max-w-5xl px-4">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              variants={staggerContainer}
+              className="text-center mb-16"
+            >
+              <motion.h2
+                variants={fadeInUp}
+                className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+              >
+                {data.workflow.title}
+              </motion.h2>
+              <motion.p
+                variants={fadeInUp}
+                className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground"
+              >
+                {data.workflow.description}
+              </motion.p>
+            </motion.div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {data.workflow.steps.map((step) => {
+                const Icon = resolveIcon(step.icon);
+                return (
+                  <motion.div
+                    key={step.number}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={viewportOnce}
+                    transition={{ duration: 0.5, delay: step.number * 0.1 }}
+                    className="relative rounded-2xl border border-border/60 bg-card/50 p-6 backdrop-blur-sm"
+                  >
+                    <div className="absolute -top-3 -left-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
+                      {step.number}
+                    </div>
+                    <div className="mb-4 mt-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                      <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">{step.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
         <section className="relative py-24 border-t border-border/50">
           <div className="mx-auto max-w-4xl px-4">
             <motion.div
@@ -793,7 +690,7 @@ export function NukeidePage({
                     rel="noopener noreferrer"
                     className="group inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
                   >
-                    <BrandIcon name="github" size={16} />
+                    <ExternalLink className="h-4 w-4" />
                     {data.cta.primary.text}
                   </a>
                   <a
@@ -802,7 +699,7 @@ export function NukeidePage({
                     rel="noopener noreferrer"
                     className="group inline-flex h-11 items-center gap-2 rounded-xl border border-input bg-background/60 px-6 text-sm font-semibold text-foreground backdrop-blur-md transition-all hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5"
                   >
-                    <BookOpen className="h-4 w-4" />
+                    <BrandIcon name="github" size={16} />
                     {data.cta.secondary.text}
                   </a>
                 </motion.div>

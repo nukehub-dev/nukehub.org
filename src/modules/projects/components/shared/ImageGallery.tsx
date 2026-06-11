@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { TiltCard } from "./TiltCard";
+import { TiltCard } from "@modules/projects/components/shared/TiltCard";
 
 interface GalleryImage {
   src: string;

@@ -1,0 +1,152 @@
+hero:
+  badge:
+    text: "Scientific Computing Platform"
+    icon: "Server"
+  ctas:
+    - text: "Try NukeLab"
+      href: "https://lab.nukehub.org"
+      variant: "primary"
+      icon: "arrowRight"
+      external: true
+    - text: "View on GitHub"
+      href: "https://github.com/nukehub-dev/nukelab"
+      variant: "secondary"
+      icon: "github"
+      external: true
+  heroImage: "/assets/images/nuke-lab.png"
+  heroImageAlt: "NukeLab dashboard showing server management and resource monitoring"
+
+stats:
+  - value: "52+"
+    label: "API Endpoints"
+  - value: "6"
+    label: "RBAC Roles"
+  - value: "4"
+    label: "Resource Plans"
+  - value: "500+"
+    label: "Tests Passing"
+
+features:
+  title: "Built for Teams That Simulate"
+  description: "On-demand nuclear-engineering workspaces with enterprise governance, monitoring, and collaboration."
+  items:
+    - icon: "Container"
+      title: "Containerized Workspaces"
+      description: "Spawn browser-accessible NukeIDE and Jupyter environments instantly, managed by a FastAPI backend."
+      color: "amber"
+    - icon: "Boxes"
+      title: "Custom Environments"
+      description: "Admin-configurable Docker templates define installed tools, packages, ports, env vars, and resource defaults."
+      color: "emerald"
+    - icon: "Users"
+      title: "Granular RBAC"
+      description: "Six predefined roles with 20+ permissions, plus a visual permission-matrix editor and per-user overrides."
+      color: "sky"
+    - icon: "Activity"
+      title: "Live Monitoring"
+      description: "Real-time CPU, memory, disk, and network metrics streamed over WebSockets with alerting and health checks."
+      color: "violet"
+
+environments:
+  title: "Batteries-Included Nuclear Stack"
+  description: "Default environment ships production-ready simulation codes and scientific libraries, not just generic Jupyter."
+  items:
+    - name: "Default Simulation Environment"
+      badge: "Flagship"
+      badgeIcon: "FlaskConical"
+      description: "A Debian-based container preloaded with the essential open-source nuclear engineering toolchain. Clone, customize, or deploy as-is."
+      image: "/assets/images/nuke-lab.png"
+      imageAlt: "NukeLab default environment with JupyterLab and nuclear simulation tools"
+      features:
+        - "OpenMC v0.15.2, Geant4 v11.3.0, DAGMC v3.2.4"
+        - "MOAB, Double-Down, libMesh, NJOY2016, KDSource"
+        - "PyNE, Paramak, PlasmaPy, cad_to_dagmc, vmecpp"
+        - "JupyterHub 5.3.0 + JupyterLab + NukeIDE (Theia)"
+        - "Miniforge Python 3.12 with NumPy, Cython, HDF5, Gmsh"
+      reversed: false
+
+architecture:
+  title: "Modern, Self-Hosted Architecture"
+  description: "Optimized for constrained bare-metal. Docker or Podman. No Node.js runtime overhead in production."
+  items:
+    - icon: "Globe"
+      title: "Traefik v3 Proxy"
+      description: "Dynamic container routing, TLS termination, rate limiting, and native WebSocket proxying."
+    - icon: "Zap"
+      title: "Vite + React 19 SPA"
+      description: "Static dashboard with TanStack Router/Query, Recharts, and shadcn/ui primitives."
+    - icon: "Cpu"
+      title: "FastAPI Backend"
+      description: "Python 3.12 async API with Pydantic, SQLAlchemy, Alembic, and async Docker SDK orchestration."
+    - icon: "Database"
+      title: "PostgreSQL + Redis"
+      description: "PostgreSQL 17 for persistent state, Redis 7 for sessions, pub/sub, Celery, and response caching."
+    - icon: "Clock"
+      title: "Celery Workers"
+      description: "Background cleanup, notifications, scheduled maintenance, report generation, and cron tasks."
+    - icon: "Shield"
+      title: "Security Hardened"
+      description: "CSRF protection, IP allowlists, rate limiting, security headers, path traversal defenses, and audit logs."
+
+plans:
+  title: "Fair-Share Resource Plans"
+  description: "Decouple what runs from how big it is. Plans define CPU, memory, disk, runtime, idle timeout, and NUKE cost."
+  items:
+    - name: "Small"
+      cpu: "2"
+      memory: "4 GB"
+      disk: "20 GB"
+      cost: "1 NUKE/hr"
+      description: "Light analysis, notebooks, and quick experiments."
+    - name: "Medium"
+      cpu: "4"
+      memory: "8 GB"
+      disk: "50 GB"
+      cost: "2 NUKE/hr"
+      description: "Standard simulations and data processing workflows."
+      highlighted: true
+    - name: "Large"
+      cpu: "8"
+      memory: "16 GB"
+      disk: "100 GB"
+      cost: "4 NUKE/hr"
+      description: "Heavy parallel CPU workloads and longer runs."
+    - name: "XLarge"
+      cpu: "16"
+      memory: "32 GB"
+      disk: "200 GB"
+      cost: "8 NUKE/hr"
+      description: "Maximum resources — admin approval required."
+
+workflow:
+  title: "From Login to Simulation in Minutes"
+  description: "A streamlined workflow for researchers, engineers, and educators."
+  steps:
+    - number: 1
+      title: "Sign In"
+      description: "Authenticate via local credentials or your organization's OAuth2 / OIDC provider."
+      icon: "LogIn"
+    - number: 2
+      title: "Deploy a Server"
+      description: "Pick a pre-configured environment and resource plan, then spawn a containerized workspace."
+      icon: "Rocket"
+    - number: 3
+      title: "Run Simulations"
+      description: "Open NukeIDE or JupyterLab in the browser and work with OpenMC, Geant4, and the full nuclear stack."
+      icon: "FlaskConical"
+    - number: 4
+      title: "Share & Scale"
+      description: "Invite collaborators to shared workspaces, monitor live metrics, and schedule automated start/stop."
+      icon: "Share2"
+
+cta:
+  title: "Ready to Run Simulations in the Cloud?"
+  description: "Deploy NukeLab on your own hardware or try the hosted instance today."
+  primary:
+    text: "Try NukeLab"
+    href: "https://lab.nukehub.org"
+    icon: "external"
+  secondary:
+    text: "GitHub"
+    href: "https://github.com/nukehub-dev/nukelab"
+    icon: "github"
