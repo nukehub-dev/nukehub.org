@@ -47,47 +47,51 @@ recurrence:
 ## Recurrence patterns
 
 ### Monthly — specific date
+
 ```yaml
 recurrence:
   type: monthly-date
-  day: 28        # 28th of every month
+  day: 28 # 28th of every month
 ```
 
 ### Monthly — Nth weekday
+
 ```yaml
 recurrence:
   type: monthly-weekday
-  weekday: 3     # Wednesday (0=Sun, 1=Mon, ..., 6=Sat)
-  occurrence: 2  # 2nd Wednesday. Use -1 for "last"
+  weekday: 3 # Wednesday (0=Sun, 1=Mon, ..., 6=Sat)
+  occurrence: 2 # 2nd Wednesday. Use -1 for "last"
 ```
 
 ### Weekly
+
 ```yaml
 recurrence:
   type: weekly
-  weekday: 5     # Every Friday
+  weekday: 5 # Every Friday
 ```
 
 ### Biweekly
+
 ```yaml
 recurrence:
   type: biweekly
-  weekday: 2     # Tuesday
-  anchorDate: "2025-01-14"  # First occurrence date
+  weekday: 2 # Tuesday
+  anchorDate: "2025-01-14" # First occurrence date
 ```
 
 ## Field reference
 
-| Field | Required | Description |
-|---|---|---|
-| `title` | ✅ | Event title |
-| `start` | ✅ | Start date/time in ISO 8601 (e.g. `2025-06-15T09:00:00Z`) |
-| `end` | | End date/time in ISO 8601 |
-| `description` | | Long description shown in modal |
-| `venue` | | Location or platform name |
-| `meetingUrl` | | Direct Zoom/Meet/Discord link (shows "Join Meeting" button) |
-| `url` | | Event info / registration page |
-| `backgroundColor` | | Hex color for calendar dot and card accent |
-| `organizer` | | Array of `{ name, email }` — shown as contact links |
-| `speakers` | | Array of `{ name, email }` — shown as tags |
-| `recurrence` | | Recurrence pattern (see examples above) |
+| Field             | Required | Description                                                 |
+| ----------------- | -------- | ----------------------------------------------------------- |
+| `title`           | ✅       | Event title                                                 |
+| `start`           | ✅       | Start date/time in ISO 8601 (e.g. `2025-06-15T09:00:00Z`)   |
+| `end`             |          | End date/time in ISO 8601                                   |
+| `description`     |          | Long description shown in modal                             |
+| `venue`           |          | Location or platform name                                   |
+| `meetingUrl`      |          | Direct Zoom/Meet/Discord link (shows "Join Meeting" button) |
+| `url`             |          | Event info / registration page                              |
+| `backgroundColor` |          | Hex color for calendar dot and card accent                  |
+| `organizer`       |          | Array of `{ name, email }` — shown as contact links         |
+| `speakers`        |          | Array of `{ name, email }` — shown as tags                  |
+| `recurrence`      |          | Recurrence pattern (see examples above)                     |

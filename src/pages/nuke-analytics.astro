@@ -5,7 +5,9 @@ import type { NukeAnalyticsData } from "@modules/projects/nuke-analytics/types";
 import { loadYaml } from "@lib/loadYaml";
 import { getCollection } from "astro:content";
 
-const data = loadYaml<NukeAnalyticsData>("projects/nuke-analytics/data/page.yml");
+const data = loadYaml<NukeAnalyticsData>(
+  "projects/nuke-analytics/data/page.yml",
+);
 
 const projectEntries = await getCollection("projects");
 const entry = projectEntries.find((e) => e.id === "nuke-analytics");

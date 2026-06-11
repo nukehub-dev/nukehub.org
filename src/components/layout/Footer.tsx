@@ -1,10 +1,23 @@
-import { footerColumns, footerLegal, socialLinks } from "@data/footer";
+import {
+  footerColumns as defaultFooterColumns,
+  footerLegal,
+  socialLinks,
+  buildFooterColumns,
+  type ProjectFooterEntry,
+} from "@data/footer";
 import { Logo } from "@components/ui/Logo";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { ArrowUpRight } from "lucide-react";
 
-export function Footer() {
+interface FooterProps {
+  projectEntries?: ProjectFooterEntry[];
+}
+
+export function Footer({ projectEntries }: FooterProps) {
   const year = new Date().getFullYear();
+  const columns = projectEntries
+    ? buildFooterColumns(projectEntries)
+    : defaultFooterColumns;
 
   return (
     <footer className="relative mt-auto w-full border-t border-border/40 bg-background">
@@ -44,7 +57,7 @@ export function Footer() {
 
           {/* Link columns */}
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-8">
-            {footerColumns.map((col) => (
+            {columns.map((col) => (
               <div key={col.title}>
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                   {col.title}

@@ -10,7 +10,12 @@ interface LaptopMockupProps {
 
 export function LaptopMockup({ children, className }: LaptopMockupProps) {
   return (
-    <div className={cn("relative mx-auto w-full px-2 pb-10 pt-4 sm:px-8", className)}>
+    <div
+      className={cn(
+        "relative mx-auto w-full px-2 pb-10 pt-4 sm:px-8",
+        className,
+      )}
+    >
       {/* Top Lid */}
       <div className="relative z-10 rounded-t-xl bg-[#1c1c1c] p-1.5 sm:p-2 pb-0 shadow-2xl ring-1 ring-white/10 sm:rounded-t-2xl">
         {/* Webcam */}

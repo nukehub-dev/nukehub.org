@@ -18,6 +18,11 @@ import {
   Calendar,
   MessageSquare,
   Mail,
+  Code2,
+  Globe,
+  Monitor,
+  Cpu,
+  Server,
 } from "lucide-react";
 import { BrandIcon } from "@components/ui/BrandIcon";
 
@@ -44,26 +49,11 @@ const LinkedinIcon = (props: { className?: string }) => (
   <BrandIcon name="linkedin" size={16} {...props} />
 );
 
-export const navItems: NavItem[] = [
+const staticNavItems: NavItem[] = [
   {
     title: "Home",
     icon: Home,
     url: "/",
-  },
-  {
-    title: "Projects",
-    icon: LayoutGrid,
-    children: [
-      { title: "NRMS", icon: Factory, url: "/nrms" },
-      { title: "NukeAnalytics", icon: BarChart3, url: "/nuke-analytics" },
-      { title: "NukeLab", icon: FlaskConical, url: "/nuke-lab" },
-      {
-        title: "NukeBox",
-        icon: Package,
-        url: "https://nukebox.readthedocs.io/",
-        newpage: true,
-      },
-    ],
   },
   {
     title: "Manual",
@@ -105,3 +95,60 @@ export const navItems: NavItem[] = [
     ],
   },
 ];
+
+export interface ProjectNavEntry {
+  title: string;
+  iconName?: string;
+  url: string;
+  newpage?: boolean;
+}
+
+// Icon map for dynamic project entries
+export const projectIconMap: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
+  Factory,
+  BarChart3,
+  FlaskConical,
+  Package,
+  Code2,
+  Globe,
+  Monitor,
+  Cpu,
+  Server,
+};
+
+export function buildNavItems(
+  projectEntries: ProjectNavEntry[] = [],
+): NavItem[] {
+  const projectChildren: NavChild[] = projectEntries.map((p) => ({
+    title: p.title,
+    icon: projectIconMap[p.iconName || "Factory"] || Factory,
+    url: p.url,
+    newpage: p.newpage,
+  }));
+
+  const projectsItem: NavItem = {
+    title: "Projects",
+    icon: LayoutGrid,
+    children: projectChildren,
+  };
+
+  // Insert Projects after Home
+  return [staticNavItems[0], projectsItem, ...staticNavItems.slice(1)];
+}
+
+// Legacy export for backward compatibility
+export const navItems = buildNavItems([
+  { title: "NukeLab", iconName: "FlaskConical", url: "/nuke-lab" },
+  { title: "NukeIDE", iconName: "Code2", url: "/nuke-ide" },
+  { title: "NRMS", iconName: "Factory", url: "/nrms" },
+  { title: "NukeAnalytics", iconName: "BarChart3", url: "/nuke-analytics" },
+  {
+    title: "NukeBox",
+    iconName: "Package",
+    url: "https://nukebox.readthedocs.io/",
+    newpage: true,
+  },
+]);

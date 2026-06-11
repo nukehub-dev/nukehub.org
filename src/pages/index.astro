@@ -42,7 +42,7 @@ const ctaData = loadYaml<CTAData>("home/data/cta.yml");
 // Load projects from content collection and sort by order
 const projectEntries = await getCollection("projects");
 const sortedEntries = projectEntries.sort(
-  (a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity)
+  (a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity),
 );
 const allProjects = sortedEntries.map((entry) => ({
   title: entry.data.title,

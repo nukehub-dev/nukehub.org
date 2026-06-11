@@ -1,13 +1,24 @@
 import * as React from "react";
 import { cn } from "@lib/utils";
-import { navItems } from "@data/nav.tsx";
+import {
+  navItems as defaultNavItems,
+  buildNavItems,
+  type ProjectNavEntry,
+} from "@data/nav.tsx";
 import { Logo } from "@components/ui/Logo";
 import { ThemeToggle } from "@components/shared/ThemeToggle";
 import { ColorPicker } from "@components/shared/ColorPicker";
 import { UserAuthMenu } from "@components/shared/UserAuthMenu";
 import { Menu, X } from "lucide-react";
 
-export function Header() {
+interface HeaderProps {
+  projectEntries?: ProjectNavEntry[];
+}
+
+export function Header({ projectEntries }: HeaderProps) {
+  const items = projectEntries
+    ? buildNavItems(projectEntries)
+    : defaultNavItems;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
 
@@ -25,7 +36,7 @@ export function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
+          {items.map((item) => (
             <React.Fragment key={item.title}>
               {item.children ? (
                 <div
@@ -131,7 +142,7 @@ export function Header() {
       {mobileOpen && (
         <div className="border-t border-border md:hidden">
           <div className="mx-auto max-w-7xl px-4 py-4 space-y-1">
-            {navItems.map((item) => (
+            {items.map((item) => (
               <div key={item.title}>
                 {item.children ? (
                   <div className="space-y-1">

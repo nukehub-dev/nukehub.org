@@ -69,7 +69,10 @@ const colorConfig: Record<
   },
 };
 
-const iconComponents: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
+const iconComponents: Record<
+  string,
+  React.ComponentType<{ className?: string; size?: number }>
+> = {
   Server,
   Container,
   Boxes,
@@ -149,7 +152,9 @@ function AnimatedCounter({ value, label }: { value: string; label: string }) {
         <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent">
           {displayValue}
         </div>
-        <div className="mt-2 text-sm text-muted-foreground font-medium">{label}</div>
+        <div className="mt-2 text-sm text-muted-foreground font-medium">
+          {label}
+        </div>
       </div>
     </motion.div>
   );
@@ -290,7 +295,11 @@ export function NukelabPage({
           <div className="mx-auto max-w-4xl px-4">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {data.stats.map((stat) => (
-                <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
+                <AnimatedCounter
+                  key={stat.label}
+                  value={stat.value}
+                  label={stat.label}
+                />
               ))}
             </div>
           </div>
@@ -361,8 +370,12 @@ export function NukelabPage({
                       >
                         <Icon size={22} />
                       </div>
-                      <h3 className="mt-4 text-lg font-semibold text-foreground">{feature.title}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                      <h3 className="mt-4 text-lg font-semibold text-foreground">
+                        {feature.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                        {feature.description}
+                      </p>
                     </div>
                   </motion.div>
                 );
@@ -413,15 +426,23 @@ export function NukelabPage({
                       env.image ? "lg:grid-cols-2" : ""
                     }`}
                   >
-                    <div className={env.reversed ? "order-2" : "order-2 lg:order-1"}>
+                    <div
+                      className={
+                        env.reversed ? "order-2" : "order-2 lg:order-1"
+                      }
+                    >
                       {env.badge && (
                         <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-4">
                           <BadgeIcon className="h-4 w-4" />
                           {env.badge}
                         </div>
                       )}
-                      <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">{env.name}</h3>
-                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">{env.description}</p>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+                        {env.name}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
+                        {env.description}
+                      </p>
                       <ul className="space-y-3">
                         {env.features.map((feat) => (
                           <li
@@ -438,7 +459,9 @@ export function NukelabPage({
                     {env.image && (
                       <motion.div
                         variants={fadeInUp}
-                        className={env.reversed ? "order-1" : "order-1 lg:order-2"}
+                        className={
+                          env.reversed ? "order-1" : "order-1 lg:order-2"
+                        }
                       >
                         <TiltCard tiltAmount={3}>
                           <div className="relative group">
@@ -515,8 +538,12 @@ export function NukelabPage({
                     <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
                       <Icon className="h-7 w-7 text-primary" />
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2 text-center">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed text-center">{item.description}</p>
+                    <h3 className="text-lg font-semibold text-foreground mb-2 text-center">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed text-center">
+                      {item.description}
+                    </p>
                   </motion.div>
                 );
               })}
@@ -571,19 +598,29 @@ export function NukelabPage({
                     </div>
                   )}
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-                  <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
-                  <div className="mt-4 text-3xl font-bold text-primary">{plan.cost}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">per hour</div>
+                  <h3 className="text-xl font-bold text-foreground">
+                    {plan.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {plan.description}
+                  </p>
+                  <div className="mt-4 text-3xl font-bold text-primary">
+                    {plan.cost}
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    per hour
+                  </div>
                   <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center gap-2">
                       <Cpu className="h-4 w-4 text-primary" /> {plan.cpu} CPU
                     </li>
                     <li className="flex items-center gap-2">
-                      <Database className="h-4 w-4 text-primary" /> {plan.memory} RAM
+                      <Database className="h-4 w-4 text-primary" />{" "}
+                      {plan.memory} RAM
                     </li>
                     <li className="flex items-center gap-2">
-                      <Server className="h-4 w-4 text-primary" /> {plan.disk} Disk
+                      <Server className="h-4 w-4 text-primary" /> {plan.disk}{" "}
+                      Disk
                     </li>
                   </ul>
                 </motion.div>
@@ -635,8 +672,12 @@ export function NukelabPage({
                     <div className="mb-4 mt-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                       <Icon className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground">{step.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {step.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {step.description}
+                    </p>
                   </motion.div>
                 );
               })}

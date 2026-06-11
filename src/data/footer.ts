@@ -10,6 +10,11 @@ import {
   BarChart3,
   FlaskConical,
   Package,
+  Code2,
+  Globe,
+  Monitor,
+  Cpu,
+  Server,
   ExternalLink,
   Mail,
 } from "lucide-react";
@@ -26,26 +31,7 @@ export interface FooterColumn {
   links: FooterLink[];
 }
 
-export const footerColumns: FooterColumn[] = [
-  {
-    title: "Projects",
-    links: [
-      { title: "NRMS", url: "/nrms", newpage: true, icon: Factory },
-      {
-        title: "NukeAnalytics",
-        url: "/nuke-analytics",
-        newpage: true,
-        icon: BarChart3,
-      },
-      { title: "NukeLab", url: "/nuke-lab", newpage: true, icon: FlaskConical },
-      {
-        title: "NukeBox",
-        url: "https://nukebox.readthedocs.io/",
-        newpage: true,
-        icon: Package,
-      },
-    ],
-  },
+const staticFooterColumns: FooterColumn[] = [
   {
     title: "Manual",
     links: [
@@ -86,6 +72,58 @@ export const footerColumns: FooterColumn[] = [
     ],
   },
 ];
+
+// Icon map for dynamic project entries
+const projectIconMap: Record<string, LucideIcon> = {
+  Factory,
+  BarChart3,
+  FlaskConical,
+  Package,
+  Code2,
+  Globe,
+  Monitor,
+  Cpu,
+  Server,
+};
+
+export interface ProjectFooterEntry {
+  title: string;
+  iconName?: string;
+  url: string;
+  newpage?: boolean;
+}
+
+export function buildFooterColumns(
+  projectEntries: ProjectFooterEntry[] = [],
+): FooterColumn[] {
+  const projectLinks: FooterLink[] = projectEntries.map((p) => ({
+    title: p.title,
+    url: p.url,
+    newpage: p.newpage ?? true,
+    icon: projectIconMap[p.iconName || "Factory"] || Factory,
+  }));
+
+  const projectsColumn: FooterColumn = {
+    title: "Projects",
+    links: projectLinks,
+  };
+
+  return [projectsColumn, ...staticFooterColumns];
+}
+
+// Legacy export for backward compatibility
+export const footerColumns = buildFooterColumns([
+  { title: "NukeLab", iconName: "FlaskConical", url: "/nuke-lab" },
+  { title: "NukeIDE", iconName: "Code2", url: "/nuke-ide" },
+  { title: "NRMS", iconName: "Factory", url: "/nrms" },
+  { title: "NukeAnalytics", iconName: "BarChart3", url: "/nuke-analytics" },
+  {
+    title: "NukeBox",
+    iconName: "Package",
+    url: "https://nukebox.readthedocs.io/",
+    newpage: true,
+  },
+]);
 
 export const footerLegal = [
   { title: "Privacy", url: "/privacy-policy" },

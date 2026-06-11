@@ -149,7 +149,11 @@ export function NrmsPage({
                 {data.hero.ctas.map((cta, i) => {
                   const isPrimary = cta.variant === "primary";
                   const CtaIcon =
-                    cta.icon === "github" ? undefined : cta.icon === "external" ? ExternalLink : ArrowRight;
+                    cta.icon === "github"
+                      ? undefined
+                      : cta.icon === "external"
+                        ? ExternalLink
+                        : ArrowRight;
                   return (
                     <a
                       key={i}

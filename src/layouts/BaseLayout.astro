@@ -7,6 +7,9 @@ import { CustomCursor } from "@components/shared/CustomCursor";
 import { GlobalContextMenu } from "@components/shared/GlobalContextMenu";
 import { PerformanceMonitor } from "@components/shared/PerformanceMonitor";
 import GrainOverlay from "@components/shared/GrainOverlay.astro";
+import { getCollection } from "astro:content";
+import type { ProjectNavEntry } from "@data/nav.tsx";
+import type { ProjectFooterEntry } from "@data/footer";
 
 interface Props {
   title?: string;
@@ -29,6 +32,28 @@ const {
   htmlClass,
   showFooter = true,
 } = Astro.props;
+
+// Load projects from content collection for dynamic nav/footer
+const projectEntries = await getCollection("projects");
+const sortedEntries = projectEntries.sort(
+  (a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity),
+);
+
+// Pass simple JSON-serializable project entries to client components
+// (React components can't be serialized across server/client boundary)
+const projectNavEntries = sortedEntries.map((entry) => ({
+  title: entry.data.title,
+  url: entry.data.permalink || `/${entry.id}`,
+  newpage: entry.data.newpage,
+  iconName: entry.data.icon || "Factory",
+}));
+
+const projectFooterEntries = sortedEntries.map((entry) => ({
+  title: entry.data.title,
+  url: entry.data.permalink || `/${entry.id}`,
+  newpage: entry.data.newpage ?? true,
+  iconName: entry.data.tags?.[0] || "Factory",
+}));
 
 const siteUrl = "https://nukehub.org";
 const pageTitle = title ? `${title} | NukeHub` : "NukeHub";
@@ -174,13 +199,14 @@ const canonicalUrl = `${siteUrl}${permalink}`;
       url={import.meta.env.PUBLIC_KEYCLOAK_URL}
       realm={import.meta.env.PUBLIC_KEYCLOAK_REALM}
       clientId={import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID}
+      projectEntries={projectNavEntries}
     />
 
     <main class="flex-1" role="main">
       <slot />
     </main>
 
-    {showFooter && <Footer />}
+    {showFooter && <Footer projectEntries={projectFooterEntries} />}
 
     <!-- Scroll to top -->
     <button
