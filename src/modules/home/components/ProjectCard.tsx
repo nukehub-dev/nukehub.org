@@ -3,12 +3,14 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { Badge } from "@components/ui/Badge";
+import { GitHubStatsOverlay } from "@components/shared/GitHubStatsOverlay";
 
 export interface Project {
   title: string;
   description: string;
   url: string;
   source: string;
+  githubRepo?: string;
   newpage?: boolean;
   image?: string;
   tags?: string[];
@@ -97,6 +99,8 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
+
+          <GitHubStatsOverlay githubRepo={project.githubRepo} />
         </div>
 
         {/* Content */}

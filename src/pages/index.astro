@@ -49,6 +49,7 @@ const allProjects = sortedEntries.map((entry) => ({
   description: entry.data.description || "",
   url: entry.data.url || "",
   source: entry.data.source || "",
+  githubRepo: entry.data.githubRepo,
   newpage: entry.data.newpage ?? false,
   image: entry.data.image,
   tags: entry.data.tags,

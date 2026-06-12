@@ -9,6 +9,7 @@ export interface Project {
   description: string;
   url: string;
   source: string;
+  githubRepo?: string;
   newpage?: boolean;
   image?: string;
   tags?: string[];
@@ -85,7 +86,7 @@ export function ProjectsGrid({
           {projects.map((project, i) => (
             <div
               key={project.title}
-              className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
+              className="flex w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
             >
               <ProjectCard project={project} index={i} />
             </div>

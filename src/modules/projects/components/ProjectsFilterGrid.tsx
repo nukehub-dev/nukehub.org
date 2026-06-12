@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Tag, ArrowUpRight } from "lucide-react";
 import { Badge } from "@components/ui/Badge";
 import { SearchInput } from "@components/ui/SearchInput";
+import { GitHubStatsOverlay } from "@components/shared/GitHubStatsOverlay";
 import { viewportOnce } from "@lib/animations";
 
 export interface Project {
@@ -11,6 +12,7 @@ export interface Project {
   url: string;
   source: string;
   slug: string;
+  githubRepo?: string;
   newpage?: boolean;
   image?: string;
   tags?: string[];
@@ -121,7 +123,7 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3, delay: i * 0.05 }}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/[0.08] dark:border-border/30 dark:bg-card/50"
+                className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/[0.08] dark:border-border/30 dark:bg-card/50"
               >
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden">
@@ -142,6 +144,8 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+
+                  <GitHubStatsOverlay githubRepo={project.githubRepo} />
                 </div>
 
                 {/* Content */}
@@ -166,7 +170,7 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                     {project.description}
                   </p>
 
-                  <div className="mt-5 flex items-center gap-3">
+                  <div className="mt-auto flex items-center gap-3">
                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
                       View Details
                       <ArrowUpRight size={12} />

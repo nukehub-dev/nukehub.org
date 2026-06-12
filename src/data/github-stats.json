@@ -1,0 +1,50 @@
+{
+  "lastUpdated": "2026-06-12T15:43:12.849Z",
+  "maxStaleHours": 24,
+  "repos": {
+    "nukehub-dev/nuke-ide": {
+      "stars": 2,
+      "forks": 0,
+      "openIssues": 0,
+      "watchers": 2,
+      "contributors": 1,
+      "lastCommitAt": "2026-04-28T20:45:04Z",
+      "lastRelease": null,
+      "defaultBranch": "main"
+    },
+    "nukehub-dev/nukebox": {
+      "stars": 10,
+      "forks": 0,
+      "openIssues": 0,
+      "watchers": 10,
+      "contributors": 1,
+      "lastCommitAt": "2024-02-27T04:36:39Z",
+      "lastRelease": {
+        "tag": "v0.1.2",
+        "name": "v0.1.2",
+        "publishedAt": "2023-09-06T15:50:48Z",
+        "url": "https://github.com/nukehub-dev/nukebox/releases/tag/v0.1.2"
+      },
+      "defaultBranch": "develop"
+    },
+    "nukehub-dev/nukelab": {
+      "stars": 0,
+      "forks": 0,
+      "openIssues": 1,
+      "watchers": 0,
+      "contributors": 1,
+      "lastCommitAt": "2026-04-24T18:57:19Z",
+      "lastRelease": null,
+      "defaultBranch": "main"
+    }
+  },
+  "aggregate": {
+    "totalRepos": 3,
+    "syncedRepos": 3,
+    "failedRepos": 0,
+    "totalStars": 12,
+    "totalForks": 0,
+    "totalContributors": 3,
+    "totalOpenIssues": 1
+  }
+}
