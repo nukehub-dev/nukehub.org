@@ -22,6 +22,7 @@ import {
   Monitor as MonitorIcon,
 } from "lucide-react";
 import { cn } from "@lib/utils";
+import { useFocusTrap } from "@lib/useFocusTrap";
 
 export interface CommandPaletteProject {
   id: string;
@@ -192,6 +193,7 @@ export function CommandPalette({
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const resultsRef = React.useRef<HTMLDivElement>(null);
+  const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
 
   React.useEffect(() => setMounted(true), []);
 
@@ -304,6 +306,7 @@ export function CommandPalette({
 
           {/* Modal */}
           <motion.div
+            ref={modalRef}
             className="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-black/60"
             initial={{ opacity: 0, scale: 0.96, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}

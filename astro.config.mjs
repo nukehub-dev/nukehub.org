@@ -1,50 +1,50 @@
-import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from "astro/config";
+import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://nukehub.org',
-  output: 'static',
+  site: "https://nukehub.org",
+  output: "static",
   prefetch: {
     prefetchAll: false,
-    defaultStrategy: 'hover',
+    defaultStrategy: "hover",
   },
   image: {
-    domains: ['github.com', 'avatars.githubusercontent.com'],
+    domains: ["github.com", "avatars.githubusercontent.com"],
   },
-  integrations: [
-    react(),
-    mdx(),
-    sitemap(),
-  ],
+  integrations: [react(), mdx(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
-        '@fullcalendar/react',
-        '@fullcalendar/daygrid',
-        '@fullcalendar/timegrid',
-        '@fullcalendar/list',
-        '@fullcalendar/interaction',
+        "@fullcalendar/react",
+        "@fullcalendar/daygrid",
+        "@fullcalendar/timegrid",
+        "@fullcalendar/list",
+        "@fullcalendar/interaction",
       ],
+      exclude: ["@resvg/resvg-js"],
       esbuildOptions: {
         define: {
-          'process.env.NODE_ENV': '"development"',
+          "process.env.NODE_ENV": '"development"',
         },
       },
     },
+    ssr: {
+      external: ["@resvg/resvg-js"],
+    },
     resolve: {
       alias: {
-        '@components': '/src/components',
-        '@layouts': '/src/layouts',
-        '@data': '/src/data',
-        '@styles': '/src/styles',
-        '@lib': '/src/lib',
-        '@content': '/src/content',
-        '@modules': '/src/modules',
+        "@components": "/src/components",
+        "@layouts": "/src/layouts",
+        "@data": "/src/data",
+        "@styles": "/src/styles",
+        "@lib": "/src/lib",
+        "@content": "/src/content",
+        "@modules": "/src/modules",
       },
     },
   },

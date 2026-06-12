@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle } from "lucide-react";
 import { cn } from "@lib/utils";
+import { useFocusTrap } from "@lib/useFocusTrap";
 import { ContactForm } from "./ContactForm";
 
 interface ContactModalProps {
@@ -17,6 +18,7 @@ export function ContactModal({
   defaultInquiryType = "",
 }: ContactModalProps) {
   const [mounted, setMounted] = React.useState(false);
+  const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
 
   React.useEffect(() => setMounted(true), []);
 
@@ -61,6 +63,7 @@ export function ContactModal({
 
           {/* Modal */}
           <motion.div
+            ref={modalRef}
             className={cn(
               "relative w-full overflow-hidden rounded-2xl border shadow-2xl",
               "bg-background/95 backdrop-blur-2xl border-border/60",

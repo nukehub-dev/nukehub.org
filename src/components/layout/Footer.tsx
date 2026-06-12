@@ -7,6 +7,7 @@ import {
 } from "@data/footer";
 import { Logo } from "@components/ui/Logo";
 import { BrandIcon } from "@components/ui/BrandIcon";
+import { CookieSettingsLink } from "@components/shared/CookieSettingsLink";
 import { ArrowUpRight } from "lucide-react";
 
 interface FooterProps {
@@ -117,6 +118,7 @@ export function Footer({ projectEntries }: FooterProps) {
                 <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
+            <CookieSettingsLink />
           </nav>
         </div>
       </div>

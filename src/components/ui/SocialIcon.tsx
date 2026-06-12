@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Phone, Mail, Globe, Video, type LucideProps } from "lucide-react";
+import { Phone, Mail, Globe, type LucideProps } from "lucide-react";
 import { BrandIcon } from "./BrandIcon";
 
 // ============================================================================

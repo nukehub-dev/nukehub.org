@@ -7,6 +7,7 @@ import { CustomCursor } from "@components/shared/CustomCursor";
 import { GlobalContextMenu } from "@components/shared/GlobalContextMenu";
 import { PerformanceMonitor } from "@components/shared/PerformanceMonitor";
 import GrainOverlay from "@components/shared/GrainOverlay.astro";
+import { CookieConsent } from "@components/shared/CookieConsent";
 import { getCollection } from "astro:content";
 import { CommandPaletteManager } from "@components/shared/CommandPaletteManager";
 import type { ProjectNavEntry } from "@data/nav.tsx";
@@ -295,11 +296,19 @@ const commandPalettePages: CommandPalettePage[] = [
   </head>
 
   <body class={`min-h-screen flex flex-col ${bodyClass || ""}`}>
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[9999] -translate-y-[150%] rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+    >
+      Skip to content
+    </a>
+
     <ScrollProgress client:idle />
     <CustomCursor client:idle />
     <GlobalContextMenu client:idle />
     <PerformanceMonitor client:idle />
     <GrainOverlay />
+    <CookieConsent client:load />
 
     <CommandPaletteManager
       client:load
@@ -318,11 +327,11 @@ const commandPalettePages: CommandPalettePage[] = [
       projectEntries={projectNavEntries}
     />
 
-    <main class="flex-1" role="main">
+    <main id="main-content" class="flex-1" role="main" tabindex="-1">
       <slot />
     </main>
 
-    {showFooter && <Footer projectEntries={projectFooterEntries} />}
+    {showFooter && <Footer projectEntries={projectFooterEntries} client:load />}
 
     <!-- Scroll to top -->
     <button
@@ -358,6 +367,32 @@ const commandPalettePages: CommandPalettePage[] = [
         });
         btn.addEventListener("click", function () {
           window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      })();
+    </script>
+    <script is:inline>
+      (function () {
+        function showCookieBanner() {
+          var banner = document.querySelector("[data-cookie-banner]");
+          if (!banner) return;
+          banner.classList.remove("translate-y-6", "opacity-0", "pointer-events-none");
+          banner.classList.add("translate-y-0", "opacity-100", "pointer-events-auto");
+        }
+
+        document.addEventListener("click", function (e) {
+          var target = e.target.closest("[data-cookie-settings]");
+          if (!target) return;
+          e.preventDefault();
+          try {
+            localStorage.removeItem("cookie-consent");
+            showCookieBanner();
+            window.dispatchEvent(
+              new CustomEvent("cookie-consent-change", { detail: { consent: null } }),
+            );
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error("Failed to reset cookie consent:", err);
+          }
         });
       })();
     </script>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
+import { usePrefersReducedMotion } from "@lib/usePrefersReducedMotion";
 
 interface TiltCardProps {
   children: ReactNode;
@@ -15,8 +16,10 @@ export function TiltCard({
 }: TiltCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState({ rotateX: 0, rotateY: 0 });
+  const reducedMotion = usePrefersReducedMotion();
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reducedMotion) return;
     const card = cardRef.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
