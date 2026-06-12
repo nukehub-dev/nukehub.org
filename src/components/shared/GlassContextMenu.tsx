@@ -210,7 +210,7 @@ interface ContextMenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
   href?: string;
   target?: string;
   rel?: string;
-  shortcut?: string;
+  shortcut?: React.ReactNode;
   variant?: "default" | "danger";
 }
 

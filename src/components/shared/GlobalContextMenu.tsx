@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Link, ArrowUp } from "lucide-react";
+import { Link, ArrowUp, Search, Command, Plus } from "lucide-react";
 import { navItems } from "@data/nav";
 import {
   GlassContextMenu,
@@ -14,6 +14,21 @@ export function GlobalContextMenu() {
   return (
     <GlassContextMenu title="Navigation">
       {/* Quick actions */}
+      <ContextMenuItem
+        icon={Search}
+        onClick={() =>
+          window.dispatchEvent(new CustomEvent("command-palette:open"))
+        }
+        shortcut={
+          <span className="flex items-center gap-0.5 leading-none">
+            <Command className="h-3 w-3" />
+            <Plus className="h-3 w-3" />
+            <span className="leading-none">K</span>
+          </span>
+        }
+      >
+        Search
+      </ContextMenuItem>
       <ContextMenuItem
         icon={Link}
         onClick={() => navigator.clipboard.writeText(window.location.href)}

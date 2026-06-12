@@ -312,7 +312,7 @@ export function UserAuthMenu() {
             {initials}
           </div>
         )}
-        <span className="hidden sm:inline max-w-[120px] truncate">
+        <span className="hidden lg:inline max-w-[120px] truncate">
           {user?.username}
         </span>
         <ChevronDown

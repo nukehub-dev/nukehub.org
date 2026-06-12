@@ -8,8 +8,16 @@ import { GlobalContextMenu } from "@components/shared/GlobalContextMenu";
 import { PerformanceMonitor } from "@components/shared/PerformanceMonitor";
 import GrainOverlay from "@components/shared/GrainOverlay.astro";
 import { getCollection } from "astro:content";
+import { CommandPaletteManager } from "@components/shared/CommandPaletteManager";
 import type { ProjectNavEntry } from "@data/nav.tsx";
 import type { ProjectFooterEntry } from "@data/footer";
+import type {
+  CommandPaletteProject,
+  CommandPalettePerson,
+  CommandPaletteEvent,
+  CommandPaletteIntegration,
+  CommandPalettePage,
+} from "@components/shared/CommandPalette";
 
 interface Props {
   title?: string;
@@ -54,6 +62,72 @@ const projectFooterEntries = sortedEntries.map((entry) => ({
   newpage: entry.data.newpage ?? true,
   iconName: entry.data.tags?.[0] || "Factory",
 }));
+
+// Build command palette index from content collections
+const commandPaletteProjects: CommandPaletteProject[] = sortedEntries.map(
+  (entry) => ({
+    id: entry.id,
+    title: entry.data.title,
+    description: entry.data.description || "",
+    url: entry.data.permalink || `/${entry.id}`,
+    iconName: entry.data.icon || "Factory",
+    tags: entry.data.tags,
+    category: "Projects",
+  }),
+);
+
+const [peopleEntries, eventEntries, integrationEntries] = await Promise.all([
+  getCollection("people"),
+  getCollection("events"),
+  getCollection("integrations"),
+]);
+
+const commandPalettePeople: CommandPalettePerson[] = peopleEntries.map(
+  (entry) => ({
+    id: entry.id,
+    name: entry.data.name,
+    role: entry.data.role,
+    organization: entry.data.organization,
+    url: entry.data.url,
+    category: "People",
+  }),
+);
+
+const commandPaletteEvents: CommandPaletteEvent[] = eventEntries.map(
+  (entry) => ({
+    id: entry.id,
+    title: entry.data.title,
+    description: entry.data.description,
+    url: entry.data.url,
+    category: "Events",
+  }),
+);
+
+const commandPaletteIntegrations: CommandPaletteIntegration[] =
+  integrationEntries.map((entry) => ({
+    id: entry.id,
+    name: entry.data.name,
+    description: entry.data.description,
+    url: entry.data.url,
+    categoryName: entry.data.category,
+    category: "Integrations",
+  }));
+
+const commandPalettePages: CommandPalettePage[] = [
+  { id: "home", title: "Home", url: "/", category: "Pages" },
+  { id: "about", title: "About", url: "/about", category: "Pages" },
+  { id: "projects", title: "Projects", url: "/projects", category: "Pages" },
+  { id: "people", title: "People", url: "/people", category: "Pages" },
+  { id: "events", title: "Events", url: "/events", category: "Pages" },
+  { id: "contact", title: "Contact", url: "/contact", category: "Pages" },
+  { id: "support", title: "Support Us", url: "/support", category: "Pages" },
+  {
+    id: "acknowledgment",
+    title: "Acknowledgment",
+    url: "/acknowledgment",
+    category: "Pages",
+  },
+];
 
 const siteUrl = "https://nukehub.org";
 const pageTitle = title ? `${title} | NukeHub` : "NukeHub";
@@ -193,6 +267,15 @@ const canonicalUrl = `${siteUrl}${permalink}`;
     <GlobalContextMenu client:idle />
     <PerformanceMonitor client:idle />
     <GrainOverlay />
+
+    <CommandPaletteManager
+      client:load
+      projects={commandPaletteProjects}
+      people={commandPalettePeople}
+      events={commandPaletteEvents}
+      integrations={commandPaletteIntegrations}
+      pages={commandPalettePages}
+    />
 
     <AuthHeader
       client:only="react"

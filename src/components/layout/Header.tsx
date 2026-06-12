@@ -7,9 +7,8 @@ import {
 } from "@data/nav.tsx";
 import { Logo } from "@components/ui/Logo";
 import { ThemeToggle } from "@components/shared/ThemeToggle";
-import { ColorPicker } from "@components/shared/ColorPicker";
 import { UserAuthMenu } from "@components/shared/UserAuthMenu";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 
 interface HeaderProps {
   projectEntries?: ProjectNavEntry[];
@@ -111,13 +110,19 @@ export function Header({ projectEntries }: HeaderProps) {
         </nav>
 
         {/* Right side controls */}
-        <div className="flex items-center gap-2">
-          {/* Accent picker (desktop) */}
-          <div className="hidden sm:flex items-center">
-            <ColorPicker />
-          </div>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Command palette trigger */}
+          <button
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent("command-palette:open"))
+            }
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            aria-label="Open command palette"
+          >
+            <Search className="h-[18px] w-[18px]" />
+          </button>
 
-          {/* Theme toggle */}
+          {/* Theme + accent appearance toggle */}
           <ThemeToggle variant="dropdown" />
 
           {/* Auth menu */}
@@ -176,12 +181,6 @@ export function Header({ projectEntries }: HeaderProps) {
                 )}
               </div>
             ))}
-
-            {/* Mobile accent picker */}
-            <div className="flex items-center gap-2 px-3 pt-3 border-t border-border mt-2">
-              <span className="text-xs text-muted-foreground">Accent:</span>
-              <ColorPicker showLabels />
-            </div>
           </div>
         </div>
       )}

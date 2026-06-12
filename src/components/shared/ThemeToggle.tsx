@@ -6,11 +6,15 @@ import {
   setThemePreference,
   cycleTheme,
   watchSystemTheme,
+  getAccentColor,
+  setAccentColor,
+  ACCENT_SWATCHES,
   type ThemePreference,
   type ResolvedTheme,
+  type AccentColor,
   resolveTheme,
 } from "@lib/theme";
-import { Sun, Moon, Monitor, Check } from "lucide-react";
+import { Sun, Moon, Monitor, Check, Palette } from "lucide-react";
 import { Tooltip } from "@components/ui/Tooltip";
 
 const options: {
@@ -46,6 +50,7 @@ export function ThemeToggle({
   const [preference, setPreferenceState] =
     React.useState<ThemePreference>("system");
   const [resolved, setResolved] = React.useState<ResolvedTheme>("light");
+  const [accent, setAccentState] = React.useState<AccentColor>("orange");
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
@@ -57,6 +62,7 @@ export function ThemeToggle({
     const pref = getThemePreference();
     setPreferenceState(pref);
     setResolved(resolveTheme(pref));
+    setAccentState(getAccentColor());
   }, []);
 
   // Sync across browser tabs
@@ -66,6 +72,9 @@ export function ThemeToggle({
         const pref = getThemePreference();
         setPreferenceState(pref);
         setResolved(resolveTheme(pref));
+      }
+      if (e.key === "accent") {
+        setAccentState(getAccentColor());
       }
     };
     window.addEventListener("storage", handler);
@@ -99,6 +108,11 @@ export function ThemeToggle({
     setResolved(resolveTheme(pref));
     setThemePreference(pref);
     setOpen(false);
+  };
+
+  const applyAccent = (color: AccentColor) => {
+    setAccentState(color);
+    setAccentColor(color);
   };
 
   const handleCycle = () => {
@@ -167,11 +181,14 @@ export function ThemeToggle({
 
       {open && (
         <div
-          className="absolute right-0 top-full mt-1.5 w-40 rounded-lg border border-border bg-popover p-1 shadow-lg z-50"
+          className="absolute right-0 top-full mt-1.5 w-52 rounded-lg border border-border bg-popover p-2 shadow-lg z-50"
           role="menu"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
+          <div className="px-1 pb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Theme
+          </div>
           {options.map((opt) => {
             const OptIcon = opt.icon;
             const active = preference === opt.value;
@@ -193,6 +210,41 @@ export function ThemeToggle({
               </button>
             );
           })}
+
+          <div className="my-1.5 h-px bg-border" />
+
+          <div className="px-1 pb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Accent
+          </div>
+          <div
+            className="flex items-center justify-between px-1"
+            role="radiogroup"
+            aria-label="Accent color"
+          >
+            {ACCENT_SWATCHES.map((swatch) => {
+              const active = accent === swatch.name;
+              return (
+                <Tooltip key={swatch.name} content={swatch.label}>
+                  <button
+                    role="radio"
+                    aria-checked={active}
+                    aria-label={swatch.label}
+                    onClick={() => applyAccent(swatch.name)}
+                    className={cn(
+                      "relative h-6 w-6 rounded-full border-2 transition-transform",
+                      "hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-popover",
+                      active ? "border-foreground" : "border-transparent",
+                    )}
+                    style={{ background: `oklch(65% 0.18 ${swatch.hue})` }}
+                  >
+                    {active && (
+                      <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/40" />
+                    )}
+                  </button>
+                </Tooltip>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
