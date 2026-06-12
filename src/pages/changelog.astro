@@ -1,0 +1,55 @@
+---
+import { getCollection, render } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import { ChangelogList } from "@modules/changelog/components/ChangelogList";
+
+const entries = await getCollection("changelog");
+const sortedEntries = entries.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+
+const items = await Promise.all(
+  sortedEntries.map(async (entry) => {
+    const { Content } = await render(entry);
+    return {
+      id: entry.id,
+      version: entry.data.version,
+      date: entry.data.date,
+      summary: entry.data.summary,
+      highlights: entry.data.highlights,
+      breaking: entry.data.breaking,
+      project: entry.data.project,
+      githubReleaseUrl: entry.data.githubReleaseUrl,
+    };
+  }),
+);
+
+const title = "Changelog";
+const description =
+  "Track releases, new features, breaking changes, and improvements across NukeHub projects.";
+const keywords =
+  "nukehub, changelog, release notes, open source, nuclear engineering";
+const permalink = "/changelog";
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  permalink={permalink}
+>
+  <div class="mb-10 text-center">
+    <h1 class="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      Release <span
+        class="bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent inline-block"
+        >Changelog</span
+      >
+    </h1>
+    <p class="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+      A chronological record of what has shipped across NukeHub and its
+      projects.
+    </p>
+  </div>
+
+  <ChangelogList client:load entries={items} />
+</PageLayout>

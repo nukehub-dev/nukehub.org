@@ -185,6 +185,35 @@ const integrations = defineCollection({
   }),
 });
 
+const roadmap = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.{mdx,md}", base: "./src/content/roadmap" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    status: z.enum(["planned", "in-progress", "shipped", "parked"]),
+    targetQuarter: z.string().optional(),
+    relatedProject: z.string().optional(),
+    ghIssueUrl: z.string().url().optional(),
+    order: z.number().optional(),
+  }),
+});
+
+const changelog = defineCollection({
+  loader: glob({
+    pattern: "**/[^_]*.{mdx,md}",
+    base: "./src/content/changelog",
+  }),
+  schema: z.object({
+    version: z.string(),
+    date: z.coerce.date(),
+    summary: z.string().optional(),
+    highlights: z.array(z.string()).default([]),
+    breaking: z.array(z.string()).default([]),
+    project: z.string().optional(),
+    githubReleaseUrl: z.string().url().optional(),
+  }),
+});
+
 export const collections = {
   manual,
   projects,
@@ -194,4 +223,6 @@ export const collections = {
   sponsors,
   testimonials,
   integrations,
+  roadmap,
+  changelog,
 };

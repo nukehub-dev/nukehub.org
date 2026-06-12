@@ -1,0 +1,13 @@
+---
+version: "1.1.0"
+date: 2025-06-10
+summary: Live GitHub stats now appear on project cards and sync automatically.
+highlights:
+  - Scheduled GitHub Actions workflow refreshes stats every six hours.
+  - New GitHubStatsOverlay component shows stars, forks, contributors, and last commit.
+  - Project cards share equal height in the same grid row.
+breaking: []
+project: nukehub.org
+---
+
+Stats are fetched at build time from a static JSON cache, avoiding visitor-side rate limits and keeping the site fast.

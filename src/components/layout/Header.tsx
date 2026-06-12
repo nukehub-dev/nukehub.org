@@ -34,7 +34,7 @@ export function Header({ projectEntries }: HeaderProps) {
         </a>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-1">
           {items.map((item) => (
             <React.Fragment key={item.title}>
               {item.children ? (
@@ -131,7 +131,7 @@ export function Header({ projectEntries }: HeaderProps) {
           {/* Mobile menu toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors lg:hidden"
             aria-label="Toggle menu"
           >
             {mobileOpen ? (
@@ -145,7 +145,7 @@ export function Header({ projectEntries }: HeaderProps) {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-border md:hidden">
+        <div className="border-t border-border lg:hidden">
           <div className="mx-auto max-w-7xl px-4 py-4 space-y-1">
             {items.map((item) => (
               <div key={item.title}>

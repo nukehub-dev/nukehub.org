@@ -17,6 +17,7 @@ import path from "node:path";
 import yaml from "js-yaml";
 
 const PROJECTS_DIR = "src/content/projects";
+const CHANGELOG_DIR = "src/content/changelog";
 const OUTPUT_PATH = "src/data/github-stats.json";
 const MAX_STALE_HOURS = 24;
 
@@ -117,12 +118,181 @@ async function fetchLatestRelease(repo) {
       name: release.name,
       publishedAt: release.published_at,
       url: release.html_url,
+      body: release.body || "",
     };
   } catch (err) {
     if (err instanceof Error && err.message.includes("404")) {
       return null;
     }
     throw err;
+  }
+}
+
+/**
+ * Discover project slugs mapped to their githubRepo values.
+ *
+ * @returns {Promise<Record<string, string>>} slug -> repo
+ */
+async function discoverProjectRepoMap() {
+  const entries = await fs.readdir(PROJECTS_DIR, { withFileTypes: true });
+  /** @type {Record<string, string>} */
+  const map = {};
+
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.endsWith(".mdx")) continue;
+
+    const slug = entry.name.replace(/\.mdx$/, "");
+    const content = await fs.readFile(
+      path.join(PROJECTS_DIR, entry.name),
+      "utf-8",
+    );
+    const frontmatter = parseFrontmatter(content);
+    const repo = frontmatter.githubRepo;
+
+    if (repo && /^[\w.-]+\/[\w.-]+$/.test(repo)) {
+      map[repo] = slug;
+    }
+  }
+
+  return map;
+}
+
+/**
+ * Convert a GitHub release body to a markdown summary.
+ *
+ * @param {string} body
+ */
+function releaseBodyToSummary(body) {
+  if (!body) return "";
+  return body
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(
+      (line) =>
+        line &&
+        !line.startsWith("##") &&
+        !line.startsWith("#") &&
+        !line.startsWith("!") &&
+        !line.startsWith("<!--"),
+    )
+    .slice(0, 3)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Extract bullet highlights from a release body.
+ *
+ * @param {string} body
+ */
+function extractHighlights(body) {
+  if (!body) return [];
+  const lines = body.split("\n");
+  const highlights = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (
+      trimmed.startsWith("- ") ||
+      trimmed.startsWith("* ") ||
+      /^\d+\.\s/.test(trimmed)
+    ) {
+      const text = trimmed.replace(/^[-*\d.\s]+/, "").trim();
+      if (text && !text.toLowerCase().includes("breaking")) {
+        highlights.push(text);
+      }
+    }
+  }
+
+  return highlights.slice(0, 6);
+}
+
+/**
+ * Write draft changelog entries for new GitHub releases. Drafts are prefixed
+ * with an underscore so the content loader skips them until a human reviews
+ * and renames the file.
+ *
+ * @param {Record<string, any>} repoStats
+ */
+async function writeChangelogDrafts(repoStats) {
+  const projectRepoMap = await discoverProjectRepoMap();
+
+  // Read existing changelog files to avoid duplicates.
+  let existingFiles = [];
+  try {
+    existingFiles = await fs.readdir(CHANGELOG_DIR);
+  } catch {
+    // Directory may not exist yet.
+    await fs.mkdir(CHANGELOG_DIR, { recursive: true });
+  }
+
+  const existingVersionSet = new Set(
+    (
+      await Promise.all(
+        existingFiles
+          .filter((name) => name.endsWith(".mdx") || name.endsWith(".md"))
+          .map(async (name) => {
+            try {
+              const content = await fs.readFile(
+                path.join(CHANGELOG_DIR, name),
+                "utf-8",
+              );
+              const fm = parseFrontmatter(content);
+              return `${fm.project || ""}@${fm.version || ""}`;
+            } catch {
+              return "";
+            }
+          }),
+      )
+    ).filter(Boolean),
+  );
+
+  let created = 0;
+
+  for (const [repo, stats] of Object.entries(repoStats)) {
+    const release = stats.lastRelease;
+    if (!release || !release.tag) continue;
+
+    const projectSlug = projectRepoMap[repo];
+    if (!projectSlug) continue;
+
+    const key = `${projectSlug}@${release.tag}`;
+    if (existingVersionSet.has(key)) continue;
+
+    const date = release.publishedAt
+      ? release.publishedAt.split("T")[0]
+      : new Date().toISOString().split("T")[0];
+    const version = release.tag.replace(/^v/, "");
+    const highlights = extractHighlights(release.body);
+    const summary =
+      release.name || releaseBodyToSummary(release.body) || `Release ${release.tag}`;
+
+    const safeTag = release.tag.replace(/[^\w.-]/g, "_");
+    const fileName = `_draft-${projectSlug}-${safeTag}.mdx`;
+    const filePath = path.join(CHANGELOG_DIR, fileName);
+
+    const frontmatter = {
+      version,
+      date,
+      summary,
+      highlights,
+      breaking: [],
+      project: projectSlug,
+      githubReleaseUrl: release.url,
+    };
+
+    const fileContent = `---\n${yaml.dump(frontmatter).trim()}\n---\n\n${release.body || `Release ${release.tag} for ${projectSlug}.`}\n`;
+
+    await fs.writeFile(filePath, fileContent);
+    log(`Created changelog draft: ${filePath}`);
+    created++;
+  }
+
+  if (created === 0) {
+    log("No new changelog drafts needed.");
+  } else {
+    log(`Created ${created} changelog draft(s).`);
   }
 }
 
@@ -266,6 +436,8 @@ async function main() {
   }
 
   await fs.writeFile(OUTPUT_PATH, JSON.stringify(output, null, 2) + "\n");
+
+  await writeChangelogDrafts(repoStats);
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
   log(

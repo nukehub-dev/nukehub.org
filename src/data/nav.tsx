@@ -23,6 +23,9 @@ import {
   Monitor,
   Cpu,
   Server,
+  Rocket,
+  Kanban,
+  GitCommit,
 } from "lucide-react";
 import { BrandIcon } from "@components/ui/BrandIcon";
 
@@ -65,6 +68,14 @@ const staticNavItems: NavItem[] = [
       { title: "Code of Conduct", icon: Scale, url: "/code-of-conduct" },
       { title: "Acknowledgment", icon: Award, url: "/acknowledgment" },
       { title: "Support Us", icon: Heart, url: "/support" },
+    ],
+  },
+  {
+    title: "Updates",
+    icon: Rocket,
+    children: [
+      { title: "Roadmap", icon: Kanban, url: "/roadmap" },
+      { title: "Changelog", icon: GitCommit, url: "/changelog" },
     ],
   },
   {
