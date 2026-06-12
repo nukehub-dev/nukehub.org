@@ -124,13 +124,13 @@ function getItemTitle(item: CommandPaletteItem) {
   return item.title;
 }
 
-function getItemSubtitle(item: CommandPaletteItem) {
+function getItemSubtitle(item: CommandPaletteItem): string {
   if (item.category === "Projects")
-    return item.tags?.join(", ") || item.description;
+    return item.tags?.join(", ") || item.description || "";
   if (item.category === "People") {
     return [item.role, item.organization].filter(Boolean).join(" · ");
   }
-  if (item.category === "Events") return item.description;
+  if (item.category === "Events") return item.description || "";
   if (item.category === "Integrations") return item.categoryName;
   if (item.category === "Pages") return "";
   return "";
@@ -174,8 +174,8 @@ function groupItems(
   }
 
   return categoryOrder
-    .map((category) => [category, grouped.get(category) || []] as const)
-    .filter(([, list]) => list.length > 0);
+    .map((category) => [category, grouped.get(category) || []])
+    .filter(([, list]) => list.length > 0) as [string, CommandPaletteItem[]][];
 }
 
 export function CommandPalette({

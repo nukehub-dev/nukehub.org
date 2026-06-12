@@ -25,6 +25,7 @@ interface Props {
   keywords?: string;
   permalink?: string;
   image?: string;
+  ogImage?: string;
   bodyClass?: string;
   htmlClass?: string;
   showFooter?: boolean;
@@ -36,10 +37,39 @@ const {
   keywords = "nukehub, nuclear, technology, science, open source, innovation, collaboration, community, simulation",
   permalink = "/",
   image = "/assets/images/nukehub.png",
+  ogImage,
   bodyClass,
   htmlClass,
   showFooter = true,
 } = Astro.props;
+
+const siteUrl = "https://nukehub.org";
+const pageTitle = title ? `${title} | NukeHub` : "NukeHub";
+const canonicalUrl = `${siteUrl}${permalink}`;
+
+function resolveOgImage(
+  permalink: string,
+  fallback: string,
+  explicit?: string,
+): string {
+  if (explicit) return explicit;
+  if (permalink === "/" || permalink === "") return "/og/home.png";
+  if (permalink === "/roadmap") return "/og/roadmap.png";
+  const projectSlugs = [
+    "nuke-lab",
+    "nuke-ide",
+    "nrms",
+    "nuke-analytics",
+    "nukebox",
+  ];
+  const slug = permalink.replace(/^\//, "");
+  if (projectSlugs.includes(slug)) {
+    return `/og/projects/${slug}.png`;
+  }
+  return fallback;
+}
+
+const resolvedOgImage = `${siteUrl}${resolveOgImage(permalink, image, ogImage)}`;
 
 // Load projects from content collection for dynamic nav/footer
 const projectEntries = await getCollection("projects");
@@ -135,10 +165,6 @@ const commandPalettePages: CommandPalettePage[] = [
     category: "Pages",
   },
 ];
-
-const siteUrl = "https://nukehub.org";
-const pageTitle = title ? `${title} | NukeHub` : "NukeHub";
-const canonicalUrl = `${siteUrl}${permalink}`;
 ---
 
 <!doctype html>
@@ -182,14 +208,14 @@ const canonicalUrl = `${siteUrl}${permalink}`;
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={`${siteUrl}${image}`} />
+    <meta property="og:image" content={resolvedOgImage} />
     <meta property="og:description" content={description} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${siteUrl}${image}`} />
+    <meta name="twitter:image" content={resolvedOgImage} />
 
     <!-- Schema.org -->
     <script
