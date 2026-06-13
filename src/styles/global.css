@@ -216,29 +216,29 @@
    ========================================================================== */
 
 [data-accent="red"] {
-  --primary: oklch(64% 0.155 27);
-  --primary-foreground: oklch(0.15 0.01 27);
-  --ring: oklch(64% 0.155 27);
+  --primary: oklch(58% 0.155 27);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(58% 0.155 27);
 }
 [data-accent="orange"] {
-  --primary: oklch(72% 0.13 48);
-  --primary-foreground: oklch(0.15 0.01 48);
-  --ring: oklch(72% 0.13 48);
+  --primary: oklch(58% 0.13 48);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(58% 0.13 48);
 }
 [data-accent="green"] {
-  --primary: oklch(70% 0.12 144);
-  --primary-foreground: oklch(0.15 0.01 144);
-  --ring: oklch(70% 0.12 144);
+  --primary: oklch(55% 0.12 144);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(55% 0.12 144);
 }
 [data-accent="cyan"] {
-  --primary: oklch(75% 0.095 211);
-  --primary-foreground: oklch(0.15 0.01 211);
-  --ring: oklch(75% 0.095 211);
+  --primary: oklch(55% 0.095 211);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(55% 0.095 211);
 }
 [data-accent="purple"] {
-  --primary: oklch(68% 0.16 321);
-  --primary-foreground: oklch(0.15 0.01 321);
-  --ring: oklch(68% 0.16 321);
+  --primary: oklch(58% 0.16 321);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(58% 0.16 321);
 }
 
 [data-theme="dark"][data-accent="red"] {

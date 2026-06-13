@@ -120,11 +120,11 @@ export function updateMetaThemeColor(): void {
 
   // Map accent to a dark-mode-aware hex fallback for the theme-color meta tag.
   const accentMap: Record<string, { light: string; dark: string }> = {
-    red: { light: "#e03131", dark: "#c92a2a" },
-    orange: { light: "#f37524", dark: "#d65a0f" },
-    green: { light: "#40c057", dark: "#2f9e44" },
-    cyan: { light: "#15aabf", dark: "#1098ad" },
-    purple: { light: "#be4bdb", dark: "#9c36b5" },
+    red: { light: "#c54e45", dark: "#c92a2a" },
+    orange: { light: "#b75f2c", dark: "#d65a0f" },
+    green: { light: "#408341", dark: "#2f9e44" },
+    cyan: { light: "#028091", dark: "#1098ad" },
+    purple: { light: "#a455b3", dark: "#9c36b5" },
   };
 
   const color = accentMap[accent]?.[isDark ? "dark" : "light"] || "#000000";
