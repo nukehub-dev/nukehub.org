@@ -375,8 +375,16 @@ const commandPalettePages: CommandPalettePage[] = [
         function showCookieBanner() {
           var banner = document.querySelector("[data-cookie-banner]");
           if (!banner) return;
-          banner.classList.remove("translate-y-6", "opacity-0", "pointer-events-none");
-          banner.classList.add("translate-y-0", "opacity-100", "pointer-events-auto");
+          banner.classList.remove(
+            "translate-y-6",
+            "opacity-0",
+            "pointer-events-none",
+          );
+          banner.classList.add(
+            "translate-y-0",
+            "opacity-100",
+            "pointer-events-auto",
+          );
         }
 
         document.addEventListener("click", function (e) {
@@ -387,7 +395,9 @@ const commandPalettePages: CommandPalettePage[] = [
             localStorage.removeItem("cookie-consent");
             showCookieBanner();
             window.dispatchEvent(
-              new CustomEvent("cookie-consent-change", { detail: { consent: null } }),
+              new CustomEvent("cookie-consent-change", {
+                detail: { consent: null },
+              }),
             );
           } catch (err) {
             // eslint-disable-next-line no-console

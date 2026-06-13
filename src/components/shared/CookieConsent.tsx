@@ -24,7 +24,10 @@ export function useCookieConsent() {
 
     const handleChange = (event: Event) => {
       const detail = (event as CustomEvent<{ consent?: ConsentValue }>).detail;
-      if (detail && (detail.consent === "granted" || detail.consent === "denied")) {
+      if (
+        detail &&
+        (detail.consent === "granted" || detail.consent === "denied")
+      ) {
         setConsent(detail.consent);
       } else if (detail && detail.consent === null) {
         setConsent(null);
@@ -34,7 +37,8 @@ export function useCookieConsent() {
     };
 
     window.addEventListener("cookie-consent-change", handleChange);
-    return () => window.removeEventListener("cookie-consent-change", handleChange);
+    return () =>
+      window.removeEventListener("cookie-consent-change", handleChange);
   }, []);
 
   const grant = React.useCallback(() => {

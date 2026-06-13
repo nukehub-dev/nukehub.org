@@ -2,11 +2,7 @@
 
 import { cn } from "@lib/utils";
 
-export function CookieSettingsLink({
-  className,
-}: {
-  className?: string;
-}) {
+export function CookieSettingsLink({ className }: { className?: string }) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (typeof window === "undefined") return;
