@@ -1,0 +1,309 @@
+---
+// Clean, professional reactor-core illustration for the 404 page.
+// A glowing plasma core inside a containment vessel with orbiting magnetic
+// rings and a single fractured segment. All motion is CSS-driven and
+// respects prefers-reduced-motion.
+---
+
+<svg
+  class="reactor-core-404"
+  viewBox="0 0 360 360"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Unstable reactor core"
+>
+  <defs>
+    {/* Core glow */}
+    <filter id="reactor-glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10" result="blur"></feGaussianBlur>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+    </filter>
+
+    {/* Hot plasma gradient */}
+    <radialGradient id="plasma-gradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="var(--primary)" stop-opacity="1"></stop>
+      <stop offset="50%" stop-color="var(--primary)" stop-opacity="0.45"></stop>
+      <stop offset="100%" stop-color="var(--primary)" stop-opacity="0"></stop>
+    </radialGradient>
+
+    {/* Ring sheen */}
+    <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.8"></stop>
+      <stop offset="50%" stop-color="var(--primary)" stop-opacity="0.1"></stop>
+      <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.8"></stop>
+    </linearGradient>
+
+    {/* Vessel gradient */}
+    <radialGradient id="vessel-gradient" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" stop-color="var(--primary)" stop-opacity="0"></stop>
+      <stop offset="92%" stop-color="var(--primary)" stop-opacity="0.08"></stop>
+      <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.25"
+      ></stop>
+    </radialGradient>
+  </defs>
+
+  {/* Outer containment vessel */}
+  <circle
+    cx="180"
+    cy="180"
+    r="150"
+    fill="url(#vessel-gradient)"
+    stroke="var(--primary)"
+    stroke-width="1"
+    stroke-opacity="0.12"
+    class="vessel"></circle>
+
+  {/* Magnetic field / orbit rings */}
+  <g
+    class="reactor-rings"
+    fill="none"
+    stroke="url(#ring-gradient)"
+    stroke-width="2.5"
+  >
+    <circle
+      cx="180"
+      cy="180"
+      r="124"
+      stroke-opacity="0.22"
+      class="ring ring--outer"></circle>
+    <circle
+      cx="180"
+      cy="180"
+      r="96"
+      stroke-opacity="0.32"
+      class="ring ring--middle"></circle>
+    <circle
+      cx="180"
+      cy="180"
+      r="68"
+      stroke-opacity="0.42"
+      class="ring ring--inner"></circle>
+  </g>
+
+  {/* Broken containment segment — clearly one fractured ring */}
+  <path
+    d="M 180 84 A 96 96 0 1 1 95 138"
+    fill="none"
+    stroke="var(--primary)"
+    stroke-width="4"
+    stroke-linecap="round"
+    opacity="0.9"
+    class="breach-ring"></path>
+
+  {/* Plasma bloom */}
+  <circle
+    cx="180"
+    cy="180"
+    r="48"
+    fill="url(#plasma-gradient)"
+    class="plasma-bloom"></circle>
+
+  {/* Inner core */}
+  <circle
+    cx="180"
+    cy="180"
+    r="30"
+    fill="var(--primary)"
+    fill-opacity="0.15"
+    stroke="var(--primary)"
+    stroke-width="2"
+    class="core-shell"></circle>
+
+  {/* Hot core highlight */}
+  <circle
+    cx="180"
+    cy="180"
+    r="14"
+    fill="var(--primary)"
+    class="core-pulse"
+    filter="url(#reactor-glow)"></circle>
+
+  {/* Sparks venting from the breach */}
+  <g class="sparks" fill="var(--primary)">
+    <circle cx="110" cy="110" r="2.5" class="spark spark--1"></circle>
+    <circle cx="88" cy="128" r="2" class="spark spark--2"></circle>
+    <circle cx="128" cy="92" r="2" class="spark spark--3"></circle>
+    <circle cx="94" cy="98" r="1.5" class="spark spark--4"></circle>
+  </g>
+</svg>
+
+<style>
+  .reactor-core-404 {
+    width: 100%;
+    height: 100%;
+    max-width: 360px;
+    max-height: 360px;
+    overflow: visible;
+  }
+
+  .vessel {
+    transform-origin: center;
+    animation: vessel-breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes vessel-breathe {
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.01);
+    }
+  }
+
+  .ring {
+    transform-origin: center;
+  }
+  .ring--outer {
+    animation: ring-rotate 16s linear infinite;
+  }
+  .ring--middle {
+    animation: ring-rotate 12s linear infinite reverse;
+  }
+  .ring--inner {
+    animation: ring-rotate 8s linear infinite;
+  }
+
+  @keyframes ring-rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .breach-ring {
+    transform-origin: center;
+    animation: breach-pulse 2.6s ease-in-out infinite;
+  }
+
+  @keyframes breach-pulse {
+    0%,
+    100% {
+      opacity: 0.6;
+      stroke-width: 4;
+    }
+    50% {
+      opacity: 1;
+      stroke-width: 5;
+    }
+  }
+
+  .core-pulse {
+    transform-origin: center;
+    animation: core-flicker 2.4s ease-in-out infinite;
+  }
+
+  @keyframes core-flicker {
+    0%,
+    100% {
+      opacity: 0.7;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  }
+
+  .core-shell {
+    transform-origin: center;
+    animation: core-breathe 5s ease-in-out infinite;
+  }
+
+  @keyframes core-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.85;
+    }
+    50% {
+      transform: scale(1.04);
+      opacity: 1;
+    }
+  }
+
+  .plasma-bloom {
+    transform-origin: center;
+    animation: plasma-expand 6s ease-in-out infinite;
+  }
+
+  @keyframes plasma-expand {
+    0%,
+    100% {
+      transform: scale(0.94);
+      opacity: 0.75;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  .spark {
+    opacity: 0;
+    transform-origin: center;
+  }
+  .spark--1 {
+    animation: spark-vent 2.6s ease-out infinite;
+  }
+  .spark--2 {
+    animation: spark-vent 2.6s ease-out infinite;
+    animation-delay: 0.65s;
+  }
+  .spark--3 {
+    animation: spark-vent 2.6s ease-out infinite;
+    animation-delay: 1.3s;
+  }
+  .spark--4 {
+    animation: spark-vent 2.6s ease-out infinite;
+    animation-delay: 1.95s;
+  }
+
+  @keyframes spark-vent {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.5);
+    }
+    12% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--spark-x, 0), var(--spark-y, 0)) scale(0.15);
+    }
+  }
+
+  .spark--1 {
+    --spark-x: -20px;
+    --spark-y: -20px;
+  }
+  .spark--2 {
+    --spark-x: -26px;
+    --spark-y: -10px;
+  }
+  .spark--3 {
+    --spark-x: -12px;
+    --spark-y: -24px;
+  }
+  .spark--4 {
+    --spark-x: -22px;
+    --spark-y: -16px;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .vessel,
+    .ring,
+    .breach-ring,
+    .core-pulse,
+    .core-shell,
+    .plasma-bloom,
+    .spark {
+      animation: none;
+    }
+  }
+</style>

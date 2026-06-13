@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import ReactorCore404 from "@components/illustrations/ReactorCore404.astro";
 ---
 
 <BaseLayout
@@ -11,49 +12,38 @@ import BaseLayout from "@layouts/BaseLayout.astro";
   <section
     class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 text-center"
   >
-    {/* Subtle radial glow behind the message */}
+    {/* Ambient reactor glow */}
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.06]"
+      class="pointer-events-none absolute inset-0 opacity-[0.07]"
       aria-hidden="true"
-      style="background: radial-gradient(circle at 50% 55%, var(--primary) 0%, transparent 60%);"
+      style="background: radial-gradient(circle at 50% 48%, var(--primary) 0%, transparent 55%);"
     >
     </div>
 
-    {/* Core */}
-    <div class="relative z-10 mb-8">
-      <div class="relative inline-flex items-center justify-center">
-        {/* Pulsing rings */}
-        <span
-          class="absolute h-40 w-40 rounded-full border border-primary/20 animate-ping"
-          style="animation-duration: 3s;"
-          aria-hidden="true"></span>
-        <span
-          class="absolute h-28 w-28 rounded-full border border-primary/30 animate-ping"
-          style="animation-duration: 2.2s; animation-delay: 0.4s;"
-          aria-hidden="true"></span>
-        <span
-          class="absolute h-16 w-16 rounded-full border border-primary/40 animate-ping"
-          style="animation-duration: 1.6s; animation-delay: 0.8s;"
-          aria-hidden="true"></span>
+    {/* Code badge */}
+    <div class="relative z-10 mb-6 animate-text-reveal animate-text-reveal-1">
+      <span
+        class="inline-flex items-center rounded-full border border-primary/20 bg-card px-4 py-1.5 font-mono text-sm font-semibold text-primary shadow-sm"
+      >
+        Error 404
+      </span>
+    </div>
 
-        {/* Numeric code */}
-        <span
-          class="relative z-10 inline-flex h-24 w-24 items-center justify-center rounded-full bg-card font-mono text-4xl font-bold text-primary shadow-2xl ring-1 ring-primary/20"
-          aria-label="404 error"
-        >
-          404
-        </span>
-      </div>
+    {/* Animated reactor illustration */}
+    <div
+      class="relative z-10 mb-10 flex h-64 w-64 items-center justify-center animate-reactor-entrance sm:h-80 sm:w-80"
+    >
+      <ReactorCore404 />
     </div>
 
     {/* Message */}
     <h1
-      class="relative z-10 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+      class="relative z-10 max-w-lg text-3xl font-semibold tracking-tight text-foreground animate-text-reveal animate-text-reveal-2 sm:text-5xl"
     >
       Lost in the reactor
     </h1>
     <p
-      class="relative z-10 mt-3 max-w-md text-base text-muted-foreground sm:text-lg"
+      class="relative z-10 mt-3 max-w-md text-base text-muted-foreground animate-text-reveal animate-text-reveal-3 sm:text-lg"
     >
       The magnetic containment field couldn't locate this page. It may have
       drifted into an unstable orbit.
@@ -61,7 +51,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 
     {/* Status indicators */}
     <div
-      class="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-medium text-muted-foreground"
+      class="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-medium text-muted-foreground animate-text-reveal animate-text-reveal-3"
     >
       <span
         class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1"
@@ -83,7 +73,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 
     {/* CTA */}
     <div
-      class="relative z-10 mt-10 flex flex-col items-center gap-3 sm:flex-row"
+      class="relative z-10 mt-10 flex flex-col items-center gap-3 animate-text-reveal animate-text-reveal-3 sm:flex-row"
     >
       <a
         href="/"

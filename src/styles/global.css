@@ -1035,10 +1035,64 @@ html.homepage {
   scroll-snap-align: start;
 }
 
+/* ==========================================================================
+   404 page — subtle entrance animation for the reactor scene
+   ========================================================================== */
+
+@keyframes reactor-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-reactor-entrance {
+  animation: reactor-entrance 0.7s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+/* Staggered text reveal for 404 message lines */
+@keyframes text-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-text-reveal {
+  animation: text-reveal 0.55s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+.animate-text-reveal-1 {
+  animation-delay: 0.15s;
+}
+
+.animate-text-reveal-2 {
+  animation-delay: 0.28s;
+}
+
+.animate-text-reveal-3 {
+  animation-delay: 0.4s;
+}
+
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   html.homepage {
     scroll-snap-type: none;
     scroll-padding-top: 0;
+  }
+
+  .animate-reactor-entrance,
+  .animate-text-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
