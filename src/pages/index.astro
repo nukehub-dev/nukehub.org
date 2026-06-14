@@ -8,7 +8,6 @@ import { EnhancedCTA } from "@modules/home/components/EnhancedCTA";
 
 import { TestimonialsSection } from "@modules/home/components/TestimonialsSection";
 import { InstitutionsSection } from "@modules/home/components/InstitutionsSection";
-import { PageLoader } from "@components/shared/PageLoader";
 import { Footer } from "@components/layout/Footer";
 
 import { loadYaml } from "@lib/loadYaml";
@@ -83,8 +82,6 @@ const sponsors: Sponsor[] = sponsorEntries.map((entry) => ({
   htmlClass="homepage"
   showFooter={false}
 >
-  <PageLoader client:load />
-
   <HeroSection client:load data={heroData} />
 
   <MissionStrip client:visible data={missionData} />

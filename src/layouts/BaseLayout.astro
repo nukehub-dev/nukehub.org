@@ -9,6 +9,7 @@ import { PerformanceMonitor } from "@components/shared/PerformanceMonitor";
 import GrainOverlay from "@components/shared/GrainOverlay.astro";
 import { CookieConsent } from "@components/shared/CookieConsent";
 import Analytics from "@components/shared/Analytics.astro";
+import { PageLoader } from "@components/shared/PageLoader";
 import { getCollection } from "astro:content";
 import { CommandPaletteManager } from "@components/shared/CommandPaletteManager";
 import type {
@@ -303,6 +304,8 @@ const commandPalettePages: CommandPalettePage[] = [
     >
       Skip to content
     </a>
+
+    <PageLoader client:load />
 
     <ScrollProgress client:idle />
     <CustomCursor client:idle />
