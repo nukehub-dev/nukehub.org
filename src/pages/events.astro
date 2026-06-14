@@ -1,6 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { ErrorBoundary } from "@components/shared/ErrorBoundary";
+import { Skeleton } from "@components/shared/Skeleton";
 import { EventsContainer } from "@modules/events/components/EventsContainer";
 import { EventsFloatingDots } from "@modules/events/components/decorations/EventsFloatingDots";
 import { expandEvents } from "@modules/events/types";
@@ -94,6 +96,10 @@ const permalink = "/events";
 
   <!-- Events Content -->
   <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-    <EventsContainer client:only="react" events={events} />
+    <ErrorBoundary client:load title="Calendar couldn't load">
+      <EventsContainer client:only="react" events={events}>
+        <Skeleton slot="fallback" className="h-96 w-full rounded-2xl" />
+      </EventsContainer>
+    </ErrorBoundary>
   </div>
 </BaseLayout>

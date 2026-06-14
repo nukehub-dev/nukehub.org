@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { ErrorBoundary } from "@components/shared/ErrorBoundary";
 import { HeroSection } from "@modules/home/components/HeroSection";
 import { MissionStrip } from "@modules/home/components/MissionStrip";
 import { ProjectsGrid } from "@modules/home/components/ProjectsGrid";
@@ -82,7 +83,9 @@ const sponsors: Sponsor[] = sponsorEntries.map((entry) => ({
   htmlClass="homepage"
   showFooter={false}
 >
-  <HeroSection client:load data={heroData} />
+  <ErrorBoundary client:load title="Hero couldn't load">
+    <HeroSection client:load data={heroData} />
+  </ErrorBoundary>
 
   <MissionStrip client:visible data={missionData} />
 

@@ -10,6 +10,7 @@ import GrainOverlay from "@components/shared/GrainOverlay.astro";
 import { CookieConsent } from "@components/shared/CookieConsent";
 import Analytics from "@components/shared/Analytics.astro";
 import { PageLoader } from "@components/shared/PageLoader";
+import { ErrorBoundary } from "@components/shared/ErrorBoundary";
 import { getCollection } from "astro:content";
 import { CommandPaletteManager } from "@components/shared/CommandPaletteManager";
 import type {
@@ -324,13 +325,15 @@ const commandPalettePages: CommandPalettePage[] = [
       pages={commandPalettePages}
     />
 
-    <AuthHeader
-      client:only="react"
-      url={import.meta.env.PUBLIC_KEYCLOAK_URL}
-      realm={import.meta.env.PUBLIC_KEYCLOAK_REALM}
-      clientId={import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID}
-      projectEntries={projectNavEntries}
-    />
+    <ErrorBoundary client:load>
+      <AuthHeader
+        client:only="react"
+        url={import.meta.env.PUBLIC_KEYCLOAK_URL}
+        realm={import.meta.env.PUBLIC_KEYCLOAK_REALM}
+        clientId={import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID}
+        projectEntries={projectNavEntries}
+      />
+    </ErrorBoundary>
 
     <main id="main-content" class="flex-1" role="main" tabindex="-1">
       <slot />

@@ -40,7 +40,7 @@ func main() {
 	mux.HandleFunc("/contact/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)
 
-	handler := corsMiddleware(mux, allowedOrigins)
+	handler := securityHeadersMiddleware(corsMiddleware(mux, allowedOrigins))
 
 	fmt.Printf("Contact server listening on port %s\n", port)
 	fmt.Printf("Health check: http://localhost:%s/health\n", port)
@@ -371,6 +371,18 @@ func corsMiddleware(next http.Handler, allowedOrigins []string) http.Handler {
 			return
 		}
 
+		next.ServeHTTP(w, r)
+	})
+}
+
+func securityHeadersMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()")
+		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'")
 		next.ServeHTTP(w, r)
 	})
 }
