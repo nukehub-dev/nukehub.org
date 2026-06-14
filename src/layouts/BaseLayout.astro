@@ -8,10 +8,9 @@ import { GlobalContextMenu } from "@components/shared/GlobalContextMenu";
 import { PerformanceMonitor } from "@components/shared/PerformanceMonitor";
 import GrainOverlay from "@components/shared/GrainOverlay.astro";
 import { CookieConsent } from "@components/shared/CookieConsent";
+import Analytics from "@components/shared/Analytics.astro";
 import { getCollection } from "astro:content";
 import { CommandPaletteManager } from "@components/shared/CommandPaletteManager";
-import type { ProjectNavEntry } from "@data/nav.tsx";
-import type { ProjectFooterEntry } from "@data/footer";
 import type {
   CommandPaletteProject,
   CommandPalettePerson,
@@ -181,6 +180,8 @@ const commandPalettePages: CommandPalettePage[] = [
       href={`${siteUrl}/rss.xml`}
     />
     <link rel="icon" type="image/svg+xml" href="/assets/images/nukehub.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
 
     <!-- Preload Geist fonts for faster first paint -->
     <link
@@ -308,6 +309,7 @@ const commandPalettePages: CommandPalettePage[] = [
     <GlobalContextMenu client:idle />
     <PerformanceMonitor client:idle />
     <GrainOverlay />
+    <Analytics />
     <CookieConsent client:load />
 
     <CommandPaletteManager
@@ -400,7 +402,6 @@ const commandPalettePages: CommandPalettePage[] = [
               }),
             );
           } catch (err) {
-            // eslint-disable-next-line no-console
             console.error("Failed to reset cookie consent:", err);
           }
         });

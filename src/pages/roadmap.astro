@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import { RoadmapBoard } from "@modules/roadmap/components/RoadmapBoard";
 
@@ -8,20 +8,15 @@ const sortedEntries = entries.sort(
   (a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity),
 );
 
-const items = await Promise.all(
-  sortedEntries.map(async (entry) => {
-    const { Content } = await render(entry);
-    return {
-      id: entry.id,
-      title: entry.data.title,
-      description: entry.data.description,
-      status: entry.data.status,
-      targetQuarter: entry.data.targetQuarter,
-      relatedProject: entry.data.relatedProject,
-      ghIssueUrl: entry.data.ghIssueUrl,
-    };
-  }),
-);
+const items = sortedEntries.map((entry) => ({
+  id: entry.id,
+  title: entry.data.title,
+  description: entry.data.description,
+  status: entry.data.status,
+  targetQuarter: entry.data.targetQuarter,
+  relatedProject: entry.data.relatedProject,
+  ghIssueUrl: entry.data.ghIssueUrl,
+}));
 
 const title = "Roadmap";
 const description =

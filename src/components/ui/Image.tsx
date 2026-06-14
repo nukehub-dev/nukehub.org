@@ -95,6 +95,8 @@ export function Image({
           alt={alt}
           width={imgProps.width ?? "100%"}
           height={imgProps.height ?? "100%"}
+          loading={imgProps.loading ?? "lazy"}
+          decoding={imgProps.decoding ?? "async"}
           className={cn(
             "h-full w-full object-cover",
             status === "loaded" ? "opacity-100" : "opacity-0",

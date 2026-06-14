@@ -7,7 +7,7 @@
  *   node scripts/debug-pages.js --disable  # Remove src/pages/debug/
  */
 
-import { existsSync, mkdirSync, readdirSync, copyFileSync, statSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, copyFileSync, rmSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const SRC = join(process.cwd(), 'src');

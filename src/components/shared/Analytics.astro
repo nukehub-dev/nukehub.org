@@ -1,0 +1,58 @@
+---
+// Privacy-respecting analytics loader.
+// Loads Cloudflare Web Analytics only when the user has granted cookie consent.
+// Set PUBLIC_CF_ANALYTICS_TOKEN in your environment to enable.
+
+const cfToken = import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN;
+const enabled = Boolean(cfToken);
+---
+
+{enabled && <meta name="cf-analytics-token" content={cfToken} />}
+
+<link
+  rel="preconnect"
+  href="https://static.cloudflareinsights.com"
+  crossorigin="anonymous"
+/>
+<script is:inline>
+  (function () {
+    var meta = document.querySelector('meta[name="cf-analytics-token"]');
+    var token = meta ? meta.getAttribute("content") : null;
+    if (!token) return;
+
+    var CONSENT_KEY = "cookie-consent";
+    var SCRIPT_ID = "cloudflare-analytics";
+    var BEACON_SRC = "https://static.cloudflareinsights.com/beacon.min.js";
+
+    function loadBeacon() {
+      if (document.getElementById(SCRIPT_ID)) return;
+      var script = document.createElement("script");
+      script.id = SCRIPT_ID;
+      script.defer = true;
+      script.src = BEACON_SRC;
+      script.setAttribute("data-cf-beacon", JSON.stringify({ token: token }));
+      document.head.appendChild(script);
+    }
+
+    function removeBeacon() {
+      var script = document.getElementById(SCRIPT_ID);
+      if (script) script.remove();
+    }
+
+    function sync() {
+      try {
+        var consent = localStorage.getItem(CONSENT_KEY);
+        if (consent === "granted") {
+          loadBeacon();
+        } else if (consent === "denied") {
+          removeBeacon();
+        }
+      } catch {
+        // localStorage may be unavailable in private mode / strict browsers
+      }
+    }
+
+    sync();
+    window.addEventListener("cookie-consent-change", sync);
+  })();
+</script>

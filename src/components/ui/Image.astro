@@ -1,0 +1,76 @@
+---
+// Astro wrapper around the built-in <Image /> asset component.
+// Use this in .astro files for responsive, optimized images (WebP/AVIF).
+// For React components, continue using the React Image.tsx wrapper.
+
+import { Image as AstroImage } from "astro:assets";
+import type { HTMLAttributes, ImageMetadata } from "astro/types";
+
+interface Props extends Omit<HTMLAttributes<"img">, "src"> {
+  src: ImageMetadata | string;
+  alt: string;
+  width?: number;
+  height?: number;
+  quality?: number;
+  format?: "avif" | "jpeg" | "jpg" | "png" | "webp" | "svg";
+  loading?: "eager" | "lazy" | null | undefined;
+  decoding?: "async" | "auto" | "sync" | null | undefined;
+  wrapperClass?: string;
+  aspect?: "square" | "video" | "portrait" | "auto";
+  rounded?: "none" | "sm" | "md" | "lg" | "xl" | "full";
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  quality = 85,
+  format,
+  loading = "lazy",
+  decoding = "async",
+  wrapperClass,
+  aspect = "auto",
+  rounded = "lg",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const aspectClass = {
+  square: "aspect-square",
+  video: "aspect-video",
+  portrait: "aspect-[3/4]",
+  auto: "",
+};
+
+const roundedClass = {
+  none: "rounded-none",
+  sm: "rounded-sm",
+  md: "rounded-md",
+  lg: "rounded-lg",
+  xl: "rounded-xl",
+  full: "rounded-full",
+};
+---
+
+<div
+  class:list={[
+    "relative overflow-hidden bg-muted",
+    aspectClass[aspect],
+    roundedClass[rounded],
+    wrapperClass,
+  ]}
+>
+  <AstroImage
+    {src}
+    {alt}
+    {width}
+    {height}
+    {quality}
+    {format}
+    {loading}
+    {decoding}
+    class:list={["h-full w-full object-cover", className]}
+    {...rest}
+  />
+</div>

@@ -9,6 +9,8 @@
     "build": "node scripts/debug-pages.js --disable && astro build",
     "format": "prettier --write \"src/**/*.{ts,tsx,astro,css,scss,json,md}\" \"*.json\" \"*.md\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,astro,css,scss,json,md}\" \"*.json\" \"*.md\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -28,6 +30,7 @@
     "@astrojs/react": "^5.0.7",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.3",
+    "@fullcalendar/core": "^6.1.20",
     "@fullcalendar/daygrid": "^6.1.20",
     "@fullcalendar/interaction": "^6.1.20",
     "@fullcalendar/list": "^6.1.20",
@@ -58,11 +61,19 @@
     "three": "^0.184.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@tailwindcss/typography": "^0.5.20",
     "@types/js-yaml": "^4.0.9",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.184.1",
+    "@typescript-eslint/eslint-plugin": "^8.61.0",
+    "@typescript-eslint/parser": "^8.61.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-astro": "^1.7.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "prettier": "^3.8.4",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^6.0.3"
