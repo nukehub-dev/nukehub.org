@@ -3,69 +3,13 @@ import { motion } from "framer-motion";
 import { MapPin, Clock } from "lucide-react";
 import { Badge } from "@components/ui/Badge";
 import { cn } from "@lib/utils";
+import {
+  formatEventDay,
+  formatEventMonth,
+  formatEventTimeRange,
+  getEventStatus,
+} from "@modules/events/lib/eventDates";
 import type { CalendarEvent } from "@modules/events/types";
-
-// ============================================================================
-// Date helpers
-// ============================================================================
-
-function getEventStatus(startIso: string): "today" | "upcoming" | "past" {
-  const start = new Date(startIso);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDay = new Date(
-    start.getFullYear(),
-    start.getMonth(),
-    start.getDate(),
-  );
-
-  if (startDay.getTime() === today.getTime()) return "today";
-  if (start > now) return "upcoming";
-  return "past";
-}
-
-function formatDay(iso: string): string {
-  return new Date(iso).getDate().toString();
-}
-
-function formatMonth(iso: string): string {
-  return new Date(iso)
-    .toLocaleString("en-US", { month: "short" })
-    .toUpperCase();
-}
-
-function formatTimeRange(startIso: string, endIso?: string): string {
-  const start = new Date(startIso);
-  const end = endIso ? new Date(endIso) : null;
-
-  const sameDay =
-    end &&
-    start.getFullYear() === end.getFullYear() &&
-    start.getMonth() === end.getMonth() &&
-    start.getDate() === end.getDate();
-
-  const timeFmt: Intl.DateTimeFormatOptions = {
-    hour: "numeric",
-    minute: "2-digit",
-  };
-
-  if (sameDay) {
-    return `${start.toLocaleTimeString("en-US", timeFmt)} – ${end.toLocaleTimeString("en-US", timeFmt)}`;
-  }
-
-  const dateFmt: Intl.DateTimeFormatOptions = {
-    month: "short",
-    day: "numeric",
-  };
-  if (end) {
-    return `${start.toLocaleDateString("en-US", dateFmt)} – ${end.toLocaleDateString("en-US", dateFmt)}`;
-  }
-  return start.toLocaleDateString("en-US", { ...dateFmt, year: "numeric" });
-}
-
-// ============================================================================
-// Event Card
-// ============================================================================
 
 interface EventCardProps {
   event: CalendarEvent;
@@ -114,10 +58,10 @@ export function EventCard({ event, index = 0, onClick }: EventCardProps) {
         {/* Date block */}
         <div className="flex flex-col items-center justify-center px-4 py-4 sm:px-5 sm:py-5 min-w-[72px] sm:min-w-[84px] border-r border-border/30 bg-muted/30">
           <span className="text-[10px] sm:text-xs font-semibold text-muted-foreground tracking-wider">
-            {formatMonth(event.start)}
+            {formatEventMonth(event.start)}
           </span>
           <span className="text-2xl sm:text-3xl font-bold text-foreground leading-none mt-0.5">
-            {formatDay(event.start)}
+            {formatEventDay(event.start)}
           </span>
         </div>
 
@@ -138,7 +82,7 @@ export function EventCard({ event, index = 0, onClick }: EventCardProps) {
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
             <Clock size={12} className="shrink-0" />
             <span className="truncate">
-              {formatTimeRange(event.start, event.end)}
+              {formatEventTimeRange(event.start, event.end)}
             </span>
           </div>
 

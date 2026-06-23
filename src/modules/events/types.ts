@@ -50,43 +50,60 @@ export interface CalendarEvent {
 
 const RECUR_START = new Date("2024-10-01T00:00:00Z");
 const RECUR_END = new Date("2026-12-31T23:59:59Z");
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-function getNthWeekday(
+function getUTCDaysInMonth(year: number, month: number): number {
+  return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+}
+
+function getNthWeekdayUTC(
   year: number,
   month: number,
   weekday: number,
   occurrence: number,
 ): Date | null {
+  const daysInMonth = getUTCDaysInMonth(year, month);
+
   if (occurrence > 0) {
     let count = 0;
-    for (let day = 1; day <= 31; day++) {
-      const d = new Date(year, month, day);
-      if (d.getMonth() !== month) break;
-      if (d.getDay() === weekday) {
+    for (let day = 1; day <= daysInMonth; day++) {
+      const d = new Date(Date.UTC(year, month, day));
+      if (d.getUTCDay() === weekday) {
         count++;
         if (count === occurrence) return d;
       }
     }
   } else {
-    const lastDay = new Date(year, month + 1, 0);
-    for (let day = lastDay.getDate(); day >= 1; day--) {
-      const d = new Date(year, month, day);
-      if (d.getDay() === weekday) return d;
+    for (let day = daysInMonth; day >= 1; day--) {
+      const d = new Date(Date.UTC(year, month, day));
+      if (d.getUTCDay() === weekday) return d;
     }
   }
   return null;
 }
 
-function addMonths(date: Date, months: number): Date {
-  const d = new Date(date);
-  d.setMonth(d.getMonth() + months);
-  return d;
+function addMonthsUTC(date: Date, months: number): Date {
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
+
+  let targetMonth = month + months;
+  let targetYear = year;
+  while (targetMonth < 0) {
+    targetMonth += 12;
+    targetYear -= 1;
+  }
+  while (targetMonth > 11) {
+    targetMonth -= 12;
+    targetYear += 1;
+  }
+
+  const maxDay = getUTCDaysInMonth(targetYear, targetMonth);
+  return new Date(Date.UTC(targetYear, targetMonth, Math.min(day, maxDay)));
 }
 
-function addDays(date: Date, days: number): Date {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
+function addDaysUTC(date: Date, days: number): Date {
+  return new Date(date.getTime() + days * DAY_MS);
 }
 
 function durationMs(start: string, end?: string): number {
@@ -109,7 +126,7 @@ function timeOfDay(iso: string): {
   };
 }
 
-function setDateTime(
+function setDateTimeUTC(
   base: Date,
   tod: { h: number; m: number; s: number; ms: number },
 ): Date {
@@ -132,17 +149,22 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
       let cursor = new Date(RECUR_START);
       while (cursor <= RECUR_END) {
         const candidate = new Date(
-          cursor.getFullYear(),
-          cursor.getMonth(),
-          recur.day,
+          Date.UTC(
+            cursor.getUTCFullYear(),
+            cursor.getUTCMonth(),
+            recur.day,
+            tod.h,
+            tod.m,
+            tod.s,
+            tod.ms,
+          ),
         );
-        if (candidate.getMonth() === cursor.getMonth()) {
-          const start = setDateTime(candidate, tod);
-          if (start >= RECUR_START && start <= RECUR_END) {
-            instances.push(makeInstance(event, start, dur, seq++));
+        if (candidate.getUTCMonth() === cursor.getUTCMonth()) {
+          if (candidate >= RECUR_START && candidate <= RECUR_END) {
+            instances.push(makeInstance(event, candidate, dur, seq++));
           }
         }
-        cursor = addMonths(cursor, 1);
+        cursor = addMonthsUTC(cursor, 1);
       }
       break;
     }
@@ -150,34 +172,34 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
     case "monthly-weekday": {
       let cursor = new Date(RECUR_START);
       while (cursor <= RECUR_END) {
-        const candidate = getNthWeekday(
-          cursor.getFullYear(),
-          cursor.getMonth(),
+        const candidate = getNthWeekdayUTC(
+          cursor.getUTCFullYear(),
+          cursor.getUTCMonth(),
           recur.weekday,
           recur.occurrence,
         );
         if (candidate) {
-          const start = setDateTime(candidate, tod);
+          const start = setDateTimeUTC(candidate, tod);
           if (start >= RECUR_START && start <= RECUR_END) {
             instances.push(makeInstance(event, start, dur, seq++));
           }
         }
-        cursor = addMonths(cursor, 1);
+        cursor = addMonthsUTC(cursor, 1);
       }
       break;
     }
 
     case "weekly": {
       let cursor = new Date(RECUR_START);
-      while (cursor.getDay() !== recur.weekday) {
-        cursor = addDays(cursor, 1);
+      while (cursor.getUTCDay() !== recur.weekday) {
+        cursor = addDaysUTC(cursor, 1);
       }
       while (cursor <= RECUR_END) {
-        const start = setDateTime(cursor, tod);
+        const start = setDateTimeUTC(cursor, tod);
         if (start >= RECUR_START && start <= RECUR_END) {
           instances.push(makeInstance(event, start, dur, seq++));
         }
-        cursor = addDays(cursor, 7);
+        cursor = addDaysUTC(cursor, 7);
       }
       break;
     }
@@ -186,17 +208,17 @@ function generateInstances(event: CalendarEvent): CalendarEvent[] {
       const anchor = new Date(recur.anchorDate + "T00:00:00Z");
       let cursor = new Date(anchor);
       while (cursor < RECUR_START) {
-        cursor = addDays(cursor, 14);
+        cursor = addDaysUTC(cursor, 14);
       }
-      while (cursor.getDay() !== recur.weekday) {
-        cursor = addDays(cursor, 1);
+      while (cursor.getUTCDay() !== recur.weekday) {
+        cursor = addDaysUTC(cursor, 1);
       }
       while (cursor <= RECUR_END) {
-        const start = setDateTime(cursor, tod);
+        const start = setDateTimeUTC(cursor, tod);
         if (start >= RECUR_START && start <= RECUR_END) {
           instances.push(makeInstance(event, start, dur, seq++));
         }
-        cursor = addDays(cursor, 14);
+        cursor = addDaysUTC(cursor, 14);
       }
       break;
     }

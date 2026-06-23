@@ -5,6 +5,11 @@ import { SearchInput } from "@components/ui/SearchInput";
 import { cn } from "@lib/utils";
 import type { CalendarEvent } from "@modules/events/types";
 import { EventCard } from "./EventCard";
+import {
+  formatEventMonthLabel,
+  getEventCategory,
+  getEventMonthKey,
+} from "@modules/events/lib/eventDates";
 
 // ============================================================================
 // Constants
@@ -12,37 +17,10 @@ import { EventCard } from "./EventCard";
 
 const PAGE_SIZE = 20;
 
-// ============================================================================
-// Date helpers
-// ============================================================================
-
-function getEventCategory(startIso: string): "upcoming" | "past" {
-  const start = new Date(startIso);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDay = new Date(
-    start.getFullYear(),
-    start.getMonth(),
-    start.getDate(),
-  );
-  return startDay.getTime() >= today.getTime() ? "upcoming" : "past";
-}
-
-function getMonthKey(iso: string): string {
-  const d = new Date(iso);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-}
-
-function formatMonthLabel(key: string): string {
-  const [year, month] = key.split("-");
-  const date = new Date(Number(year), Number(month) - 1);
-  return date.toLocaleString("en-US", { month: "long", year: "numeric" });
-}
-
 function groupByMonth(events: CalendarEvent[]): Map<string, CalendarEvent[]> {
   const groups = new Map<string, CalendarEvent[]>();
   for (const event of events) {
-    const key = getMonthKey(event.start);
+    const key = getEventMonthKey(event.start);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(event);
   }
@@ -185,7 +163,7 @@ export function EventList({ events, onEventClick }: EventListProps) {
                   {/* Month header */}
                   <div className="flex items-center gap-3 mb-3">
                     <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      {formatMonthLabel(key)}
+                      {formatEventMonthLabel(key)}
                     </h3>
                     <div className="flex-1 h-px bg-border/40" />
                     <span className="text-[10px] text-muted-foreground/60 tabular-nums">

@@ -14,52 +14,25 @@ import {
 } from "lucide-react";
 import { Badge } from "@components/ui/Badge";
 import { cn } from "@lib/utils";
+import {
+  formatEventDateTime,
+  formatEventTimeRange,
+  isSameLocalDay,
+} from "@modules/events/lib/eventDates";
 import type { CalendarEvent } from "@modules/events/types";
 
 // ============================================================================
 // Date formatting helper
 // ============================================================================
 
-function formatDateTime(iso: string): string {
-  const date = new Date(iso);
-  return date.toLocaleString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
-  });
-}
-
-function formatTimeRange(start: string, end?: string): string {
-  const startDate = new Date(start);
-  const endDate = end ? new Date(end) : null;
-
-  const sameDay =
-    endDate &&
-    startDate.getFullYear() === endDate.getFullYear() &&
-    startDate.getMonth() === endDate.getMonth() &&
-    startDate.getDate() === endDate.getDate();
+function formatModalTimeRange(start: string, end?: string): string {
+  const sameDay = end ? isSameLocalDay(start, end) : false;
 
   if (sameDay) {
-    const startStr = startDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-    });
-    const endStr = endDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-    });
-    return `${startDate.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    })} · ${startStr} – ${endStr}`;
+    return formatEventTimeRange(start, end);
   }
 
-  return `${formatDateTime(start)}${end ? " – " + formatDateTime(end) : ""}`;
+  return `${formatEventDateTime(start)}${end ? " – " + formatEventDateTime(end) : ""}`;
 }
 
 // ============================================================================
@@ -177,7 +150,7 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
 
                   <div className="flex items-start gap-2 text-sm text-muted-foreground mb-1">
                     <Clock size={15} className="mt-0.5 shrink-0" />
-                    <span>{formatTimeRange(event.start, event.end)}</span>
+                    <span>{formatModalTimeRange(event.start, event.end)}</span>
                   </div>
 
                   {event.venue && (

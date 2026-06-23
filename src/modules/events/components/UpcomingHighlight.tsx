@@ -3,39 +3,12 @@ import { motion } from "framer-motion";
 import { MapPin, ArrowRight, Calendar } from "lucide-react";
 import { Card } from "@components/ui/Card";
 import { Badge } from "@components/ui/Badge";
-import { cn } from "@lib/utils";
+import {
+  formatEventDate,
+  formatEventTime,
+  getEventCategory,
+} from "@modules/events/lib/eventDates";
 import type { CalendarEvent } from "@modules/events/types";
-
-// ============================================================================
-// Date helpers
-// ============================================================================
-
-function isUpcoming(startIso: string): boolean {
-  const start = new Date(startIso);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDay = new Date(
-    start.getFullYear(),
-    start.getMonth(),
-    start.getDate(),
-  );
-  return startDay.getTime() >= today.getTime();
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
 
 // ============================================================================
 // Upcoming Highlight
@@ -52,7 +25,7 @@ export function UpcomingHighlight({
 }: UpcomingHighlightProps) {
   const upcoming = React.useMemo(() => {
     return events
-      .filter((e) => isUpcoming(e.start))
+      .filter((e) => getEventCategory(e.start) === "upcoming")
       .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
       .slice(0, 3);
   }, [events]);
@@ -108,7 +81,8 @@ export function UpcomingHighlight({
                         : undefined
                     }
                   >
-                    {formatDate(event.start)} · {formatTime(event.start)}
+                    {formatEventDate(event.start)} ·{" "}
+                    {formatEventTime(event.start)}
                   </Badge>
 
                   {/* Title */}

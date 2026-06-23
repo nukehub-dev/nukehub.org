@@ -3,6 +3,7 @@ import { EventCalendar } from "./EventCalendar";
 import { UpcomingHighlight } from "./UpcomingHighlight";
 import { EventList } from "./EventList";
 import { EventDetailModal } from "./EventDetailModal";
+import { TimezoneNote } from "./TimezoneNote";
 import type { CalendarEvent } from "@modules/events/types";
 
 interface EventsContainerProps {
@@ -15,6 +16,8 @@ export function EventsContainer({ events }: EventsContainerProps) {
 
   return (
     <div className="space-y-8">
+      <TimezoneNote />
+
       {/* Next Up — top 3 upcoming events */}
       <UpcomingHighlight events={events} onEventClick={setSelectedEvent} />
 
