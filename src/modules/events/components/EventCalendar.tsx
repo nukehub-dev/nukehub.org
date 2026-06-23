@@ -4,7 +4,11 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { CalendarApi, EventContentArg } from "@fullcalendar/core";
+import type {
+  CalendarApi,
+  DayCellContentArg,
+  EventContentArg,
+} from "@fullcalendar/core";
 import { cn } from "@lib/utils";
 import { Tooltip } from "@components/ui/Tooltip";
 import type { CalendarEvent } from "@modules/events/types";
@@ -36,13 +40,7 @@ function convertEvent(event: CalendarEvent) {
 // Custom event render — replaces native browser tooltip with our Tooltip
 // ============================================================================
 
-function EventContent({
-  info,
-  onEventClick,
-}: {
-  info: EventContentArg;
-  onEventClick: (event: CalendarEvent) => void;
-}) {
+function EventContent({ info }: { info: EventContentArg }) {
   const event = info.event;
   const timeText = info.timeText;
   const isList =
@@ -81,6 +79,24 @@ function EventContent({
 }
 
 // ============================================================================
+// Custom day cell content — replaces native "Go to ..." tooltip with ours
+// ============================================================================
+
+function DayCellContent({ info }: { info: DayCellContentArg }) {
+  const label = info.date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  return (
+    <Tooltip content={`Go to ${label}`} position="top" delay={150}>
+      <span className="fc-daygrid-day-number">{info.dayNumberText}</span>
+    </Tooltip>
+  );
+}
+
+// ============================================================================
 // Event Calendar
 // ============================================================================
 
@@ -110,10 +126,6 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
 
   const fcEvents = React.useMemo(() => events.map(convertEvent), [events]);
 
-  const getApi = (): CalendarApi | null => {
-    return calendarRef.current?.getApi() ?? null;
-  };
-
   return (
     <div className={cn(isDark ? "fc-dark" : "")}>
       <FullCalendar
@@ -126,9 +138,8 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
           right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
         }}
         events={fcEvents}
-        eventContent={(info) => (
-          <EventContent info={info} onEventClick={onEventClick} />
-        )}
+        eventContent={(info) => <EventContent info={info} />}
+        dayCellContent={(info) => <DayCellContent info={info} />}
         eventClick={(info) => {
           const original = events.find((e) => e.id === info.event.id);
           if (original) {
@@ -144,11 +155,10 @@ export function EventCalendar({ events, onEventClick }: EventCalendarProps) {
         height="auto"
         dayMaxEvents={3}
         moreLinkClick="day"
-        navLinks
-        navLinkDayClick={(date) => {
-          const api = getApi();
+        dateClick={(info) => {
+          const api: CalendarApi | null = calendarRef.current?.getApi() ?? null;
           if (api) {
-            api.changeView("timeGridDay", date);
+            api.changeView("timeGridDay", info.date);
           }
         }}
         selectable={false}
