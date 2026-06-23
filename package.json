@@ -7,6 +7,8 @@
     "dev": "rm -rf node_modules/.vite && node scripts/debug-pages.js --enable && astro dev --host",
     "dev:fast": "node scripts/debug-pages.js --enable && astro dev --host",
     "build": "node scripts/debug-pages.js --disable && astro build",
+    "clean": "rm -rf .astro node_modules/.astro node_modules/.vite dist",
+    "build:clean": "npm run clean && npm run build",
     "format": "prettier --write \"src/**/*.{ts,tsx,astro,css,scss,json,md}\" \"*.json\" \"*.md\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,astro,css,scss,json,md}\" \"*.json\" \"*.md\"",
     "lint": "eslint .",
