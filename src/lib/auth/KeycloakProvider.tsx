@@ -36,6 +36,61 @@ interface KeycloakProviderProps {
   clientId: string;
 }
 
+const TOKEN_KEY = "nukehub_keycloak_tokens";
+
+function hasAuthResponseInUrl(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  return (
+    params.has("code") ||
+    params.has("state") ||
+    params.has("session_state") ||
+    params.has("error") ||
+    params.has("id_token") ||
+    params.has("access_token")
+  );
+}
+
+interface StoredTokens {
+  token: string;
+  refreshToken: string;
+  idToken?: string;
+  timeSkew?: number;
+}
+
+function loadTokens(): StoredTokens | null {
+  try {
+    const raw = localStorage.getItem(TOKEN_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredTokens;
+    if (!parsed.token || !parsed.refreshToken) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function saveTokens(keycloak: Keycloak) {
+  try {
+    const tokens: StoredTokens = {
+      token: keycloak.token || "",
+      refreshToken: keycloak.refreshToken || "",
+      idToken: keycloak.idToken,
+      timeSkew: keycloak.timeSkew,
+    };
+    localStorage.setItem(TOKEN_KEY, JSON.stringify(tokens));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function clearTokens() {
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    // ignore storage errors
+  }
+}
+
 export function KeycloakProvider({
   children,
   url,
@@ -52,7 +107,17 @@ export function KeycloakProvider({
   useEffect(() => {
     let mounted = true;
 
-    const init = () => {
+    const handleAuth = (authenticated: boolean) => {
+      if (!mounted) return;
+      setIsAuthenticated(authenticated);
+      setUser(authenticated ? mapUser(keycloak) : null);
+      setIsLoading(false);
+      if (authenticated) {
+        saveTokens(keycloak);
+      }
+    };
+
+    const initWithCheckSso = () => {
       if (!mounted) return;
       setIsLoading(true);
 
@@ -83,20 +148,60 @@ export function KeycloakProvider({
       });
 
       Promise.race([initPromise, timeoutPromise])
-        .then((authenticated) => {
-          if (!mounted) return;
-
-          setIsAuthenticated(authenticated);
-          setUser(authenticated ? mapUser(keycloak) : null);
-          setIsLoading(false);
-        })
+        .then((authenticated) => handleAuth(authenticated))
         .catch((error) => {
           if (!mounted) return;
           console.error("Keycloak init failed:", error);
-          setIsAuthenticated(false);
-          setUser(null);
-          setIsLoading(false);
+          handleAuth(false);
         });
+    };
+
+    const initWithStoredTokens = () => {
+      // If the URL carries a fresh auth response (e.g. after login redirect),
+      // let Keycloak parse it instead of restoring stale stored tokens.
+      if (hasAuthResponseInUrl()) {
+        initWithCheckSso();
+        return;
+      }
+
+      const tokens = loadTokens();
+      if (!tokens) {
+        initWithCheckSso();
+        return;
+      }
+
+      if (!mounted) return;
+      setIsLoading(true);
+
+      keycloak
+        .init({
+          token: tokens.token,
+          refreshToken: tokens.refreshToken,
+          idToken: tokens.idToken,
+          timeSkew: tokens.timeSkew,
+          pkceMethod: "S256",
+          checkLoginIframe: false,
+          enableLogging: process.env.NODE_ENV === "development",
+        })
+        .then((authenticated) => {
+          if (authenticated) {
+            handleAuth(true);
+          } else {
+            clearTokens();
+            initWithCheckSso();
+          }
+        })
+        .catch((error) => {
+          console.error("Keycloak token restore failed:", error);
+          clearTokens();
+          initWithCheckSso();
+        });
+    };
+
+    const init = () => {
+      // Try restoring tokens from a previous login first. This avoids
+      // relying on third-party cookies for the silent SSO check on reload.
+      initWithStoredTokens();
     };
 
     // Defer Keycloak init until the page has finished initial render
@@ -110,23 +215,31 @@ export function KeycloakProvider({
     keycloak.onAuthSuccess = () => {
       setIsAuthenticated(true);
       setUser(mapUser(keycloak));
+      saveTokens(keycloak);
+    };
+
+    keycloak.onAuthRefreshSuccess = () => {
+      saveTokens(keycloak);
     };
 
     keycloak.onAuthLogout = () => {
       setIsAuthenticated(false);
       setUser(null);
+      clearTokens();
     };
 
     keycloak.onTokenExpired = () => {
       keycloak.updateToken(30).catch(() => {
         setIsAuthenticated(false);
         setUser(null);
+        clearTokens();
       });
     };
 
     return () => {
       mounted = false;
       keycloak.onAuthSuccess = undefined;
+      keycloak.onAuthRefreshSuccess = undefined;
       keycloak.onAuthLogout = undefined;
       keycloak.onTokenExpired = undefined;
     };
@@ -137,6 +250,7 @@ export function KeycloakProvider({
   }, [keycloak]);
 
   const logout = useCallback(() => {
+    clearTokens();
     keycloak.logout({ redirectUri: window.location.origin });
   }, [keycloak]);
 
