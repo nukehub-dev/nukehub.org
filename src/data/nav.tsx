@@ -26,6 +26,7 @@ import {
   Rocket,
   Kanban,
   GitCommit,
+  ArrowRight,
 } from "lucide-react";
 import { BrandIcon } from "@components/ui/BrandIcon";
 
@@ -130,15 +131,25 @@ export const projectIconMap: Record<
   Server,
 };
 
+const MAX_NAV_PROJECTS = 5;
+
 export function buildNavItems(
   projectEntries: ProjectNavEntry[] = [],
 ): NavItem[] {
-  const projectChildren: NavChild[] = projectEntries.map((p) => ({
+  const visibleEntries = projectEntries.slice(0, MAX_NAV_PROJECTS);
+
+  const projectChildren: NavChild[] = visibleEntries.map((p) => ({
     title: p.title,
     icon: projectIconMap[p.iconName || "Factory"] || Factory,
     url: p.url,
     newpage: p.newpage,
   }));
+
+  projectChildren.push({
+    title: "All Projects",
+    icon: ArrowRight,
+    url: "/projects",
+  });
 
   const projectsItem: NavItem = {
     title: "Projects",

@@ -166,7 +166,7 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                     {project.title}
                   </h3>
 
-                  <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-2 mb-2 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
                     {project.description}
                   </p>
 
