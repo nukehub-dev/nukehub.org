@@ -20,14 +20,15 @@ ctas:
     variant: "secondary"
 
 stats:
-  - value: "12+"
-    numericValue: 12
+  - value: "3+"
+    numericValue: 3
     label: "Active Projects"
     icon: "atom"
-  - value: "850+"
-    numericValue: 850
-    label: "Contributions"
+  - value: "3+"
+    numericValue: 3
+    label: "Contributors"
     icon: "gitBranch"
-  - value: "Global"
-    label: "Community"
+  - value: "12+"
+    numericValue: 12
+    label: "GitHub Stars"
     icon: "users"
