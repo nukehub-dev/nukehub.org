@@ -62,7 +62,7 @@ function PillarCard({
       }}
       className="group bubble relative h-full flex flex-col overflow-hidden p-5 shadow-lg shadow-black/[0.06] transition-all duration-500 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/[0.08] dark:shadow-sm dark:hover:border-primary/20 dark:hover:shadow-2xl dark:hover:shadow-primary/[0.04] sm:p-7"
     >
-      <div className="relative flex h-full flex-col">
+      <div className="flex h-full flex-col">
         {/* Subtle brand tint gradient */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-transparent dark:from-primary/[0.02]" />
 
