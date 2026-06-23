@@ -39,6 +39,7 @@ export function ContactCTA({
       whileInView="visible"
       viewport={viewportOnce}
       variants={fadeInUp}
+      className="py-20"
     >
       <div className="bubble p-8 sm:p-12 text-center relative overflow-hidden">
         {/* Inner warm glow */}

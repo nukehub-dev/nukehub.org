@@ -11,7 +11,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,astro,css,scss,json,md}\" \"*.json\" \"*.md\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "astro preview",
+    "preview": "astro preview --host",
     "astro": "astro"
   },
   "repository": {

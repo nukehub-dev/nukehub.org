@@ -6,7 +6,7 @@ interface Tier {
   name: string;
   price: string;
   period: string;
-  tier: "platinum" | "gold" | "silver" | "bronze";
+  tier: "platinum" | "gold" | "silver" | "bronze" | "custom";
   description: string;
   features: string[];
   cta: string;
@@ -143,9 +143,11 @@ export function SponsorshipTiers({ tiers, onContactClick }: Props) {
                       <span className="text-[2.75rem] font-extrabold tracking-tight text-foreground leading-none">
                         {t.price}
                       </span>
-                      <span className="text-sm font-medium text-muted-foreground">
-                        {t.period}
-                      </span>
+                      {t.period && (
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {t.period}
+                        </span>
+                      )}
                     </div>
 
                     {/* Description */}

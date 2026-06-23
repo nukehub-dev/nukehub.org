@@ -21,12 +21,30 @@ export interface SupportTier {
   name: string;
   price: string;
   period: string;
-  tier: "platinum" | "gold" | "silver" | "bronze";
+  tier: "platinum" | "gold" | "silver" | "bronze" | "custom";
   description: string;
   features: string[];
   cta: string;
   inquiryType: string;
   featured?: boolean;
+}
+
+export interface OneTimeDonationAmount {
+  amount: string;
+  label: string;
+  cta: string;
+  inquiryType: string;
+}
+
+export interface OneTimeDonationData {
+  title: string;
+  description: string;
+  amounts: OneTimeDonationAmount[];
+  custom: {
+    label: string;
+    cta: string;
+    inquiryType: string;
+  };
 }
 
 export interface SupportContactData {
@@ -42,5 +60,7 @@ export interface SupportData {
   impacts: SupportImpact[];
   methods: SupportMethod[];
   tiers: SupportTier[];
+  customTier: SupportTier;
+  oneTimeDonation: OneTimeDonationData;
   contact: SupportContactData;
 }

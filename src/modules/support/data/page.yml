@@ -109,6 +109,50 @@ tiers:
     inquiryType: "Sponsorship"
     featured: true
 
+customTier:
+  name: Custom
+  price: "Let's talk"
+  period: ""
+  tier: custom
+  description: >
+    Have specific goals, a unique budget, or need a tailored package? Let's
+    build a partnership that works for both of us.
+  features:
+    - All Platinum benefits
+    - Custom benefits tailored to your goals
+    - Flexible contribution schedule
+    - Dedicated partnership manager
+    - Co-created marketing opportunities
+  cta: Build a Custom Package
+  inquiryType: "Sponsorship"
+
+oneTimeDonation:
+  title: One-time Donation
+  description: >
+    Not ready for a yearly sponsorship? Every one-time contribution helps us
+    keep the lights on and the community growing.
+  amounts:
+    - amount: "$50"
+      label: Supporter
+      cta: Donate $50
+      inquiryType: "One-time Donation"
+    - amount: "$100"
+      label: Advocate
+      cta: Donate $100
+      inquiryType: "One-time Donation"
+    - amount: "$250"
+      label: Champion
+      cta: Donate $250
+      inquiryType: "One-time Donation"
+    - amount: "$500"
+      label: Benefactor
+      cta: Donate $500
+      inquiryType: "One-time Donation"
+  custom:
+    label: Choose your own amount
+    cta: Make a Custom Donation
+    inquiryType: "One-time Donation"
+
 contact:
   title: Ready to Make an Impact?
   description: >

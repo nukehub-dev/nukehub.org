@@ -22,6 +22,7 @@ export interface ContactFormProps {
 
 const inquiryTypes = [
   { value: "Sponsorship", label: "Sponsorship" },
+  { value: "One-time Donation", label: "One-time Donation" },
   { value: "Resource Donation", label: "Resource Donation" },
   { value: "Volunteering", label: "Volunteering" },
   { value: "General", label: "General Inquiry" },
@@ -34,6 +35,12 @@ const inquiryHelpers: Record<string, { placeholder: string; proTip: string }> =
         "Tell us about your company, sponsorship goals, preferred tier, and any branding or marketing benefits you would like...",
       proTip:
         "Include budget range, partnership duration, and any specific events or initiatives you want to support.",
+    },
+    "One-time Donation": {
+      placeholder:
+        "Let us know the amount you would like to donate and any recognition preferences (e.g., anonymous, name on acknowledgment page)...",
+      proTip:
+        "Mention if you would like a receipt, your preferred payment method, and whether you want public recognition.",
     },
     "Resource Donation": {
       placeholder:
