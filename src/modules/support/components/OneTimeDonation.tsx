@@ -5,7 +5,10 @@ import type { OneTimeDonationData } from "@modules/support/types";
 
 interface Props {
   data: OneTimeDonationData;
-  onContactClick: (inquiryType: string) => void;
+  onContactClick: (
+    inquiryType: string,
+    additionalValues?: Record<string, string>,
+  ) => void;
 }
 
 export function OneTimeDonation({ data, onContactClick }: Props) {
@@ -43,7 +46,11 @@ export function OneTimeDonation({ data, onContactClick }: Props) {
                   y: -4,
                   transition: { type: "spring", stiffness: 300, damping: 20 },
                 }}
-                onClick={() => onContactClick(amount.inquiryType)}
+                onClick={() =>
+                  onContactClick(amount.inquiryType, {
+                    amount: amount.amount,
+                  })
+                }
                 className="group flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-background/60 p-5 text-center transition-all duration-200 hover:border-primary/40 hover:bg-primary/[0.04] hover:shadow-lg hover:shadow-primary/10 active:scale-[0.98]"
               >
                 <span className="text-2xl font-extrabold tracking-tight text-foreground">

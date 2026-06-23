@@ -24,7 +24,10 @@ interface SupportMethod {
 
 interface Props {
   methods: SupportMethod[];
-  onContactClick: (inquiryType: string) => void;
+  onContactClick: (
+    inquiryType: string,
+    additionalValues?: Record<string, string>,
+  ) => void;
 }
 
 function resolveIcon(name: string): LucideIcon {

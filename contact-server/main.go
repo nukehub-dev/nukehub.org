@@ -92,12 +92,13 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Name           string `json:"name"`
-		Email          string `json:"email"`
-		Organization   string `json:"organization"`
-		InquiryType    string `json:"inquiryType"`
-		Message        string `json:"message"`
-		TurnstileToken string `json:"turnstileToken"`
+		Name             string            `json:"name"`
+		Email            string            `json:"email"`
+		Organization     string            `json:"organization"`
+		InquiryType      string            `json:"inquiryType"`
+		Message          string            `json:"message"`
+		TurnstileToken   string            `json:"turnstileToken"`
+		AdditionalFields map[string]string `json:"additionalFields"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -154,6 +155,24 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Build additional fields section
+	additionalHTML := ""
+	additionalText := ""
+	if len(req.AdditionalFields) > 0 {
+		additionalHTML += "<h3>Additional Information</h3><ul>"
+		for key, value := range req.AdditionalFields {
+			safeKey := sanitizeInput(key)
+			safeValue := sanitizeInput(value)
+			if safeValue == "" {
+				continue
+			}
+			additionalHTML += fmt.Sprintf("<li><strong>%s:</strong> %s</li>",
+				html.EscapeString(safeKey), html.EscapeString(safeValue))
+			additionalText += fmt.Sprintf("%s: %s\n", safeKey, safeValue)
+		}
+		additionalHTML += "</ul>"
+	}
+
 	// Send email
 	toEmail := getEnv("CONTACT_TO_EMAIL", "contact@nukehub.org")
 	safeName := sanitizeHeader(name)
@@ -166,14 +185,15 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 		<p><strong>Email:</strong> %s</p>
 		<p><strong>Organization:</strong> %s</p>
 		<p><strong>Inquiry Type:</strong> %s</p>
+		%s
 		<p><strong>Message:</strong></p>
 		<p style="white-space: pre-wrap">%s</p>
 	`, html.EscapeString(safeName), html.EscapeString(safeEmail),
 		html.EscapeString(organization), html.EscapeString(inquiryType),
-		html.EscapeString(message))
+		additionalHTML, html.EscapeString(message))
 
-	textBody := fmt.Sprintf("Name: %s\nEmail: %s\nOrganization: %s\nInquiry Type: %s\n\nMessage:\n%s",
-		safeName, safeEmail, organization, inquiryType, message)
+	textBody := fmt.Sprintf("Name: %s\nEmail: %s\nOrganization: %s\nInquiry Type: %s\n\n%s\nMessage:\n%s",
+		safeName, safeEmail, organization, inquiryType, additionalText, message)
 
 	if err := sendEmail(toEmail, safeEmail, subject, htmlBody, textBody); err != nil {
 		fmt.Fprintf(os.Stderr, "SMTP error: %v\n", err)

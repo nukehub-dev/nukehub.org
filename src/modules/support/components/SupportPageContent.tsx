@@ -15,9 +15,25 @@ interface SupportPageContentProps {
 export function SupportPageContent({ data }: SupportPageContentProps) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [defaultInquiryType, setDefaultInquiryType] = React.useState("");
+  const [defaultAdditionalValues, setDefaultAdditionalValues] = React.useState<
+    Record<string, string>
+  >({});
 
-  const openContact = (inquiryType: string = "") => {
+  const tierOptions = React.useMemo(
+    () =>
+      data.tiers.map((t) => ({
+        value: t.name,
+        label: `${t.name} — ${t.price}${t.period}`,
+      })),
+    [data.tiers],
+  );
+
+  const openContact = (
+    inquiryType: string = "",
+    additionalValues: Record<string, string> = {},
+  ) => {
     setDefaultInquiryType(inquiryType);
+    setDefaultAdditionalValues(additionalValues);
     setIsModalOpen(true);
   };
 
@@ -43,6 +59,8 @@ export function SupportPageContent({ data }: SupportPageContentProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         defaultInquiryType={defaultInquiryType}
+        defaultAdditionalValues={defaultAdditionalValues}
+        tierOptions={tierOptions}
       />
     </>
   );

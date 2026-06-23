@@ -10,12 +10,16 @@ interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultInquiryType?: string;
+  defaultAdditionalValues?: Record<string, string>;
+  tierOptions?: { value: string; label: string }[];
 }
 
 export function ContactModal({
   isOpen,
   onClose,
   defaultInquiryType = "",
+  defaultAdditionalValues = {},
+  tierOptions = [],
 }: ContactModalProps) {
   const [mounted, setMounted] = React.useState(false);
   const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
@@ -102,6 +106,8 @@ export function ContactModal({
             <div className="relative overflow-y-auto px-6 pb-10 pt-6 sm:px-10">
               <ContactForm
                 defaultInquiryType={defaultInquiryType}
+                defaultAdditionalValues={defaultAdditionalValues}
+                tierOptions={tierOptions}
                 onSuccess={() => {
                   // Auto-close after delay
                   setTimeout(() => onClose(), 2000);

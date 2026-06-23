@@ -15,6 +15,8 @@ import { cn } from "@lib/utils";
 
 export interface ContactFormProps {
   defaultInquiryType?: string;
+  defaultAdditionalValues?: Record<string, string>;
+  tierOptions?: { value: string; label: string }[];
   onSuccess?: () => void;
   onReset?: () => void;
   successContent?: React.ReactNode;
@@ -28,31 +30,164 @@ const inquiryTypes = [
   { value: "General", label: "General Inquiry" },
 ];
 
+interface AdditionalField {
+  name: string;
+  label: string;
+  type: "text" | "email" | "url" | "select";
+  placeholder?: string;
+  required?: boolean;
+  options?: { value: string; label: string }[];
+}
+
+function getAdditionalFields(
+  tierOptions: { value: string; label: string }[] = [],
+): Record<string, AdditionalField[]> {
+  const sponsorshipTierOptions =
+    tierOptions.length > 0
+      ? [{ value: "", label: "Select a tier" }, ...tierOptions]
+      : [
+          { value: "", label: "Select a tier" },
+          { value: "Bronze", label: "Bronze" },
+          { value: "Silver", label: "Silver" },
+          { value: "Gold", label: "Gold" },
+          { value: "Platinum", label: "Platinum" },
+          { value: "Custom", label: "Custom / Tailored" },
+        ];
+
+  return {
+    "One-time Donation": [
+      {
+        name: "amount",
+        label: "Donation Amount *",
+        type: "text",
+        placeholder: "e.g., $250",
+        required: true,
+      },
+      {
+        name: "recognition",
+        label: "Recognition Preference",
+        type: "select",
+        options: [
+          { value: "", label: "Select recognition preference" },
+          { value: "anonymous", label: "Anonymous" },
+          { value: "acknowledgment", label: "Name on acknowledgment page" },
+          { value: "newsletter", label: "Newsletter mention" },
+          { value: "social", label: "Social media shout-out" },
+        ],
+      },
+      {
+        name: "paymentMethod",
+        label: "Preferred Payment Method",
+        type: "select",
+        options: [
+          { value: "", label: "Select payment method" },
+          { value: "card", label: "Credit / Debit card" },
+          { value: "bank", label: "Bank transfer" },
+          { value: "paypal", label: "PayPal" },
+          { value: "crypto", label: "Cryptocurrency" },
+          { value: "other", label: "Other" },
+        ],
+      },
+    ],
+    Sponsorship: [
+      {
+        name: "preferredTier",
+        label: "Preferred Tier",
+        type: "select",
+        options: sponsorshipTierOptions,
+      },
+      {
+        name: "budgetRange",
+        label: "Budget Range",
+        type: "select",
+        options: [
+          { value: "", label: "Select budget range" },
+          { value: "under-1k", label: "Under $1,000" },
+          { value: "1k-5k", label: "$1,000 – $5,000" },
+          { value: "5k-10k", label: "$5,000 – $10,000" },
+          { value: "10k+", label: "$10,000+" },
+          { value: "custom", label: "Custom / Discuss" },
+        ],
+      },
+      {
+        name: "website",
+        label: "Company / Organization Website",
+        type: "url",
+        placeholder: "https://example.com",
+      },
+    ],
+    "Resource Donation": [
+      {
+        name: "resourceType",
+        label: "Resource Type *",
+        type: "select",
+        required: true,
+        options: [
+          { value: "", label: "Select resource type" },
+          { value: "compute", label: "Compute credits / cloud resources" },
+          { value: "software", label: "Software licenses" },
+          { value: "hardware", label: "Hardware / infrastructure" },
+          { value: "data", label: "Datasets / benchmarks" },
+          { value: "services", label: "Professional services" },
+          { value: "other", label: "Other" },
+        ],
+      },
+      {
+        name: "estimatedValue",
+        label: "Estimated Value",
+        type: "text",
+        placeholder: "e.g., $5,000",
+      },
+    ],
+    Volunteering: [
+      {
+        name: "skills",
+        label: "Skills / Background",
+        type: "text",
+        placeholder: "e.g., React, nuclear engineering, technical writing",
+      },
+      {
+        name: "availability",
+        label: "Availability",
+        type: "select",
+        options: [
+          { value: "", label: "Select availability" },
+          { value: "few-hours", label: "A few hours per month" },
+          { value: "part-time", label: "Part-time commitment" },
+          { value: "full-time", label: "Full-time commitment" },
+          { value: "project", label: "Project-based" },
+          { value: "event", label: "Event-based" },
+        ],
+      },
+    ],
+  };
+}
+
 const inquiryHelpers: Record<string, { placeholder: string; proTip: string }> =
   {
     Sponsorship: {
       placeholder:
-        "Tell us about your company, sponsorship goals, preferred tier, and any branding or marketing benefits you would like...",
+        "Tell us about your sponsorship goals, branding preferences, partnership duration, and any specific events or initiatives you want to support...",
       proTip:
-        "Include budget range, partnership duration, and any specific events or initiatives you want to support.",
+        "Include your target audience, desired visibility, and how you would like to measure success.",
     },
     "One-time Donation": {
       placeholder:
-        "Let us know the amount you would like to donate and any recognition preferences (e.g., anonymous, name on acknowledgment page)...",
+        "Anything else we should know? Special instructions, dedication, or questions about your donation...",
       proTip:
-        "Mention if you would like a receipt, your preferred payment method, and whether you want public recognition.",
+        "If you need a tax receipt or invoice, mention it here and we will follow up with the details.",
     },
     "Resource Donation": {
       placeholder:
-        "Describe the resources you would like to donate — compute credits, software licenses, datasets, hardware...",
+        "Describe the resources in more detail — quantity, specifications, transfer terms, and how NukeHub can acknowledge your contribution...",
       proTip:
-        "Mention estimated value, transfer terms, and how NukeHub can acknowledge your contribution.",
+        "Mention ownership terms, support period, and any compliance or security requirements.",
     },
     Volunteering: {
       placeholder:
-        "Tell us about your background, skills, availability, and what you would love to contribute to...",
+        "Tell us about the teams or projects that excite you most and what you would love to contribute...",
       proTip:
-        "Share relevant experience, weekly time commitment, and the teams or projects that excite you most.",
+        "Share links to your portfolio, GitHub, or LinkedIn to help us find the best fit.",
     },
     General: {
       placeholder: "How can we help you? Share as much detail as you can...",
@@ -62,19 +197,23 @@ const inquiryHelpers: Record<string, { placeholder: string; proTip: string }> =
   };
 
 function CustomSelect({
+  id,
   value,
   onChange,
   error,
   placeholder,
+  options,
 }: {
+  id?: string;
   value: string;
   onChange: (value: string) => void;
   error?: string;
   placeholder: string;
+  options: { value: string; label: string }[];
 }) {
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const selected = inquiryTypes.find((t) => t.value === value);
+  const selected = options.find((t) => t.value === value);
 
   React.useEffect(() => {
     if (!open) return;
@@ -93,6 +232,7 @@ function CustomSelect({
   return (
     <div ref={containerRef} className="relative">
       <button
+        id={id}
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
@@ -118,23 +258,23 @@ function CustomSelect({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1.5 w-full overflow-hidden rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl shadow-xl">
-          {inquiryTypes.map((type) => (
+        <div className="absolute z-50 mt-1.5 w-full overflow-hidden rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl shadow-xl max-h-60 overflow-y-auto">
+          {options.map((option) => (
             <button
-              key={type.value}
+              key={option.value}
               type="button"
               onClick={() => {
-                onChange(type.value);
+                onChange(option.value);
                 setOpen(false);
               }}
               className={cn(
                 "w-full px-4 py-2.5 text-left text-sm transition-colors",
-                value === type.value
+                value === option.value
                   ? "bg-primary/10 text-primary font-medium"
                   : "text-foreground hover:bg-accent hover:text-accent-foreground",
               )}
             >
-              {type.label}
+              {option.label}
             </button>
           ))}
         </div>
@@ -145,6 +285,8 @@ function CustomSelect({
 
 export function ContactForm({
   defaultInquiryType = "",
+  defaultAdditionalValues = {},
+  tierOptions = [],
   onSuccess,
   onReset,
   successContent,
@@ -156,6 +298,9 @@ export function ContactForm({
     inquiryType: defaultInquiryType,
     message: "",
   });
+  const [additionalFieldValues, setAdditionalFieldValues] = React.useState<
+    Record<string, string>
+  >({});
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [status, setStatus] = React.useState<
     "idle" | "submitting" | "success" | "error"
@@ -165,8 +310,12 @@ export function ContactForm({
 
   React.useEffect(() => {
     setFormData((prev) => ({ ...prev, inquiryType: defaultInquiryType }));
+    setAdditionalFieldValues(defaultAdditionalValues);
     setMessageExpanded(false);
-  }, [defaultInquiryType]);
+  }, [defaultInquiryType, defaultAdditionalValues]);
+
+  const currentAdditionalFields =
+    getAdditionalFields(tierOptions)[formData.inquiryType] || [];
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -179,9 +328,69 @@ export function ContactForm({
     }
   };
 
+  const handleInquiryTypeChange = (value: string) => {
+    handleChange("inquiryType", value);
+    setAdditionalFieldValues({});
+  };
+
+  const handleAdditionalFieldChange = (field: string, value: string) => {
+    setAdditionalFieldValues((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (formData.inquiryType === "") {
+      newErrors.inquiryType = "Please select an inquiry type";
+    }
+
+    if (formData.message.trim().length < 10) {
+      newErrors.message = "Message must be at least 10 characters";
+    }
+
+    if (formData.message.trim().length > 2000) {
+      newErrors.message = "Message must be less than 2000 characters";
+    }
+
+    currentAdditionalFields.forEach((field) => {
+      if (
+        field.required &&
+        (!additionalFieldValues[field.name] ||
+          additionalFieldValues[field.name].trim() === "")
+      ) {
+        newErrors[field.name] = `${field.label.replace(" *", "")} is required`;
+      }
+    });
+
+    return newErrors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("submitting");
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setStatus("idle");
+      return;
+    }
     setErrors({});
 
     try {
@@ -189,7 +398,11 @@ export function ContactForm({
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, turnstileToken }),
+        body: JSON.stringify({
+          ...formData,
+          additionalFields: additionalFieldValues,
+          turnstileToken,
+        }),
       });
 
       const data = await response.json();
@@ -206,6 +419,20 @@ export function ContactForm({
     } catch {
       setStatus("error");
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      organization: "",
+      inquiryType: defaultInquiryType,
+      message: "",
+    });
+    setAdditionalFieldValues(defaultAdditionalValues);
+    setTurnstileToken("");
+    setMessageExpanded(false);
+    onReset?.();
   };
 
   if (status === "success") {
@@ -268,15 +495,7 @@ export function ContactForm({
             transition={{ delay: 0.7 }}
             onClick={() => {
               setStatus("idle");
-              setFormData({
-                name: "",
-                email: "",
-                organization: "",
-                inquiryType: defaultInquiryType,
-                message: "",
-              });
-              setTurnstileToken("");
-              onReset?.();
+              resetForm();
             }}
             className="mt-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -359,20 +578,86 @@ export function ContactForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2 pl-4">
+          <label
+            htmlFor="contact-inquiry-type"
+            className="block text-sm font-medium text-foreground mb-2 pl-4"
+          >
             Inquiry Type *
           </label>
           <CustomSelect
+            id="contact-inquiry-type"
             value={formData.inquiryType}
-            onChange={(value) => handleChange("inquiryType", value)}
+            onChange={handleInquiryTypeChange}
             error={errors.inquiryType}
             placeholder="Select inquiry type"
+            options={inquiryTypes}
           />
           {errors.inquiryType && (
             <p className="mt-1.5 text-xs text-red-500">{errors.inquiryType}</p>
           )}
         </div>
       </div>
+
+      {/* Dynamic fields based on inquiry type */}
+      <AnimatePresence mode="wait">
+        {currentAdditionalFields.length > 0 && (
+          <motion.div
+            key={formData.inquiryType}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 gap-6 rounded-2xl border border-border/40 bg-muted/20 p-5 sm:grid-cols-2 dark:bg-white/[0.02]"
+          >
+            {currentAdditionalFields.map((field) => (
+              <div key={field.name}>
+                <label
+                  htmlFor={`contact-${field.name}`}
+                  className="block text-sm font-medium text-foreground mb-2 pl-4"
+                >
+                  {field.label}
+                </label>
+                {field.type === "select" && field.options ? (
+                  <CustomSelect
+                    value={additionalFieldValues[field.name] || ""}
+                    onChange={(value) =>
+                      handleAdditionalFieldChange(field.name, value)
+                    }
+                    error={errors[field.name]}
+                    placeholder={
+                      field.placeholder || `Select ${field.label.toLowerCase()}`
+                    }
+                    options={field.options}
+                  />
+                ) : (
+                  <input
+                    id={`contact-${field.name}`}
+                    type={field.type}
+                    value={additionalFieldValues[field.name] || ""}
+                    onChange={(e) =>
+                      handleAdditionalFieldChange(field.name, e.target.value)
+                    }
+                    className={cn(
+                      "w-full rounded-xl border bg-background/60 px-4 py-3.5 text-sm text-foreground",
+                      "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20",
+                      "transition-colors hover:bg-background",
+                      errors[field.name]
+                        ? "border-red-500"
+                        : "border-border/60",
+                    )}
+                    placeholder={field.placeholder || ""}
+                  />
+                )}
+                {errors[field.name] && (
+                  <p className="mt-1.5 text-xs text-red-500">
+                    {errors[field.name]}
+                  </p>
+                )}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div
         className={cn(

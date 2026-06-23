@@ -16,7 +16,10 @@ interface Tier {
 
 interface Props {
   tiers: Tier[];
-  onContactClick: (inquiryType: string) => void;
+  onContactClick: (
+    inquiryType: string,
+    additionalValues?: Record<string, string>,
+  ) => void;
 }
 
 const tierConfig: Record<
@@ -181,7 +184,11 @@ export function SponsorshipTiers({ tiers, onContactClick }: Props) {
                     {/* CTA */}
                     <div className="mt-7">
                       <button
-                        onClick={() => onContactClick(t.inquiryType)}
+                        onClick={() =>
+                          onContactClick(t.inquiryType, {
+                            preferredTier: t.name,
+                          })
+                        }
                         className={`flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-nowrap transition-all duration-200 ${
                           t.featured
                             ? "border border-primary/30 bg-primary/10 text-primary shadow-sm hover:bg-primary/15 hover:shadow-md active:scale-[0.98] dark:border-primary/50 dark:bg-primary dark:text-primary-foreground dark:shadow-lg dark:shadow-primary/25 dark:hover:bg-primary/90 dark:hover:shadow-xl dark:hover:shadow-primary/40"

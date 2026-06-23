@@ -17,7 +17,7 @@ go build -o contact-server main.go
 ## Docker Deployment
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Or manually:

@@ -5,7 +5,10 @@ import type { SupportTier } from "@modules/support/types";
 
 interface Props {
   tier: SupportTier;
-  onContactClick: (inquiryType: string) => void;
+  onContactClick: (
+    inquiryType: string,
+    additionalValues?: Record<string, string>,
+  ) => void;
 }
 
 export function CustomTier({ tier, onContactClick }: Props) {
@@ -50,7 +53,11 @@ export function CustomTier({ tier, onContactClick }: Props) {
             </p>
 
             <button
-              onClick={() => onContactClick(tier.inquiryType)}
+              onClick={() =>
+                onContactClick(tier.inquiryType, {
+                  preferredTier: tier.name,
+                })
+              }
               className="inline-flex items-center justify-center rounded-xl border border-violet-500/40 bg-violet-500/10 px-6 py-3 text-sm font-semibold text-violet-500 transition-all hover:bg-violet-500 hover:text-white hover:border-violet-500 dark:text-violet-400 dark:hover:bg-violet-400 dark:hover:text-slate-950 dark:hover:border-violet-400 active:scale-[0.98]"
             >
               {tier.cta}
