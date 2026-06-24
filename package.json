@@ -1,6 +1,6 @@
 {
   "name": "nukehub.org",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "NukeHub flagship brand site — Astro + React Islands + Tailwind v4",
   "type": "module",
   "scripts": {

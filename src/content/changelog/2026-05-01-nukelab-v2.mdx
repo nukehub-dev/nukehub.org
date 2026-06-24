@@ -1,0 +1,17 @@
+---
+version: "2.0.0"
+date: 2026-05-01
+summary: Shipped NukeLab v2.0, a complete multi-user scientific computing platform rewrite.
+highlights:
+  - FastAPI backend with async SQLAlchemy, PostgreSQL 17, Redis, and Celery workers.
+  - React 19 SPA with TanStack Router, TanStack Query, and shadcn/ui components.
+  - Role-based access control with six roles and 24 API-token scopes.
+  - NUKE credit economy with daily allowance, grants, deductions, and immutable transaction ledger.
+  - Real-time Docker metrics, alerting rules, audit logs, and maintenance windows.
+  - 500+ passing pytest tests covering security, lifecycle, and performance.
+breaking:
+  - NukeLab v1.x workspace data and API are deprecated and require migration to v2.
+project: nuke-lab
+---
+
+NukeLab v2.0 replaces JupyterHub with a custom orchestration layer designed for browser-based nuclear engineering workspaces, fine-grained access control, and credit-based resource management.
