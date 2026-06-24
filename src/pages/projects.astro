@@ -19,7 +19,12 @@ const projects = sortedEntries.map((entry) => ({
   newpage: entry.data.newpage ?? false,
   image: entry.data.image,
   tags: entry.data.tags,
-  slug: entry.data.permalink || `/${entry.id}`,
+  slug:
+    (entry.data.customPage &&
+      !entry.data.permalink &&
+      entry.data.url) ||
+    entry.data.permalink ||
+    `/${entry.id}`,
 }));
 
 // Load integrations from content collection

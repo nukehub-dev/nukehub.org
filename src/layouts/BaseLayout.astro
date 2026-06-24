@@ -81,19 +81,33 @@ const sortedEntries = projectEntries.sort(
 
 // Pass simple JSON-serializable project entries to client components
 // (React components can't be serialized across server/client boundary)
-const projectNavEntries = sortedEntries.map((entry) => ({
-  title: entry.data.title,
-  url: entry.data.permalink || `/${entry.id}`,
-  newpage: entry.data.newpage,
-  iconName: entry.data.icon || "Factory",
-}));
+function resolveProjectUrl(entry: (typeof sortedEntries)[number]): string {
+  return (
+    (entry.data.customPage && !entry.data.permalink && entry.data.url) ||
+    entry.data.permalink ||
+    `/${entry.id}`
+  );
+}
 
-const projectFooterEntries = sortedEntries.map((entry) => ({
-  title: entry.data.title,
-  url: entry.data.permalink || `/${entry.id}`,
-  newpage: entry.data.newpage ?? true,
-  iconName: entry.data.icon || "Factory",
-}));
+const projectNavEntries = sortedEntries.map((entry) => {
+  const url = resolveProjectUrl(entry);
+  return {
+    title: entry.data.title,
+    url,
+    newpage: url.startsWith("http"),
+    iconName: entry.data.icon || "Factory",
+  };
+});
+
+const projectFooterEntries = sortedEntries.map((entry) => {
+  const url = resolveProjectUrl(entry);
+  return {
+    title: entry.data.title,
+    url,
+    newpage: url.startsWith("http"),
+    iconName: entry.data.icon || "Factory",
+  };
+});
 
 // Build command palette index from content collections
 const commandPaletteProjects: CommandPaletteProject[] = sortedEntries.map(
@@ -101,7 +115,7 @@ const commandPaletteProjects: CommandPaletteProject[] = sortedEntries.map(
     id: entry.id,
     title: entry.data.title,
     description: entry.data.description || "",
-    url: entry.data.permalink || `/${entry.id}`,
+    url: resolveProjectUrl(entry),
     iconName: entry.data.icon || "Factory",
     tags: entry.data.tags,
     category: "Projects",

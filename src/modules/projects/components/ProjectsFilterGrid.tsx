@@ -118,6 +118,9 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
               <motion.a
                 key={project.title}
                 href={project.slug}
+                {...(project.slug.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 layout
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
