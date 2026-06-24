@@ -126,14 +126,14 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                 className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/[0.08] dark:border-border/30 dark:bg-card/50"
               >
                 {/* Image */}
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-48 overflow-hidden bg-card">
                   {project.image ? (
                     <img
                       src={project.image}
                       alt={project.title}
                       width="100%"
                       height="100%"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="h-full w-full origin-bottom object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
                   ) : (
@@ -143,7 +143,7 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                       </span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
 
                   <GitHubStatsOverlay githubRepo={project.githubRepo} />
                 </div>
