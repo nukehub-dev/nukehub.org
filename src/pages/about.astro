@@ -13,8 +13,18 @@ import { GradientOrbs } from "@modules/about/components/decorations/GradientOrbs
 import { ConnectingNodes } from "@modules/about/components/decorations/ConnectingNodes";
 import { loadYaml } from "@lib/loadYaml";
 import type { AboutData } from "@modules/about/types";
+import { getCollection } from "astro:content";
 
 const data = loadYaml<AboutData>("about/data/page.yml");
+
+// Make the Open Source Projects count dynamic; keep the rest as general data.
+const projectEntries = await getCollection("projects");
+const openSourceProjectCount = projectEntries.length;
+const heroStats = data.hero.stats.map((stat) =>
+  stat.label === "Open Source Projects"
+    ? { ...stat, value: `${openSourceProjectCount}+` }
+    : stat,
+);
 ---
 
 <BaseLayout
@@ -32,7 +42,7 @@ const data = loadYaml<AboutData>("about/data/page.yml");
         client:load
         title={data.hero.title}
         description={data.hero.description}
-        stats={data.hero.stats}
+        stats={heroStats}
       />
     </div>
 
