@@ -92,7 +92,7 @@ const projectFooterEntries = sortedEntries.map((entry) => ({
   title: entry.data.title,
   url: entry.data.permalink || `/${entry.id}`,
   newpage: entry.data.newpage ?? true,
-  iconName: entry.data.tags?.[0] || "Factory",
+  iconName: entry.data.icon || "Factory",
 }));
 
 // Build command palette index from content collections
