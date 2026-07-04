@@ -11,10 +11,12 @@ import {
   ExternalLink,
   Database,
   BookOpen,
+  Check,
 } from "lucide-react";
 import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { TiltCard } from "@modules/projects/components/shared/TiltCard";
+import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
 import type { NrmsData } from "../types";
 
@@ -189,8 +191,9 @@ export function NrmsPage({
                 <div className="relative">
                   <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 blur-2xl opacity-40" />
                   <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-2xl shadow-black/10 dark:shadow-black/20">
-                    <img
-                      src={data.hero.heroImage}
+                    <ThemedImage
+                      lightSrc={data.hero.heroImage}
+                      darkSrc={data.hero.heroImageDark}
                       alt={data.hero.heroImageAlt}
                       className="w-full"
                       loading="eager"
@@ -278,6 +281,112 @@ export function NrmsPage({
                 );
               })}
             </motion.div>
+          </div>
+        </section>
+
+        {/* ===== SHOWCASE ===== */}
+        <section className="relative py-24 border-t border-border/50">
+          <FloatingParticles count={10} />
+          <div className="relative z-10 mx-auto max-w-7xl px-4">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              variants={staggerContainer}
+              className="text-center mb-16"
+            >
+              <motion.h2
+                variants={fadeInUp}
+                className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+              >
+                {data.showcase.title}
+              </motion.h2>
+              <motion.p
+                variants={fadeInUp}
+                className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground"
+              >
+                {data.showcase.description}
+              </motion.p>
+            </motion.div>
+
+            <div className="space-y-24">
+              {data.showcase.items.map((item) => {
+                const BadgeIcon = item.badgeIcon
+                  ? resolveIcon(item.badgeIcon)
+                  : Globe;
+
+                return (
+                  <motion.div
+                    key={item.name}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={viewportOnce}
+                    variants={fadeInUp}
+                    className="grid gap-10 items-center lg:grid-cols-2"
+                  >
+                    <div className={item.reversed ? "order-2" : "order-2 lg:order-1"}>
+                      {item.badge && (
+                        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-4">
+                          <BadgeIcon className="h-4 w-4" />
+                          {item.badge}
+                        </div>
+                      )}
+                      <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+                        {item.name}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
+                        {item.description}
+                      </p>
+                      <ul className="space-y-3">
+                        {item.features.map((feat) => (
+                          <li
+                            key={feat}
+                            className="flex items-start gap-3 text-muted-foreground"
+                          >
+                            <Check className="mt-1 h-4 w-4 text-primary shrink-0" />
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <motion.div
+                      variants={fadeInUp}
+                      className={item.reversed ? "order-1" : "order-1 lg:order-2"}
+                    >
+                      <TiltCard tiltAmount={3}>
+                        <div className="relative group">
+                          <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/5 to-primary/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                          <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-2xl shadow-black/10 dark:shadow-black/20">
+                            <div className="flex items-center gap-2 border-b border-border/40 bg-muted/50 px-3 py-2.5">
+                              <div className="flex gap-1.5">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
+                              </div>
+                              <div className="mx-auto flex items-center gap-1.5 rounded-md bg-background/80 border border-border/30 px-3 py-1 text-[11px] text-muted-foreground font-mono">
+                                <Globe className="h-3 w-3" />
+                                nrms.nukehub.org
+                              </div>
+                              <div className="w-16" />
+                            </div>
+                            <div className="relative bg-background">
+                              <ThemedImage
+                                lightSrc={item.image}
+                                darkSrc={item.imageDark}
+                                alt={item.imageAlt || item.name}
+                                className="w-full"
+                                loading="lazy"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </TiltCard>
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </section>
 

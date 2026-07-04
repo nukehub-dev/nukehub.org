@@ -26,6 +26,7 @@ import {
 import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { TiltCard } from "@modules/projects/components/shared/TiltCard";
+import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
 import type { NukelabData } from "../types";
 
@@ -149,7 +150,7 @@ function AnimatedCounter({ value, label }: { value: string; label: string }) {
     >
       <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent">
+        <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_95%,var(--foreground))] bg-clip-text text-transparent">
           {displayValue}
         </div>
         <div className="mt-2 text-sm text-muted-foreground font-medium">
@@ -276,8 +277,9 @@ export function NukelabPage({
                       <div className="w-16" />
                     </div>
                     <div className="relative bg-background">
-                      <img
-                        src={data.hero.heroImage}
+                      <ThemedImage
+                        lightSrc={data.hero.heroImage}
+                        darkSrc={data.hero.heroImageDark}
                         alt={data.hero.heroImageAlt}
                         className="w-full"
                         loading="eager"
@@ -476,8 +478,9 @@ export function NukelabPage({
                                 <div className="w-16" />
                               </div>
                               <div className="relative bg-background">
-                                <img
-                                  src={env.image}
+                                <ThemedImage
+                                  lightSrc={env.image!}
+                                  darkSrc={env.imageDark}
                                   alt={env.imageAlt || env.name}
                                   className="w-full"
                                   loading="lazy"

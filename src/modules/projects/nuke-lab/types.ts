@@ -9,6 +9,7 @@ export interface NukelabData {
       external?: boolean;
     }>;
     heroImage: string;
+    heroImageDark?: string;
     heroImageAlt: string;
   };
   stats: Array<{ value: string; label: string }>;
@@ -29,6 +30,7 @@ export interface NukelabData {
       name: string;
       description: string;
       image?: string;
+      imageDark?: string;
       imageAlt?: string;
       features: string[];
       reversed: boolean;

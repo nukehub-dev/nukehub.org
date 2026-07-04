@@ -28,6 +28,7 @@ const projects = defineCollection({
     showStats: z.boolean().default(true).optional(),
     newpage: z.boolean().optional(),
     image: z.string().optional(),
+    imageDark: z.string().optional(),
     tags: z.array(z.string()).optional(),
     customPage: z.boolean().optional(),
     order: z.number().optional(),

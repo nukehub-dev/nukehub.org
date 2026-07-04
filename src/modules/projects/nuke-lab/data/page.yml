@@ -13,7 +13,8 @@ hero:
       variant: "secondary"
       icon: "github"
       external: true
-  heroImage: "/assets/images/nuke-lab.png"
+  heroImage: "/assets/images/projects/nuke-lab/hero-lite.png"
+  heroImageDark: "/assets/images/projects/nuke-lab/hero-dark.png"
   heroImageAlt: "NukeLab dashboard showing server management and resource monitoring"
 
 stats:
@@ -55,7 +56,8 @@ environments:
       badge: "Flagship"
       badgeIcon: "FlaskConical"
       description: "A Debian-based container preloaded with the essential open-source nuclear engineering toolchain. Clone, customize, or deploy as-is."
-      image: "/assets/images/nuke-lab.png"
+      image: "/assets/images/projects/nuke-lab/admin-lite.png"
+      imageDark: "/assets/images/projects/nuke-lab/admin-dark.png"
       imageAlt: "NukeLab default environment with JupyterLab and nuclear simulation tools"
       features:
         - "OpenMC v0.15.2, Geant4 v11.3.0, DAGMC v3.2.4"

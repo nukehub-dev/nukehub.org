@@ -13,7 +13,8 @@ hero:
       variant: "secondary"
       icon: "github"
       external: true
-  heroImage: "/assets/images/nuke-analytics.png"
+  heroImage: "/assets/images/projects/nuke-analytics/hero-lite.png"
+  heroImageDark: "/assets/images/projects/nuke-analytics/hero-dark.png"
   heroImageAlt: "NukeAnalytics dashboard showing nuclear data visualizations"
 
 features:

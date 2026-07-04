@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TiltCard } from "@modules/projects/components/shared/TiltCard";
+import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 
 interface GalleryImage {
   src: string;
+  srcDark?: string;
   alt: string;
 }
 
@@ -81,9 +83,10 @@ export function ImageGallery({ images }: ImageGalleryProps) {
 
             {/* Image Container */}
             <div className="relative bg-black aspect-video">
-              <img
+              <ThemedImage
                 key={current}
-                src={images[current].src}
+                lightSrc={images[current].src}
+                darkSrc={images[current].srcDark}
                 alt={images[current].alt}
                 className="w-full h-full object-cover"
               />

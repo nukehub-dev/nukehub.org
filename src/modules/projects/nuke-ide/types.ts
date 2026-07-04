@@ -9,6 +9,7 @@ export interface NukeideData {
       external?: boolean;
     }>;
     heroImage: string;
+    heroImageDark?: string;
     heroImageAlt: string;
   };
   stats: Array<{ value: string; label: string }>;
@@ -31,8 +32,9 @@ export interface NukeideData {
       badgeIcon: string;
       description: string;
       image?: string;
+      imageDark?: string;
       imageAlt?: string;
-      images?: Array<{ src: string; alt: string }>;
+      images?: Array<{ src: string; srcDark?: string; alt: string }>;
       features: string[];
       reversed: boolean;
       gallery?: boolean;

@@ -12,6 +12,7 @@ export interface Project {
   githubRepo?: string;
   newpage?: boolean;
   image?: string;
+  imageDark?: string;
   tags?: string[];
 }
 

@@ -25,6 +25,7 @@ import { BrandIcon } from "@components/ui/BrandIcon";
 import { TiltCard } from "@modules/projects/components/shared/TiltCard";
 import { LaptopMockup } from "@modules/projects/components/shared/LaptopMockup";
 import { ImageGallery } from "@modules/projects/components/shared/ImageGallery";
+import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
 import type { NukeideData } from "../types";
 
@@ -147,7 +148,7 @@ function AnimatedCounter({ value, label }: { value: string; label: string }) {
     >
       <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_60%,var(--foreground))] bg-clip-text text-transparent">
+        <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary to-[color-mix(in_oklch,var(--primary)_95%,var(--foreground))] bg-clip-text text-transparent">
           {displayValue}
         </div>
         <div className="mt-2 text-sm text-muted-foreground font-medium">
@@ -440,8 +441,9 @@ export function NukeidePage({
                 <div className="relative">
                   <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 blur-2xl opacity-40" />
                   <LaptopMockup>
-                    <img
-                      src={data.hero.heroImage}
+                    <ThemedImage
+                      lightSrc={data.hero.heroImage}
+                      darkSrc={data.hero.heroImageDark}
                       alt={data.hero.heroImageAlt}
                       className="w-full"
                       loading="eager"
@@ -634,8 +636,9 @@ export function NukeidePage({
                             <div className="relative group">
                               <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/5 to-primary/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
                               <BrowserMockup>
-                                <img
-                                  src={ext.image}
+                                <ThemedImage
+                                  lightSrc={ext.image!}
+                                  darkSrc={ext.imageDark}
                                   alt={ext.imageAlt || ""}
                                   className="w-full"
                                   loading="lazy"

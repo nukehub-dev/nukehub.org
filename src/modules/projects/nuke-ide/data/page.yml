@@ -12,7 +12,8 @@ hero:
       variant: "secondary"
       icon: "github"
       external: true
-  heroImage: "/assets/images/projects/nukeide/hero.png"
+  heroImage: "/assets/images/projects/nuke-ide/hero-lite.png"
+  heroImageDark: "/assets/images/projects/nuke-ide/hero-dark.png"
   heroImageAlt: "NukeIDE Overview showing OpenMC Studio with tokamak visualization"
 
 stats:
@@ -54,7 +55,8 @@ extensions:
       badge: "Flagship Extension"
       badgeIcon: "FlaskConical"
       description: "No-code graphical workspace for OpenMC Monte Carlo neutron transport simulations. Build geometries, configure materials, set up tallies, and run simulations — all without writing a single line of code."
-      image: "/assets/images/projects/nukeide/simulation-dashboard.png"
+      image: "/assets/images/projects/nuke-ide/simulation-dashboard-lite.png"
+      imageDark: "/assets/images/projects/nuke-ide/simulation-dashboard-dark.png"
       imageAlt: "OpenMC Studio Materials tab with DAGMC materials"
       features:
         - "Simulation dashboard with live metrics and k-eff plots"
@@ -69,9 +71,11 @@ extensions:
       badgeIcon: "Eye"
       description: "Advanced 3D and 2D visualization for nuclear engineering data. Inspect OpenMC statepoints, overlay tallies on geometry, and analyze simulation results with interactive plots."
       images:
-        - src: "/assets/images/projects/nukeide/geometry-viewer.png"
+        - src: "/assets/images/projects/nuke-ide/geometry-viewer-lite.png"
+          srcDark: "/assets/images/projects/nuke-ide/geometry-viewer-dark.png"
           alt: "3D stellarator geometry wireframe viewer"
-        - src: "/assets/images/projects/nukeide/statepoint-viewer.png"
+        - src: "/assets/images/projects/nuke-ide/statepoint-viewer-lite.png"
+          srcDark: "/assets/images/projects/nuke-ide/statepoint-viewer-dark.png"
           alt: "OpenMC statepoint viewer with k-effective convergence analysis"
       features:
         - "3D mesh viewer for VTK, DAGMC, STL, PLY, OBJ files"

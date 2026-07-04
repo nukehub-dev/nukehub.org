@@ -9,6 +9,7 @@ export interface NrmsData {
       external?: boolean;
     }>;
     heroImage: string;
+    heroImageDark?: string;
     heroImageAlt: string;
   };
   features: {
@@ -19,6 +20,21 @@ export interface NrmsData {
       title: string;
       description: string;
       color: string;
+    }>;
+  };
+  showcase: {
+    title: string;
+    description: string;
+    items: Array<{
+      name: string;
+      description: string;
+      image: string;
+      imageDark?: string;
+      imageAlt?: string;
+      features: string[];
+      reversed: boolean;
+      badge?: string;
+      badgeIcon?: string;
     }>;
   };
   dataSources: {

@@ -4,6 +4,7 @@ import { Search, Tag, ArrowUpRight } from "lucide-react";
 import { Badge } from "@components/ui/Badge";
 import { SearchInput } from "@components/ui/SearchInput";
 import { GitHubStatsOverlay } from "@components/shared/GitHubStatsOverlay";
+import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 import { viewportOnce } from "@lib/animations";
 
 export interface Project {
@@ -15,6 +16,7 @@ export interface Project {
   githubRepo?: string;
   newpage?: boolean;
   image?: string;
+  imageDark?: string;
   tags?: string[];
 }
 
@@ -131,8 +133,9 @@ export function ProjectsFilterGrid({ projects }: ProjectsFilterGridProps) {
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden bg-card">
                   {project.image ? (
-                    <img
-                      src={project.image}
+                    <ThemedImage
+                      lightSrc={project.image}
+                      darkSrc={project.imageDark}
                       alt={project.title}
                       width="100%"
                       height="100%"

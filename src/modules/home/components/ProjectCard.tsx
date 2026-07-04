@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { Badge } from "@components/ui/Badge";
 import { GitHubStatsOverlay } from "@components/shared/GitHubStatsOverlay";
+import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 
 export interface Project {
   title: string;
@@ -13,6 +14,7 @@ export interface Project {
   githubRepo?: string;
   newpage?: boolean;
   image?: string;
+  imageDark?: string;
   tags?: string[];
 }
 
@@ -83,8 +85,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         {/* Image area */}
         <div className="relative h-44 overflow-hidden sm:h-48">
           {project.image ? (
-            <img
-              src={project.image}
+            <ThemedImage
+              lightSrc={project.image}
+              darkSrc={project.imageDark}
               alt={project.title}
               width="100%"
               height="100%"

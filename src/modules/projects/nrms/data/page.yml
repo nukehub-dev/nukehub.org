@@ -13,7 +13,8 @@ hero:
       variant: "secondary"
       icon: "github"
       external: true
-  heroImage: "/assets/images/nrms-overview.png"
+  heroImage: "/assets/images/projects/nrms/hero-lite.png"
+  heroImageDark: "/assets/images/projects/nrms/hero-dark.png"
   heroImageAlt: "NRMS dashboard showing global nuclear reactor map and statistics"
 
 features:
@@ -36,6 +37,52 @@ features:
       title: "Reactor Database"
       description: "Comprehensive list of all reactors worldwide with filtering, sorting, and detailed specs."
       color: "violet"
+
+showcase:
+  title: "Explore the Platform"
+  description: "From fleet-wide overviews to reactor-level benchmarks — every view is interactive and themed for light or dark."
+  items:
+    - name: "Reactor Database"
+      badge: "Browse & Filter"
+      badgeIcon: "Table2"
+      description: "A searchable, sortable table of every nuclear power reactor worldwide. Filter by country, type, status, or capacity, and drill into a dedicated page for each unit with full operational specs."
+      image: "/assets/images/projects/nrms/reactors-list-lite.png"
+      imageDark: "/assets/images/projects/nrms/reactors-list-dark.png"
+      imageAlt: "NRMS reactor database table with filtering and sorting"
+      features:
+        - "Comprehensive list of all reactors worldwide"
+        - "Filter by country, reactor type, status, and capacity"
+        - "Sortable columns with paginated results"
+        - "Direct links to individual reactor pages"
+      reversed: false
+
+    - name: "Individual Benchmarking"
+      badge: "Per-Reactor Analysis"
+      badgeIcon: "Scale"
+      description: "Compare a single reactor against peers operating under similar conditions. Assess capacity factors, availability, and safety indicators with clear charts and contextual benchmarks."
+      image: "/assets/images/projects/nrms/individual-benchmark-lite.png"
+      imageDark: "/assets/images/projects/nrms/individual-benchmark-dark.png"
+      imageAlt: "NRMS individual reactor benchmarking view"
+      features:
+        - "Capacity factor and availability comparisons"
+        - "Peer grouping by reactor type and design"
+        - "Historical performance trends"
+        - "Contextual safety and efficiency indicators"
+      reversed: true
+
+    - name: "Group Benchmarking"
+      badge: "Fleet Comparisons"
+      badgeIcon: "TrendingUp"
+      description: "Evaluate groups of reactors — by vendor, country, or technology family — to uncover patterns and outliers across the global fleet. Ideal for strategic planning and comparative studies."
+      image: "/assets/images/projects/nrms/group-benchmark-lite.png"
+      imageDark: "/assets/images/projects/nrms/group-benchmark-dark.png"
+      imageAlt: "NRMS group benchmarking dashboard comparing reactor fleets"
+      features:
+        - "Aggregate statistics across reactor groups"
+        - "Vendor and country-level comparisons"
+        - "Outlier detection and ranking"
+        - "Exportable charts for reporting"
+      reversed: false
 
 dataSources:
   title: "Data Sources"

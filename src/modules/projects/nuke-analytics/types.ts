@@ -9,6 +9,7 @@ export interface NukeAnalyticsData {
       external?: boolean;
     }>;
     heroImage: string;
+    heroImageDark?: string;
     heroImageAlt: string;
   };
   features: {

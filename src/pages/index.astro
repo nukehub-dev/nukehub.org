@@ -69,6 +69,7 @@ const allProjects = sortedEntries.map((entry) => ({
   githubRepo: entry.data.githubRepo,
   newpage: entry.data.newpage ?? false,
   image: entry.data.image,
+  imageDark: entry.data.imageDark,
   tags: entry.data.tags,
 }));
 const projects = allProjects.slice(0, 4);

@@ -14,6 +14,7 @@ import {
 import { fadeInUp, staggerContainer, viewportOnce } from "@lib/animations";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { TiltCard } from "@modules/projects/components/shared/TiltCard";
+import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 import { FloatingParticles } from "@components/shared/decorations/FloatingParticles";
 import type { NukeAnalyticsData } from "../types";
 
@@ -178,8 +179,9 @@ export function NukeAnalyticsPage({
                 <div className="relative">
                   <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 blur-2xl opacity-40" />
                   <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-2xl shadow-black/10 dark:shadow-black/20">
-                    <img
-                      src={data.hero.heroImage}
+                    <ThemedImage
+                      lightSrc={data.hero.heroImage}
+                      darkSrc={data.hero.heroImageDark}
                       alt={data.hero.heroImageAlt}
                       className="w-full"
                       loading="eager"
