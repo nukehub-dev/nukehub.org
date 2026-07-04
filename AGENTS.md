@@ -1,0 +1,290 @@
+# Nuke Agent Doc (NAD) Framework
+
+## Purpose
+
+Binding work contract for AI agents and human contributors working on the
+NukeHub flagship brand site (Astro + React Islands + Tailwind v4, deployed
+statically on Cloudflare Pages).
+
+## Ownership
+
+This root `AGENTS.md` owns the NAD hierarchy, project-wide workflow rules, and
+cross-domain standards. Domain-specific guidance lives in child `AGENTS.md`
+files listed in the Child NAD Index.
+
+## NAD Core Contract
+
+- `AGENTS.md` files are binding work contracts for their subtrees.
+- Work products, source materials, instructions, records, assets, and durable
+  docs must stay understandable from the nearest applicable `AGENTS.md` plus
+  every parent `AGENTS.md` above it.
+
+### Read Before Editing
+
+1. Read this root `AGENTS.md`.
+2. Identify every file or folder you expect to touch.
+3. Walk from the repository root to each target path.
+4. Read every `AGENTS.md` found along each route.
+5. If a parent `AGENTS.md` lists a child `AGENTS.md` whose scope contains the
+   path, read that child and continue from there.
+6. Use the nearest `AGENTS.md` as the local contract and parent docs for
+   repo-wide rules.
+7. If docs conflict, the closer doc controls local work details, but no child
+   doc may weaken NAD.
+
+### Update After Editing
+
+Every meaningful change requires a NAD pass before the task is done.
+
+Update the closest owning `AGENTS.md` when a change affects:
+
+- purpose, scope, ownership, or responsibilities
+- durable structure, contracts, workflows, or operating rules
+- required inputs, outputs, permissions, constraints, side effects, or
+  artifacts
+- user preferences about behavior, communication, process, organization, or
+  quality
+- `AGENTS.md` creation, deletion, move, rename, or index contents
+
+Update parent docs when parent-level structure, ownership, workflow, or child
+index changes. Update child docs when parent changes alter local rules. Remove
+stale or contradictory text immediately. Small edits that do not change
+behavior or contracts may leave docs unchanged, but the NAD pass still must
+happen.
+
+## Hierarchy
+
+- Root `AGENTS.md` is the NAD rail: project-wide instructions, global
+  preferences, durable workflow rules, and the top-level Child NAD Index.
+- Child `AGENTS.md` files own domain-specific instructions and their own Child
+  NAD Index.
+- Each parent explains what its direct children cover and what stays owned by
+  the parent.
+- The closer a doc is to the work, the more specific and practical it must be.
+
+## Child Doc Shape
+
+Create a child `AGENTS.md` when a folder becomes a durable boundary with its
+own purpose, rules, responsibilities, workflow, materials, or quality
+standards.
+
+Default section order:
+
+- Purpose
+- Ownership
+- Local Contracts
+- Work Guidance
+- Verification
+- Child NAD Index
+
+## Style
+
+- Keep docs concise, current, and operational.
+- Document stable contracts, not diary entries.
+- Put broad rules in parent docs and concrete details in child docs.
+- Prefer direct bullets with explicit names.
+- Do not duplicate rules across many files unless each scope needs a local
+  version.
+- Delete stale notes instead of explaining history.
+- Trim obvious statements, repeated rules, misplaced detail, and warnings for
+  risks that no longer exist.
+
+## Closeout
+
+1. Re-check changed paths against the NAD chain.
+2. Update nearest owning docs and any affected parents or children.
+3. Refresh every affected Child NAD Index.
+4. Remove stale or contradictory text.
+5. Run existing verification when relevant.
+6. Report any docs intentionally left unchanged and why.
+
+## User Preferences
+
+When the user requests a durable behavior change, record it here or in the
+relevant child `AGENTS.md`.
+
+---
+
+## NukeHub Project Guidance
+
+## Required tooling
+
+Install once before making changes:
+
+- **Node.js** + npm (site build, scripts, and lint).
+- **Go 1.22+** — only when modifying `contact-server/`. The site itself does
+  not require Go.
+- **wrangler** (`npm i -D wrangler` or use `npx wrangler`) — for local
+  Cloudflare Pages preview and deploying `dist/`. Pin
+  `compatibility_date = "2026-06-10"` in `wrangler.toml` to match your local
+  `workerd`; production Cloudflare always supports the latest date.
+
+No native Python toolchain is needed — the Go contact server is the only
+non-JavaScript code in this repo.
+
+## Before committing
+
+Run these from the repo root. They are the canonical "did I break anything"
+checks:
+
+```bash
+npm run lint            # eslint . (zero errors required)
+npm run format:check    # prettier check on src/** and *.json/*.md
+npm run build           # astro build — must complete and emit .md siblings
+npx astro check         # typecheck (network install @astrojs/check on first run)
+```
+
+Notes:
+
+- `npm run lint` must end with `0 errors`. Warnings in pre-existing React
+  files are tolerated; do not add new ones in files you touch.
+- `npm run build` invokes the `markdown-negotiation` Astro integration, which
+  walks `dist/**/*.html` and writes a `.md` sibling per page. If the build log
+  does not contain `[markdown-negotiation] generated .md siblings for all
+pages`, the integration is broken — fix before committing.
+- `npm run dev` and `npm run dev:fast` toggle `src/pages/debug/` from
+  `src/debug-pages/` via `scripts/debug-pages.js`. `npm run build` always
+  disables debug pages.
+
+## Architecture pointer
+
+High-level layout; see the Child NAD Index below for domain-specific details.
+
+- `astro.config.mjs` — Astro config (static output, React + MDX + sitemap
+  integrations, Tailwind v4 via Vite, path aliases to `@components`,
+  `@layouts`, `@data`, `@lib`, `@content`, `@modules`).
+- `src/integrations/markdown-negotiation.ts` — build-time Astro integration
+  that emits `.md` siblings next to every prerendered `.html`.
+- `public/_worker.js` — Cloudflare Pages advanced-mode Worker; performs
+  RFC 9110 `Accept` negotiation and serves the `.md` sibling when
+  `text/markdown` is preferred.
+- `wrangler.toml` — Cloudflare Pages config (compatibility date, output dir).
+- `src/pages/` — Astro routes. One `.astro` file per page plus the
+  `[...slug].astro` catch-all that renders entries from the `projects`
+  collection. `src/pages/og/` holds dynamic OpenGraph image endpoints (`.png.ts`).
+- `src/layouts/` — `BaseLayout.astro` (every page funnels through it) and
+  `PageLayout.astro` (prose wrapper over BaseLayout).
+- `src/components/` — Astro components and React islands shared across pages
+  (`layout/`, `shared/`, `ui/`, `illustrations/`, `status/`).
+- `src/modules/` — React islands grouped by feature area (`home/`,
+  `projects/{nuke-lab,nuke-ide,nuke-analytics,nrms}/`, `about/`, `roadmap/`,
+  `changelog/`, `people/`, `events/`, `support/`, `contact/`, `sponsors/`,
+  `acknowledgment/`, `manual/`).
+- `src/content/` — Astro content collections (mdx/yaml). Schemas declared in
+  `src/content.config.ts`.
+- `src/lib/` — TypeScript utilities, hooks, and the Keycloak auth provider.
+- `src/data/` — static data (nav, footer) and `github-stats.json` (snapshot
+  refreshed by `scripts/sync-github-stats.mjs`).
+- `src/styles/global.css` — Tailwind v4 entrypoint (`@import "tailwindcss"`)
+  plus theme tokens and base styles.
+- `public/` — static assets copied verbatim into `dist/`. Includes
+  `_worker.js`, `_headers`, fonts, images, manifest, and `silent-check-sso.html`.
+- `scripts/` — Node.js maintenance scripts: `debug-pages.js`,
+  `sync-github-stats.mjs`, `optimize-images.js`.
+- `contact-server/` — Go HTTP service receiving the static-site contact form
+  and forwarding via SMTP. Deployed behind `api.nukehub.org/contact`.
+- `nginx/` — vhost config for `api.nukehub.org` (reverse proxies
+  `/contact` to the Go server). Not used by the static site itself.
+- `.github/workflows/sync-github-stats.yml` — scheduled CI job that runs
+  `scripts/sync-github-stats.mjs` and commits the refreshed
+  `src/data/github-stats.json`.
+
+## Deployment (Cloudflare Pages + markdown negotiation)
+
+This is a **static** build (`output: "static"`). Two layers cooperate to
+provide HTTP content negotiation:
+
+1. **Build time** — `src/integrations/markdown-negotiation.ts` runs in the
+   `astro:build:done` hook, converts every `dist/**/*.html` to Markdown via
+   Turndown (with site-specific rules: strip UI chrome, flatten card anchors,
+   label icon-only anchors, separate adjacent links/images), and writes the
+   result next to the source as a `.md` sibling.
+2. **Request time** — `public/_worker.js` switches Cloudflare Pages into
+   advanced mode. It parses `Accept` (RFC 9110 §12.5.1: q-values, specificity,
+   `q=0` rejections), and when `text/markdown` is preferred it serves the
+   matching `.md` sibling with `Content-Type: text/markdown; charset=utf-8`
+   and `Vary: Accept`. Otherwise it falls through to `env.ASSETS.fetch` and
+   annotates the response with `Vary: Accept` so edge caches split correctly.
+
+Each `<page>.html` URL therefore exposes three reachable representations:
+
+- `Accept: text/html` (default) — the prerendered Astro page.
+- `Accept: text/markdown` — the generated `.md` sibling.
+- Direct `GET /<page>.md` — the static `.md` file (no negotiation needed).
+
+A `<link rel="alternate" type="text/markdown" href={canonicalUrl}>` is injected
+in `BaseLayout.astro` so consumers can discover the markdown variant from the
+HTML itself.
+
+Verification:
+
+```bash
+npm run build
+npx wrangler pages dev dist
+# in another shell:
+curl -sI -H "Accept: text/markdown" http://localhost:8788/nuke-lab/   # expect text/markdown; Vary: Accept
+curl -sI -H "Accept: text/html"     http://localhost:8788/nuke-lab/   # expect text/html; Vary: Accept
+```
+
+Deploy with `npx wrangler pages deploy dist`. Do not modify `dist/` directly —
+it is a build artifact and ignored by git.
+
+## Common pitfalls
+
+- **All pages route through `BaseLayout.astro`.** A head/SEO change there
+  affects every page. Add new `<link>`/`<meta>` in BaseLayout, not in
+  individual page files.
+- **React islands pre-hydrate to placeholders.** Live data (GitHub stars,
+  animated counters) ships as `0` in the prerendered HTML — the real values
+  hydrate client-side. The generated `.md` therefore shows the placeholder
+  for those numbers, not the live values. Acceptable; do not try to fix by
+  SSR'ing the islands.
+- **`.wrangler/` is gitignored and eslint-ignored.** `npx wrangler pages dev`
+  writes temp bundles under `.wrangler/tmp/`; do not commit them.
+- **`wrangler.toml`'s `compatibility_date` only matters locally.** It must
+  not exceed the date supported by your local `workerd` binary; Cloudflare
+  production always supports the latest date.
+- **Do not edit generated files.** `dist/`, `.astro/`, `node_modules/.vite/`,
+  `src/routeTree.gen.ts` (if added), and any other build outputs are
+  regenerated. Change source only.
+- **`silent-check-sso.html` is a Keycloak artifact.** It is exempt from the
+  markdown-negotiation integration. Do not wrap it in BaseLayout.
+
+## Environment variables
+
+`PUBLIC_*` variables are bundled into the static site and visible to the
+browser. They are defined in `.env` (local dev) and Cloudflare Pages env vars
+(production). See `.env.example` for the canonical list:
+
+- `PUBLIC_TURNSTILE_SITE_KEY` — Cloudflare Turnstile site key (contact form).
+- `PUBLIC_CONTACT_API_URL` — Go contact server endpoint
+  (`https://api.nukehub.org/contact`).
+- `PUBLIC_CF_ANALYTICS_TOKEN` — Cloudflare Web Analytics token (optional).
+- `PUBLIC_KEYCLOAK_URL` / `PUBLIC_KEYCLOAK_REALM` / `PUBLIC_KEYCLOAK_CLIENT_ID`
+  — Keycloak IdP config for `src/lib/auth/KeycloakProvider.tsx`.
+
+Secrets for the contact server (`SMTP_*`, `TURNSTILE_SECRET_KEY`,
+`ALLOWED_ORIGINS`) live in the `contact-server/` `.env`, never in this repo's
+`.env`.
+
+## Child NAD Index
+
+- `src/AGENTS.md` — Astro site source: `pages/`, `layouts/`, `components/`,
+  `styles/`, `data/`, `types/`, `integrations/`, plus Astro config and project
+  path aliases.
+- `src/content/AGENTS.md` — Astro content collections and `content.config.ts`
+  schemas (projects, people, sponsors, events, integrations, roadmap,
+  changelog, manual, testimonials, incidents, people/categories).
+- `src/modules/AGENTS.md` — React islands grouped by feature area
+  (`home/`, `projects/<name>/`, `about/`, `roadmap/`, `changelog/`, `people/`,
+  `events/`, `support/`, `contact/`, `sponsors/`, `acknowledgment/`,
+  `manual/`).
+- `src/lib/AGENTS.md` — TypeScript utilities, hooks, and the Keycloak auth
+  provider.
+- `public/AGENTS.md` — Static assets copied verbatim into `dist/` (the
+  Cloudflare Pages Worker, `_headers`, fonts, images, manifest,
+  `silent-check-sso.html`).
+- `scripts/AGENTS.md` — Node.js maintenance scripts
+  (`debug-pages.js`, `sync-github-stats.mjs`, `optimize-images.js`).
+- `contact-server/AGENTS.md` — Go contact-form server (SMTP relay behind
+  `api.nukehub.org/contact`).

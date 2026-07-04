@@ -1,0 +1,114 @@
+# Public — Static Assets & Cloudflare Worker
+
+## Purpose
+
+Static files copied verbatim into `dist/` by the Astro build. Owns the
+Cloudflare Pages advanced-mode Worker that performs `Accept`-based markdown
+content negotiation, plus the security headers, fonts, images, manifest, and
+Keycloak SSO artifact.
+
+## Ownership
+
+Every file in `public/`. None of these files are processed by Vite/Astro —
+they are byte-for-byte copied into `dist/`.
+
+## Local Contracts
+
+- Cloudflare Pages serves these directly unless `public/_worker.js` rewrites
+  the response. Putting `_worker.js` here switches Pages into advanced mode:
+  the Worker runs for every request before static assets are returned.
+- Security headers in `public/_headers` apply to every static response the
+  CDN serves (including the `.md` siblings). The Worker adds `Vary: Accept`
+  at runtime.
+- Image/font/manifest paths referenced from components must match the
+  on-disk path here (no build-time URL transformation).
+
+## Work Guidance
+
+### Files
+
+- `_worker.js` — Cloudflare Pages advanced-mode Worker.
+  - Parses `Accept` (RFC 9110 §12.5.1): q-values, specificity, `q=0`
+    rejections. If `text/markdown` is preferred, fetches the matching `.md`
+    sibling via `env.ASSETS.fetch` (tries both `<path>.md` and
+    `<path>/index.md` to handle Astro's directory build format) and returns
+    `Content-Type: text/markdown; charset=utf-8` + `Vary: Accept` +
+    cache hints.
+  - On any other `Accept`, falls through to `env.ASSETS.fetch(request)` and
+    annotates the response with `Vary: Accept` so edge caches split by
+    `Accept`.
+  - The `.md` siblings themselves are produced by
+    `src/integrations/markdown-negotiation.ts` (see `src/AGENTS.md`). The
+    Worker does **not** generate them — it only routes to them.
+  - Local preview: `npm run build && npx wrangler pages dev dist`. The
+    `compatibility_date` in `wrangler.toml` must match your local `workerd`
+    binary (currently `2026-06-10`); production Cloudflare always supports the
+    latest date.
+- `_headers` — security header set. CSP allow-lists
+  `https://challenges.cloudflare.com` (Turnstile),
+  `https://auth.nukehub.org` (Keycloak),
+  `https://api.nukehub.org` (contact API), and the Cloudflare Analytics
+  beacon. If you add a new third-party service, you must add its origin to
+  the matching `*-src` directive here or it will be silently blocked.
+- `silent-check-sso.html` — raw Keycloak iframe target. **Exempt from the
+  markdown-negotiation integration** (added to `EXACT_SKIP` there). Do not
+  wrap in BaseLayout.
+- `manifest.json` — PWA manifest (paired with `apple-touch-icon.png`,
+  `icon-192.png`, `icon-512.png`, `favicon.ico`).
+- `robots.txt` — crawl directives.
+- `fonts/Geist-Variable.woff2` — the Geist variable font, preloaded in
+  BaseLayout.
+- `assets/` — site images under `assets/images/...`. Referenced from
+  `src/modules/<project>/components/*.tsx`, OG endpoints, and BaseLayout OG
+  fallback. Most project assets live under
+  `assets/images/projects/<name>/hero-{lite,dark}.png` so the project pages
+  can swap on dark mode.
+
+### Editing the Worker
+
+- The Worker is plain JS with no build step — Cloudflare bundles it at
+  deploy time. Keep `Request`/`Response`/`URL`/`Headers` globals (the
+  `eslint-disable no-undef` header is intentional).
+- Rules added to the negotiation parser must preserve RFC 9110 §12.5.1
+  semantics (specificity beats q-value, `q=0` is an explicit rejection,
+  position is the final tiebreak). The build log does **not** validate the
+  parser; test locally with the curl commands in the root NAD.
+- New rewrite logic (e.g. an alternate language) belongs as a new branch in
+  `fetch()`; keep the markdown branch self-contained.
+
+### Adding a static file
+
+1. Drop it under `public/`; reference it from a page/component by its
+   root-relative path (`/fonts/Geist-Variable.woff2`,
+   `/assets/images/...`, `/manifest.json`).
+2. If the file should also be reachable as a `.md`-negotiated asset, it does
+   not need anything special — the negotiation only kicks in when a sibling
+   `.md` exists next to a `.html`. Static-only files (fonts, images) just
+   serve directly.
+
+### Common pitfalls
+
+- **Do not import this Worker from anywhere.** It is loaded by Cloudflare,
+  not by Astro. Putting it under `public/` is the deployment mechanism.
+- **The Worker must add to `Vary`, not overwrite.** `_headers` may set `Vary`
+  on its own responses; the Worker's `appendVaryAccept` keeps it correct for
+  both HTML and markdown replies.
+- **Compatibility flag drift.** If `wrangler pages dev` fails with
+  "requires compatibility date ... but the newest date supported by this
+  server binary is ...", lower `wrangler.toml`'s `compatibility_date` until
+  it matches your local `workerd` (Cloudflare production is unaffected).
+
+## Verification
+
+```bash
+npm run build
+npx wrangler pages dev dist
+# in another shell:
+curl -sI -H "Accept: text/markdown" http://localhost:8788/<page>/   # expect text/markdown; Vary: Accept
+curl -sI -H "Accept: text/html"     http://localhost:8788/<page>/   # expect text/html; Vary: Accept
+curl -sI                            http://localhost:8788/<page>/    # defaults to text/html
+```
+
+## Child NAD Index
+
+- None (single folder of static files).
