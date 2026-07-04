@@ -92,6 +92,7 @@ export default [
       "dist/**",
       "node_modules/**",
       ".astro/**",
+      ".wrangler/**",
       "archive/**",
       "contact-server/**",
       "coverage/**",

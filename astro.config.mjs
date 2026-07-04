@@ -3,6 +3,7 @@ import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
+import markdownNegotiation from "./src/integrations/markdown-negotiation";
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,7 +16,7 @@ export default defineConfig({
   image: {
     domains: ["github.com", "avatars.githubusercontent.com"],
   },
-  integrations: [react(), mdx(), sitemap()],
+  integrations: [react(), mdx(), sitemap(), markdownNegotiation()],
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {

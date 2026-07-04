@@ -40,6 +40,7 @@ test-results/
 .vercel
 .netlify
 .cloudflare
+.wrangler/
 
 # Cache
 .cache/

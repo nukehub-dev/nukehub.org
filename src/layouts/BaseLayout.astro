@@ -191,6 +191,12 @@ const commandPalettePages: CommandPalettePage[] = [
     <link rel="canonical" href={canonicalUrl} />
     <link
       rel="alternate"
+      type="text/markdown"
+      title={title || "NukeHub page — Markdown"}
+      href={canonicalUrl}
+    />
+    <link
+      rel="alternate"
       type="application/rss+xml"
       title="NukeHub RSS Feed"
       href={`${siteUrl}/rss.xml`}
