@@ -50,8 +50,9 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
   loader, GitHub stats overlay, analytics, grain overlay, glass context menu.
   `decorations/` and `lazy/` are subgroups.
 - `src/components/ui/` — visual primitives: `Button`, `Card`, `Badge`,
-  `Logo`, `Image`, `SearchInput`, `BrandIcon`. The Astro `Image.astro` and
-  React `Image.tsx` pair wraps `<img>` with consistent sizing/loading.
+  `Tooltip`, `Logo`, `Image`, `SearchInput`, `BrandIcon`. The Astro
+  `Image.astro` and React `Image.tsx` pair wraps `<img>` with consistent
+  sizing/loading.
 - `src/components/illustrations/` — decorative illustration components.
 - `src/components/status/` — status badges / state indicators.
 - `src/data/` — typed static data: `nav.tsx`, `footer.ts`, and
@@ -110,6 +111,14 @@ negotiated markdown does not leak it.
 strategy, image domains, and Vite plugins/aliases. Do not add adapter
 imports — this site is static-only. Cloudflare Pages is handled by
 `public/_worker.js` (see `public/AGENTS.md`), not by `@astrojs/cloudflare`.
+
+### UI primitives
+
+The project does not use a generic component library. Build custom components
+in `src/components/ui/` when a new primitive is needed. Do not rely on
+browser-built-in UI (e.g. native `title` attribute tooltips, default
+`<select>` dropdowns, unstyled `<dialog>`) for product UX — use the project's own
+components such as `Tooltip`.
 
 ### Common pitfalls
 
