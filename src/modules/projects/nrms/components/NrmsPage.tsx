@@ -324,7 +324,11 @@ export function NrmsPage({
                     variants={fadeInUp}
                     className="grid gap-10 items-center lg:grid-cols-2"
                   >
-                    <div className={item.reversed ? "order-2" : "order-2 lg:order-1"}>
+                    <div
+                      className={
+                        item.reversed ? "order-2" : "order-2 lg:order-1"
+                      }
+                    >
                       {item.badge && (
                         <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-4">
                           <BadgeIcon className="h-4 w-4" />
@@ -352,7 +356,9 @@ export function NrmsPage({
 
                     <motion.div
                       variants={fadeInUp}
-                      className={item.reversed ? "order-1" : "order-1 lg:order-2"}
+                      className={
+                        item.reversed ? "order-1" : "order-1 lg:order-2"
+                      }
                     >
                       <TiltCard tiltAmount={3}>
                         <div className="relative group">

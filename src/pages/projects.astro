@@ -21,9 +21,7 @@ const projects = sortedEntries.map((entry) => ({
   imageDark: entry.data.imageDark,
   tags: entry.data.tags,
   slug:
-    (entry.data.customPage &&
-      !entry.data.permalink &&
-      entry.data.url) ||
+    (entry.data.customPage && !entry.data.permalink && entry.data.url) ||
     entry.data.permalink ||
     `/${entry.id}`,
 }));
