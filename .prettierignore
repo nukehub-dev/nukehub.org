@@ -1,0 +1,11 @@
+# Dependencies
+node_modules
+
+# Build / cache outputs
+dist
+.astro
+.wrangler
+node_modules/.vite
+
+# npm owns this format
+package-lock.json

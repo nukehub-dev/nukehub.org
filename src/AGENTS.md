@@ -50,9 +50,8 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
   loader, GitHub stats overlay, analytics, grain overlay, glass context menu.
   `decorations/` and `lazy/` are subgroups.
 - `src/components/ui/` — visual primitives: `Button`, `Card`, `Badge`,
-  `Tooltip`, `Logo`, `Image`, `SearchInput`, `BrandIcon`. The Astro
-  `Image.astro` and React `Image.tsx` pair wraps `<img>` with consistent
-  sizing/loading.
+  `Tooltip`, `Logo`, `Image`, `SearchInput`, `BrandIcon`. `Image.tsx` wraps
+  `<img>` with consistent sizing/loading for React islands.
 - `src/components/illustrations/` — decorative illustration components.
 - `src/components/status/` — status badges / state indicators.
 - `src/data/` — typed static data: `nav.tsx`, `footer.ts`, and

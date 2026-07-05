@@ -75,7 +75,7 @@ function saveTokens(keycloak: Keycloak) {
       token: keycloak.token || "",
       refreshToken: keycloak.refreshToken || "",
       idToken: keycloak.idToken,
-      timeSkew: keycloak.timeSkew,
+      timeSkew: keycloak.timeSkew ?? undefined,
     };
     localStorage.setItem(TOKEN_KEY, JSON.stringify(tokens));
   } catch {

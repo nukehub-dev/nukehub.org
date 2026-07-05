@@ -121,11 +121,12 @@ Install once before making changes:
 ## Before committing
 
 Run these from the repo root. They are the canonical "did I break anything"
-checks:
+checks — the same checks run in `.github/workflows/ci.yml` on every PR and
+push to `main`:
 
 ```bash
 npm run lint            # eslint . (zero errors required)
-npm run format:check    # prettier check on src/** and *.json/*.md
+npm run format:check    # prettier check on src/**, root configs, and YAML
 npm run build           # astro build — must complete and emit .md siblings
 npx astro check         # typecheck (network install @astrojs/check on first run)
 ```
@@ -168,6 +169,7 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `contact-server/` — Go SMTP relay for the contact form. See
   `contact-server/AGENTS.md`.
 - `nginx/` — reverse-proxy vhost for `api.nukehub.org/contact`.
+- `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
 - `.github/workflows/sync-github-stats.yml` — scheduled GitHub stats refresh.
 
 ## Deployment (Cloudflare Pages + markdown negotiation)
