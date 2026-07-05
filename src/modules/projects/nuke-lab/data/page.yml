@@ -33,7 +33,7 @@ features:
   items:
     - icon: "Container"
       title: "Containerized Workspaces"
-      description: "Spawn browser-accessible NukeIDE and Jupyter environments instantly, managed by a FastAPI backend."
+      description: "Spawn browser-accessible NukeIDE environments instantly, managed by a FastAPI backend."
       color: "amber"
     - icon: "Boxes"
       title: "Custom Environments"
@@ -49,22 +49,22 @@ features:
       color: "violet"
 
 environments:
-  title: "Batteries-Included Nuclear Stack"
-  description: "Default environment ships production-ready simulation codes and scientific libraries, not just generic Jupyter."
+  title: "Dynamic User Environments"
+  description: "Admins create Environment templates that define the container image, packages, ports, volumes, and defaults. NukeLab turns each template into on-demand, isolated per-user workspaces."
   items:
-    - name: "Default Simulation Environment"
-      badge: "Flagship"
-      badgeIcon: "FlaskConical"
-      description: "A Debian-based container preloaded with the essential open-source nuclear engineering toolchain. Clone, customize, or deploy as-is."
+    - name: "Environment Templates"
+      badge: "Core"
+      badgeIcon: "Container"
+      description: "Build Docker images with your simulation codes, IDE extensions, Python packages, and configuration. Every server spawned from a template is isolated and inherits the template's settings."
       image: "/assets/images/projects/nuke-lab/admin-lite.png"
       imageDark: "/assets/images/projects/nuke-lab/admin-dark.png"
-      imageAlt: "NukeLab default environment with JupyterLab and nuclear simulation tools"
+      imageAlt: "NukeLab admin dashboard showing environment templates and server management"
       features:
-        - "OpenMC v0.15.2, Geant4 v11.3.0, DAGMC v3.2.4"
-        - "MOAB, Double-Down, libMesh, NJOY2016, KDSource"
-        - "PyNE, Paramak, PlasmaPy, cad_to_dagmc, vmecpp"
-        - "JupyterHub 5.3.0 + JupyterLab + NukeIDE (Theia)"
-        - "Miniforge Python 3.12 with NumPy, Cython, HDF5, Gmsh"
+        - "Admin-defined Docker image templates with optional custom Dockerfile"
+        - "Per-user NukeIDE (Theia) containers with JWT auth proxy"
+        - "Persistent volumes and configurable port exposure"
+        - "Resource plans enforcing CPU, memory, and disk limits"
+        - "Runs on Docker or Podman with Traefik v3 dynamic routing"
       reversed: false
 
 architecture:
@@ -79,7 +79,7 @@ architecture:
       description: "Static dashboard with TanStack Router/Query, Recharts, and shadcn/ui primitives."
     - icon: "Cpu"
       title: "FastAPI Backend"
-      description: "Python 3.12 async API with Pydantic, SQLAlchemy, Alembic, and async Docker SDK orchestration."
+      description: "Python 3.13 async API with Pydantic v2, SQLAlchemy 2, Alembic, and async Docker SDK orchestration."
     - icon: "Database"
       title: "PostgreSQL + Redis"
       description: "PostgreSQL 17 for persistent state, Redis 7 for sessions, pub/sub, Celery, and response caching."
@@ -134,7 +134,7 @@ workflow:
       icon: "Rocket"
     - number: 3
       title: "Run Simulations"
-      description: "Open NukeIDE or JupyterLab in the browser and work with OpenMC, Geant4, and the full nuclear stack."
+      description: "Open NukeIDE in the browser and work in your containerized workspace with the tools and data you configured."
       icon: "FlaskConical"
     - number: 4
       title: "Share & Scale"
