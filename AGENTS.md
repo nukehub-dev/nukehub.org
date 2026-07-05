@@ -240,8 +240,8 @@ browser. They are defined in `.env` (local dev) and Cloudflare Pages env vars
 - `PUBLIC_CONTACT_API_URL` — Go contact server endpoint
   (`https://api.nukehub.org/contact`).
 - `PUBLIC_CF_ANALYTICS_TOKEN` — Cloudflare Web Analytics token (optional).
-- `PUBLIC_KEYCLOAK_URL` / `PUBLIC_KEYCLOAK_REALM` / `PUBLIC_KEYCLOAK_CLIENT_ID`
-  — Keycloak IdP config for `src/lib/auth/KeycloakProvider.tsx`.
+- `PUBLIC_AUTH_URL` / `PUBLIC_AUTH_REALM` / `PUBLIC_AUTH_CLIENT_ID`
+  — NukeAuth IdP config for `src/lib/auth/NukeAuthProvider.tsx`.
 
 Secrets for the contact server (`SMTP_*`, `TURNSTILE_SECRET_KEY`,
 `ALLOWED_ORIGINS`) live in the `contact-server/` `.env`, never in this repo's
