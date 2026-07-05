@@ -114,8 +114,7 @@ Install once before making changes:
 - **Node.js** + npm (site build, scripts, and lint).
 - **Go 1.22+** — only when modifying `contact-server/`. The site itself does
   not require Go.
-- **wrangler** (`npm i -D wrangler` or use `npx wrangler`) — for local
-  Cloudflare Pages preview and deploying `dist/`. Pin
+- **wrangler** — local Cloudflare Pages preview and deploying `dist/`. Pin
   `compatibility_date = "2026-06-10"` in `wrangler.toml` to match your local
   `workerd`; production Cloudflare always supports the latest date.
 

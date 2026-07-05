@@ -36,7 +36,7 @@ All files under `scripts/**`.
   - `MAX_STALE_HOURS = 24` — the script skips re-fetch if the cache is fresh
     enough. Override by deleting `github-stats.json`.
 - `optimize-images.js` — Image compression pass over `public/assets/images/`
-  using `sharp`. Run manually; not wired into CI.
+  using `sharp` + `glob` (dev dependencies). Run manually; not wired into CI.
 
 ### Adding a script
 
