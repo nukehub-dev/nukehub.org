@@ -121,7 +121,10 @@ export function NukeAuthProvider({
       }),
   );
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // Start in loading state so the sign-in button is not clickable until
+  // Keycloak init has run. Calling keycloak.login() before init() completes
+  // crashes because keycloak-js initializes its internal adapter in init().
+  const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<AuthUser | null>(null);
 
   // Track the last time we successfully refreshed so user-activity refreshes
@@ -131,14 +134,31 @@ export function NukeAuthProvider({
   // Guard against concurrent init attempts from the mount effect and
   // cross-tab storage sync.
   const initInFlightRef = useRef<boolean>(false);
+  // True once the first init attempt has finished (success or failure).
+  // keycloak.login() crashes if called before init completes, so we queue
+  // early clicks and run them as soon as init is done.
+  const readyRef = useRef<boolean>(false);
+  const pendingLoginRef = useRef<boolean>(false);
 
   const accountUrl = configValid ? `${url}/realms/${realm}/account` : "";
 
   const clearAuthState = useCallback(() => {
     setIsAuthenticated(false);
     setUser(null);
+    setIsLoading(false);
     clearTokens();
   }, []);
+
+  const setReady = useCallback(() => {
+    readyRef.current = true;
+  }, []);
+
+  const flushPendingLogin = useCallback(() => {
+    if (pendingLoginRef.current) {
+      pendingLoginRef.current = false;
+      keycloak.login({ redirectUri: window.location.href });
+    }
+  }, [keycloak]);
 
   const handleAuth = useCallback(
     (authenticated: boolean) => {
@@ -149,8 +169,10 @@ export function NukeAuthProvider({
         saveTokens(keycloak);
         lastRefreshRef.current = Date.now();
       }
+      setReady();
+      flushPendingLogin();
     },
-    [keycloak],
+    [keycloak, setReady, flushPendingLogin],
   );
 
   const refreshTokens = useCallback(
@@ -184,10 +206,31 @@ export function NukeAuthProvider({
     [keycloak, clearAuthState],
   );
 
+  // Cap Keycloak init so a slow/unreachable auth server doesn't delay page
+  // interactivity or skew local Lighthouse scores.
+  const withInitTimeout = useCallback(
+    (initPromise: Promise<boolean>, ms = 5000): Promise<boolean> => {
+      let timeoutId = 0;
+      const timeoutPromise = new Promise<boolean>((_, reject) => {
+        timeoutId = window.setTimeout(
+          () => reject(new Error("Keycloak init timeout")),
+          ms,
+        );
+      });
+      initPromise
+        .then(() => window.clearTimeout(timeoutId))
+        .catch(() => window.clearTimeout(timeoutId));
+      return Promise.race([initPromise, timeoutPromise]);
+    },
+    [],
+  );
+
   const initWithCheckSso = useCallback(() => {
-    // Cap Keycloak init so a slow/unreachable auth server doesn't
-    // delay page interactivity or skew local Lighthouse scores.
-    const KEYCLOAK_INIT_TIMEOUT = 5000;
+    if (!configValid) {
+      clearAuthState();
+      return;
+    }
+
     // Skip silent SSO iframe on localhost/127.0.0.1 because the auth
     // redirect target is the production domain and will fail/timeout.
     const isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(
@@ -201,17 +244,8 @@ export function NukeAuthProvider({
       pkceMethod: "S256",
       enableLogging: process.env.NODE_ENV === "development",
     });
-    const timeoutPromise = new Promise<boolean>((_, reject) => {
-      const id = window.setTimeout(
-        () => reject(new Error("Keycloak init timeout")),
-        KEYCLOAK_INIT_TIMEOUT,
-      );
-      initPromise
-        .then(() => window.clearTimeout(id))
-        .catch(() => window.clearTimeout(id));
-    });
 
-    Promise.race([initPromise, timeoutPromise])
+    withInitTimeout(initPromise)
       .then((authenticated) => {
         handleAuth(authenticated);
       })
@@ -219,30 +253,37 @@ export function NukeAuthProvider({
         console.error("Keycloak init failed:", error);
         handleAuth(false);
       });
-  }, [keycloak, handleAuth]);
+  }, [keycloak, handleAuth, clearAuthState, configValid, withInitTimeout]);
 
   const restoreTokensFromStorage = useCallback(() => {
     if (initInFlightRef.current) return;
 
     const tokens = loadTokens();
     if (!tokens) {
+      // Anonymous visitor: no need to talk to Keycloak at all.
+      clearAuthState();
+      return;
+    }
+
+    if (!configValid) {
+      clearTokens();
       clearAuthState();
       return;
     }
 
     initInFlightRef.current = true;
-    setIsLoading(true);
 
-    keycloak
-      .init({
-        token: tokens.token,
-        refreshToken: tokens.refreshToken,
-        idToken: tokens.idToken,
-        timeSkew: tokens.timeSkew,
-        pkceMethod: "S256",
-        checkLoginIframe: false,
-        enableLogging: process.env.NODE_ENV === "development",
-      })
+    const initPromise = keycloak.init({
+      token: tokens.token,
+      refreshToken: tokens.refreshToken,
+      idToken: tokens.idToken,
+      timeSkew: tokens.timeSkew,
+      pkceMethod: "S256",
+      checkLoginIframe: false,
+      enableLogging: process.env.NODE_ENV === "development",
+    });
+
+    withInitTimeout(initPromise)
       .then(async (authenticated) => {
         if (authenticated) {
           handleAuth(true);
@@ -263,17 +304,26 @@ export function NukeAuthProvider({
 
         clearTokens();
         clearAuthState();
+        setReady();
       })
       .catch((error) => {
         console.error("Keycloak token restore failed:", error);
         clearTokens();
         clearAuthState();
+        setReady();
       })
       .finally(() => {
         initInFlightRef.current = false;
-        setIsLoading(false);
       });
-  }, [keycloak, handleAuth, clearAuthState, refreshTokens]);
+  }, [
+    keycloak,
+    handleAuth,
+    clearAuthState,
+    refreshTokens,
+    configValid,
+    withInitTimeout,
+    setReady,
+  ]);
 
   // Initial mount: restore tokens or run silent SSO.
   useEffect(() => {
@@ -304,8 +354,10 @@ export function NukeAuthProvider({
 
     const init = () => {
       // If the URL carries a fresh auth response (e.g. after login redirect),
-      // let Keycloak parse it instead of restoring stale stored tokens.
-      if (hasAuthResponseInUrl()) {
+      // or the user is anonymous (no stored tokens), run the standard
+      // Keycloak init. This initializes the adapter so login() works and
+      // checks for an existing SSO session when appropriate.
+      if (hasAuthResponseInUrl() || !loadTokens()) {
         initWithCheckSso();
         return;
       }
@@ -315,13 +367,9 @@ export function NukeAuthProvider({
       restoreTokensFromStorage();
     };
 
-    // Defer Keycloak init until the page has finished initial render
-    // to avoid blocking LCP on auth checks.
-    if (document.readyState === "complete") {
-      init();
-    } else {
-      window.addEventListener("load", init, { once: true });
-    }
+    // Run init immediately. Keycloak's init is async and non-blocking; waiting
+    // for window.load risks missing the event if the island hydrates late.
+    init();
 
     return () => {
       keycloak.onAuthSuccess = undefined;
@@ -421,8 +469,15 @@ export function NukeAuthProvider({
       );
       return;
     }
+    if (!readyRef.current) {
+      // User clicked Sign In before the silent init finished. Queue the login
+      // so it runs as soon as Keycloak is ready; calling keycloak.login() too
+      // early crashes because the adapter has not been initialized yet.
+      pendingLoginRef.current = true;
+      return;
+    }
     keycloak.login({ redirectUri: window.location.href });
-  }, [keycloak, configValid]);
+  }, [configValid, keycloak]);
 
   const logout = useCallback(() => {
     clearAuthState();
