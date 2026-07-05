@@ -3,8 +3,7 @@
 ## Purpose
 
 The live Astro application: routes, layouts, shared components, global
-styles, static data, type declarations, and build-time integrations. This is
-the layer that turns content + modules into the prerendered static site.
+styles, static data, type declarations, and build-time integrations.
 
 ## Ownership
 
@@ -79,6 +78,9 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
 
 ### markdown-negotiation integration
 
+This is the build-time half of the markdown-negotiation system described in
+the root NAD's Deployment section.
+
 `src/integrations/markdown-negotiation.ts` is the build-time hook. It is
 registered in `astro.config.mjs` and runs on `astro:build:done`. Contract:
 
@@ -111,9 +113,8 @@ imports — this site is static-only. Cloudflare Pages is handled by
 
 ### Common pitfalls
 
-- **`silent-check-sso.html` lives under `public/`**, not `src/pages/`. It is a
-  Keycloak iframe artifact and must stay raw HTML — do not wrap it in
-  BaseLayout, do not emit `.md` for it.
+- **`silent-check-sso.html` lives under `public/`**, not `src/pages/`. See
+  `public/AGENTS.md` for the static-file exemption rule.
 - **`@resvg/resvg-js` is native.** It is excluded from Vite's `optimizeDeps`
   and marked `ssr.external`. If you import it from a route, keep the import on
   the server side (it's only used in `src/pages/og/*.png.ts`).

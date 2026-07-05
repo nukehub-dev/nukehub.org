@@ -98,6 +98,4 @@ npx astro check
 
 ## Child NAD Index
 
-- `src/content/people/categories/AGENTS.md` (none) — category yaml files;
-  schema lives in this NAD's `content.config.ts` `peopleCategories` slot.
-- `incidents/` is intentionally empty pending schema decisions.
+- None.

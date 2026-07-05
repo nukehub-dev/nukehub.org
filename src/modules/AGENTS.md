@@ -3,8 +3,7 @@
 ## Purpose
 
 Client-rendered React islands grouped by feature area. Each module owns the
-interactive UI for one site page or section. Astro prerenders shells; React
-hydrates the rich interactions.
+interactive UI for one site page or section.
 
 ## Ownership
 
@@ -89,9 +88,8 @@ All files under `src/modules/**` except generated artifacts (`dist/`,
 
 ### Common pitfalls
 
-- **Stat counters render `0` pre-hydration.** The negotiated markdown shows
-  `0` for these — do not try to SSR the actual values. See root NAD
-  "React islands pre-hydrate to placeholders."
+- **Stat counters render `0` pre-hydration.** See root NAD "React islands
+  pre-hydrate to placeholders."
 - **FullCalendar and three.js are heavy.** Lazy-load via `lazy/` wrappers in
   `src/components/shared/lazy/` (already in place); adding direct imports
   bloats the home bundle.

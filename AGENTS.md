@@ -119,9 +119,6 @@ Install once before making changes:
   `compatibility_date = "2026-06-10"` in `wrangler.toml` to match your local
   `workerd`; production Cloudflare always supports the latest date.
 
-No native Python toolchain is needed — the Go contact server is the only
-non-JavaScript code in this repo.
-
 ## Before committing
 
 Run these from the repo root. They are the canonical "did I break anything"
@@ -150,44 +147,29 @@ pages`, the integration is broken — fix before committing.
 
 High-level layout; see the Child NAD Index below for domain-specific details.
 
-- `astro.config.mjs` — Astro config (static output, React + MDX + sitemap
-  integrations, Tailwind v4 via Vite, path aliases to `@components`,
-  `@layouts`, `@data`, `@lib`, `@content`, `@modules`).
-- `src/integrations/markdown-negotiation.ts` — build-time Astro integration
-  that emits `.md` siblings next to every prerendered `.html`.
-- `public/_worker.js` — Cloudflare Pages advanced-mode Worker; performs
-  RFC 9110 `Accept` negotiation and serves the `.md` sibling when
-  `text/markdown` is preferred.
-- `wrangler.toml` — Cloudflare Pages config (compatibility date, output dir).
-- `src/pages/` — Astro routes. One `.astro` file per page plus the
-  `[...slug].astro` catch-all that renders entries from the `projects`
-  collection. `src/pages/og/` holds dynamic OpenGraph image endpoints (`.png.ts`).
-- `src/layouts/` — `BaseLayout.astro` (every page funnels through it) and
-  `PageLayout.astro` (prose wrapper over BaseLayout).
-- `src/components/` — Astro components and React islands shared across pages
-  (`layout/`, `shared/`, `ui/`, `illustrations/`, `status/`).
-- `src/modules/` — React islands grouped by feature area (`home/`,
-  `projects/{nuke-lab,nuke-ide,nuke-analytics,nrms}/`, `about/`, `roadmap/`,
-  `changelog/`, `people/`, `events/`, `support/`, `contact/`, `sponsors/`,
-  `acknowledgment/`, `manual/`).
-- `src/content/` — Astro content collections (mdx/yaml). Schemas declared in
-  `src/content.config.ts`.
-- `src/lib/` — TypeScript utilities, hooks, and the Keycloak auth provider.
-- `src/data/` — static data (nav, footer) and `github-stats.json` (snapshot
-  refreshed by `scripts/sync-github-stats.mjs`).
-- `src/styles/global.css` — Tailwind v4 entrypoint (`@import "tailwindcss"`)
-  plus theme tokens and base styles.
-- `public/` — static assets copied verbatim into `dist/`. Includes
-  `_worker.js`, `_headers`, fonts, images, manifest, and `silent-check-sso.html`.
-- `scripts/` — Node.js maintenance scripts: `debug-pages.js`,
-  `sync-github-stats.mjs`, `optimize-images.js`.
-- `contact-server/` — Go HTTP service receiving the static-site contact form
-  and forwarding via SMTP. Deployed behind `api.nukehub.org/contact`.
-- `nginx/` — vhost config for `api.nukehub.org` (reverse proxies
-  `/contact` to the Go server). Not used by the static site itself.
-- `.github/workflows/sync-github-stats.yml` — scheduled CI job that runs
-  `scripts/sync-github-stats.mjs` and commits the refreshed
-  `src/data/github-stats.json`.
+- `astro.config.mjs` — Astro config, integrations, and Vite aliases. See
+  `src/AGENTS.md`.
+- `src/integrations/markdown-negotiation.ts` — build-time integration that
+  emits `.md` siblings. See `src/AGENTS.md`.
+- `public/_worker.js` — Cloudflare Pages advanced-mode Worker for request-time
+  content negotiation. See `public/AGENTS.md`.
+- `wrangler.toml` — Cloudflare Pages compatibility and output config.
+- `src/pages/`, `src/layouts/`, `src/components/` — Astro routes, page shells,
+  and shared UI. See `src/AGENTS.md`.
+- `src/modules/` — React islands grouped by feature area. See
+  `src/modules/AGENTS.md`.
+- `src/content/` — content collections and schemas. See
+  `src/content/AGENTS.md`.
+- `src/lib/` — shared TypeScript utilities, hooks, and auth. See
+  `src/lib/AGENTS.md`.
+- `src/data/`, `src/styles/` — static data and Tailwind v4 theme entrypoint.
+  See `src/AGENTS.md`.
+- `public/` — static assets and the Cloudflare Worker. See `public/AGENTS.md`.
+- `scripts/` — Node.js maintenance scripts. See `scripts/AGENTS.md`.
+- `contact-server/` — Go SMTP relay for the contact form. See
+  `contact-server/AGENTS.md`.
+- `nginx/` — reverse-proxy vhost for `api.nukehub.org/contact`.
+- `.github/workflows/sync-github-stats.yml` — scheduled GitHub stats refresh.
 
 ## Deployment (Cloudflare Pages + markdown negotiation)
 
@@ -196,15 +178,12 @@ provide HTTP content negotiation:
 
 1. **Build time** — `src/integrations/markdown-negotiation.ts` runs in the
    `astro:build:done` hook, converts every `dist/**/*.html` to Markdown via
-   Turndown (with site-specific rules: strip UI chrome, flatten card anchors,
-   label icon-only anchors, separate adjacent links/images), and writes the
-   result next to the source as a `.md` sibling.
+   Turndown, and writes the result next to the source as a `.md` sibling. See
+   `src/AGENTS.md` for the detailed generation rules.
 2. **Request time** — `public/_worker.js` switches Cloudflare Pages into
-   advanced mode. It parses `Accept` (RFC 9110 §12.5.1: q-values, specificity,
-   `q=0` rejections), and when `text/markdown` is preferred it serves the
-   matching `.md` sibling with `Content-Type: text/markdown; charset=utf-8`
-   and `Vary: Accept`. Otherwise it falls through to `env.ASSETS.fetch` and
-   annotates the response with `Vary: Accept` so edge caches split correctly.
+   advanced mode. It parses `Accept` (RFC 9110 §12.5.1) and serves the matching
+   `.md` sibling when `text/markdown` is preferred. See `public/AGENTS.md` for
+   the detailed Worker behavior.
 
 Each `<page>.html` URL therefore exposes three reachable representations:
 
@@ -247,8 +226,8 @@ it is a build artifact and ignored by git.
 - **Do not edit generated files.** `dist/`, `.astro/`, `node_modules/.vite/`,
   `src/routeTree.gen.ts` (if added), and any other build outputs are
   regenerated. Change source only.
-- **`silent-check-sso.html` is a Keycloak artifact.** It is exempt from the
-  markdown-negotiation integration. Do not wrap it in BaseLayout.
+- **`silent-check-sso.html` is a Keycloak artifact.** See `public/AGENTS.md`
+  for the static-file exemption rule.
 
 ## Environment variables
 

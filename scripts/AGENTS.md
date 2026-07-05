@@ -8,8 +8,7 @@ GitHub stats refresh, and image optimization. Run from the repo root via
 
 ## Ownership
 
-All files under `scripts/**`. Each script is self-contained and may be
-invoked independently.
+All files under `scripts/**`.
 
 ## Local Contracts
 

@@ -46,8 +46,7 @@ Build-time config comes from `PUBLIC_KEYCLOAK_URL`,
 "Environment variables".)
 
 - **Silent SSO** uses `public/silent-check-sso.html` as the iframe check
-  target — it must stay a raw HTML file under `public/`, never wrapped by
-  BaseLayout.
+  target. See `public/AGENTS.md` for the static-file exemption rule.
 - Components consume auth via the provider's `useAuth()` hook (re-exported
   alongside the provider). Do not call `keycloak-js` directly from islands —
   go through the context.
@@ -82,5 +81,4 @@ npx astro check
 
 ## Child NAD Index
 
-- `src/lib/auth/AGENTS.md` (none) — single-file boundary (the provider); this
-  NAD covers it.
+- None.
