@@ -104,7 +104,22 @@ export function NukeAuthProvider({
   realm,
   clientId,
 }: NukeAuthProviderProps) {
-  const [keycloak] = useState(() => new Keycloak({ url, realm, clientId }));
+  const configValid = Boolean(url && realm && clientId);
+  if (!configValid && process.env.NODE_ENV === "development") {
+    console.error(
+      "NukeAuthProvider: missing auth configuration. " +
+        "Ensure PUBLIC_AUTH_URL, PUBLIC_AUTH_REALM, and PUBLIC_AUTH_CLIENT_ID are set.",
+    );
+  }
+
+  const [keycloak] = useState(
+    () =>
+      new Keycloak({
+        url: url || "",
+        realm: realm || "",
+        clientId: clientId || "",
+      }),
+  );
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -117,7 +132,7 @@ export function NukeAuthProvider({
   // cross-tab storage sync.
   const initInFlightRef = useRef<boolean>(false);
 
-  const accountUrl = `${url}/realms/${realm}/account`;
+  const accountUrl = configValid ? `${url}/realms/${realm}/account` : "";
 
   const clearAuthState = useCallback(() => {
     setIsAuthenticated(false);
@@ -399,13 +414,22 @@ export function NukeAuthProvider({
   }, [isAuthenticated, keycloak, refreshTokens]);
 
   const login = useCallback(() => {
+    if (!configValid) {
+      console.error(
+        "NukeAuth login failed: auth configuration is missing. " +
+          "Check PUBLIC_AUTH_URL, PUBLIC_AUTH_REALM, and PUBLIC_AUTH_CLIENT_ID.",
+      );
+      return;
+    }
     keycloak.login({ redirectUri: window.location.href });
-  }, [keycloak]);
+  }, [keycloak, configValid]);
 
   const logout = useCallback(() => {
     clearAuthState();
-    keycloak.logout({ redirectUri: window.location.origin });
-  }, [keycloak, clearAuthState]);
+    if (configValid) {
+      keycloak.logout({ redirectUri: window.location.origin });
+    }
+  }, [keycloak, clearAuthState, configValid]);
 
   return (
     <AuthContext.Provider
