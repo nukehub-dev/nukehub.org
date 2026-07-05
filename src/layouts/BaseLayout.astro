@@ -348,9 +348,9 @@ const commandPalettePages: CommandPalettePage[] = [
     <ErrorBoundary client:load>
       <AuthHeader
         client:only="react"
-        url={import.meta.env.PUBLIC_KEYCLOAK_URL}
-        realm={import.meta.env.PUBLIC_KEYCLOAK_REALM}
-        clientId={import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID}
+        url={import.meta.env.PUBLIC_AUTH_URL}
+        realm={import.meta.env.PUBLIC_AUTH_REALM}
+        clientId={import.meta.env.PUBLIC_AUTH_CLIENT_ID}
         projectEntries={projectNavEntries}
       />
     </ErrorBoundary>

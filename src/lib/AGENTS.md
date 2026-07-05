@@ -38,11 +38,11 @@ All files under `src/lib/**`.
 - `useWebGL.ts` — WebGL/Three.js lifecycle helper used by home hero.
 - `auth/NukeAuthProvider.tsx` — the single auth provider.
 
-### Keycloak auth provider
+### NukeAuth provider
 
 `src/lib/auth/NukeAuthProvider.tsx` wires `keycloak-js` to a React context.
-Build-time config comes from `PUBLIC_KEYCLOAK_URL`,
-`PUBLIC_KEYCLOAK_REALM`, `PUBLIC_KEYCLOAK_CLIENT_ID`. (See root NAD
+Build-time config comes from `PUBLIC_AUTH_URL`,
+`PUBLIC_AUTH_REALM`, `PUBLIC_AUTH_CLIENT_ID`. (See root NAD
 "Environment variables".)
 
 - **Silent SSO** uses `public/silent-check-sso.html` as the iframe check
