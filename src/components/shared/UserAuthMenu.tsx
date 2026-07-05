@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { User, LogOut, Settings, ChevronDown, Loader2 } from "lucide-react";
-import { useAuth } from "@lib/auth/KeycloakProvider";
+import { useAuth } from "@lib/auth/NukeAuthProvider";
 import { cn } from "@lib/utils";
 
 function md5(inputString: string): string {

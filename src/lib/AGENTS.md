@@ -36,11 +36,11 @@ All files under `src/lib/**`.
   islands must respect it.
 - `useFocusTrap.ts` — focus trap for modals/menus (accessibility).
 - `useWebGL.ts` — WebGL/Three.js lifecycle helper used by home hero.
-- `auth/KeycloakProvider.tsx` — the single auth provider.
+- `auth/NukeAuthProvider.tsx` — the single auth provider.
 
 ### Keycloak auth provider
 
-`src/lib/auth/KeycloakProvider.tsx` wires `keycloak-js` to a React context.
+`src/lib/auth/NukeAuthProvider.tsx` wires `keycloak-js` to a React context.
 Build-time config comes from `PUBLIC_KEYCLOAK_URL`,
 `PUBLIC_KEYCLOAK_REALM`, `PUBLIC_KEYCLOAK_CLIENT_ID`. (See root NAD
 "Environment variables".)

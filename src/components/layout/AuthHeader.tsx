@@ -1,6 +1,6 @@
 "use client";
 
-import { KeycloakProvider } from "@lib/auth/KeycloakProvider";
+import { NukeAuthProvider } from "@lib/auth/NukeAuthProvider";
 import { Header } from "./Header";
 import type { ProjectNavEntry } from "@data/nav.tsx";
 
@@ -18,8 +18,8 @@ export function AuthHeader({
   projectEntries,
 }: AuthHeaderProps) {
   return (
-    <KeycloakProvider url={url} realm={realm} clientId={clientId}>
+    <NukeAuthProvider url={url} realm={realm} clientId={clientId}>
       <Header projectEntries={projectEntries} />
-    </KeycloakProvider>
+    </NukeAuthProvider>
   );
 }
