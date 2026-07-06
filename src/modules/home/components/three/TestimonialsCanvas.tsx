@@ -54,6 +54,7 @@ export function TestimonialsCanvas() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const isVisible = useCanvasVisibility("testimonials-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 3000);
+  const webglSupported = useWebGL();
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -83,7 +84,7 @@ export function TestimonialsCanvas() {
     };
   }, []);
 
-  if (reducedMotion || !useWebGL()) return <StaticFallback />;
+  if (reducedMotion || !webglSupported) return <StaticFallback />;
 
   return (
     <div

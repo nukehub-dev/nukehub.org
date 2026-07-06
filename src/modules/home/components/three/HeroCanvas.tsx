@@ -7,7 +7,7 @@ const NucleusScene = lazy(() =>
   import("./NucleusScene").then((mod) => ({ default: mod.NucleusScene })),
 );
 
-function StaticFallback() {
+export function StaticFallback() {
   const [primary, setPrimary] = useState("#f37524");
 
   useEffect(() => {
@@ -51,7 +51,9 @@ function StaticFallback() {
 
 export function HeroCanvas() {
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // Default to mobile so the heavy Three.js chunk is not requested on phones.
+  // The check is confirmed client-side after hydration.
+  const [isMobile, setIsMobile] = useState(true);
   // Hero is above the fold — render immediately without lazy-loading
   const [hasLoaded] = useState(true);
   const isVisible = useCanvasVisibility("hero-canvas-anchor");
@@ -80,8 +82,9 @@ export function HeroCanvas() {
     };
   }, []);
 
-  // If reduced motion or no WebGL, show static fallback
-  if (reducedMotion || !webglSupported) {
+  // If reduced motion, no WebGL, or mobile, show static fallback.
+  // Mobile CPUs struggle with the Three.js scene, so we skip it entirely.
+  if (reducedMotion || !webglSupported || isMobile) {
     return <StaticFallback />;
   }
 

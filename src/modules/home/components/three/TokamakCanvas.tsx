@@ -38,6 +38,7 @@ export function TokamakCanvas() {
   const [isMobile, setIsMobile] = useState(false);
   const isVisible = useCanvasVisibility("tech-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 3000);
+  const webglSupported = useWebGL();
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -75,7 +76,7 @@ export function TokamakCanvas() {
     };
   }, []);
 
-  if (reducedMotion || !useWebGL()) return <StaticFallback />;
+  if (reducedMotion || !webglSupported) return <StaticFallback />;
 
   return (
     <div className="absolute inset-0" id="tech-canvas-anchor">

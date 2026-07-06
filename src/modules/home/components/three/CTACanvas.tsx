@@ -39,6 +39,7 @@ export function CTACanvas() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const isVisible = useCanvasVisibility("cta-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 3000);
+  const webglSupported = useWebGL();
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -66,7 +67,7 @@ export function CTACanvas() {
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  if (reducedMotion || !useWebGL()) return <StaticFallback />;
+  if (reducedMotion || !webglSupported) return <StaticFallback />;
 
   return (
     <div className="absolute inset-0" id="cta-canvas-anchor">

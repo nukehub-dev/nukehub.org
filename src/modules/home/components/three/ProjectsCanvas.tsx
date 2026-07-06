@@ -7,7 +7,7 @@ const ProjectsScene = lazy(() =>
   import("./ProjectsScene").then((mod) => ({ default: mod.ProjectsScene })),
 );
 
-function StaticFallback() {
+export function StaticFallback() {
   const [primary, setPrimary] = useState("#f37524");
 
   useEffect(() => {
@@ -35,8 +35,11 @@ function StaticFallback() {
 export function ProjectsCanvas() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  // Default to mobile so the heavy Three.js chunk is not requested on phones.
+  const [isMobile, setIsMobile] = useState(true);
   const isVisible = useCanvasVisibility("projects-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 3000);
+  const webglSupported = useWebGL();
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -44,6 +47,12 @@ export function ProjectsCanvas() {
     const handleChange = (e: MediaQueryListEvent) =>
       setReducedMotion(e.matches);
     mq.addEventListener("change", handleChange);
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
 
     const anchor = document.getElementById("projects-canvas-anchor");
     if (anchor) {
@@ -61,10 +70,13 @@ export function ProjectsCanvas() {
       setHasLoaded(true);
     }
 
-    return () => mq.removeEventListener("change", handleChange);
+    return () => {
+      mq.removeEventListener("change", handleChange);
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
-  if (reducedMotion || !useWebGL()) return <StaticFallback />;
+  if (reducedMotion || !webglSupported || isMobile) return <StaticFallback />;
 
   return (
     <div
