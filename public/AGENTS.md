@@ -46,7 +46,8 @@ they are byte-for-byte copied into `dist/`.
 - `_headers` — security header set. CSP allow-lists
   `https://challenges.cloudflare.com` (Turnstile),
   `https://auth.nukehub.org` (Keycloak),
-  `https://api.nukehub.org` (contact API), and the Cloudflare Analytics
+  `https://api.nukehub.org` (contact API),
+  `https://www.gravatar.com` (user avatars), and the Cloudflare Analytics
   beacon. If you add a new third-party service, you must add its origin to
   the matching `*-src` directive here or it will be silently blocked.
 - `silent-check-sso.html` — raw Keycloak iframe target. **Exempt from the
