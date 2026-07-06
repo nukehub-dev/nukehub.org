@@ -19,6 +19,9 @@ export default defineConfig({
   integrations: [react(), mdx(), sitemap(), markdownNegotiation()],
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      sourcemap: true,
+    },
     optimizeDeps: {
       include: [
         "@fullcalendar/react",

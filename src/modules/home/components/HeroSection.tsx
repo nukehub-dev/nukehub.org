@@ -1,20 +1,54 @@
-import { HeroCanvas } from "@modules/home/components/three/HeroCanvas";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { HeroStatCard } from "./HeroStatCard";
 import { getIcon } from "@lib/icons";
 import type { HeroData } from "@modules/home/types";
+
+const HeroCanvas = lazy(() =>
+  import("@modules/home/components/three/HeroCanvas").then((mod) => ({
+    default: mod.HeroCanvas,
+  })),
+);
 
 interface HeroSectionProps {
   data: HeroData;
 }
 
+function useDeferHeroCanvas() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const useIdleCallback = typeof window.requestIdleCallback === "function";
+    const handle = useIdleCallback
+      ? window.requestIdleCallback(() => setShow(true), { timeout: 500 })
+      : window.setTimeout(() => setShow(true), 200);
+
+    return () => {
+      if (useIdleCallback) {
+        window.cancelIdleCallback(handle);
+      } else {
+        window.clearTimeout(handle);
+      }
+    };
+  }, []);
+
+  return show;
+}
+
 export function HeroSection({ data }: HeroSectionProps) {
   const { badge, headline, subtitle, ctas, stats } = data;
+  const showCanvas = useDeferHeroCanvas();
 
   return (
     <section className="relative isolate flex min-h-[100dvh] flex-col overflow-hidden px-4 snap-section">
       {/* 3D Canvas Background */}
       <div className="absolute inset-0 -z-20 opacity-[0.28] dark:opacity-100 transition-opacity duration-700">
-        <HeroCanvas />
+        {showCanvas && (
+          <Suspense fallback={null}>
+            <HeroCanvas />
+          </Suspense>
+        )}
       </div>
 
       {/* Top fade */}
