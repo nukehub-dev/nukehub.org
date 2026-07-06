@@ -82,9 +82,9 @@ export function HeroCanvas() {
     };
   }, []);
 
-  // If reduced motion, no WebGL, or mobile, show static fallback.
-  // Mobile CPUs struggle with the Three.js scene, so we skip it entirely.
-  if (reducedMotion || !webglSupported || isMobile) {
+  // If reduced motion or no WebGL, show static fallback.
+  // On mobile the scene still renders but ReactorLattice reduces geometry.
+  if (reducedMotion || !webglSupported) {
     return <StaticFallback />;
   }
 

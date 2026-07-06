@@ -162,7 +162,7 @@ export function HeroSection({ data }: HeroSectionProps) {
             className="mt-8 w-full max-w-3xl sm:mt-10 animate-fade-in-up"
             style={{ animationDelay: "0.8s" }}
           >
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               {stats.map((stat, i) => (
                 <HeroStatCard
                   key={stat.label}
