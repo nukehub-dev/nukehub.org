@@ -12,6 +12,7 @@ import { InstitutionsSection } from "@modules/home/components/InstitutionsSectio
 import { Footer } from "@components/layout/Footer";
 
 import { loadYaml } from "@lib/loadYaml";
+import { resolveProjectUrl } from "@lib/projects";
 import { getCollection } from "astro:content";
 import type {
   HeroData,
@@ -64,6 +65,7 @@ const sortedEntries = projectEntries.sort(
 const allProjects = sortedEntries.map((entry) => ({
   title: entry.data.title,
   description: entry.data.description || "",
+  href: resolveProjectUrl(entry),
   url: entry.data.url || "",
   source: entry.data.source || "",
   githubRepo: entry.data.githubRepo,

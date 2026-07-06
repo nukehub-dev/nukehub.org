@@ -7,6 +7,7 @@ import { ProjectsCanvas } from "@modules/home/components/three/ProjectsCanvas";
 export interface Project {
   title: string;
   description: string;
+  href: string;
   url: string;
   source: string;
   githubRepo?: string;

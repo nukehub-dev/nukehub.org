@@ -9,6 +9,7 @@ import { ThemedImage } from "@modules/projects/components/shared/ThemedImage";
 export interface Project {
   title: string;
   description: string;
+  href: string;
   url: string;
   source: string;
   githubRepo?: string;
@@ -47,6 +48,27 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
     setIsHovered(false);
   };
 
+  const navigateToProject = () => {
+    if (project.href.startsWith("http")) {
+      window.open(project.href, "_blank", "noopener,noreferrer");
+    } else {
+      window.location.href = project.href;
+    }
+  };
+
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("a, button")) return;
+    navigateToProject();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigateToProject();
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -62,10 +84,15 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
     >
       <div
         ref={cardRef}
+        onClick={handleCardClick}
+        onKeyDown={handleKeyDown}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
-        className="project-card relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-md transition-all duration-300 ease-out dark:border-border/60 dark:bg-card/70"
+        role="link"
+        tabIndex={0}
+        aria-label={`Open ${project.title}`}
+        className="project-card relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-md transition-all duration-300 ease-out focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none dark:border-border/60 dark:bg-card/70"
         style={{
           transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) scale(${isHovered ? 1.02 : 1})`,
           transformStyle: "preserve-3d",
