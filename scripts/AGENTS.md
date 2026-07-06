@@ -37,6 +37,10 @@ All files under `scripts/**`.
     enough. Override by deleting `github-stats.json`.
 - `optimize-images.js` — Image compression pass over `public/assets/images/`
   using `sharp` + `glob` (dev dependencies). Run manually; not wired into CI.
+- `inject-sw-cache.js` — Generates `public/sw.js` from `public/sw.js.tpl`,
+  injecting a per-build cache name (`nukehub-<version>-<timestamp>`). Wired as
+  `npm run prebuild` so every production build gets a fresh service-worker
+  cache key. The generated `public/sw.js` is gitignored.
 
 ### Adding a script
 
@@ -66,6 +70,7 @@ All files under `scripts/**`.
 node scripts/debug-pages.js --enable && node scripts/debug-pages.js --disable
 GH_STATS_TOKEN=... node scripts/sync-github-stats.mjs
 node scripts/optimize-images.js
+node scripts/inject-sw-cache.js
 ```
 
 ## Child NAD Index

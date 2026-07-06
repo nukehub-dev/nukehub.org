@@ -55,6 +55,9 @@ archive/
 # Debug pages (generated during dev)
 src/pages/debug/
 
+# Generated service worker
+public/sw.js
+
 # Go binaries
 contact-server/contact-server
 *.exe
