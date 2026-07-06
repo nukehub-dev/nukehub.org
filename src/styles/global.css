@@ -310,6 +310,7 @@
 .prose a {
   text-decoration: none;
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .prose a:hover {
