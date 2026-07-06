@@ -53,8 +53,12 @@ they are byte-for-byte copied into `dist/`.
 - `silent-check-sso.html` — raw Keycloak iframe target. **Exempt from the
   markdown-negotiation integration** (added to `EXACT_SKIP` there). Do not
   wrap in BaseLayout.
+- `favicon.svg` — monochrome SVG favicon used as the no-JS fallback. The
+  active tab icon is generated at runtime from CSS `--primary` by `src/lib/favicon.ts`.
 - `manifest.json` — PWA manifest (paired with `apple-touch-icon.png`,
-  `icon-192.png`, `icon-512.png`, `favicon.ico`).
+  `icon-192.png`, `icon-512.png`, and `icon-monochrome-{192,512}.png`).
+- `icon-monochrome.svg` — white silhouette of the logo used to generate the
+  `purpose: "monochrome"` PNGs for Android themed app icons.
 - `robots.txt` — crawl directives.
 - `fonts/Geist-Variable.woff2` — the Geist variable font, preloaded in
   BaseLayout.

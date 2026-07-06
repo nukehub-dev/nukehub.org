@@ -23,6 +23,8 @@ All files under `src/lib/**`.
 - `utils.ts` — `cn()` (clsx + tailwind-merge), small shared helpers.
 - `animations.ts` — framer-motion variants shared by islands.
 - `theme.ts`, `themeColors.ts` — theme token helpers (drives `ThemeToggle`).
+- `favicon.ts` — runtime favicon generator; reads CSS `--primary` /
+  `--background` and renders a data-URI SVG tab icon.
 - `icons.ts` — icon-name → lucide component map for dynamic icons.
 - `loadYaml.ts` — YAML loader helper used by data layers.
 - `github.ts` — GitHub API helpers (used by `scripts/sync-github-stats.mjs`

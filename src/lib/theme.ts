@@ -107,33 +107,17 @@ export function cycleTheme(current: ThemePreference): ThemePreference {
   return order[(idx + 1) % order.length];
 }
 
+import { updateFavicon, updateThemeColor } from "./favicon";
+
 /**
- * Update the <meta name="theme-color"> tag to match the current
+ * Update the <meta name="theme-color"> tag and favicon to match the current
  * resolved theme and accent color.
  */
 export function updateMetaThemeColor(): void {
   if (typeof document === "undefined") return;
 
-  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  const accent =
-    document.documentElement.getAttribute("data-accent") || "orange";
-
-  // Map accent to a dark-mode-aware hex fallback for the theme-color meta tag.
-  const accentMap: Record<string, { light: string; dark: string }> = {
-    red: { light: "#c54e45", dark: "#c92a2a" },
-    orange: { light: "#b75f2c", dark: "#d65a0f" },
-    green: { light: "#408341", dark: "#2f9e44" },
-    cyan: { light: "#028091", dark: "#1098ad" },
-    purple: { light: "#a455b3", dark: "#9c36b5" },
-  };
-
-  const color = accentMap[accent]?.[isDark ? "dark" : "light"] || "#000000";
-  const meta = document.querySelector(
-    'meta[name="theme-color"]',
-  ) as HTMLMetaElement | null;
-  if (meta) {
-    meta.content = color;
-  }
+  updateThemeColor();
+  updateFavicon();
 }
 
 /**

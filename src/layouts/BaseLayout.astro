@@ -201,9 +201,20 @@ const commandPalettePages: CommandPalettePage[] = [
       title="NukeHub RSS Feed"
       href={`${siteUrl}/rss.xml`}
     />
-    <link rel="icon" type="image/svg+xml" href="/assets/images/nukehub.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
+
+    <!--
+      Dynamic favicon: swaps the tab icon to the current theme accent and
+      background once CSS variables are available. Falls back to /favicon.svg
+      when JS is disabled.
+    -->
+    <script>
+      import { updateFavicon, updateThemeColor } from "@lib/favicon";
+      updateFavicon();
+      updateThemeColor();
+    </script>
 
     <!-- Preload Geist fonts for faster first paint -->
     <link

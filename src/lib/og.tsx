@@ -21,6 +21,8 @@ const LOGO_PATH = path.resolve(
   "public/assets/images/nukehub.svg",
 );
 
+const BRAND_PRIMARY = "#f37524";
+
 let logoDataUri: string | undefined;
 
 async function loadLogoDataUri() {
@@ -28,7 +30,7 @@ async function loadLogoDataUri() {
   const svg = await fs.readFile(LOGO_PATH, "utf-8");
   // Replace currentColor with the brand primary so the image renders correctly
   // when used outside of a CSS context.
-  const themed = svg.replace(/currentColor/g, "#e06257");
+  const themed = svg.replace(/currentColor/g, BRAND_PRIMARY);
   logoDataUri = `data:image/svg+xml,${encodeURIComponent(themed)}`;
   return logoDataUri;
 }
@@ -110,7 +112,7 @@ export async function generateOgImage({
           height: 480,
           borderRadius: "50%",
           background:
-            "radial-gradient(circle, rgba(224,98,87,0.18) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(243,117,36,0.18) 0%, transparent 70%)",
         }}
       />
       <div
@@ -196,8 +198,8 @@ export async function generateOgImage({
               gap: 8,
               fontSize: 22,
               fontWeight: 600,
-              color: "#e06257",
-              background: "rgba(224,98,87,0.12)",
+              color: BRAND_PRIMARY,
+              background: "rgba(243,117,36,0.12)",
               padding: "10px 18px",
               borderRadius: 999,
             }}
@@ -207,7 +209,7 @@ export async function generateOgImage({
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
-                fill="#e06257"
+                fill={BRAND_PRIMARY}
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
