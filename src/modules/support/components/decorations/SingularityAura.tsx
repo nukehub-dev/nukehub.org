@@ -15,6 +15,7 @@ export function SingularityAura({ className = "" }: { className?: string }) {
           background:
             "radial-gradient(circle, var(--primary) 0%, transparent 70%)",
         }}
+        initial={{ opacity: 0.05 }}
         animate={
           shouldReduceMotion
             ? undefined
@@ -39,6 +40,7 @@ export function SingularityAura({ className = "" }: { className?: string }) {
           background:
             "radial-gradient(circle, var(--primary) 0%, transparent 70%)",
         }}
+        initial={{ opacity: 0.02 }}
         animate={
           shouldReduceMotion
             ? undefined

@@ -38,6 +38,7 @@ export function ContactFloatingDots({
             backgroundColor:
               "color-mix(in oklch, var(--primary) 40%, transparent)",
           }}
+          initial={{ opacity: 0.3 }}
           animate={
             shouldReduceMotion
               ? undefined

@@ -92,6 +92,7 @@ export function ConnectingNodes({ className = "" }: { className?: string }) {
             fill="currentColor"
             className="text-primary"
             style={{ opacity: 0.2 }}
+            initial={{ opacity: 0.15 }}
             animate={
               shouldReduceMotion
                 ? undefined

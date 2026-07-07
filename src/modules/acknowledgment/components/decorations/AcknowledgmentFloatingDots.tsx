@@ -38,6 +38,7 @@ export function AcknowledgmentFloatingDots({
             backgroundColor:
               "color-mix(in oklch, var(--primary) 35%, transparent)",
           }}
+          initial={{ opacity: 0.25 }}
           animate={
             shouldReduceMotion
               ? undefined

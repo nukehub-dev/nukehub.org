@@ -17,6 +17,7 @@ export function SoftGlow() {
             <motion.stop
               offset="0%"
               stopColor="var(--primary)"
+              initial={{ stopOpacity: 0.1 }}
               animate={
                 shouldReduceMotion
                   ? {}
@@ -40,6 +41,7 @@ export function SoftGlow() {
             <motion.stop
               offset="0%"
               stopColor="var(--primary)"
+              initial={{ stopOpacity: 0.07 }}
               animate={
                 shouldReduceMotion
                   ? {}

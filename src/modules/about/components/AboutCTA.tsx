@@ -47,6 +47,7 @@ export function AboutCTA({
                   background:
                     "radial-gradient(circle, color-mix(in oklch, var(--primary) 20%, transparent) 0%, transparent 70%)",
                 }}
+                initial={{ opacity: 0.15 }}
                 animate={
                   shouldReduceMotion
                     ? {}

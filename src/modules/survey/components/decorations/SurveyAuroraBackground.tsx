@@ -96,6 +96,7 @@ export function SurveyAuroraBackground({
             boxShadow:
               "0 0 40px color-mix(in oklch, var(--primary) 12%, transparent), inset 0 0 40px color-mix(in oklch, var(--primary) 8%, transparent)",
           }}
+          initial={{ opacity: 0.3 }}
           animate={
             shouldReduceMotion
               ? undefined

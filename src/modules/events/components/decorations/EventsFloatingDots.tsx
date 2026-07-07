@@ -32,6 +32,7 @@ export function EventsFloatingDots({ className = "" }: { className?: string }) {
             backgroundColor:
               "color-mix(in oklch, var(--primary) 35%, transparent)",
           }}
+          initial={{ opacity: 0.2 }}
           animate={
             shouldReduceMotion
               ? undefined

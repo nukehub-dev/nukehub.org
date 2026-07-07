@@ -54,6 +54,7 @@ export function OrbitRings({ className = "" }: { className?: string }) {
                 left: "50%",
                 marginLeft: -3,
               }}
+              initial={{ opacity: 0.4 }}
               animate={
                 shouldReduceMotion
                   ? undefined

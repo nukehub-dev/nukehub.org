@@ -24,6 +24,7 @@ export function StarBurst({ className = "" }: { className?: string }) {
             "radial-gradient(circle, color-mix(in oklch, var(--primary) 20%, transparent) 0%, transparent 60%)",
           filter: "blur(60px)",
         }}
+        initial={{ opacity: 0.3 }}
         animate={
           shouldReduceMotion
             ? undefined
@@ -66,6 +67,7 @@ export function StarBurst({ className = "" }: { className?: string }) {
               transform: `rotate(${ray.angle}deg)`,
               opacity: 0.08,
             }}
+            initial={{ opacity: 0.05 }}
             animate={
               shouldReduceMotion
                 ? undefined
@@ -92,6 +94,7 @@ export function StarBurst({ className = "" }: { className?: string }) {
       <motion.div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border border-primary"
         style={{ opacity: 0.1 }}
+        initial={{ opacity: 0.1 }}
         animate={
           shouldReduceMotion
             ? undefined
