@@ -37,12 +37,7 @@ const description = survey.description || `Take the ${survey.title} survey`;
 const permalink = `/survey/${slug}`;
 ---
 
-<BaseLayout
-  title={title}
-  description={description}
-  permalink={permalink}
-  showFooter={false}
->
+<BaseLayout title={title} description={description} permalink={permalink}>
   <section
     class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center overflow-hidden px-4 py-16"
   >

@@ -1,6 +1,8 @@
 import * as React from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import { cn } from "@lib/utils";
 
 export interface SelectOption {
@@ -36,9 +38,19 @@ export function Select({
 }: SelectProps) {
   const [open, setOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
+  const [dropdownStyle, setDropdownStyle] = React.useState<React.CSSProperties>(
+    { position: "fixed", top: 0, left: 0, width: 0 },
+  );
+  const [mounted, setMounted] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
   const listId = React.useId();
   const labelId = React.useId();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const selectedOption = options.find((option) => option.value === value);
   const dropdownOptions = options.filter((option) => option.value !== "");
@@ -53,9 +65,12 @@ export function Select({
     if (!open) return;
 
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (
         containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        !containerRef.current.contains(target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
       ) {
         close();
       }
@@ -64,6 +79,47 @@ export function Select({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open, close]);
+
+  const DROPDOWN_MAX_HEIGHT = 240;
+
+  const updatePosition = React.useCallback(() => {
+    const trigger = triggerRef.current;
+    if (!trigger) return;
+
+    const triggerRect = trigger.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const gap = 4;
+
+    const spaceBelow = viewportHeight - triggerRect.bottom - gap;
+    const spaceAbove = triggerRect.top - gap;
+    const placeTop =
+      spaceBelow < DROPDOWN_MAX_HEIGHT && spaceAbove > spaceBelow;
+
+    setDropdownStyle({
+      position: "fixed",
+      left: triggerRect.left,
+      top: placeTop
+        ? triggerRect.top - gap - DROPDOWN_MAX_HEIGHT
+        : triggerRect.bottom + gap,
+      width: triggerRect.width,
+      maxHeight: DROPDOWN_MAX_HEIGHT,
+    });
+  }, []);
+
+  React.useLayoutEffect(() => {
+    if (!open) return;
+
+    updatePosition();
+
+    const handleReposition = () => updatePosition();
+    window.addEventListener("resize", handleReposition);
+    window.addEventListener("scroll", handleReposition, true);
+
+    return () => {
+      window.removeEventListener("resize", handleReposition);
+      window.removeEventListener("scroll", handleReposition, true);
+    };
+  }, [open, updatePosition]);
 
   React.useEffect(() => {
     if (open && highlightedIndex >= 0) {
@@ -162,6 +218,7 @@ export function Select({
       </select>
 
       <button
+        ref={triggerRef}
         type="button"
         role="combobox"
         aria-expanded={open}
@@ -198,67 +255,77 @@ export function Select({
         />
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.ul
-            id={listId}
-            role="listbox"
-            initial={{ opacity: 0, y: -4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-50 mt-1 max-h-60 w-full space-y-1 overflow-auto rounded-xl border border-border bg-popover p-1.5 shadow-lg"
-          >
-            {dropdownOptions.map((option, index) => {
-              const isHighlighted = highlightedIndex === index;
-              const isSelected = option.value === value;
-              return (
-                <li
-                  key={option.value}
-                  id={`${listId}-option-${index}`}
-                  role="option"
-                  aria-selected={isSelected}
-                  aria-disabled={option.disabled}
-                  tabIndex={-1}
-                  onMouseEnter={() => setHighlightedIndex(index)}
-                  onClick={() =>
-                    !option.disabled && handleOptionClick(option.value)
-                  }
-                  onKeyDown={(e) => {
-                    if (option.disabled) return;
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleOptionClick(option.value);
-                    }
-                  }}
-                  className={cn(
-                    "relative flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none transition-colors",
-                    option.disabled && "cursor-not-allowed opacity-50",
-                    isHighlighted && "bg-accent text-accent-foreground",
-                    !isHighlighted &&
-                      !isSelected &&
-                      "text-popover-foreground hover:bg-accent",
-                    isSelected &&
-                      !isHighlighted &&
-                      "bg-primary/10 text-primary",
-                  )}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                ref={dropdownRef}
+                style={dropdownStyle}
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className="z-99 overflow-hidden rounded-xl border border-border bg-popover shadow-lg"
+              >
+                <ul
+                  id={listId}
+                  role="listbox"
+                  className="max-h-60 space-y-1 overflow-auto p-1.5"
                 >
-                  <Check
-                    size={16}
-                    className={cn(
-                      "shrink-0 transition-opacity",
-                      isSelected ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                  <span className="flex-1 whitespace-nowrap text-left">
-                    {option.label}
-                  </span>
-                </li>
-              );
-            })}
-          </motion.ul>
+                  {dropdownOptions.map((option, index) => {
+                    const isHighlighted = highlightedIndex === index;
+                    const isSelected = option.value === value;
+                    return (
+                      <li
+                        key={option.value}
+                        id={`${listId}-option-${index}`}
+                        role="option"
+                        aria-selected={isSelected}
+                        aria-disabled={option.disabled}
+                        tabIndex={-1}
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        onClick={() =>
+                          !option.disabled && handleOptionClick(option.value)
+                        }
+                        onKeyDown={(e) => {
+                          if (option.disabled) return;
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleOptionClick(option.value);
+                          }
+                        }}
+                        className={cn(
+                          "relative flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none transition-colors",
+                          option.disabled && "cursor-not-allowed opacity-50",
+                          isHighlighted && "bg-accent text-accent-foreground",
+                          !isHighlighted &&
+                            !isSelected &&
+                            "text-popover-foreground hover:bg-accent",
+                          isSelected &&
+                            !isHighlighted &&
+                            "bg-primary/10 text-primary",
+                        )}
+                      >
+                        <Check
+                          size={16}
+                          className={cn(
+                            "shrink-0 transition-opacity",
+                            isSelected ? "opacity-100" : "opacity-0",
+                          )}
+                        />
+                        <span className="flex-1 whitespace-nowrap text-left">
+                          {option.label}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </div>
   );
 }

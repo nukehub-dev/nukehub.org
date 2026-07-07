@@ -424,7 +424,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
                 <Card
                   variant="bubble"
                   className={cn(
-                    "p-5 transition-colors focus-within:ring-2 focus-within:ring-primary/20",
+                    "relative z-10 p-5 transition-colors focus-within:ring-2 focus-within:ring-primary/20",
                     errors[question.id] && "ring-2 ring-destructive/30",
                   )}
                 >
