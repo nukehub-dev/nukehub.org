@@ -1,17 +1,13 @@
 import * as React from "react";
-import {
-  Send,
-  AlertCircle,
-  Loader2,
-  ChevronDown,
-  Maximize2,
-  Minimize2,
-  CheckCircle2,
-  RotateCcw,
-} from "lucide-react";
+import { Send, AlertCircle, CheckCircle2, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { cn } from "@lib/utils";
+import { Input } from "@components/ui/Input";
+import { Textarea } from "@components/ui/Textarea";
+import { Select } from "@components/ui/Select";
+import { Button } from "@components/ui/Button";
+import { Label } from "@components/ui/Label";
 
 export interface ContactFormProps {
   defaultInquiryType?: string;
@@ -21,6 +17,8 @@ export interface ContactFormProps {
   onReset?: () => void;
   successContent?: React.ReactNode;
 }
+
+const EMPTY_ADDITIONAL_VALUES: Record<string, string> = {};
 
 const inquiryTypes = [
   { value: "Sponsorship", label: "Sponsorship" },
@@ -196,96 +194,9 @@ const inquiryHelpers: Record<string, { placeholder: string; proTip: string }> =
     },
   };
 
-function CustomSelect({
-  id,
-  value,
-  onChange,
-  error,
-  placeholder,
-  options,
-}: {
-  id?: string;
-  value: string;
-  onChange: (value: string) => void;
-  error?: string;
-  placeholder: string;
-  options: { value: string; label: string }[];
-}) {
-  const [open, setOpen] = React.useState(false);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const selected = options.find((t) => t.value === value);
-
-  React.useEffect(() => {
-    if (!open) return;
-    const handleClick = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
-
-  return (
-    <div ref={containerRef} className="relative">
-      <button
-        id={id}
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          "w-full rounded-xl border bg-background/60 px-4 py-3 text-sm text-foreground",
-          "flex items-center justify-between transition-all",
-          "hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20",
-          error ? "border-red-500" : "border-border/60",
-          open && "border-primary/40 ring-1 ring-primary/10",
-        )}
-      >
-        <span
-          className={selected ? "text-foreground" : "text-muted-foreground"}
-        >
-          {selected ? selected.label : placeholder}
-        </span>
-        <ChevronDown
-          size={16}
-          className={cn(
-            "text-muted-foreground transition-transform duration-200",
-            open && "rotate-180",
-          )}
-        />
-      </button>
-
-      {open && (
-        <div className="absolute z-50 mt-1.5 w-full overflow-hidden rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl shadow-xl max-h-60 overflow-y-auto">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => {
-                onChange(option.value);
-                setOpen(false);
-              }}
-              className={cn(
-                "w-full px-4 py-2.5 text-left text-sm transition-colors",
-                value === option.value
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-foreground hover:bg-accent hover:text-accent-foreground",
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function ContactForm({
   defaultInquiryType = "",
-  defaultAdditionalValues = {},
+  defaultAdditionalValues = EMPTY_ADDITIONAL_VALUES,
   tierOptions = [],
   onSuccess,
   onReset,
@@ -305,13 +216,11 @@ export function ContactForm({
   const [status, setStatus] = React.useState<
     "idle" | "submitting" | "success" | "error"
   >("idle");
-  const [messageExpanded, setMessageExpanded] = React.useState(false);
   const [turnstileToken, setTurnstileToken] = React.useState("");
 
   React.useEffect(() => {
     setFormData((prev) => ({ ...prev, inquiryType: defaultInquiryType }));
     setAdditionalFieldValues(defaultAdditionalValues);
-    setMessageExpanded(false);
   }, [defaultInquiryType, defaultAdditionalValues]);
 
   const currentAdditionalFields =
@@ -431,7 +340,6 @@ export function ContactForm({
     });
     setAdditionalFieldValues(defaultAdditionalValues);
     setTurnstileToken("");
-    setMessageExpanded(false);
     onReset?.();
   };
 
@@ -511,89 +419,70 @@ export function ContactForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
-          <label
-            htmlFor="contact-name"
-            className="block text-sm font-medium text-foreground mb-2 pl-4"
-          >
-            Name *
-          </label>
-          <input
+          <Label htmlFor="contact-name" required>
+            Name
+          </Label>
+          <Input
             id="contact-name"
             type="text"
             value={formData.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            className={cn(
-              "w-full rounded-xl border bg-background/60 px-4 py-3.5 text-sm text-foreground",
-              "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20",
-              "transition-colors hover:bg-background",
-              errors.name ? "border-red-500" : "border-border/60",
-            )}
+            error={!!errors.name}
             placeholder="Your name"
+            className="h-auto rounded-xl px-4 py-3.5"
           />
           {errors.name && (
-            <p className="mt-1.5 text-xs text-red-500">{errors.name}</p>
+            <p className="mt-1.5 text-xs text-destructive">{errors.name}</p>
           )}
         </div>
 
         <div>
-          <label
-            htmlFor="contact-email"
-            className="block text-sm font-medium text-foreground mb-2 pl-4"
-          >
-            Email *
-          </label>
-          <input
+          <Label htmlFor="contact-email" required>
+            Email
+          </Label>
+          <Input
             id="contact-email"
             type="email"
             value={formData.email}
             onChange={(e) => handleChange("email", e.target.value)}
-            className={cn(
-              "w-full rounded-xl border bg-background/60 px-4 py-3.5 text-sm text-foreground",
-              "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20",
-              "transition-colors hover:bg-background",
-              errors.email ? "border-red-500" : "border-border/60",
-            )}
+            error={!!errors.email}
             placeholder="you@example.com"
+            className="h-auto rounded-xl px-4 py-3.5"
           />
           {errors.email && (
-            <p className="mt-1.5 text-xs text-red-500">{errors.email}</p>
+            <p className="mt-1.5 text-xs text-destructive">{errors.email}</p>
           )}
         </div>
 
         <div>
-          <label
-            htmlFor="contact-org"
-            className="block text-sm font-medium text-foreground mb-2 pl-4"
-          >
-            Organization
-          </label>
-          <input
+          <Label htmlFor="contact-org">Organization</Label>
+          <Input
             id="contact-org"
             type="text"
             value={formData.organization}
             onChange={(e) => handleChange("organization", e.target.value)}
-            className="w-full rounded-xl border border-border/60 bg-background/60 px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors hover:bg-background"
             placeholder="Company or institution (optional)"
+            className="h-auto rounded-xl px-4 py-3.5"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="contact-inquiry-type"
-            className="block text-sm font-medium text-foreground mb-2 pl-4"
-          >
-            Inquiry Type *
-          </label>
-          <CustomSelect
+          <Label htmlFor="contact-inquiry-type" required>
+            Inquiry Type
+          </Label>
+          <Select
             id="contact-inquiry-type"
             value={formData.inquiryType}
             onChange={handleInquiryTypeChange}
-            error={errors.inquiryType}
+            error={!!errors.inquiryType}
             placeholder="Select inquiry type"
             options={inquiryTypes}
+            triggerClassName="h-auto rounded-xl px-4 py-3"
           />
           {errors.inquiryType && (
-            <p className="mt-1.5 text-xs text-red-500">{errors.inquiryType}</p>
+            <p className="mt-1.5 text-xs text-destructive">
+              {errors.inquiryType}
+            </p>
           )}
         </div>
       </div>
@@ -611,45 +500,35 @@ export function ContactForm({
           >
             {currentAdditionalFields.map((field) => (
               <div key={field.name}>
-                <label
-                  htmlFor={`contact-${field.name}`}
-                  className="block text-sm font-medium text-foreground mb-2 pl-4"
-                >
-                  {field.label}
-                </label>
+                <Label htmlFor={`contact-${field.name}`}>{field.label}</Label>
                 {field.type === "select" && field.options ? (
-                  <CustomSelect
+                  <Select
                     value={additionalFieldValues[field.name] || ""}
                     onChange={(value) =>
                       handleAdditionalFieldChange(field.name, value)
                     }
-                    error={errors[field.name]}
+                    error={!!errors[field.name]}
                     placeholder={
                       field.placeholder || `Select ${field.label.toLowerCase()}`
                     }
                     options={field.options}
+                    triggerClassName="h-auto rounded-xl px-4 py-3"
                   />
                 ) : (
-                  <input
+                  <Input
                     id={`contact-${field.name}`}
                     type={field.type}
                     value={additionalFieldValues[field.name] || ""}
                     onChange={(e) =>
                       handleAdditionalFieldChange(field.name, e.target.value)
                     }
-                    className={cn(
-                      "w-full rounded-xl border bg-background/60 px-4 py-3.5 text-sm text-foreground",
-                      "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20",
-                      "transition-colors hover:bg-background",
-                      errors[field.name]
-                        ? "border-red-500"
-                        : "border-border/60",
-                    )}
+                    error={!!errors[field.name]}
                     placeholder={field.placeholder || ""}
+                    className="h-auto rounded-xl px-4 py-3.5"
                   />
                 )}
                 {errors[field.name] && (
-                  <p className="mt-1.5 text-xs text-red-500">
+                  <p className="mt-1.5 text-xs text-destructive">
                     {errors[field.name]}
                   </p>
                 )}
@@ -663,89 +542,44 @@ export function ContactForm({
         className={cn(
           "rounded-2xl border p-5 transition-all duration-300",
           "bg-muted/30 dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-transparent",
-          messageExpanded
-            ? "border-primary/30 bg-primary/[0.04] shadow-xl shadow-primary/8"
-            : "border-transparent hover:border-border/40 dark:hover:border-white/5",
+          "border-transparent hover:border-border/40 dark:hover:border-white/5",
         )}
       >
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <label
-            htmlFor="contact-message"
-            className="text-sm font-semibold text-foreground pl-4"
-          >
-            Message *
-          </label>
+          <Label htmlFor="contact-message" required>
+            Message
+          </Label>
           <span className="tabular-nums text-xs text-muted-foreground">
             {formData.message.length}
             <span className="text-muted-foreground/60"> / 2000</span>
           </span>
         </div>
 
-        <div className="relative group">
-          <textarea
-            id="contact-message"
-            value={formData.message}
-            onChange={(e) => handleChange("message", e.target.value)}
-            maxLength={2000}
-            rows={messageExpanded ? 14 : 6}
-            className={cn(
-              "w-full rounded-xl border bg-background/70 px-4 py-3.5 text-sm text-foreground",
-              "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/25",
-              "transition-[height] duration-300 ease-out resize-none",
-              errors.message ? "border-red-500" : "border-border/60",
-              "pr-11",
-            )}
-            placeholder={
-              inquiryHelpers[formData.inquiryType]?.placeholder ??
-              inquiryHelpers.General.placeholder
-            }
-          />
-          <button
-            type="button"
-            onClick={() => setMessageExpanded((v) => !v)}
-            className={cn(
-              "absolute right-3 bottom-3 inline-flex h-8 w-8 items-center justify-center rounded-lg",
-              "border border-border/60 bg-muted/50 text-muted-foreground",
-              "transition-all hover:bg-muted hover:text-foreground hover:scale-105",
-              "backdrop-blur-sm",
-              "dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10",
-              messageExpanded
-                ? "opacity-100"
-                : "opacity-0 group-hover:opacity-100 focus:opacity-100",
-            )}
-            aria-label={
-              messageExpanded ? "Collapse message box" : "Expand message box"
-            }
-          >
-            {messageExpanded ? (
-              <Minimize2 size={15} />
-            ) : (
-              <Maximize2 size={15} />
-            )}
-          </button>
-        </div>
+        <Textarea
+          id="contact-message"
+          value={formData.message}
+          onChange={(e) => handleChange("message", e.target.value)}
+          maxLength={2000}
+          error={!!errors.message}
+          className="rounded-xl px-4 py-3.5"
+          placeholder={
+            inquiryHelpers[formData.inquiryType]?.placeholder ??
+            inquiryHelpers.General.placeholder
+          }
+        />
 
-        <div
-          className={cn(
-            "grid transition-[grid-template-rows] duration-300 ease-out",
-            messageExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-          )}
-        >
-          <div className="overflow-hidden">
-            <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/10 bg-primary/5 px-3.5 py-2.5">
-              <span className="mt-0.5 text-xs font-semibold text-primary uppercase tracking-wide">
-                Pro tip
-              </span>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {inquiryHelpers[formData.inquiryType]?.proTip ??
-                  inquiryHelpers.General.proTip}
-              </p>
-            </div>
-          </div>
+        <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/10 bg-primary/5 px-3.5 py-2.5">
+          <span className="mt-0.5 text-xs font-semibold text-primary uppercase tracking-wide">
+            Pro tip
+          </span>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {inquiryHelpers[formData.inquiryType]?.proTip ??
+              inquiryHelpers.General.proTip}
+          </p>
         </div>
 
         {errors.message && (
-          <p className="mt-2 text-xs text-red-500">{errors.message}</p>
+          <p className="mt-2 text-xs text-destructive">{errors.message}</p>
         )}
       </div>
 
@@ -772,23 +606,14 @@ export function ContactForm({
         </div>
       )}
 
-      <button
+      <Button
         type="submit"
-        disabled={status === "submitting"}
-        className="w-full inline-flex items-center justify-center gap-2.5 rounded-xl bg-primary px-6 py-4 text-base font-semibold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5"
+        loading={status === "submitting"}
+        className="h-auto w-full rounded-xl px-6 py-4 text-base shadow-xl shadow-primary/20 hover:shadow-primary/30"
       >
-        {status === "submitting" ? (
-          <>
-            <Loader2 size={18} className="animate-spin" />
-            Sending...
-          </>
-        ) : (
-          <>
-            <Send size={18} />
-            Send Message
-          </>
-        )}
-      </button>
+        <Send size={18} />
+        Send Message
+      </Button>
     </form>
   );
 }

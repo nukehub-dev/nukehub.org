@@ -96,8 +96,10 @@ export function ContactPageContent() {
       {/* Contact Form */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-8">
         <div className="mx-auto max-w-5xl">
-          <div className="bubble relative overflow-hidden p-6 sm:p-8 lg:p-10">
-            <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-primary/10 blur-[100px] opacity-60" />
+          <div className="bubble relative p-6 sm:p-8 lg:p-10">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+              <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-primary/10 blur-[100px] opacity-60" />
+            </div>
             <div className="relative">
               <AnimatePresence mode="wait">
                 {!formSubmitted && (

@@ -19,6 +19,7 @@ export interface SelectProps {
   disabled?: boolean;
   error?: boolean;
   className?: string;
+  triggerClassName?: string;
   id?: string;
   name?: string;
   required?: boolean;
@@ -32,6 +33,7 @@ export function Select({
   disabled = false,
   error = false,
   className,
+  triggerClassName,
   id,
   name,
   required,
@@ -76,8 +78,8 @@ export function Select({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, [open, close]);
 
   const DROPDOWN_MAX_HEIGHT = 240;
@@ -241,6 +243,7 @@ export function Select({
           "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
           open && "ring-[3px] ring-ring/50",
           !selectedOption && "text-muted-foreground",
+          triggerClassName,
         )}
       >
         <span id={labelId} className="truncate">
@@ -285,9 +288,16 @@ export function Select({
                         aria-disabled={option.disabled}
                         tabIndex={-1}
                         onMouseEnter={() => setHighlightedIndex(index)}
-                        onClick={() =>
-                          !option.disabled && handleOptionClick(option.value)
-                        }
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                        }}
+                        onPointerUp={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (!option.disabled) {
+                            handleOptionClick(option.value);
+                          }
+                        }}
                         onKeyDown={(e) => {
                           if (option.disabled) return;
                           if (e.key === "Enter" || e.key === " ") {
