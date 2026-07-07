@@ -1,7 +1,17 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
+import {
+  ArrowLeft,
+  ClipboardList,
+  Clock,
+  FileQuestion,
+  Layers,
+  ShieldCheck,
+} from "lucide-react";
 import { SurveyForm } from "@modules/survey/components/SurveyForm";
+import { SurveyAuroraBackground } from "@modules/survey/components/decorations/SurveyAuroraBackground";
+import { SurveyFloatingDots } from "@modules/survey/components/decorations/SurveyFloatingDots";
 import type { Survey } from "@modules/survey/types";
 
 export async function getStaticPaths() {
@@ -15,6 +25,12 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const survey = entry.data as Survey;
 const slug = survey.slug || entry.id;
+
+const questionCount = survey.pages
+  ? survey.pages.reduce((sum, page) => sum + page.questions.length, 0)
+  : (survey.questions ?? []).length;
+const pageCount = survey.pages?.length ?? 1;
+const estimatedMinutes = Math.max(1, Math.round(questionCount * 0.6));
 
 const title = survey.title;
 const description = survey.description || `Take the ${survey.title} survey`;
@@ -30,22 +46,33 @@ const permalink = `/survey/${slug}`;
   <section
     class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center overflow-hidden px-4 py-16"
   >
+    <SurveyAuroraBackground client:visible />
+    <SurveyFloatingDots client:visible />
+
     {/* Ambient glow */}
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.05]"
+      class="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/[0.03] via-transparent to-transparent"
       aria-hidden="true"
-      style="background: radial-gradient(circle at 50% 20%, var(--primary) 0%, transparent 55%);"
     >
     </div>
 
     <div class="relative z-10 w-full max-w-2xl">
       {/* Header */}
-      <div class="mb-8 text-center">
-        <span
-          class="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-card px-4 py-1.5 font-mono text-sm font-semibold text-primary shadow-sm"
+      <div class="relative mb-8 text-center">
+        <a
+          href="/survey"
+          class="absolute left-0 top-0 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
+          <ArrowLeft size={16} />
+          All surveys
+        </a>
+
+        <div
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary"
+        >
+          <ClipboardList size={16} />
           Survey
-        </span>
+        </div>
         <h1
           class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
         >
@@ -60,10 +87,55 @@ const permalink = `/survey/${slug}`;
         }
       </div>
 
+      {/* Meta card */}
+      <div
+        class="bubble mb-8 grid grid-cols-3 gap-4 divide-x divide-border p-4 text-center"
+      >
+        <div>
+          <p
+            class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          >
+            Questions
+          </p>
+          <p
+            class="mt-1 inline-flex items-center justify-center gap-1 text-lg font-semibold text-foreground"
+          >
+            <FileQuestion size={16} />
+            {questionCount}
+          </p>
+        </div>
+        <div>
+          <p
+            class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          >
+            Pages
+          </p>
+          <p
+            class="mt-1 inline-flex items-center justify-center gap-1 text-lg font-semibold text-foreground"
+          >
+            <Layers size={16} />
+            {pageCount}
+          </p>
+        </div>
+        <div>
+          <p
+            class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          >
+            Estimated
+          </p>
+          <p
+            class="mt-1 inline-flex items-center justify-center gap-1 text-lg font-semibold text-foreground"
+          >
+            <Clock size={16} />
+            {estimatedMinutes} min
+          </p>
+        </div>
+      </div>
+
       {/* Intro card */}
       {
         survey.intro && (
-          <div class="mb-8 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground shadow-sm">
+          <div class="bubble mb-8 p-5 text-sm leading-relaxed text-muted-foreground">
             {survey.intro}
           </div>
         )
@@ -80,6 +152,14 @@ const permalink = `/survey/${slug}`;
           </p>
         )
       }
+
+      {/* Privacy note */}
+      <div
+        class="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground"
+      >
+        <ShieldCheck size={14} />
+        Responses are anonymous and used only to improve NukeHub.
+      </div>
     </div>
   </section>
 </BaseLayout>

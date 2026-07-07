@@ -17,6 +17,8 @@ export interface SurveyQuestion {
   options?: Array<string | { label: string; value: string }>;
   min?: number;
   max?: number;
+  minLabel?: string;
+  maxLabel?: string;
   maxLength?: number;
   maxSelections?: number;
   image?: string;

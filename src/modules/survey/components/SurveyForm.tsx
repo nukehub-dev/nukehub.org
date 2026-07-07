@@ -1,5 +1,11 @@
 import * as React from "react";
-import { AlertCircle, CheckCircle2, Send } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Send,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { cn } from "@lib/utils";
@@ -39,6 +45,19 @@ export function SurveyForm({ survey }: SurveyFormProps) {
     if (survey.pages && survey.pages.length > 0) return survey.pages;
     return [{ title: survey.title, questions: survey.questions ?? [] }];
   }, [survey]);
+
+  const questionOffsets = React.useMemo(() => {
+    const offsets: number[] = [];
+    let count = 0;
+    for (const page of pages) {
+      offsets.push(count);
+      count += page.questions.length;
+    }
+    return offsets;
+  }, [pages]);
+  const totalQuestions =
+    questionOffsets[pages.length - 1] +
+    pages[pages.length - 1].questions.length;
 
   const [values, setValues] = React.useState<SurveyResponse>({});
   const [errors, setErrors] = React.useState<FormErrors>({});
@@ -263,7 +282,10 @@ export function SurveyForm({ survey }: SurveyFormProps) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <Card className="flex flex-col items-center justify-center border-primary/20 px-6 py-12 text-center">
+        <Card
+          variant="bubble"
+          className="flex flex-col items-center justify-center px-6 py-12 text-center"
+        >
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
             <CheckCircle2 className="h-7 w-7 text-primary" />
           </div>
@@ -271,6 +293,13 @@ export function SurveyForm({ survey }: SurveyFormProps) {
           <p className="mt-2 max-w-md text-muted-foreground">
             {survey.successMessage || "Your response has been recorded."}
           </p>
+          <a
+            href="/survey"
+            className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+          >
+            <ChevronLeft size={16} />
+            Back to surveys
+          </a>
         </Card>
       </motion.div>
     );
@@ -297,7 +326,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
       </AnimatePresence>
 
       {isMultiPage && (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">
               Page {currentPage + 1} of {pages.length}
@@ -311,6 +340,30 @@ export function SurveyForm({ survey }: SurveyFormProps) {
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
             />
+          </div>
+          <div className="flex justify-center gap-2" role="tablist">
+            {pages.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => {
+                  if (index < currentPage || validatePage(currentPage)) {
+                    setCurrentPage(index);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+                className={cn(
+                  "h-2 w-2 rounded-full transition-all",
+                  index === currentPage
+                    ? "w-6 bg-primary"
+                    : index < currentPage
+                      ? "bg-primary/50"
+                      : "bg-muted-foreground/25",
+                )}
+                aria-label={`Go to page ${index + 1}`}
+                aria-current={index === currentPage ? "step" : undefined}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -358,13 +411,16 @@ export function SurveyForm({ survey }: SurveyFormProps) {
                 transition={{ delay: index * 0.05 }}
               >
                 <Card
+                  variant="bubble"
                   className={cn(
                     "p-5 transition-colors",
-                    errors[question.id] && "border-destructive/40",
+                    errors[question.id] && "ring-2 ring-destructive/30",
                   )}
                 >
                   <QuestionField
                     question={question}
+                    questionNumber={questionOffsets[currentPage] + index + 1}
+                    totalQuestions={totalQuestions}
                     value={values[question.id]}
                     onChange={(value) => setValue(question.id, value)}
                     error={errors[question.id]}
@@ -407,7 +463,9 @@ export function SurveyForm({ survey }: SurveyFormProps) {
               onClick={handlePrevious}
               disabled={status === "submitting"}
               className="flex-1"
+              size="lg"
             >
+              <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
           )}
@@ -434,6 +492,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
               size="lg"
             >
               Next
+              <ChevronRight className="h-4 w-4" />
             </Button>
           )}
         </div>
@@ -444,6 +503,8 @@ export function SurveyForm({ survey }: SurveyFormProps) {
 
 interface QuestionFieldProps {
   question: SurveyQuestion;
+  questionNumber: number;
+  totalQuestions: number;
   value: string | string[] | undefined;
   onChange: (value: string | string[]) => void;
   error?: string;
@@ -451,6 +512,8 @@ interface QuestionFieldProps {
 
 function QuestionField({
   question,
+  questionNumber,
+  totalQuestions,
   value,
   onChange,
   error,
@@ -468,6 +531,9 @@ function QuestionField({
   return (
     <fieldset className="space-y-3">
       <legend className="text-base font-semibold text-foreground">
+        <span className="mr-2 inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-primary/10 px-1.5 text-xs font-bold text-primary">
+          Q{questionNumber}
+        </span>
         {question.label}
         {question.required && <span className="ml-1 text-destructive">*</span>}
       </legend>
@@ -639,10 +705,16 @@ function QuestionField({
           onChange={onChange}
           min={question.min ?? 1}
           max={question.max ?? 5}
+          minLabel={question.minLabel}
+          maxLabel={question.maxLabel}
         />
       )}
 
       {error && <p className="text-sm text-destructive">{error}</p>}
+
+      <div className="sr-only" aria-live="polite">
+        Question {questionNumber} of {totalQuestions}
+      </div>
     </fieldset>
   );
 }
@@ -652,30 +724,42 @@ function RatingField({
   onChange,
   min,
   max,
+  minLabel,
+  maxLabel,
 }: {
   value: string | undefined;
   onChange: (value: string) => void;
   min: number;
   max: number;
+  minLabel?: string;
+  maxLabel?: string;
 }) {
   const selected = value ? Number(value) : undefined;
   const items = Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {items.map((num) => (
-        <Button
-          key={num}
-          type="button"
-          variant={selected === num ? "default" : "outline"}
-          size="icon"
-          onClick={() => onChange(String(num))}
-          aria-pressed={selected === num}
-          className="h-10 w-10 text-sm font-semibold"
-        >
-          {num}
-        </Button>
-      ))}
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {items.map((num) => (
+          <Button
+            key={num}
+            type="button"
+            variant={selected === num ? "default" : "outline"}
+            size="icon"
+            onClick={() => onChange(String(num))}
+            aria-pressed={selected === num}
+            className="h-10 w-10 text-sm font-semibold"
+          >
+            {num}
+          </Button>
+        ))}
+      </div>
+      {(minLabel || maxLabel) && (
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>{minLabel || `${min}`}</span>
+          <span>{maxLabel || `${max}`}</span>
+        </div>
+      )}
     </div>
   );
 }

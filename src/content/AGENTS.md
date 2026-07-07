@@ -58,7 +58,9 @@ Fusion`.
 - `surveys` (yaml) — YAML-driven survey definitions. Each file describes a
   survey page rendered at `/survey/<slug>` with a dynamic form. Question types:
   `text`, `textarea`, `email`, `number`, `url`, `select`, `radio`, `checkbox`,
-  `rating`. Submissions are sent to the Go contact server at `/survey`.
+  `rating`. `rating` questions may optionally set `minLabel` and `maxLabel` to
+  label the low and high ends of the scale. Submissions are sent to the Go
+  contact server at `/survey`.
 
 ### Adding a new collection
 

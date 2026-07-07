@@ -23,6 +23,8 @@ All files under `src/modules/survey/**` and the routes
   can still use a flat `questions` list for backward compatibility.
 - `src/pages/survey/index.astro` lists every survey as a card grid and is linked
   from the header Community dropdown and the Community footer column.
+- `SurveyFloatingDots` provides the animated background decoration shared by the
+  list and detail pages.
 
 ## Work Guidance
 
@@ -44,14 +46,18 @@ All files under `src/modules/survey/**` and the routes
 - `select`, `radio`, `checkbox` — require `options`. Each option can be a plain
   string or `{ label, value }`. For `checkbox`, add `maxSelections` to limit
   how many options can be chosen.
-- `rating` — numeric buttons from `min` to `max` (defaults to 1–5).
+- `rating` — numeric buttons from `min` to `max` (defaults to 1–5). Optional
+  `minLabel` and `maxLabel` strings render under the scale (e.g., “Very
+  dissatisfied” / “Very satisfied”).
 
 ### Paging
 
 - Define `pages` as a list of page objects. The form renders one page at a time
-  with Previous/Next navigation, a progress bar, and per-page validation.
+  with Previous/Next navigation, a progress bar, page step dots, and per-page
+  validation. Questions are numbered sequentially across pages.
 - `intro` displays before the first page; `outro` displays after the last page
-  before submission.
+  before submission. The detail page also shows a meta card with question count,
+  page count, and estimated completion time.
 
 ### Submission flow
 

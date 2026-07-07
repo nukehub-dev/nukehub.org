@@ -434,7 +434,7 @@
       );
     background-color: color-mix(
       in oklch,
-      var(--glass-base, var(--bg-surface)) 28%,
+      var(--glass-base, var(--bg-surface)) 95%,
       transparent
     );
     border: 1px solid

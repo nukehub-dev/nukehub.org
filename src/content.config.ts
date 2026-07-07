@@ -239,6 +239,8 @@ const surveyQuestionSchema = z.object({
     .optional(),
   min: z.number().optional(),
   max: z.number().optional(),
+  minLabel: z.string().optional(),
+  maxLabel: z.string().optional(),
   maxLength: z.number().int().min(1).optional(),
   maxSelections: z.number().int().min(1).optional(),
   image: z.string().optional(),
