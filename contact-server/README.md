@@ -36,12 +36,16 @@ docker run -d \
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and configure.
+Copy `.env.example` to `.env` and configure. Key variables:
+
+- `CONTACT_TO_EMAIL` — recipient for contact form submissions.
+- `SURVEY_TO_EMAIL` — recipient for survey submissions (defaults to `CONTACT_TO_EMAIL`).
 
 ## API Endpoints
 
 - `GET /contact/health` - Health check
 - `POST /contact` - Submit contact form
+- `POST /survey` - Submit YAML-driven survey responses
 
 ## Security Features
 

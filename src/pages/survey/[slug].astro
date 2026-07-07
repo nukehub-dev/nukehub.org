@@ -1,0 +1,85 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { SurveyForm } from "@modules/survey/components/SurveyForm";
+import type { Survey } from "@modules/survey/types";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("surveys");
+  return entries.map((entry) => ({
+    params: { slug: entry.data.slug || entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const survey = entry.data as Survey;
+const slug = survey.slug || entry.id;
+
+const title = survey.title;
+const description = survey.description || `Take the ${survey.title} survey`;
+const permalink = `/survey/${slug}`;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  permalink={permalink}
+  showFooter={false}
+>
+  <section
+    class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center overflow-hidden px-4 py-16"
+  >
+    {/* Ambient glow */}
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.05]"
+      aria-hidden="true"
+      style="background: radial-gradient(circle at 50% 20%, var(--primary) 0%, transparent 55%);"
+    >
+    </div>
+
+    <div class="relative z-10 w-full max-w-2xl">
+      {/* Header */}
+      <div class="mb-8 text-center">
+        <span
+          class="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-card px-4 py-1.5 font-mono text-sm font-semibold text-primary shadow-sm"
+        >
+          Survey
+        </span>
+        <h1
+          class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+        >
+          {survey.title}
+        </h1>
+        {
+          survey.description && (
+            <p class="mt-3 text-base text-muted-foreground sm:text-lg">
+              {survey.description}
+            </p>
+          )
+        }
+      </div>
+
+      {/* Intro card */}
+      {
+        survey.intro && (
+          <div class="mb-8 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground shadow-sm">
+            {survey.intro}
+          </div>
+        )
+      }
+
+      {/* Form */}
+      <SurveyForm survey={survey} client:load />
+
+      {/* Outro */}
+      {
+        survey.outro && (
+          <p class="mt-8 text-center text-sm text-muted-foreground">
+            {survey.outro}
+          </p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

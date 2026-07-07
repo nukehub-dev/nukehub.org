@@ -27,6 +27,7 @@ import {
   Kanban,
   GitCommit,
   ArrowRight,
+  ClipboardList,
 } from "lucide-react";
 import { BrandIcon } from "@components/ui/BrandIcon";
 
@@ -85,6 +86,7 @@ const staticNavItems: NavItem[] = [
     children: [
       { title: "People", icon: User, url: "/people" },
       { title: "Events", icon: Calendar, url: "/events" },
+      { title: "Surveys", icon: ClipboardList, url: "/survey" },
       { title: "Contact", icon: Mail, url: "/contact" },
       {
         title: "NukeTalk",

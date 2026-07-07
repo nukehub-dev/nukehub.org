@@ -1,0 +1,245 @@
+title: NukeHub Experience & Product Feedback
+description: A detailed survey about your background, tool usage, and feedback on NukeHub projects. Takes about 5–7 minutes.
+slug: nukehub-experience
+intro: |
+  Thank you for taking the time to share your experience with NukeHub.
+  Your answers help us prioritize features, improve documentation, and build
+  better open-source tools for the nuclear community.
+successMessage: Thank you for your detailed feedback — it directly shapes our roadmap.
+submitLabel: Submit feedback
+pages:
+  - title: About You
+    description: Tell us a little about your background so we can understand who is using NukeHub.
+    image: /assets/images/projects/nuke-lab/hero-lite.png
+    questions:
+      - id: role
+        type: select
+        label: What best describes your current role?
+        required: true
+        options:
+          - Student
+          - Researcher
+          - Engineer
+          - Educator
+          - Hobbyist
+          - Other
+
+      - id: experience_years
+        type: radio
+        label: How long have you been working with nuclear technology?
+        required: true
+        options:
+          - Less than 1 year
+          - 1–3 years
+          - 3–5 years
+          - 5–10 years
+          - More than 10 years
+
+      - id: primary_field
+        type: checkbox
+        label: Which fields are you most active in? (Select all that apply)
+        required: true
+        options:
+          - Fission reactors
+          - Fusion energy
+          - Radiation detection
+          - Nuclear medicine
+          - Safeguards & non-proliferation
+          - Computational methods
+          - Policy & education
+          - Other
+
+      - id: institution
+        type: text
+        label: Institution or organization
+        required: false
+        placeholder: e.g., MIT, IAEA, Oak Ridge National Laboratory
+
+      - id: country
+        type: text
+        label: Country
+        required: false
+        placeholder: e.g., United States
+
+  - title: Tools & Workflow
+    description: We want to learn about the software and workflows you use today.
+    image: /assets/images/projects/nuke-ide/hero-lite.png
+    questions:
+      - id: tools_used
+        type: textarea
+        label: What software or tools do you currently use?
+        description: MCNP, OpenMC, SERPENT, SCALE, Python scripts, Geant4, etc.
+        required: true
+        maxLength: 1000
+        placeholder: I mostly use...
+
+      - id: open_source_attitude
+        type: radio
+        label: How important is open-source software to your work?
+        required: true
+        options:
+          - Essential
+          - Very important
+          - Nice to have
+          - Not important
+
+      - id: pain_points
+        type: checkbox
+        label: What are your biggest pain points with current tools? (Select up to 3)
+        required: false
+        maxSelections: 3
+        options:
+          - Difficult installation
+          - Poor documentation
+          - Expensive licenses
+          - Slow performance
+          - Hard to share models
+          - Lack of visualization
+          - Limited community support
+
+      - id: workflow_description
+        type: textarea
+        label: Describe a typical project workflow
+        description: From model creation to analysis and reporting.
+        required: false
+        maxLength: 1500
+        placeholder: I usually start by...
+
+  - title: NukeLab Feedback
+    description: Share your thoughts on NukeLab, our reactor simulation workbench.
+    image: /assets/images/projects/nuke-lab/admin-lite.png
+    questions:
+      - id: nukelab_used
+        type: radio
+        label: Have you used NukeLab?
+        required: true
+        options:
+          - label: Yes, regularly
+            value: regularly
+          - label: Yes, a few times
+            value: few-times
+          - label: Tried it once
+            value: once
+          - label: No, but I am interested
+            value: interested
+          - label: No, not relevant to me
+            value: not-relevant
+
+      - id: nukelab_features
+        type: checkbox
+        label: Which NukeLab features interest you most?
+        required: false
+        options:
+          - Geometry builder
+          - Material library
+          - Cross-section handling
+          - Tallies & analysis
+          - Visualization
+          - Cloud execution
+
+      - id: nukelab_rating
+        type: rating
+        label: How would you rate NukeLab overall?
+        required: false
+        min: 1
+        max: 5
+
+      - id: nukelab_feedback
+        type: textarea
+        label: What would make NukeLab more useful to you?
+        required: false
+        maxLength: 1000
+        placeholder: I wish NukeLab could...
+
+  - title: NukeIDE & NukeAnalytics
+    description: Feedback on our IDE and analytics tooling.
+    image: /assets/images/projects/nuke-analytics/hero-lite.png
+    questions:
+      - id: nukeide_interest
+        type: radio
+        label: How interested are you in a dedicated IDE for nuclear workflows?
+        required: true
+        options:
+          - Very interested
+          - Somewhat interested
+          - Neutral
+          - Not interested
+
+      - id: analytics_interest
+        type: checkbox
+        label: Which analytics capabilities would you value? (Select all that apply)
+        required: false
+        options:
+          - Result comparison across simulations
+          - Automated sensitivity analysis
+          - Uncertainty quantification
+          - Interactive plotting
+          - Report generation
+          - Benchmark suites
+
+      - id: integration_priority
+        type: select
+        label: Which integration should we prioritize?
+        required: false
+        options:
+          - OpenMC
+          - SERPENT
+          - MCNP
+          - Geant4
+          - SCALE
+          - MOOSE
+
+  - title: Final Thoughts
+    description: Last few questions to help us improve.
+    image: /assets/images/projects/nrms/hero-lite.png
+    questions:
+      - id: missing_feature
+        type: textarea
+        label: What feature or tool feels missing from NukeHub right now?
+        description: Be as specific as you like — examples are helpful.
+        required: true
+        maxLength: 1000
+        placeholder: I wish NukeHub had...
+
+      - id: liked_most
+        type: textarea
+        label: What do you like most about NukeHub so far?
+        required: false
+        maxLength: 1000
+        placeholder: The part I enjoy most is...
+
+      - id: satisfaction
+        type: rating
+        label: How would you rate your overall experience with NukeHub?
+        required: true
+        min: 1
+        max: 5
+
+      - id: improvements
+        type: checkbox
+        label: Where should we focus our efforts? (Select up to 3)
+        required: false
+        maxSelections: 3
+        options:
+          - Better documentation
+          - More example projects
+          - Faster performance
+          - More integrations
+          - Community forums
+          - Video tutorials
+          - API access
+
+      - id: newsletter
+        type: checkbox
+        label: Interested in updates?
+        required: false
+        options:
+          - label: Send me occasional updates about NukeHub
+            value: yes
+
+      - id: email
+        type: email
+        label: Email (optional)
+        description: Leave your email if you are open to a short follow-up conversation.
+        required: false
+        placeholder: you@example.com

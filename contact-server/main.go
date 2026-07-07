@@ -39,6 +39,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/contact/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)
+	mux.HandleFunc("/survey", handleSurvey)
 
 	handler := securityHeadersMiddleware(corsMiddleware(mux, allowedOrigins))
 
@@ -207,6 +208,158 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, http.StatusOK, map[string]interface{}{
 		"success": true,
 		"message": "Thank you for reaching out! We will get back to you soon.",
+	})
+}
+
+func handleSurvey(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	ip := r.Header.Get("X-Real-IP")
+	if ip == "" {
+		ip = r.Header.Get("X-Forwarded-For")
+		if ip != "" {
+			ip = strings.Split(ip, ",")[0]
+			ip = strings.TrimSpace(ip)
+		}
+	}
+	if ip == "" {
+		var err error
+		ip, _, err = net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			ip = r.RemoteAddr
+		}
+	}
+
+	if !checkRateLimit(ip) {
+		jsonResponse(w, http.StatusTooManyRequests, map[string]interface{}{
+			"success": false,
+			"message": "Too many requests. Please try again later.",
+		})
+		return
+	}
+
+	var req struct {
+		SurveySlug     string                 `json:"surveySlug"`
+		SurveyTitle    string                 `json:"surveyTitle"`
+		Responses      map[string]interface{} `json:"responses"`
+		TurnstileToken string                 `json:"turnstileToken"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "Invalid request body",
+		})
+		return
+	}
+
+	surveySlug := sanitizeInput(req.SurveySlug)
+	surveyTitle := sanitizeInput(req.SurveyTitle)
+	if surveySlug == "" {
+		surveySlug = "unknown"
+	}
+	if surveyTitle == "" {
+		surveyTitle = "Survey Submission"
+	}
+
+	// Verify Turnstile
+	if req.TurnstileToken == "" {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "CAPTCHA verification is required",
+		})
+		return
+	}
+	if !verifyTurnstile(req.TurnstileToken) {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "CAPTCHA verification failed. Please try again.",
+		})
+		return
+	}
+
+	if len(req.Responses) == 0 {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "No responses provided",
+		})
+		return
+	}
+
+	const maxResponseValueLen = 10000
+	const maxArraySelections = 100
+
+	// Build email body
+	htmlItems := ""
+	textItems := ""
+	for key, value := range req.Responses {
+		safeKey := sanitizeInput(key)
+		var displayValue string
+		switch v := value.(type) {
+		case []interface{}:
+			if len(v) > maxArraySelections {
+				jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+					"success": false,
+					"message": fmt.Sprintf("Too many selections for '%s'", safeKey),
+				})
+				return
+			}
+			parts := make([]string, 0, len(v))
+			for _, item := range v {
+				parts = append(parts, sanitizeInput(fmt.Sprintf("%v", item)))
+			}
+			displayValue = strings.Join(parts, ", ")
+		default:
+			displayValue = sanitizeInput(fmt.Sprintf("%v", value))
+		}
+
+		if len(displayValue) > maxResponseValueLen {
+			jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+				"success": false,
+				"message": fmt.Sprintf("Response for '%s' exceeds maximum length", safeKey),
+			})
+			return
+		}
+
+		htmlItems += fmt.Sprintf("<li><strong>%s:</strong> %s</li>", html.EscapeString(safeKey), html.EscapeString(displayValue))
+		textItems += fmt.Sprintf("%s: %s\n", safeKey, displayValue)
+	}
+
+	toEmail := getEnv("SURVEY_TO_EMAIL", getEnv("CONTACT_TO_EMAIL", "contact@nukehub.org"))
+	replyTo := toEmail
+	if emailValue, ok := req.Responses["email"].(string); ok {
+		candidate := sanitizeInput(emailValue)
+		if candidate != "" && emailRegex.MatchString(candidate) {
+			replyTo = candidate
+		}
+	}
+
+	subject := fmt.Sprintf("[Survey] %s", surveyTitle)
+	htmlBody := fmt.Sprintf(`
+		<h2>New Survey Submission</h2>
+		<p><strong>Survey:</strong> %s</p>
+		<p><strong>Slug:</strong> %s</p>
+		<h3>Responses</h3>
+		<ul>%s</ul>
+	`, html.EscapeString(surveyTitle), html.EscapeString(surveySlug), htmlItems)
+
+	textBody := fmt.Sprintf("Survey: %s\nSlug: %s\n\nResponses:\n%s", surveyTitle, surveySlug, textItems)
+
+	if err := sendEmail(toEmail, replyTo, subject, htmlBody, textBody); err != nil {
+		fmt.Fprintf(os.Stderr, "SMTP error: %v\n", err)
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{
+			"success": false,
+			"message": "Failed to send survey. Please try again.",
+		})
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"message": "Thank you for completing the survey!",
 	})
 }
 

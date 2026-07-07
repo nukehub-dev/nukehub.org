@@ -1,0 +1,699 @@
+import * as React from "react";
+import { AlertCircle, CheckCircle2, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { cn } from "@lib/utils";
+import { Button } from "@components/ui/Button";
+import { Card } from "@components/ui/Card";
+import { Input } from "@components/ui/Input";
+import { Textarea } from "@components/ui/Textarea";
+import { Select } from "@components/ui/Select";
+import { Checkbox } from "@components/ui/Checkbox";
+import { RadioGroup } from "@components/ui/RadioGroup";
+import { CharacterCount } from "@components/ui/CharacterCount";
+import type {
+  Survey,
+  SurveyPage,
+  SurveyQuestion,
+  SurveyResponse,
+} from "../types";
+
+interface SurveyFormProps {
+  survey: Survey;
+}
+
+interface FormErrors {
+  [key: string]: string | undefined;
+  turnstile?: string;
+  submit?: string;
+}
+
+function normalizeOption(
+  option: NonNullable<SurveyQuestion["options"]>[number],
+) {
+  return typeof option === "string" ? { label: option, value: option } : option;
+}
+
+export function SurveyForm({ survey }: SurveyFormProps) {
+  const pages = React.useMemo<SurveyPage[]>(() => {
+    if (survey.pages && survey.pages.length > 0) return survey.pages;
+    return [{ title: survey.title, questions: survey.questions ?? [] }];
+  }, [survey]);
+
+  const [values, setValues] = React.useState<SurveyResponse>({});
+  const [errors, setErrors] = React.useState<FormErrors>({});
+  const [turnstileToken, setTurnstileToken] = React.useState("");
+  const turnstileRef = React.useRef<TurnstileInstance>(null);
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [status, setStatus] = React.useState<"idle" | "submitting" | "success">(
+    "idle",
+  );
+
+  const storageKey = React.useMemo(
+    () => `nukehub-survey-${survey.slug || survey.title}`,
+    [survey.slug, survey.title],
+  );
+
+  // Restore saved draft on mount
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed.surveyTitle !== survey.title) return;
+      if (parsed.values && typeof parsed.values === "object") {
+        setValues(parsed.values);
+      }
+      if (
+        typeof parsed.currentPage === "number" &&
+        parsed.currentPage >= 0 &&
+        parsed.currentPage < pages.length
+      ) {
+        setCurrentPage(parsed.currentPage);
+      }
+    } catch {
+      // Ignore corrupt or unavailable storage
+    }
+  }, [storageKey, survey.title, pages.length]);
+
+  // Persist draft as the user answers / navigates
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          surveyTitle: survey.title,
+          values,
+          currentPage,
+          savedAt: new Date().toISOString(),
+        }),
+      );
+    } catch {
+      // Ignore storage errors (e.g. quota exceeded, private mode)
+    }
+  }, [storageKey, survey.title, values, currentPage]);
+
+  // Clear draft after successful submission
+  React.useEffect(() => {
+    if (status !== "success") return;
+    try {
+      localStorage.removeItem(storageKey);
+    } catch {
+      // Ignore
+    }
+  }, [status, storageKey]);
+
+  const isMultiPage = pages.length > 1;
+  const progress = Math.round(((currentPage + 1) / pages.length) * 100);
+
+  const setValue = (id: string, value: string | string[]) => {
+    setValues((prev) => ({ ...prev, [id]: value }));
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
+  const validateQuestions = (questions: SurveyQuestion[]): FormErrors => {
+    const nextErrors: FormErrors = {};
+
+    for (const question of questions) {
+      const value = values[question.id];
+      const isEmpty =
+        value === undefined ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0);
+
+      if (question.required && isEmpty) {
+        nextErrors[question.id] = "This question is required";
+      }
+
+      if (question.type === "email" && value && typeof value === "string") {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          nextErrors[question.id] = "Please enter a valid email address";
+        }
+      }
+
+      if (question.type === "url" && value && typeof value === "string") {
+        try {
+          new URL(value);
+        } catch {
+          nextErrors[question.id] = "Please enter a valid URL";
+        }
+      }
+
+      if (question.type === "number" && value && typeof value === "string") {
+        const num = Number(value);
+        if (Number.isNaN(num)) {
+          nextErrors[question.id] = "Please enter a valid number";
+        } else {
+          if (question.min !== undefined && num < question.min) {
+            nextErrors[question.id] = `Must be at least ${question.min}`;
+          }
+          if (question.max !== undefined && num > question.max) {
+            nextErrors[question.id] = `Must be at most ${question.max}`;
+          }
+        }
+      }
+
+      if (
+        question.maxLength !== undefined &&
+        typeof value === "string" &&
+        value.length > question.maxLength
+      ) {
+        nextErrors[question.id] =
+          `Must be at most ${question.maxLength} characters`;
+      }
+
+      if (
+        question.type === "checkbox" &&
+        question.maxSelections !== undefined &&
+        Array.isArray(value) &&
+        value.length > question.maxSelections
+      ) {
+        nextErrors[question.id] =
+          `Please select at most ${question.maxSelections} options`;
+      }
+    }
+
+    return nextErrors;
+  };
+
+  const validatePage = (pageIndex: number): boolean => {
+    const pageErrors = validateQuestions(pages[pageIndex].questions);
+    setErrors((prev) => ({ ...prev, ...pageErrors }));
+    return Object.keys(pageErrors).length === 0;
+  };
+
+  const validateAll = (): boolean => {
+    const allErrors: FormErrors = {};
+    for (const page of pages) {
+      Object.assign(allErrors, validateQuestions(page.questions));
+    }
+
+    if (!turnstileToken) {
+      allErrors.turnstile = "Please complete the CAPTCHA verification";
+    }
+
+    setErrors(allErrors);
+    return Object.keys(allErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (!validatePage(currentPage)) return;
+    if (currentPage < pages.length - 1) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validateAll()) return;
+
+    setStatus("submitting");
+    setErrors({});
+
+    try {
+      const apiUrl = import.meta.env.PUBLIC_SURVEY_API_URL || "/api/survey";
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          surveySlug: survey.slug || survey.title,
+          surveyTitle: survey.title,
+          responses: values,
+          turnstileToken,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setErrors({
+          submit: data.message || "Something went wrong. Please try again.",
+        });
+        setStatus("idle");
+        turnstileRef.current?.reset();
+        return;
+      }
+
+      setStatus("success");
+    } catch {
+      setErrors({
+        submit: "Network error. Please check your connection and try again.",
+      });
+      setStatus("idle");
+      turnstileRef.current?.reset();
+    }
+  };
+
+  if (status === "success") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <Card className="flex flex-col items-center justify-center border-primary/20 px-6 py-12 text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+            <CheckCircle2 className="h-7 w-7 text-primary" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground">Thank you!</h3>
+          <p className="mt-2 max-w-md text-muted-foreground">
+            {survey.successMessage || "Your response has been recorded."}
+          </p>
+        </Card>
+      </motion.div>
+    );
+  }
+
+  const page = pages[currentPage];
+  const isFirstPage = currentPage === 0;
+  const isLastPage = currentPage === pages.length - 1;
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+      <AnimatePresence>
+        {errors.submit && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="flex items-start gap-3 rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{errors.submit}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {isMultiPage && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">
+              Page {currentPage + 1} of {pages.length}
+            </span>
+            <span className="font-medium text-primary">{progress}%</span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <motion.div
+              className="h-full bg-primary"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+        </div>
+      )}
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.2 }}
+          className="space-y-6"
+        >
+          {(page.title !== survey.title || page.description || page.image) && (
+            <div className="space-y-3">
+              {page.title !== survey.title && (
+                <h2 className="text-xl font-semibold text-foreground">
+                  {page.title}
+                </h2>
+              )}
+              {page.description && (
+                <p className="text-sm text-muted-foreground">
+                  {page.description}
+                </p>
+              )}
+              {page.image && (
+                <div className="overflow-hidden rounded-xl border border-border">
+                  <img
+                    src={page.image}
+                    alt=""
+                    className="w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-5">
+            {page.questions.map((question, index) => (
+              <motion.div
+                key={question.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card
+                  className={cn(
+                    "p-5 transition-colors",
+                    errors[question.id] && "border-destructive/40",
+                  )}
+                >
+                  <QuestionField
+                    question={question}
+                    value={values[question.id]}
+                    onChange={(value) => setValue(question.id, value)}
+                    error={errors[question.id]}
+                  />
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="space-y-4">
+        {isLastPage && (
+          <>
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || ""}
+              onSuccess={setTurnstileToken}
+              onError={() =>
+                setErrors((prev) => ({
+                  ...prev,
+                  turnstile: "CAPTCHA failed to load",
+                }))
+              }
+              className="flex justify-center"
+            />
+            {errors.turnstile && (
+              <p className="text-center text-sm text-destructive">
+                {errors.turnstile}
+              </p>
+            )}
+          </>
+        )}
+
+        <div className="flex gap-3">
+          {isMultiPage && !isFirstPage && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handlePrevious}
+              disabled={status === "submitting"}
+              className="flex-1"
+            >
+              Previous
+            </Button>
+          )}
+
+          {isLastPage ? (
+            <Button
+              type="submit"
+              disabled={status === "submitting"}
+              loading={status === "submitting"}
+              className="flex-1"
+              size="lg"
+            >
+              {status !== "submitting" && (
+                <Send className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              )}
+              {survey.submitLabel || "Submit"}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              onClick={handleNext}
+              disabled={status === "submitting"}
+              className="flex-1"
+              size="lg"
+            >
+              Next
+            </Button>
+          )}
+        </div>
+      </div>
+    </form>
+  );
+}
+
+interface QuestionFieldProps {
+  question: SurveyQuestion;
+  value: string | string[] | undefined;
+  onChange: (value: string | string[]) => void;
+  error?: string;
+}
+
+function QuestionField({
+  question,
+  value,
+  onChange,
+  error,
+}: QuestionFieldProps) {
+  const options = React.useMemo(
+    () => question.options?.map(normalizeOption) ?? [],
+    [question.options],
+  );
+
+  const showCharCount =
+    question.maxLength !== undefined &&
+    ["text", "email", "url", "textarea"].includes(question.type);
+  const charCount = showCharCount ? ((value as string) || "").length : 0;
+
+  return (
+    <fieldset className="space-y-3">
+      <legend className="text-base font-semibold text-foreground">
+        {question.label}
+        {question.required && <span className="ml-1 text-destructive">*</span>}
+      </legend>
+
+      {question.description && (
+        <p className="text-sm text-muted-foreground">{question.description}</p>
+      )}
+
+      {(question.image || question.video) && (
+        <MediaBlock image={question.image} video={question.video} />
+      )}
+
+      {question.type === "text" && (
+        <div className="space-y-1">
+          <Input
+            type="text"
+            value={(value as string) || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={question.placeholder}
+            maxLength={question.maxLength}
+            error={!!error}
+          />
+          {showCharCount && (
+            <CharacterCount
+              current={charCount}
+              max={question.maxLength}
+              className="flex justify-end pr-2"
+            />
+          )}
+        </div>
+      )}
+
+      {question.type === "email" && (
+        <div className="space-y-1">
+          <Input
+            type="email"
+            value={(value as string) || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={question.placeholder}
+            maxLength={question.maxLength}
+            error={!!error}
+          />
+          {showCharCount && (
+            <CharacterCount
+              current={charCount}
+              max={question.maxLength}
+              className="flex justify-end pr-2"
+            />
+          )}
+        </div>
+      )}
+
+      {question.type === "url" && (
+        <div className="space-y-1">
+          <Input
+            type="url"
+            value={(value as string) || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={question.placeholder}
+            maxLength={question.maxLength}
+            error={!!error}
+          />
+          {showCharCount && (
+            <CharacterCount
+              current={charCount}
+              max={question.maxLength}
+              className="flex justify-end pr-2"
+            />
+          )}
+        </div>
+      )}
+
+      {question.type === "number" && (
+        <Input
+          type="number"
+          value={(value as string) || ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={question.placeholder}
+          min={question.min}
+          max={question.max}
+          error={!!error}
+        />
+      )}
+
+      {question.type === "textarea" && (
+        <div className="space-y-1">
+          <Textarea
+            value={(value as string) || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={question.placeholder}
+            maxLength={question.maxLength}
+            rows={4}
+            error={!!error}
+          />
+          {showCharCount && (
+            <CharacterCount
+              current={charCount}
+              max={question.maxLength}
+              className="flex justify-end pr-2"
+            />
+          )}
+        </div>
+      )}
+
+      {question.type === "select" && (
+        <Select
+          value={(value as string) || ""}
+          onChange={onChange}
+          options={options}
+          placeholder={question.placeholder || "Select an option"}
+          error={!!error}
+        />
+      )}
+
+      {question.type === "radio" && (
+        <RadioGroup
+          name={question.id}
+          value={(value as string) || ""}
+          onChange={onChange}
+          options={options}
+        />
+      )}
+
+      {question.type === "checkbox" && (
+        <div className="space-y-2">
+          {options.map((option) => {
+            const current = (value as string[]) || [];
+            const selected = current.includes(option.value);
+            const atMax =
+              question.maxSelections !== undefined &&
+              current.length >= question.maxSelections;
+            const disabled = !selected && atMax;
+
+            return (
+              <Checkbox
+                key={option.value}
+                checked={selected}
+                disabled={disabled}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    if (
+                      question.maxSelections !== undefined &&
+                      current.length >= question.maxSelections
+                    ) {
+                      return;
+                    }
+                    onChange([...current, option.value]);
+                  } else {
+                    onChange(current.filter((v) => v !== option.value));
+                  }
+                }}
+              >
+                {option.label}
+              </Checkbox>
+            );
+          })}
+          {question.maxSelections !== undefined && (
+            <p className="flex justify-end pr-2 text-xs text-muted-foreground">
+              {((value as string[]) || []).length} / {question.maxSelections}{" "}
+              selected
+            </p>
+          )}
+        </div>
+      )}
+
+      {question.type === "rating" && (
+        <RatingField
+          value={value as string | undefined}
+          onChange={onChange}
+          min={question.min ?? 1}
+          max={question.max ?? 5}
+        />
+      )}
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </fieldset>
+  );
+}
+
+function RatingField({
+  value,
+  onChange,
+  min,
+  max,
+}: {
+  value: string | undefined;
+  onChange: (value: string) => void;
+  min: number;
+  max: number;
+}) {
+  const selected = value ? Number(value) : undefined;
+  const items = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {items.map((num) => (
+        <Button
+          key={num}
+          type="button"
+          variant={selected === num ? "default" : "outline"}
+          size="icon"
+          onClick={() => onChange(String(num))}
+          aria-pressed={selected === num}
+          className="h-10 w-10 text-sm font-semibold"
+        >
+          {num}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+function MediaBlock({ image, video }: { image?: string; video?: string }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-border">
+      {video ? (
+        // eslint-disable-next-line jsx-a11y/media-has-caption
+        <video src={video} controls className="w-full" />
+      ) : image ? (
+        <img
+          src={image}
+          alt=""
+          className="w-full object-cover"
+          loading="lazy"
+        />
+      ) : null}
+    </div>
+  );
+}

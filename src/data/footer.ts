@@ -17,6 +17,7 @@ import {
   Server,
   ExternalLink,
   Mail,
+  ClipboardList,
 } from "lucide-react";
 
 export interface FooterLink {
@@ -45,6 +46,7 @@ const staticFooterColumns: FooterColumn[] = [
     links: [
       { title: "People", url: "/people", icon: User },
       { title: "Events", url: "/events", icon: Calendar },
+      { title: "Surveys", url: "/survey", icon: ClipboardList },
       {
         title: "NukeTalk",
         url: "https://talk.nukehub.org",

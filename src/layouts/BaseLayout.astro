@@ -21,6 +21,7 @@ import type {
   CommandPaletteIntegration,
   CommandPalettePage,
 } from "@components/shared/CommandPalette";
+import type { Survey } from "@modules/survey/types";
 
 interface Props {
   title?: string;
@@ -115,11 +116,13 @@ const commandPaletteProjects: CommandPaletteProject[] = sortedEntries.map(
   }),
 );
 
-const [peopleEntries, eventEntries, integrationEntries] = await Promise.all([
-  getCollection("people"),
-  getCollection("events"),
-  getCollection("integrations"),
-]);
+const [peopleEntries, eventEntries, integrationEntries, surveyEntries] =
+  await Promise.all([
+    getCollection("people"),
+    getCollection("events"),
+    getCollection("integrations"),
+    getCollection("surveys"),
+  ]);
 
 const commandPalettePeople: CommandPalettePerson[] = peopleEntries.map(
   (entry) => ({
@@ -152,12 +155,24 @@ const commandPaletteIntegrations: CommandPaletteIntegration[] =
     category: "Integrations",
   }));
 
+const surveyPages: CommandPalettePage[] = surveyEntries.map((entry) => {
+  const survey = entry.data as Survey;
+  const slug = survey.slug || entry.id;
+  return {
+    id: `survey-${slug}`,
+    title: survey.title,
+    url: `/survey/${slug}`,
+    category: "Pages",
+  };
+});
+
 const commandPalettePages: CommandPalettePage[] = [
   { id: "home", title: "Home", url: "/", category: "Pages" },
   { id: "about", title: "About", url: "/about", category: "Pages" },
   { id: "projects", title: "Projects", url: "/projects", category: "Pages" },
   { id: "people", title: "People", url: "/people", category: "Pages" },
   { id: "events", title: "Events", url: "/events", category: "Pages" },
+  { id: "surveys", title: "Surveys", url: "/survey", category: "Pages" },
   { id: "contact", title: "Contact", url: "/contact", category: "Pages" },
   { id: "support", title: "Support Us", url: "/support", category: "Pages" },
   {
@@ -173,6 +188,7 @@ const commandPalettePages: CommandPalettePage[] = [
     url: "/changelog",
     category: "Pages",
   },
+  ...surveyPages,
 ];
 ---
 

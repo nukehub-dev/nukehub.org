@@ -33,6 +33,8 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
   catch-all that renders non-`customPage` entries from the `projects`
   collection. Filename → URL (e.g. `nuke-lab.astro` → `/nuke-lab`,
   `about.astro` → `/about`).
+- `src/pages/survey/[slug].astro` and `src/pages/survey/index.astro` — survey
+  routes. See `src/modules/survey/AGENTS.md`.
 - `src/pages/og/` — Dynamic OpenGraph PNG endpoints (`.png.ts`). They use
   Satori + ResVG to render OG cards. `@resvg/resvg-js` is `optimizeDeps.exclude`
   and `vite.ssr.external` — do not move it into the browser bundle.
@@ -50,8 +52,11 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
   loader, GitHub stats overlay, analytics, grain overlay, glass context menu.
   `decorations/` and `lazy/` are subgroups.
 - `src/components/ui/` — visual primitives: `Button`, `Card`, `Badge`,
-  `Tooltip`, `Logo`, `Image`, `SearchInput`, `BrandIcon`. `Image.tsx` wraps
-  `<img>` with consistent sizing/loading for React islands.
+  `Tooltip`, `Logo`, `Image`, `SearchInput`, `BrandIcon`, `Input`, `Textarea`,
+  `Select`, `Label`, `Checkbox`, `RadioGroup`, `CharacterCount`. `Image.tsx`
+  wraps `<img>` with consistent sizing/loading for React islands. Form
+  primitives use project tokens and focus rings rather than browser-default
+  styling.
 - `src/components/illustrations/` — decorative illustration components.
 - `src/components/status/` — status badges / state indicators.
 - `src/data/` — typed static data: `nav.tsx`, `footer.ts`, and

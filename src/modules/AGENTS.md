@@ -53,6 +53,8 @@ All files under `src/modules/**` except generated artifacts (`dist/`,
 - `sponsors/` — sponsor row rendering.
 - `acknowledgment/` — acknowledgment list.
 - `manual/` — manual/legal pages emitted from the `manual` collection.
+- `survey/` — YAML-driven survey forms rendered from the `surveys` collection.
+  Submits to `PUBLIC_SURVEY_API_URL` via Turnstile-protected React island.
 - `debug/` — debug-only islands for local development; under
   `src/debug-pages/` until `scripts/debug-pages.js --enable` copies the page
   wrapper into `src/pages/debug/`. Never ship debug code to production.

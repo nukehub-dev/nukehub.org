@@ -215,6 +215,69 @@ const changelog = defineCollection({
   }),
 });
 
+const surveyQuestionSchema = z.object({
+  id: z.string().regex(/^[a-zA-Z0-9_-]+$/),
+  type: z.enum([
+    "text",
+    "textarea",
+    "email",
+    "number",
+    "url",
+    "select",
+    "radio",
+    "checkbox",
+    "rating",
+  ]),
+  label: z.string(),
+  description: z.string().optional(),
+  placeholder: z.string().optional(),
+  required: z.boolean().default(false),
+  options: z
+    .array(
+      z.union([z.string(), z.object({ label: z.string(), value: z.string() })]),
+    )
+    .optional(),
+  min: z.number().optional(),
+  max: z.number().optional(),
+  maxLength: z.number().int().min(1).optional(),
+  maxSelections: z.number().int().min(1).optional(),
+  image: z.string().optional(),
+  video: z.string().optional(),
+});
+
+const surveyPageSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  image: z.string().optional(),
+  questions: z.array(surveyQuestionSchema),
+});
+
+const surveys = defineCollection({
+  loader: glob({
+    pattern: "**/[^_]*.{yml,yaml}",
+    base: "./src/content/surveys",
+  }),
+  schema: z
+    .object({
+      title: z.string(),
+      description: z.string().optional(),
+      slug: z.string().optional(),
+      intro: z.string().optional(),
+      outro: z.string().optional(),
+      successMessage: z.string().optional(),
+      submitLabel: z.string().optional(),
+      pages: z.array(surveyPageSchema).optional(),
+      questions: z.array(surveyQuestionSchema).optional(),
+    })
+    .refine(
+      (data) =>
+        (data.pages?.length ?? 0) > 0 || (data.questions?.length ?? 0) > 0,
+      {
+        message: "Survey must have at least one page or question",
+      },
+    ),
+});
+
 export const collections = {
   manual,
   projects,
@@ -226,4 +289,5 @@ export const collections = {
   integrations,
   roadmap,
   changelog,
+  surveys,
 };

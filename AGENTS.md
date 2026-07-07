@@ -168,7 +168,8 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `scripts/` — Node.js maintenance scripts. See `scripts/AGENTS.md`.
 - `contact-server/` — Go SMTP relay for the contact form. See
   `contact-server/AGENTS.md`.
-- `nginx/` — reverse-proxy vhost for `api.nukehub.org/contact`.
+- `nginx/` — reverse-proxy vhost for `api.nukehub.org/contact` and
+  `api.nukehub.org/survey`.
 - `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
 - `.github/workflows/sync-github-stats.yml` — scheduled GitHub stats refresh.
 
@@ -236,9 +237,12 @@ it is a build artifact and ignored by git.
 browser. They are defined in `.env` (local dev) and Cloudflare Pages env vars
 (production). See `.env.example` for the canonical list:
 
-- `PUBLIC_TURNSTILE_SITE_KEY` — Cloudflare Turnstile site key (contact form).
+- `PUBLIC_TURNSTILE_SITE_KEY` — Cloudflare Turnstile site key (contact form and
+  survey forms).
 - `PUBLIC_CONTACT_API_URL` — Go contact server endpoint
   (`https://api.nukehub.org/contact`).
+- `PUBLIC_SURVEY_API_URL` — Go survey endpoint
+  (`https://api.nukehub.org/survey`).
 - `PUBLIC_CF_ANALYTICS_TOKEN` — Cloudflare Web Analytics token (optional).
 - `PUBLIC_AUTH_URL` / `PUBLIC_AUTH_REALM` / `PUBLIC_AUTH_CLIENT_ID`
   — NukeAuth IdP config for `src/lib/auth/NukeAuthProvider.tsx`.
@@ -254,11 +258,11 @@ Secrets for the contact server (`SMTP_*`, `TURNSTILE_SECRET_KEY`,
   path aliases.
 - `src/content/AGENTS.md` — Astro content collections and `content.config.ts`
   schemas (projects, people, sponsors, events, integrations, roadmap,
-  changelog, manual, testimonials, incidents, people/categories).
+  changelog, manual, testimonials, incidents, people/categories, surveys).
 - `src/modules/AGENTS.md` — React islands grouped by feature area
   (`home/`, `projects/<name>/`, `about/`, `roadmap/`, `changelog/`, `people/`,
   `events/`, `support/`, `contact/`, `sponsors/`, `acknowledgment/`,
-  `manual/`).
+  `manual/`, `survey/`).
 - `src/lib/AGENTS.md` — TypeScript utilities, hooks, and the Keycloak auth
   provider.
 - `public/AGENTS.md` — Static assets copied verbatim into `dist/` (the

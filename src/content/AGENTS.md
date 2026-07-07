@@ -4,8 +4,8 @@
 
 Astro content collections: the mdx/yaml source of truth for projects,
 roadmap, changelog, manual pages, people, sponsors, events, integrations,
-testimonials, people-categories, and incidents. Each collection has a Zod
-schema enforced by `src/content.config.ts`.
+testimonials, people-categories, incidents, and surveys. Each collection has
+a Zod schema enforced by `src/content.config.ts`.
 
 ## Ownership
 
@@ -55,6 +55,10 @@ Fusion`.
 - `testimonials` (yaml) — quotes for the home testimonials carousel.
 - `incidents` (yaml) — currently empty placeholder; reserved for status-page
   style records.
+- `surveys` (yaml) — YAML-driven survey definitions. Each file describes a
+  survey page rendered at `/survey/<slug>` with a dynamic form. Question types:
+  `text`, `textarea`, `email`, `number`, `url`, `select`, `radio`, `checkbox`,
+  `rating`. Submissions are sent to the Go contact server at `/survey`.
 
 ### Adding a new collection
 

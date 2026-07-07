@@ -1,0 +1,77 @@
+title: NukeHub Feature Feedback
+description: Help us prioritize what to build next for the nuclear open-source community.
+slug: feature-feedback
+intro: |
+  We are shaping the next phase of NukeHub and want your input.
+  This short survey takes about 2 minutes.
+successMessage: Thank you for your feedback — it helps us build better tools for the community.
+submitLabel: Submit feedback
+questions:
+  - id: role
+    type: select
+    label: What best describes you?
+    required: true
+    options:
+      - Student
+      - Researcher
+      - Engineer
+      - Educator
+      - Hobbyist
+      - Other
+
+  - id: primary_interest
+    type: radio
+    label: Which area of NukeHub interests you most?
+    required: true
+    options:
+      - label: Reactor simulation (NukeLab)
+        value: nukelab
+      - label: IDE & tooling (NukeIDE)
+        value: nukeide
+      - label: Data & analytics (Nuke Analytics)
+        value: nuke-analytics
+      - label: Resource management (NRMS)
+        value: nrms
+
+  - id: missing_feature
+    type: textarea
+    label: What feature or tool feels missing right now?
+    description: Be as specific as you like — examples are helpful.
+    required: true
+    maxLength: 1000
+    placeholder: I wish NukeHub had...
+
+  - id: liked_most
+    type: textarea
+    label: What do you like most about NukeHub so far?
+    required: false
+    maxLength: 1000
+    placeholder: The part I enjoy most is...
+
+  - id: satisfaction
+    type: rating
+    label: How would you rate your overall experience with NukeHub?
+    required: true
+    min: 1
+    max: 5
+
+  - id: improvements
+    type: checkbox
+    label: Where should we focus our efforts? (Pick up to 3)
+    required: false
+    maxSelections: 3
+    options:
+      - Better documentation
+      - More example projects
+      - Faster performance
+      - More integrations
+      - Community forums
+      - Video tutorials
+      - API access
+
+  - id: email
+    type: email
+    label: Email (optional)
+    description: Leave your email if you are open to a short follow-up conversation.
+    required: false
+    placeholder: you@example.com

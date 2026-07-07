@@ -166,6 +166,12 @@
     transition: background-color 5000s ease-in-out 0s;
   }
 
+  /* Custom textarea resize grip (WebKit/Blink) */
+  textarea::-webkit-resizer {
+    background: linear-gradient(135deg, transparent 65%, var(--primary) 65%);
+    border-bottom-right-radius: var(--radius-md);
+  }
+
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *,
