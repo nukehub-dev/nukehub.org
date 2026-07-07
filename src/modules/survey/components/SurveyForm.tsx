@@ -5,6 +5,8 @@ import {
   Send,
   ChevronLeft,
   ChevronRight,
+  Star,
+  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
@@ -67,6 +69,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
   const [status, setStatus] = React.useState<"idle" | "submitting" | "success">(
     "idle",
   );
+  const [lastSavedAt, setLastSavedAt] = React.useState<Date | null>(null);
 
   const storageKey = React.useMemo(
     () => `nukehub-survey-${survey.slug || survey.title}`,
@@ -107,6 +110,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
           savedAt: new Date().toISOString(),
         }),
       );
+      setLastSavedAt(new Date());
     } catch {
       // Ignore storage errors (e.g. quota exceeded, private mode)
     }
@@ -326,7 +330,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
       </AnimatePresence>
 
       {isMultiPage && (
-        <div className="space-y-3">
+        <div className="sticky top-0 z-20 -mx-4 space-y-2 bg-background/80 px-4 py-3 backdrop-blur-sm sm:static sm:mx-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">
               Page {currentPage + 1} of {pages.length}
@@ -365,6 +369,13 @@ export function SurveyForm({ survey }: SurveyFormProps) {
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {lastSavedAt && (
+        <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
+          <Check className="h-3 w-3 text-primary" />
+          Draft saved
         </div>
       )}
 
@@ -413,7 +424,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
                 <Card
                   variant="bubble"
                   className={cn(
-                    "p-5 transition-colors",
+                    "p-5 transition-colors focus-within:ring-2 focus-within:ring-primary/20",
                     errors[question.id] && "ring-2 ring-destructive/30",
                   )}
                 >
@@ -739,20 +750,32 @@ function RatingField({
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-2">
-        {items.map((num) => (
-          <Button
-            key={num}
-            type="button"
-            variant={selected === num ? "default" : "outline"}
-            size="icon"
-            onClick={() => onChange(String(num))}
-            aria-pressed={selected === num}
-            className="h-10 w-10 text-sm font-semibold"
-          >
-            {num}
-          </Button>
-        ))}
+      <div className="flex flex-wrap items-center gap-1">
+        {items.map((num) => {
+          const filled = selected !== undefined && selected >= num;
+          return (
+            <button
+              key={num}
+              type="button"
+              onClick={() => onChange(String(num))}
+              aria-pressed={filled}
+              className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-lg transition-all",
+                filled
+                  ? "text-primary hover:text-primary/80"
+                  : "text-muted-foreground/40 hover:text-primary/60",
+              )}
+            >
+              <Star
+                className={cn(
+                  "h-6 w-6 transition-all",
+                  filled ? "fill-current" : "",
+                )}
+              />
+              <span className="sr-only">{num}</span>
+            </button>
+          );
+        })}
       </div>
       {(minLabel || maxLabel) && (
         <div className="flex justify-between text-xs text-muted-foreground">
