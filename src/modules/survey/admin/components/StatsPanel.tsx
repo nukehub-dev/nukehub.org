@@ -9,7 +9,6 @@ import {
   YAxis,
 } from "recharts";
 import { Card } from "@components/ui/Card";
-import { Button } from "@components/ui/Button";
 import type { SurveyStats } from "../types";
 import type { QuestionMeta } from "../lib/survey-metadata";
 
@@ -30,11 +29,7 @@ const FREE_TEXT_TYPES = new Set<QuestionMeta["type"]>([
   "email",
   "url",
 ]);
-const DISTRIBUTION_PREVIEW_LIMIT = 10;
-
 export function StatsPanel({ stats, questionMap }: StatsPanelProps) {
-  const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
-
   const dailyData: DailyPoint[] = React.useMemo(() => {
     return Object.entries(stats.daily)
       .sort(([a], [b]) => a.localeCompare(b))
@@ -166,64 +161,42 @@ export function StatsPanel({ stats, questionMap }: StatsPanelProps) {
 
       {hasDistributions && (
         <div className="grid gap-4 md:grid-cols-2">
-          {distributions.map(({ questionId, label, items }) => {
-            const isExpanded = expanded[questionId];
-            const visibleItems = isExpanded
-              ? items
-              : items.slice(0, DISTRIBUTION_PREVIEW_LIMIT);
-            const hasMore = items.length > DISTRIBUTION_PREVIEW_LIMIT;
-
-            return (
-              <Card
-                key={questionId}
-                variant="bubble"
-                className="flex flex-col p-5"
+          {distributions.map(({ questionId, label, items }) => (
+            <Card
+              key={questionId}
+              variant="bubble"
+              className="flex flex-col p-5"
+            >
+              <h3 className="mb-4 text-sm font-semibold text-foreground">
+                {label}
+              </h3>
+              <div
+                className="max-h-[24rem] space-y-3 overflow-y-auto pr-3"
+                style={{ scrollbarGutter: "stable" }}
               >
-                <h3 className="mb-4 text-sm font-semibold text-foreground">
-                  {label}
-                </h3>
-                <div className="max-h-[24rem] space-y-3 overflow-y-auto pr-1">
-                  {visibleItems.map((item) => (
-                    <div key={item.value}>
-                      <div className="flex items-start justify-between gap-3 text-xs">
-                        <span className="line-clamp-2 flex-1 text-foreground">
-                          {formatOptionLabel(item.value)}
-                        </span>
-                        <span className="shrink-0 text-muted-foreground">
-                          {item.count} ({item.percentage}%)
-                        </span>
-                      </div>
-                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-primary transition-all duration-500"
-                          style={{
-                            width: `${Math.min(100, item.percentage)}%`,
-                          }}
-                        />
-                      </div>
+                {items.map((item) => (
+                  <div key={item.value}>
+                    <div className="flex items-start justify-between gap-3 text-xs">
+                      <span className="line-clamp-2 flex-1 text-foreground">
+                        {formatOptionLabel(item.value)}
+                      </span>
+                      <span className="shrink-0 text-muted-foreground">
+                        {item.count} ({item.percentage}%)
+                      </span>
                     </div>
-                  ))}
-                </div>
-                {hasMore && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-4 self-start"
-                    onClick={() =>
-                      setExpanded((prev) => ({
-                        ...prev,
-                        [questionId]: !prev[questionId],
-                      }))
-                    }
-                  >
-                    {isExpanded
-                      ? "Show less"
-                      : `Show ${items.length - DISTRIBUTION_PREVIEW_LIMIT} more`}
-                  </Button>
-                )}
-              </Card>
-            );
-          })}
+                    <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-500"
+                        style={{
+                          width: `${Math.min(100, item.percentage)}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          ))}
         </div>
       )}
 

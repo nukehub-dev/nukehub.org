@@ -95,8 +95,9 @@ All files under `src/modules/survey/**` and the routes
   `recharts` and shows per-question distributions as labeled cards.
 - Free-text questions (`text`, `textarea`, `email`, `url`) are excluded from
   distributions because their values are mostly unique.
-- Distribution cards show the top 10 values by default with a toggle to reveal
-  the rest, and the API caps each distribution to the top 50 values.
+- Distribution cards list every value returned by the API (capped to the top
+  50 per question server-side) inside a scrollable container with a reserved
+  scrollbar gutter so the bars never overlap the scrollbar.
 - Generate realistic demo submissions for local testing with
   `npm run seed:surveys` (see `scripts/AGENTS.md`).
 
