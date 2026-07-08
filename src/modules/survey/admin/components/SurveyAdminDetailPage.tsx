@@ -1,4 +1,5 @@
 import { NukeAuthProvider } from "@lib/auth/NukeAuthProvider";
+import type { Survey } from "../../types";
 import { SurveyDetailDashboard } from "./SurveyDetailDashboard";
 
 interface SurveyAdminDetailPageProps {
@@ -7,6 +8,7 @@ interface SurveyAdminDetailPageProps {
   clientId: string;
   slug: string;
   title: string;
+  survey?: Survey;
 }
 
 export function SurveyAdminDetailPage({
@@ -15,10 +17,11 @@ export function SurveyAdminDetailPage({
   clientId,
   slug,
   title,
+  survey,
 }: SurveyAdminDetailPageProps) {
   return (
     <NukeAuthProvider url={url} realm={realm} clientId={clientId}>
-      <SurveyDetailDashboard slug={slug} title={title} />
+      <SurveyDetailDashboard slug={slug} title={title} survey={survey} />
     </NukeAuthProvider>
   );
 }

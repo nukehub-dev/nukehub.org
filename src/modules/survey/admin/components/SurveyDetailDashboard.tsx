@@ -3,28 +3,34 @@ import { ArrowLeft, Download } from "lucide-react";
 import { useMaybeAuth } from "@lib/auth/NukeAuthProvider";
 import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
+import type { Survey } from "../../types";
 import { useSubmissions, useStats } from "../hooks/useSurveyAdmin";
 import { getExportUrl } from "../lib/admin-api";
+import { buildQuestionMap } from "../lib/survey-metadata";
 import { SubmissionsTable } from "./SubmissionsTable";
 import { StatsPanel } from "./StatsPanel";
 
 interface SurveyDetailDashboardProps {
   slug: string;
   title: string;
+  survey?: Survey;
 }
 
 export function SurveyDetailDashboard({
   slug,
   title,
+  survey,
 }: SurveyDetailDashboardProps) {
   const auth = useMaybeAuth();
   const token = auth?.token ?? null;
   const [page, setPage] = React.useState(1);
+  const [limit, setLimit] = React.useState(50);
+  const questionMap = React.useMemo(() => buildQuestionMap(survey), [survey]);
   const {
     data: submissionsData,
     error: submissionsError,
     isLoading: submissionsLoading,
-  } = useSubmissions(token, slug, page, 50);
+  } = useSubmissions(token, slug, page, limit);
   const {
     data: stats,
     error: statsError,
@@ -60,7 +66,7 @@ export function SurveyDetailDashboard({
     );
   }
 
-  if (submissionsLoading || statsLoading) {
+  if (statsLoading) {
     return <DetailSkeleton />;
   }
 
@@ -88,21 +94,25 @@ export function SurveyDetailDashboard({
         </a>
       </div>
 
-      {stats && <StatsPanel stats={stats} />}
+      {stats && <StatsPanel stats={stats} questionMap={questionMap} />}
 
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">
           Responses
         </h2>
-        {submissionsData && (
-          <SubmissionsTable
-            submissions={submissionsData.submissions}
-            page={submissionsData.page}
-            limit={submissionsData.limit}
-            total={submissionsData.total}
-            onPageChange={setPage}
-          />
-        )}
+        <SubmissionsTable
+          submissions={submissionsData?.submissions ?? []}
+          page={submissionsData?.page ?? 1}
+          limit={submissionsData?.limit ?? limit}
+          total={submissionsData?.total ?? 0}
+          questionMap={questionMap}
+          isLoading={submissionsLoading}
+          onPageChange={setPage}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </div>
     </div>
   );

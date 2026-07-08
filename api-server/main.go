@@ -39,8 +39,9 @@ var rateLimitStore = make(map[string]*rateLimitEntry)
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 const (
-	rateLimitWindow = time.Hour
-	rateLimitMax    = 5
+	rateLimitWindow        = time.Hour
+	rateLimitMax           = 5
+	statsDistributionLimit = 50
 )
 
 // Database and auth globals
@@ -144,6 +145,7 @@ CREATE TABLE IF NOT EXISTS responses (
 
 CREATE INDEX IF NOT EXISTS idx_submissions_slug ON submissions(survey_slug);
 CREATE INDEX IF NOT EXISTS idx_submissions_submitted_at ON submissions(submitted_at);
+CREATE INDEX IF NOT EXISTS idx_responses_submission_id ON responses(submission_id);
 `
 	if _, err := db.Exec(schema); err != nil {
 		return fmt.Errorf("create schema: %w", err)
@@ -553,10 +555,10 @@ func handleAdminSurveys(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type surveySummary struct {
-		Slug      string `json:"slug"`
-		Title     string `json:"title"`
-		Count     int    `json:"count"`
-		LatestAt  string `json:"latestAt"`
+		Slug     string `json:"slug"`
+		Title    string `json:"title"`
+		Count    int    `json:"count"`
+		LatestAt string `json:"latestAt"`
 	}
 	var surveys []surveySummary
 	for rows.Next() {
@@ -621,19 +623,6 @@ func handleAdminSubmissions(w http.ResponseWriter, r *http.Request, slug string)
 		return
 	}
 
-	rows, err := db.Query(`
-		SELECT s.id, s.submitted_at, s.email, r.question_id, r.value
-		FROM submissions s
-		LEFT JOIN responses r ON r.submission_id = s.id
-		WHERE s.survey_slug = ?
-		ORDER BY s.submitted_at DESC, r.id ASC
-	`, slug)
-	if err != nil {
-		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
-		return
-	}
-	defer rows.Close()
-
 	type submissionWithResponses struct {
 		ID          int64             `json:"id"`
 		SubmittedAt string            `json:"submittedAt"`
@@ -641,42 +630,67 @@ func handleAdminSubmissions(w http.ResponseWriter, r *http.Request, slug string)
 		Responses   map[string]string `json:"responses"`
 	}
 
-	all := make(map[int64]*submissionWithResponses)
-	var order []int64
-	for rows.Next() {
-		var id int64
-		var submittedAt, email, questionID string
-		var value sql.NullString
-		if err := rows.Scan(&id, &submittedAt, &email, &questionID, &value); err != nil {
+	// Fetch only the submissions for the requested page.
+	submissionRows, err := db.Query(`
+		SELECT id, submitted_at, email
+		FROM submissions
+		WHERE survey_slug = ?
+		ORDER BY submitted_at DESC
+		LIMIT ? OFFSET ?
+	`, slug, limit, offset)
+	if err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+	defer submissionRows.Close()
+
+	paged := make([]*submissionWithResponses, 0, limit)
+	var ids []int64
+	for submissionRows.Next() {
+		var s submissionWithResponses
+		if err := submissionRows.Scan(&s.ID, &s.SubmittedAt, &s.Email); err != nil {
 			jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 			return
 		}
-		if _, ok := all[id]; !ok {
-			all[id] = &submissionWithResponses{
-				ID:          id,
-				SubmittedAt: submittedAt,
-				Email:       email,
-				Responses:   make(map[string]string),
-			}
-			order = append(order, id)
-		}
-		if value.Valid {
-			all[id].Responses[questionID] = value.String
-		}
+		s.Responses = make(map[string]string)
+		paged = append(paged, &s)
+		ids = append(ids, s.ID)
 	}
 
-	// Apply pagination in-memory after preserving response grouping
-	start := offset
-	end := offset + limit
-	if start > len(order) {
-		start = len(order)
-	}
-	if end > len(order) {
-		end = len(order)
-	}
-	paged := make([]*submissionWithResponses, 0, end-start)
-	for _, id := range order[start:end] {
-		paged = append(paged, all[id])
+	if len(ids) > 0 {
+		// Build a parameterized IN clause for the paged submission IDs.
+		placeholders := make([]string, len(ids))
+		args := make([]interface{}, 0, len(ids))
+		for i, id := range ids {
+			placeholders[i] = "?"
+			args = append(args, id)
+		}
+
+		responseRows, err := db.Query(fmt.Sprintf(
+			"SELECT submission_id, question_id, value FROM responses WHERE submission_id IN (%s)",
+			strings.Join(placeholders, ","),
+		), args...)
+		if err != nil {
+			jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+			return
+		}
+		defer responseRows.Close()
+
+		byID := make(map[int64]*submissionWithResponses, len(paged))
+		for _, s := range paged {
+			byID[s.ID] = s
+		}
+		for responseRows.Next() {
+			var submissionID int64
+			var questionID, value string
+			if err := responseRows.Scan(&submissionID, &questionID, &value); err != nil {
+				jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+				return
+			}
+			if s, ok := byID[submissionID]; ok {
+				s.Responses[questionID] = value
+			}
+		}
 	}
 
 	jsonResponse(w, http.StatusOK, map[string]interface{}{
@@ -720,15 +734,23 @@ func handleAdminStats(w http.ResponseWriter, r *http.Request, slug string) {
 		daily[day] = count
 	}
 
-	// Per-question distributions
+	// Per-question distributions (top N per question to keep responses small)
 	rows2, err := db.Query(`
-		SELECT r.question_id, r.value, COUNT(*) as count
-		FROM responses r
-		JOIN submissions s ON s.id = r.submission_id
-		WHERE s.survey_slug = ?
-		GROUP BY r.question_id, r.value
-		ORDER BY r.question_id, count DESC
-	`, slug)
+		SELECT question_id, value, count
+		FROM (
+			SELECT
+				r.question_id AS question_id,
+				r.value AS value,
+				COUNT(*) AS count,
+				ROW_NUMBER() OVER (PARTITION BY r.question_id ORDER BY COUNT(*) DESC) AS rank
+			FROM responses r
+			JOIN submissions s ON s.id = r.submission_id
+			WHERE s.survey_slug = ?
+			GROUP BY r.question_id, r.value
+		)
+		WHERE rank <= ?
+		ORDER BY question_id, count DESC
+	`, slug, statsDistributionLimit)
 	if err != nil {
 		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 		return

@@ -41,6 +41,15 @@ All files under `scripts/**`.
   injecting a per-build cache name (`nukehub-<version>-<timestamp>`). Wired as
   `npm run prebuild` so every production build gets a fresh service-worker
   cache key. The generated `public/sw.js` is gitignored.
+- `seed-surveys.mjs` — Seeds the `api-server` SQLite database with realistic
+  demo survey submissions for local UI/UX testing. Reads survey YAMLs from
+  `src/content/surveys/`, generates responses matching each question type, and
+  inserts them into `api-server/data/nukehub.db`.
+  - `npm run seed:surveys` seeds 200 submissions per survey.
+  - `npm run seed:surveys -- --count 1000 --survey nukehub-experience` seeds
+    1000 submissions for a single survey.
+  - `npm run seed:surveys -- --clean` removes existing submissions for the
+    targeted surveys before seeding.
 
 ### Adding a script
 
@@ -71,6 +80,7 @@ node scripts/debug-pages.js --enable && node scripts/debug-pages.js --disable
 GH_STATS_TOKEN=... node scripts/sync-github-stats.mjs
 node scripts/optimize-images.js
 node scripts/inject-sw-cache.js
+npm run seed:surveys
 ```
 
 ## Child NAD Index

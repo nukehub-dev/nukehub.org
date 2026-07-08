@@ -83,6 +83,22 @@ All files under `src/modules/survey/**` and the routes
   bearer token to `{PUBLIC_API_URL}/admin/surveys/*` endpoints.
 - Lists every survey with response counts, shows paginated submissions,
   displays per-question distributions, and offers CSV export.
+- The detail page maps raw question IDs back to the human-readable labels
+  defined in the survey YAML.
+- The submissions table is built with `@tanstack/react-table` and supports
+  searching, sorting, toggling column visibility, and choosing the page size.
+  It also has a compact mobile card view inspired by the NukeLab admin data
+  table; each card and table row opens a modal with the full response rendered
+  as question/answer pairs (rating values shown as stars, checkbox answers as
+  badges).
+- The stats panel renders an interactive daily-response bar chart with
+  `recharts` and shows per-question distributions as labeled cards.
+- Free-text questions (`text`, `textarea`, `email`, `url`) are excluded from
+  distributions because their values are mostly unique.
+- Distribution cards show the top 10 values by default with a toggle to reveal
+  the rest, and the API caps each distribution to the top 50 values.
+- Generate realistic demo submissions for local testing with
+  `npm run seed:surveys` (see `scripts/AGENTS.md`).
 
 ## Verification
 

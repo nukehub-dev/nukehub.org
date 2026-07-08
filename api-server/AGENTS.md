@@ -84,7 +84,8 @@ variables" lists that file's contents).
 - `GET /admin/surveys` — list surveys with submission counts (requires admin
   auth).
 - `GET /admin/surveys/{slug}` — paginated submissions for a survey (requires
-  admin auth).
+  admin auth). Pagination is applied in SQL, so it stays fast even with tens of
+  thousands of responses.
 - `GET /admin/surveys/{slug}/stats` — aggregate statistics (requires admin
   auth).
 - `GET /admin/surveys/{slug}/export.csv` — CSV export (requires admin auth).

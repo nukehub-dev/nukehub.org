@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "astro preview --host",
+    "seed:surveys": "node scripts/seed-surveys.mjs",
     "astro": "astro"
   },
   "repository": {
@@ -45,6 +46,7 @@
     "@react-three/postprocessing": "^3.0.4",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.0",
+    "@tanstack/react-table": "^8.21.3",
     "astro": "^6.4.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -58,6 +60,7 @@
     "postprocessing": "^6.39.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "recharts": "^3.9.2",
     "satori": "^0.26.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.0",
@@ -69,6 +72,8 @@
     "@tailwindcss/typography": "^0.5.20",
     "@types/js-yaml": "^4.0.9",
     "@types/react": "^19.2.17",
+    "better-sqlite3": "^12.11.1",
+    "js-yaml": "^5.2.1",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.184.1",
     "@types/turndown": "^5.0.6",
