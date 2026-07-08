@@ -23,6 +23,8 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: AuthUser | null;
+  token: string | null;
+  hasRole: (role: string) => boolean;
   login: () => void;
   logout: () => void;
   accountUrl: string;
@@ -486,12 +488,25 @@ export function NukeAuthProvider({
     }
   }, [keycloak, clearAuthState, configValid]);
 
+  const hasRole = useCallback(
+    (role: string) => {
+      if (!keycloak.tokenParsed) return false;
+      const roles = extractRoles(
+        keycloak.tokenParsed as Record<string, unknown>,
+      );
+      return roles.includes(role);
+    },
+    [keycloak],
+  );
+
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
         isLoading,
         user,
+        token: keycloak.token || null,
+        hasRole,
         login,
         logout,
         accountUrl,
@@ -518,6 +533,34 @@ function mapUser(keycloak: Keycloak): AuthUser | null {
     lastName,
     fullName: [firstName, lastName].filter(Boolean).join(" ") || username,
   };
+}
+
+function extractRoles(tokenParsed: Record<string, unknown>): string[] {
+  const roles: string[] = [];
+
+  const realmAccess = tokenParsed.realm_access as
+    | Record<string, unknown>
+    | undefined;
+  if (realmAccess && Array.isArray(realmAccess.roles)) {
+    for (const role of realmAccess.roles) {
+      if (typeof role === "string") roles.push(role);
+    }
+  }
+
+  const resourceAccess = tokenParsed.resource_access as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  if (resourceAccess) {
+    for (const client of Object.values(resourceAccess)) {
+      if (client && Array.isArray(client.roles)) {
+        for (const role of client.roles) {
+          if (typeof role === "string") roles.push(role);
+        }
+      }
+    }
+  }
+
+  return roles;
 }
 
 export function useAuth(): AuthContextValue {

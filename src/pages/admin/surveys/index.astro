@@ -1,0 +1,31 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { SurveyAdminPage } from "@modules/survey/admin/components/SurveyAdminPage";
+
+const title = "Survey Admin";
+const description = "Browse and manage NukeHub survey responses.";
+const permalink = "/admin/surveys";
+---
+
+<BaseLayout title={title} description={description} permalink={permalink}>
+  <section class="relative min-h-[calc(100vh-4rem)] px-4 py-16">
+    <div class="relative z-10 mx-auto max-w-6xl">
+      <div class="mb-8">
+        <h1
+          class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+        >
+          Survey Admin
+        </h1>
+        <p class="mt-2 text-muted-foreground">
+          View response counts, browse submissions, and export survey data.
+        </p>
+      </div>
+      <SurveyAdminPage
+        url={import.meta.env.PUBLIC_AUTH_URL}
+        realm={import.meta.env.PUBLIC_AUTH_REALM}
+        clientId={import.meta.env.PUBLIC_AUTH_CLIENT_ID}
+        client:only="react"
+      />
+    </div>
+  </section>
+</BaseLayout>

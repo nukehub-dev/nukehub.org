@@ -303,7 +303,8 @@ export function ContactForm({
     setErrors({});
 
     try {
-      const apiUrl = import.meta.env.PUBLIC_CONTACT_API_URL || "/api/contact";
+      const apiBase = import.meta.env.PUBLIC_API_URL || "/api";
+      const apiUrl = `${apiBase.replace(/\/$/, "")}/contact`;
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

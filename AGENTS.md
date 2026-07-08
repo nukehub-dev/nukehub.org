@@ -239,10 +239,10 @@ browser. They are defined in `.env` (local dev) and Cloudflare Pages env vars
 
 - `PUBLIC_TURNSTILE_SITE_KEY` — Cloudflare Turnstile site key (contact form and
   survey forms).
-- `PUBLIC_CONTACT_API_URL` — Go contact server endpoint
-  (`https://api.nukehub.org/contact`).
-- `PUBLIC_SURVEY_API_URL` — Go survey endpoint
-  (`https://api.nukehub.org/survey`).
+- `PUBLIC_API_URL` — NukeHub API origin (`https://api.nukehub.org`). The
+  contact form submits to `{PUBLIC_API_URL}/contact`, survey forms to
+  `{PUBLIC_API_URL}/survey`, and the admin dashboard reads from
+  `{PUBLIC_API_URL}/admin`.
 - `PUBLIC_CF_ANALYTICS_TOKEN` — Cloudflare Web Analytics token (optional).
 - `PUBLIC_AUTH_URL` / `PUBLIC_AUTH_REALM` / `PUBLIC_AUTH_CLIENT_ID`
   — NukeAuth IdP config for `src/lib/auth/NukeAuthProvider.tsx`.

@@ -7,6 +7,7 @@ services:
       - "127.0.0.1:${PORT:-3000}:${PORT:-3000}"
     environment:
       - PORT=${PORT:-3000}
+      - DATABASE_PATH=${DATABASE_PATH:-/app/data/nukehub.db}
       - TURNSTILE_SECRET_KEY=${TURNSTILE_SECRET_KEY}
       - SMTP_HOST=${SMTP_HOST:-mail.nukehub.org}
       - SMTP_PORT=${SMTP_PORT:-587}
@@ -15,6 +16,12 @@ services:
       - SMTP_SECURE=${SMTP_SECURE:-false}
       - CONTACT_TO_EMAIL=${CONTACT_TO_EMAIL:-contact@nukehub.org}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://nukehub.org}
+      - ADMIN_EMAILS=${ADMIN_EMAILS}
+      - AUTH_URL=${AUTH_URL}
+      - AUTH_REALM=${AUTH_REALM}
+      - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
+    volumes:
+      - nukehub-api-data:/app/data
     healthcheck:
       test:
         [
@@ -29,3 +36,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+volumes:
+  nukehub-api-data:

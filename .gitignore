@@ -62,6 +62,9 @@ public/sw.js
 api-server/api-server
 *.exe
 
+# SQLite data directory (created at runtime)
+api-server/data/
+
 # Misc
 *.tgz
 *.tar.gz

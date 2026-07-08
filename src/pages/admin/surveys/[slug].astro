@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { SurveyAdminDetailPage } from "@modules/survey/admin/components/SurveyAdminDetailPage";
+import type { Survey } from "@modules/survey/types";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("surveys");
+  return entries.map((entry) => ({
+    params: { slug: entry.data.slug || entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const survey = entry.data as Survey;
+const slug = survey.slug || entry.id;
+const title = survey.title;
+const description = `Admin dashboard for ${title} survey responses.`;
+const permalink = `/admin/surveys/${slug}`;
+---
+
+<BaseLayout
+  title={`${title} · Survey Admin`}
+  description={description}
+  permalink={permalink}
+>
+  <section class="relative min-h-[calc(100vh-4rem)] px-4 py-16">
+    <div class="relative z-10 mx-auto max-w-6xl">
+      <SurveyAdminDetailPage
+        url={import.meta.env.PUBLIC_AUTH_URL}
+        realm={import.meta.env.PUBLIC_AUTH_REALM}
+        clientId={import.meta.env.PUBLIC_AUTH_CLIENT_ID}
+        slug={slug}
+        title={title}
+        client:only="react"
+      />
+    </div>
+  </section>
+</BaseLayout>

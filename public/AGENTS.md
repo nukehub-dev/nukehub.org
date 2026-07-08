@@ -52,7 +52,9 @@ they are byte-for-byte copied into `dist/`.
   the matching `*-src` directive here or it will be silently blocked.
 - `silent-check-sso.html` — raw Keycloak iframe target. **Exempt from the
   markdown-negotiation integration** (added to `EXACT_SKIP` there). Do not
-  wrap in BaseLayout.
+  wrap in BaseLayout. `_headers` sets `X-Frame-Options: SAMEORIGIN` for this
+  file so Keycloak can load it in the silent SSO iframe; the global `DENY`
+  would break authentication.
 - `favicon.svg` — monochrome SVG favicon used as the no-JS fallback. The
   active tab icon is generated at runtime from CSS `--primary` by `src/lib/favicon.ts`.
 - `manifest.json` — PWA manifest (paired with `apple-touch-icon.png`,

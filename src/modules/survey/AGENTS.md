@@ -4,12 +4,15 @@
 
 Reusable, content-managed survey forms rendered from `src/content/surveys/*.yml`.
 Each survey becomes a standalone page at `/survey/<slug>` and submits responses
-back to the Go contact server at `/survey`.
+back to the NukeHub API server at `/survey`. Responses are persisted to SQLite
+and an admin dashboard is available at `/admin/surveys`.
 
 ## Ownership
 
 All files under `src/modules/survey/**` and the routes
-`src/pages/survey/[slug].astro` and `src/pages/survey/index.astro`.
+`src/pages/survey/[slug].astro`, `src/pages/survey/index.astro`,
+`src/pages/admin/surveys/index.astro`, and
+`src/pages/admin/surveys/[slug].astro`.
 
 ## Local Contracts
 
@@ -17,12 +20,15 @@ All files under `src/modules/survey/**` and the routes
   `src/content/surveys/*.yml`. See `src/content/AGENTS.md` for the schema.
 - `src/modules/survey/types.ts` mirrors the Zod schema for TypeScript consumers.
 - `SurveyForm.tsx` is a React island that renders the form, validates inputs,
-  handles Turnstile, and POSTs JSON to `PUBLIC_SURVEY_API_URL`.
+  handles Turnstile, and POSTs JSON to `{PUBLIC_API_URL}/survey`.
 - Surveys support paging via a `pages` array. Each page has its own `title`,
   optional `description`, optional `image`, and `questions`. Single-page surveys
   can still use a flat `questions` list for backward compatibility.
 - `src/pages/survey/index.astro` lists every survey as a card grid and is linked
   from the header Community dropdown and the Community footer column.
+- `src/modules/survey/admin/` holds the admin dashboard islands and API client
+  used by `src/pages/admin/surveys/`. Admin pages require authentication via
+  `NukeAuthProvider` and are authorized server-side by email allow-list.
 - `SurveyFloatingDots` provides the animated background decoration shared by the
   list and detail pages.
 
@@ -62,13 +68,21 @@ All files under `src/modules/survey/**` and the routes
 ### Submission flow
 
 - The form POSTs `{ surveySlug, surveyTitle, responses, turnstileToken }` to
-  `PUBLIC_SURVEY_API_URL`.
+  `{PUBLIC_API_URL}/survey`.
 - Draft answers and the current page are saved to `localStorage` while the user
   fills the form, and cleared after a successful submission.
-- The Go server verifies Turnstile, enforces a per-value length limit, and
-  emails the responses to `SURVEY_TO_EMAIL` (falling back to `CONTACT_TO_EMAIL`).
-  If the responses include a valid `email` field, it is used as the email's
-  `Reply-To` address.
+- The Go server verifies Turnstile, enforces a per-value length limit, persists
+  the submission and responses to SQLite, and emails the responses to
+  `SURVEY_TO_EMAIL` (falling back to `CONTACT_TO_EMAIL`). If the responses
+  include a valid `email` field, it is used as the email's `Reply-To` address.
+
+### Admin dashboard
+
+- Available at `/admin/surveys` and `/admin/surveys/<slug>`.
+- Uses `NukeAuthProvider` to obtain a NukeAuth access token and sends it as a
+  bearer token to `{PUBLIC_API_URL}/admin/surveys/*` endpoints.
+- Lists every survey with response counts, shows paginated submissions,
+  displays per-question distributions, and offers CSV export.
 
 ## Verification
 

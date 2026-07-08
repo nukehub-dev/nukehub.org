@@ -1,3 +1,6 @@
+/silent-check-sso.html
+  X-Frame-Options: SAMEORIGIN
+
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff

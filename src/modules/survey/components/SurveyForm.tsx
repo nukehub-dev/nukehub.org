@@ -247,7 +247,8 @@ export function SurveyForm({ survey }: SurveyFormProps) {
     setErrors({});
 
     try {
-      const apiUrl = import.meta.env.PUBLIC_SURVEY_API_URL || "/api/survey";
+      const apiBase = import.meta.env.PUBLIC_API_URL || "/api";
+      const apiUrl = `${apiBase.replace(/\/$/, "")}/survey`;
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

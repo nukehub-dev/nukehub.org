@@ -38,7 +38,9 @@ All files under `src/lib/**`.
   islands must respect it.
 - `useFocusTrap.ts` — focus trap for modals/menus (accessibility).
 - `useWebGL.ts` — WebGL/Three.js lifecycle helper used by home hero.
-- `auth/NukeAuthProvider.tsx` — the single auth provider.
+- `auth/NukeAuthProvider.tsx` — the single auth provider. Exposes the Keycloak
+  access token via `useAuth().token` and a `hasRole(role)` helper for role
+  checks.
 
 ### NukeAuth provider
 
