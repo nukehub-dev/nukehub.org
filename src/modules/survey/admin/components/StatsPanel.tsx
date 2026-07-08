@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { Card } from "@components/ui/Card";
-import type { SurveyStats } from "../types";
+import type { Distribution, SurveyStats } from "../types";
 import type { QuestionMeta } from "../lib/survey-metadata";
 
 interface StatsPanelProps {
@@ -41,26 +41,41 @@ export function StatsPanel({ stats, questionMap }: StatsPanelProps) {
   }, [stats.daily]);
 
   const distributions = React.useMemo(() => {
-    return Object.entries(stats.distributions)
-      .filter(([questionId]) => {
-        const type = questionMap.get(questionId)?.type;
-        return type && !FREE_TEXT_TYPES.has(type);
-      })
-      .map(([questionId, items]) => ({
+    const result: {
+      questionId: string;
+      label: string;
+      items: (Distribution & { percentage: number })[];
+    }[] = [];
+
+    for (const [questionId, rawItems] of Object.entries(stats.distributions)) {
+      const type = questionMap.get(questionId)?.type;
+      if (!type || FREE_TEXT_TYPES.has(type)) continue;
+
+      const items =
+        type === "checkbox"
+          ? aggregateCheckboxItems(rawItems)
+          : rawItems.slice().sort((a, b) => b.count - a.count);
+
+      const withPercentage = items
+        .filter((item) => item.value.trim() !== "")
+        .map((item) => ({
+          ...item,
+          percentage:
+            stats.total > 0
+              ? Math.round((item.count / stats.total) * 1000) / 10
+              : 0,
+        }));
+
+      if (withPercentage.length === 0) continue;
+
+      result.push({
         questionId,
         label: questionMap.get(questionId)?.label || questionId,
-        items: items
-          .slice()
-          .sort((a, b) => b.count - a.count)
-          .map((item) => ({
-            ...item,
-            percentage:
-              stats.total > 0
-                ? Math.round((item.count / stats.total) * 1000) / 10
-                : 0,
-          })),
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+        items: withPercentage,
+      });
+    }
+
+    return result.sort((a, b) => a.label.localeCompare(b.label));
   }, [stats.distributions, stats.total, questionMap]);
 
   const maxDaily = React.useMemo(() => {
@@ -220,4 +235,21 @@ function formatDayLabel(day: string): string {
 
 function formatOptionLabel(value: string): string {
   return value.replace(/\n/g, ", ");
+}
+
+function aggregateCheckboxItems(items: Distribution[]): Distribution[] {
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    const parts = item.value
+      .split("\n")
+      .map((v) => v.trim())
+      .filter(Boolean);
+    if (parts.length === 0) continue;
+    for (const part of parts) {
+      counts.set(part, (counts.get(part) ?? 0) + item.count);
+    }
+  }
+  return Array.from(counts.entries())
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) => b.count - a.count);
 }
