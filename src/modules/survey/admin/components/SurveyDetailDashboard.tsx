@@ -1,8 +1,9 @@
 import * as React from "react";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, BarChart3, Download, List } from "lucide-react";
 import { useMaybeAuth } from "@lib/auth/NukeAuthProvider";
 import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
+import { cn } from "@lib/utils";
 import type { Survey } from "../../types";
 import { useSubmissions, useStats } from "../hooks/useSurveyAdmin";
 import { getExportUrl } from "../lib/admin-api";
@@ -25,6 +26,9 @@ export function SurveyDetailDashboard({
   const token = auth?.token ?? null;
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(50);
+  const [activeTab, setActiveTab] = React.useState<"stats" | "responses">(
+    "stats",
+  );
   const questionMap = React.useMemo(() => buildQuestionMap(survey), [survey]);
   const {
     data: submissionsData,
@@ -66,10 +70,6 @@ export function SurveyDetailDashboard({
     );
   }
 
-  if (statsLoading) {
-    return <DetailSkeleton />;
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -94,25 +94,45 @@ export function SurveyDetailDashboard({
         </a>
       </div>
 
-      {stats && <StatsPanel stats={stats} questionMap={questionMap} />}
-
       <div>
-        <h2 className="mb-3 text-lg font-semibold text-foreground">
-          Responses
-        </h2>
-        <SubmissionsTable
-          submissions={submissionsData?.submissions ?? []}
-          page={submissionsData?.page ?? 1}
-          limit={submissionsData?.limit ?? limit}
-          total={submissionsData?.total ?? 0}
-          questionMap={questionMap}
-          isLoading={submissionsLoading}
-          onPageChange={setPage}
-          onLimitChange={(newLimit) => {
-            setLimit(newLimit);
-            setPage(1);
-          }}
-        />
+        <div className="flex items-center gap-1 border-b border-border/50">
+          <TabButton
+            active={activeTab === "stats"}
+            onClick={() => setActiveTab("stats")}
+            icon={<BarChart3 size={16} />}
+            label="Statistics"
+          />
+          <TabButton
+            active={activeTab === "responses"}
+            onClick={() => setActiveTab("responses")}
+            icon={<List size={16} />}
+            label="Responses"
+          />
+        </div>
+
+        <div className="pt-4">
+          {activeTab === "stats" ? (
+            statsLoading || !stats ? (
+              <StatsSkeleton />
+            ) : (
+              <StatsPanel stats={stats} questionMap={questionMap} />
+            )
+          ) : (
+            <SubmissionsTable
+              submissions={submissionsData?.submissions ?? []}
+              page={submissionsData?.page ?? 1}
+              limit={submissionsData?.limit ?? limit}
+              total={submissionsData?.total ?? 0}
+              questionMap={questionMap}
+              isLoading={submissionsLoading}
+              onPageChange={setPage}
+              onLimitChange={(newLimit) => {
+                setLimit(newLimit);
+                setPage(1);
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -125,5 +145,42 @@ function DetailSkeleton() {
       <Card variant="bubble" className="h-32 animate-pulse" />
       <Card variant="bubble" className="h-64 animate-pulse" />
     </div>
+  );
+}
+
+function StatsSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Card variant="bubble" className="h-32 animate-pulse" />
+      <Card variant="bubble" className="h-64 animate-pulse" />
+    </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
+        active
+          ? "border-primary text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground",
+      )}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }

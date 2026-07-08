@@ -700,7 +700,7 @@ function SubmissionModal({
           </div>
 
           {/* Body */}
-          <div className="max-h-[calc(85vh-8rem)] divide-y divide-border/40 overflow-y-auto p-6">
+          <div className="max-h-[calc(85vh-5rem)] divide-y divide-border/40 overflow-y-auto p-6">
             {questionIds.map((id) => {
               const meta = questionMap.get(id);
               const label = meta?.label || id;
@@ -719,13 +719,6 @@ function SubmissionModal({
                 </div>
               );
             })}
-          </div>
-
-          {/* Footer */}
-          <div className="border-t border-border/50 bg-muted/30 px-6 py-3">
-            <Button variant="outline" size="sm" onClick={onClose}>
-              Close
-            </Button>
           </div>
         </motion.div>
       </motion.div>
