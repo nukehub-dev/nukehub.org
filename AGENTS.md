@@ -112,7 +112,7 @@ relevant child `AGENTS.md`.
 Install once before making changes:
 
 - **Node.js** + npm (site build, scripts, and lint).
-- **Go 1.22+** — only when modifying `contact-server/`. The site itself does
+- **Go 1.22+** — only when modifying `api-server/`. The site itself does
   not require Go.
 - **wrangler** — local Cloudflare Pages preview and deploying `dist/`. Pin
   `compatibility_date = "2026-06-10"` in `wrangler.toml` to match your local
@@ -166,8 +166,8 @@ High-level layout; see the Child NAD Index below for domain-specific details.
   See `src/AGENTS.md`.
 - `public/` — static assets and the Cloudflare Worker. See `public/AGENTS.md`.
 - `scripts/` — Node.js maintenance scripts. See `scripts/AGENTS.md`.
-- `contact-server/` — Go SMTP relay for the contact form. See
-  `contact-server/AGENTS.md`.
+- `api-server/` — NukeHub API server: contact form and survey endpoints,
+  SMTP relay. See `api-server/AGENTS.md`.
 - `nginx/` — reverse-proxy vhost for `api.nukehub.org/contact` and
   `api.nukehub.org/survey`.
 - `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
@@ -247,8 +247,8 @@ browser. They are defined in `.env` (local dev) and Cloudflare Pages env vars
 - `PUBLIC_AUTH_URL` / `PUBLIC_AUTH_REALM` / `PUBLIC_AUTH_CLIENT_ID`
   — NukeAuth IdP config for `src/lib/auth/NukeAuthProvider.tsx`.
 
-Secrets for the contact server (`SMTP_*`, `TURNSTILE_SECRET_KEY`,
-`ALLOWED_ORIGINS`) live in the `contact-server/` `.env`, never in this repo's
+Secrets for the API server (`SMTP_*`, `TURNSTILE_SECRET_KEY`,
+`ALLOWED_ORIGINS`) live in the `api-server/` `.env`, never in this repo's
 `.env`.
 
 ## Child NAD Index
@@ -270,5 +270,5 @@ Secrets for the contact server (`SMTP_*`, `TURNSTILE_SECRET_KEY`,
   `silent-check-sso.html`).
 - `scripts/AGENTS.md` — Node.js maintenance scripts
   (`debug-pages.js`, `sync-github-stats.mjs`, `optimize-images.js`).
-- `contact-server/AGENTS.md` — Go contact-form server (SMTP relay behind
-  `api.nukehub.org/contact`).
+- `api-server/AGENTS.md` — NukeHub API server (contact/survey endpoints and
+  SMTP relay behind `api.nukehub.org`).

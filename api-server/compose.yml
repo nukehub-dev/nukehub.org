@@ -1,7 +1,7 @@
 services:
-  contact-server:
+  api-server:
     build: .
-    container_name: nukehub-contact
+    container_name: nukehub-api
     restart: unless-stopped
     ports:
       - "127.0.0.1:${PORT:-3000}:${PORT:-3000}"

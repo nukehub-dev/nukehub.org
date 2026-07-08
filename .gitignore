@@ -59,7 +59,7 @@ src/pages/debug/
 public/sw.js
 
 # Go binaries
-contact-server/contact-server
+api-server/api-server
 *.exe
 
 # Misc

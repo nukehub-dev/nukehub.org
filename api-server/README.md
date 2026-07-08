@@ -1,6 +1,7 @@
-# Contact Server
+# NukeHub API Server
 
-Receives contact form submissions from your static site and sends emails via SMTP.
+Small Go HTTP service behind `api.nukehub.org`. Receives contact form and
+survey submissions from the static site and forwards them via SMTP.
 
 Written in Go for minimal resource usage (~5-10MB RAM).
 
@@ -8,10 +9,10 @@ Written in Go for minimal resource usage (~5-10MB RAM).
 
 ```bash
 # Build
-go build -o contact-server main.go
+go build -o api-server main.go
 
 # Run
-./contact-server
+./api-server
 ```
 
 ## Docker Deployment
@@ -24,14 +25,14 @@ Or manually:
 
 ```bash
 # Build
-docker build -t nukehub-contact .
+docker build -t nukehub-api .
 
 # Run
 docker run -d \
-  --name nukehub-contact \
+  --name nukehub-api \
   -p 127.0.0.1:3000:3000 \
   --env-file .env \
-  nukehub-contact
+  nukehub-api
 ```
 
 ## Environment Variables

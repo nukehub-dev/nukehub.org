@@ -94,7 +94,7 @@ export default [
       ".astro/**",
       ".wrangler/**",
       "archive/**",
-      "contact-server/**",
+      "api-server/**",
       "coverage/**",
       "*.d.ts",
     ],

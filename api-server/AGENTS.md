@@ -1,14 +1,14 @@
-# Contact Server — Go SMTP Relay
+# NukeHub API Server
 
 ## Purpose
 
-Small Go HTTP service that receives the static site's contact-form submissions
-and forwards them via SMTP. Deployed behind `api.nukehub.org/contact`, reverse
-proxied by `nginx/api.nukehub.org.conf`.
+Small Go HTTP service behind `api.nukehub.org`. Receives the static site's
+contact-form submissions and YAML-driven survey submissions, and forwards them
+via SMTP. Reverse proxied by `nginx/api.nukehub.org.conf`.
 
 ## Ownership
 
-All files under `contact-server/**`: `main.go`, `go.mod`, `Dockerfile`,
+All files under `api-server/**`: `main.go`, `go.mod`, `Dockerfile`,
 `compose.yml`, `README.md`. Plus the proxy vhost under `nginx/` only insofar
 as the `/contact` route is concerned.
 
@@ -16,7 +16,7 @@ as the `/contact` route is concerned.
 
 - Go 1.22+. Single-file `main.go` + `go.mod` — no internal packages.
 - Runtime footprint target: ~5-10MB RAM.
-- Deployed either directly (`go build -o contact-server main.go && ./contact-server`)
+- Deployed either directly (`go build -o api-server main.go && ./api-server`)
   or via `docker ./compose.yml` (the canonical production path). Listens on
   `127.0.0.1:3000` and is proxied by nginx.
 
@@ -32,7 +32,7 @@ as the `/contact` route is concerned.
 - `Dockerfile` — builds the static Go binary inside a build stage and copies
   it into a minimal runtime image. The `docker ./compose.yml` mirrors this.
 - `compose.yml` — local + production container composition. Reads secrets
-  from `contact-server/.env` (not committed).
+  from `api-server/.env` (not committed).
 - `README.md` — operator quick-start, env-var list, and security feature list.
 - `nginx/api.nukehub.org.conf` — top-level nginx vhost that:
   - Redirects HTTP → HTTPS.
@@ -44,7 +44,7 @@ as the `/contact` route is concerned.
 
 ### Environment variables
 
-Secrets live in `contact-server/.env` (gitignored). Required:
+Secrets live in `api-server/.env` (gitignored). Required:
 
 - `SMTP_*` — SMTP host, port, user, password, from-address.
 - `TURNSTILE_SECRET_KEY` — Cloudflare Turnstile server secret paired with
@@ -88,9 +88,9 @@ variables" lists that file's contents).
 ## Verification
 
 ```bash
-cd contact-server
-go build -o contact-server main.go
-./contact-server &            # listens on 127.0.0.1:3000
+cd api-server
+go build -o api-server main.go
+./api-server &            # listens on 127.0.0.1:3000
 curl http://127.0.0.1:3000/contact/health
 
 # Submit a test survey (will fail Turnstile without a real token, but exercises routing)
