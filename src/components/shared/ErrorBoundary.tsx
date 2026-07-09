@@ -33,7 +33,6 @@ export class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     if (process.env.NODE_ENV === "development") {
-       
       console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
   }
