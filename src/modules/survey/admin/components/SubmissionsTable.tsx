@@ -508,7 +508,9 @@ export function SubmissionsTable({
                 index={i}
                 onView={() => handleRowClick(row)}
                 onDelete={
-                  canDelete ? () => handleDeleteSingle(row.original.id) : undefined
+                  canDelete
+                    ? () => handleDeleteSingle(row.original.id)
+                    : undefined
                 }
                 isDeleting={deletingIds.has(row.original.id)}
               />

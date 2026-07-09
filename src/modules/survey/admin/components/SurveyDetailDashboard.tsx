@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-  ArrowLeft,
-  BarChart3,
-  Download,
-  List,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, BarChart3, Download, List, Trash2 } from "lucide-react";
 import { useMaybeAuth } from "@lib/auth/NukeAuthProvider";
 import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
