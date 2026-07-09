@@ -89,6 +89,12 @@ variables" lists that file's contents).
 - `GET /admin/surveys/{slug}/stats` — aggregate statistics (requires admin
   auth).
 - `GET /admin/surveys/{slug}/export.csv` — CSV export (requires admin auth).
+- `DELETE /admin/surveys/{slug}` — delete every response for a survey (requires
+  admin auth). Returns `{success, deleted}`.
+- `DELETE /admin/surveys/{slug}/submissions` — bulk delete responses by IDs
+  (requires admin auth). Body: `{"ids": [1, 2, 3]}`. Returns `{success, deleted}`.
+- `DELETE /admin/surveys/{slug}/submissions/{id}` — delete a single response
+  (requires admin auth). Returns `{success, deleted}`.
 
 ### Common pitfalls
 

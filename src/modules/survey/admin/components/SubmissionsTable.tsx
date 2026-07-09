@@ -18,6 +18,7 @@ import {
   Calendar,
   Hash,
   ArrowUpRight,
+  Trash2,
 } from "lucide-react";
 import {
   useReactTable,
@@ -30,11 +31,14 @@ import {
   type Row,
 } from "@tanstack/react-table";
 import { Button } from "@components/ui/Button";
+import { ConfirmDialog } from "@components/ui/Dialog";
 import { cn } from "@lib/utils";
 import type { Submission } from "../types";
 import type { QuestionMeta } from "../lib/survey-metadata";
+import { deleteSubmissions } from "../lib/admin-api";
 
 interface SubmissionsTableProps {
+  slug: string;
   submissions: Submission[];
   page: number;
   limit: number;
@@ -43,11 +47,14 @@ interface SubmissionsTableProps {
   isLoading?: boolean;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
+  token: string | null;
+  onDeleted?: () => void;
 }
 
 const LIMIT_OPTIONS = [10, 20, 50, 100];
 
 export function SubmissionsTable({
+  slug,
   submissions,
   page,
   limit,
@@ -56,6 +63,8 @@ export function SubmissionsTable({
   isLoading,
   onPageChange,
   onLimitChange,
+  token,
+  onDeleted,
 }: SubmissionsTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [sorting, setSorting] = React.useState<SortingState>([
@@ -64,11 +73,17 @@ export function SubmissionsTable({
   const [columnVisibility, setColumnVisibility] = React.useState<
     Record<string, boolean>
   >({});
+  const [rowSelection, setRowSelection] = React.useState<
+    Record<string, boolean>
+  >({});
   const [showColumnMenu, setShowColumnMenu] = React.useState(false);
   const [showMobile, setShowMobile] = React.useState(false);
   const [showLimitDropdown, setShowLimitDropdown] = React.useState(false);
   const [selectedSubmission, setSelectedSubmission] =
     React.useState<Submission | null>(null);
+  const [deletingIds, setDeletingIds] = React.useState<Set<number>>(new Set());
+  const [pendingDeleteIds, setPendingDeleteIds] = React.useState<number[]>([]);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const columnMenuRef = React.useRef<HTMLDivElement>(null);
   const limitRef = React.useRef<HTMLDivElement>(null);
 
@@ -93,10 +108,10 @@ export function SubmissionsTable({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close modal on Escape.
+  // Close modal on Escape unless a nested dialog is open.
   React.useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && !showDeleteDialog) {
         setSelectedSubmission(null);
       }
     }
@@ -104,10 +119,41 @@ export function SubmissionsTable({
       document.addEventListener("keydown", handleKeyDown);
       return () => document.removeEventListener("keydown", handleKeyDown);
     }
-  }, [selectedSubmission]);
+  }, [selectedSubmission, showDeleteDialog]);
 
   const columns = React.useMemo<ColumnDef<Submission>[]>(() => {
     const base: ColumnDef<Submission>[] = [
+      {
+        id: "__select",
+        header: ({ table }) => (
+          <button
+            type="button"
+            className="flex h-5 w-5 items-center justify-center rounded border border-border bg-background text-foreground transition-colors hover:border-primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              table.toggleAllPageRowsSelected();
+            }}
+            aria-label="Select all rows"
+          >
+            {table.getIsAllPageRowsSelected() && <Check size={12} />}
+          </button>
+        ),
+        cell: ({ row }) => (
+          <button
+            type="button"
+            className="flex h-5 w-5 items-center justify-center rounded border border-border bg-background text-foreground transition-colors hover:border-primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              row.toggleSelected();
+            }}
+            aria-label="Select row"
+          >
+            {row.getIsSelected() && <Check size={12} />}
+          </button>
+        ),
+        size: 44,
+        enableSorting: false,
+      },
       {
         id: "__meta_id",
         accessorFn: (row) => row.id,
@@ -177,10 +223,14 @@ export function SubmissionsTable({
       sorting,
       globalFilter,
       columnVisibility,
+      rowSelection,
     },
+    getRowId: (row) => String(row.id),
+    enableRowSelection: true,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -189,9 +239,47 @@ export function SubmissionsTable({
   });
 
   const visibleCount = table.getRowModel().rows.length;
+  const selectedRows = table.getSelectedRowModel().rows;
+  const selectedIds = selectedRows.map((row) => row.original.id);
 
   const handleRowClick = (row: Row<Submission>) => {
     setSelectedSubmission(row.original);
+  };
+
+  const requestDeleteIds = (ids: number[]) => {
+    if (ids.length === 0) return;
+    setPendingDeleteIds(ids);
+    setShowDeleteDialog(true);
+  };
+
+  const executeDelete = async () => {
+    if (!token || pendingDeleteIds.length === 0) return;
+
+    setDeletingIds((prev) => {
+      const next = new Set(prev);
+      pendingDeleteIds.forEach((id) => next.add(id));
+      return next;
+    });
+    try {
+      await deleteSubmissions(token, slug, pendingDeleteIds);
+      setRowSelection({});
+      setSelectedSubmission(null);
+      onDeleted?.();
+    } catch (err) {
+      console.error("Failed to delete responses:", err);
+    } finally {
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        pendingDeleteIds.forEach((id) => next.delete(id));
+        return next;
+      });
+      setPendingDeleteIds([]);
+      setShowDeleteDialog(false);
+    }
+  };
+
+  const handleDeleteSingle = async (id: number) => {
+    requestDeleteIds([id]);
   };
 
   if (isLoading) {
@@ -293,6 +381,19 @@ export function SubmissionsTable({
                 )}
               </AnimatePresence>
             </div>
+          )}
+
+          {/* Bulk delete */}
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              loading={selectedIds.some((id) => deletingIds.has(id))}
+              onClick={() => requestDeleteIds(selectedIds)}
+            >
+              <Trash2 size={16} />
+              Delete {selectedIds.length}
+            </Button>
           )}
 
           {/* View toggle */}
@@ -404,6 +505,8 @@ export function SubmissionsTable({
                 questionMap={questionMap}
                 index={i}
                 onView={() => handleRowClick(row)}
+                onDelete={() => handleDeleteSingle(row.original.id)}
+                isDeleting={deletingIds.has(row.original.id)}
               />
             ))}
           </AnimatePresence>
@@ -548,10 +651,25 @@ export function SubmissionsTable({
         </div>
       )}
 
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title={`Delete ${pendingDeleteIds.length.toLocaleString()} response${pendingDeleteIds.length === 1 ? "" : "s"}?`}
+        description="This action cannot be undone. The selected responses will be permanently removed from the database."
+        confirmLabel="Delete"
+        variant="destructive"
+        loading={pendingDeleteIds.some((id) => deletingIds.has(id))}
+        onConfirm={executeDelete}
+      />
+
       <SubmissionModal
         submission={selectedSubmission}
         questionMap={questionMap}
         onClose={() => setSelectedSubmission(null)}
+        onDelete={handleDeleteSingle}
+        isDeleting={
+          selectedSubmission ? deletingIds.has(selectedSubmission.id) : false
+        }
       />
     </div>
   );
@@ -562,11 +680,15 @@ function SubmissionCard({
   questionMap,
   index,
   onView,
+  onDelete,
+  isDeleting,
 }: {
   submission: Submission;
   questionMap: Map<string, QuestionMeta>;
   index: number;
   onView: () => void;
+  onDelete?: () => void;
+  isDeleting?: boolean;
 }) {
   const questionIds = Array.from(questionMap.keys());
   const previewIds = questionIds.slice(0, 3);
@@ -605,10 +727,26 @@ function SubmissionCard({
             </a>
           )}
         </div>
-        <Button variant="outline" size="sm" onClick={onView}>
-          View
-          <ArrowUpRight size={14} className="ml-1" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={onView}>
+            View
+            <ArrowUpRight size={14} className="ml-1" />
+          </Button>
+          {onDelete && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              loading={isDeleting}
+            >
+              <Trash2 size={14} />
+            </Button>
+          )}
+        </div>
       </div>
 
       {previewIds.length > 0 && (
@@ -639,10 +777,14 @@ function SubmissionModal({
   submission,
   questionMap,
   onClose,
+  onDelete,
+  isDeleting,
 }: {
   submission: Submission | null;
   questionMap: Map<string, QuestionMeta>;
   onClose: () => void;
+  onDelete?: (id: number) => Promise<void>;
+  isDeleting?: boolean;
 }) {
   if (!submission) return null;
 
@@ -690,13 +832,27 @@ function SubmissionModal({
                 )}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <X size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              {onDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  loading={isDeleting}
+                  onClick={() => submission && onDelete(submission.id)}
+                >
+                  <Trash2 size={16} className="mr-1.5" />
+                  Delete
+                </Button>
+              )}
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Body */}

@@ -6,42 +6,76 @@ interface AsyncState<T> {
   data: T | null;
   error: string | null;
   isLoading: boolean;
+  refresh: () => void;
 }
 
-export function useSurveys(token: string | null): AsyncState<SurveySummary[]> {
-  const [state, setState] = React.useState<AsyncState<SurveySummary[]>>({
+function useAsyncState<T>(
+  fetcher: (signal: AbortSignal) => Promise<T>,
+  deps: React.DependencyList,
+): AsyncState<T> {
+  const [state, setState] = React.useState<{
+    data: T | null;
+    error: string | null;
+    isLoading: boolean;
+    refreshKey: number;
+  }>({
     data: null,
     error: null,
     isLoading: true,
+    refreshKey: 0,
   });
 
   React.useEffect(() => {
-    if (!token) {
-      setState({ data: null, error: null, isLoading: false });
-      return;
-    }
-
     const controller = new AbortController();
-    setState({ data: null, error: null, isLoading: true });
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-    fetchSurveys(token)
+    fetcher(controller.signal)
       .then((result) => {
         if (controller.signal.aborted) return;
-        setState({ data: result.surveys, error: null, isLoading: false });
+        setState((prev) => ({
+          ...prev,
+          data: result,
+          error: null,
+          isLoading: false,
+        }));
       })
       .catch((err) => {
         if (controller.signal.aborted) return;
-        setState({
+        setState((prev) => ({
+          ...prev,
           data: null,
           error: err instanceof Error ? err.message : String(err),
           isLoading: false,
-        });
+        }));
       });
 
     return () => controller.abort();
-  }, [token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, state.refreshKey]);
 
-  return state;
+  const refresh = React.useCallback(
+    () => setState((prev) => ({ ...prev, refreshKey: prev.refreshKey + 1 })),
+    [],
+  );
+
+  return {
+    data: state.data,
+    error: state.error,
+    isLoading: state.isLoading,
+    refresh,
+  };
+}
+
+export function useSurveys(token: string | null): AsyncState<SurveySummary[]> {
+  return useAsyncState(
+    async (signal) => {
+      if (!token) throw new Error("Not authenticated");
+      const result = await fetchSurveys(token);
+      if (signal.aborted) return result.surveys;
+      return result.surveys;
+    },
+    [token],
+  );
 }
 
 export function useSubmissions(
@@ -50,76 +84,30 @@ export function useSubmissions(
   page = 1,
   limit = 50,
 ): AsyncState<SubmissionsResponse> {
-  const [state, setState] = React.useState<AsyncState<SubmissionsResponse>>({
-    data: null,
-    error: null,
-    isLoading: true,
-  });
-
-  React.useEffect(() => {
-    if (!token || !slug) {
-      setState({ data: null, error: null, isLoading: false });
-      return;
-    }
-
-    const controller = new AbortController();
-    setState({ data: null, error: null, isLoading: true });
-
-    fetchSubmissions(token, slug, page, limit)
-      .then((result) => {
-        if (controller.signal.aborted) return;
-        setState({ data: result, error: null, isLoading: false });
-      })
-      .catch((err) => {
-        if (controller.signal.aborted) return;
-        setState({
-          data: null,
-          error: err instanceof Error ? err.message : String(err),
-          isLoading: false,
-        });
-      });
-
-    return () => controller.abort();
-  }, [token, slug, page, limit]);
-
-  return state;
+  return useAsyncState(
+    async (signal) => {
+      if (!token) throw new Error("Not authenticated");
+      if (!slug) throw new Error("Survey slug is required");
+      const result = await fetchSubmissions(token, slug, page, limit);
+      if (signal.aborted) return result;
+      return result;
+    },
+    [token, slug, page, limit],
+  );
 }
 
 export function useStats(
   token: string | null,
   slug: string,
 ): AsyncState<SurveyStats> {
-  const [state, setState] = React.useState<AsyncState<SurveyStats>>({
-    data: null,
-    error: null,
-    isLoading: true,
-  });
-
-  React.useEffect(() => {
-    if (!token || !slug) {
-      setState({ data: null, error: null, isLoading: false });
-      return;
-    }
-
-    const controller = new AbortController();
-    setState({ data: null, error: null, isLoading: true });
-
-    fetchStats(token, slug)
-      .then((result) => {
-        if (controller.signal.aborted) return;
-        setState({ data: result, error: null, isLoading: false });
-      })
-      .catch((err) => {
-        if (controller.signal.aborted) return;
-        setState({
-          data: null,
-          error: err instanceof Error ? err.message : String(err),
-          isLoading: false,
-        });
-      });
-
-    return () => controller.abort();
-  }, [token, slug]);
-
-  return state;
+  return useAsyncState(
+    async (signal) => {
+      if (!token) throw new Error("Not authenticated");
+      if (!slug) throw new Error("Survey slug is required");
+      const result = await fetchStats(token, slug);
+      if (signal.aborted) return result;
+      return result;
+    },
+    [token, slug],
+  );
 }

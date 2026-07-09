@@ -576,11 +576,6 @@ func handleAdminSurveys(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleAdminSurveyDetail(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
-		return
-	}
-
 	path := strings.TrimPrefix(r.URL.Path, "/admin/surveys/")
 	parts := strings.SplitN(path, "/", 2)
 	slug := parts[0]
@@ -594,15 +589,34 @@ func handleAdminSurveyDetail(w http.ResponseWriter, r *http.Request) {
 		action = parts[1]
 	}
 
-	switch action {
-	case "", "submissions":
-		handleAdminSubmissions(w, r, slug)
-	case "stats":
-		handleAdminStats(w, r, slug)
-	case "export.csv":
-		handleAdminExportCSV(w, r, slug)
+	switch r.Method {
+	case http.MethodGet:
+		switch action {
+		case "", "submissions":
+			handleAdminSubmissions(w, r, slug)
+		case "stats":
+			handleAdminStats(w, r, slug)
+		case "export.csv":
+			handleAdminExportCSV(w, r, slug)
+		default:
+			jsonResponse(w, http.StatusNotFound, map[string]interface{}{"error": "Unknown endpoint"})
+		}
+	case http.MethodDelete:
+		switch action {
+		case "":
+			handleDeleteSurveySubmissions(w, r, slug)
+		case "submissions":
+			handleDeleteSubmissionsBulk(w, r, slug)
+		default:
+			if strings.HasPrefix(action, "submissions/") {
+				idStr := strings.TrimPrefix(action, "submissions/")
+				handleDeleteSubmission(w, r, slug, idStr)
+				return
+			}
+			jsonResponse(w, http.StatusNotFound, map[string]interface{}{"error": "Unknown endpoint"})
+		}
 	default:
-		jsonResponse(w, http.StatusNotFound, map[string]interface{}{"error": "Unknown endpoint"})
+		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
 	}
 }
 
@@ -856,6 +870,68 @@ func handleAdminExportCSV(w http.ResponseWriter, r *http.Request, slug string) {
 	cw.Flush()
 }
 
+func handleDeleteSubmission(w http.ResponseWriter, r *http.Request, slug, idStr string) {
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{"error": "Invalid submission ID"})
+		return
+	}
+
+	res, err := db.Exec("DELETE FROM submissions WHERE id = ? AND survey_slug = ?", id, slug)
+	if err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	rows, _ := res.RowsAffected()
+	jsonResponse(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
+}
+
+func handleDeleteSubmissionsBulk(w http.ResponseWriter, r *http.Request, slug string) {
+	var req struct {
+		IDs []int64 `json:"ids"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{"error": "Invalid request body"})
+		return
+	}
+	if len(req.IDs) == 0 {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{"error": "No submission IDs provided"})
+		return
+	}
+
+	placeholders := make([]string, len(req.IDs))
+	args := make([]interface{}, 0, len(req.IDs)+1)
+	args = append(args, slug)
+	for i, id := range req.IDs {
+		placeholders[i] = "?"
+		args = append(args, id)
+	}
+
+	res, err := db.Exec(fmt.Sprintf(
+		"DELETE FROM submissions WHERE survey_slug = ? AND id IN (%s)",
+		strings.Join(placeholders, ","),
+	), args...)
+	if err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	rows, _ := res.RowsAffected()
+	jsonResponse(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
+}
+
+func handleDeleteSurveySubmissions(w http.ResponseWriter, r *http.Request, slug string) {
+	res, err := db.Exec("DELETE FROM submissions WHERE survey_slug = ?", slug)
+	if err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	rows, _ := res.RowsAffected()
+	jsonResponse(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
+}
+
 func requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if len(adminEmails) == 0 {
@@ -1061,7 +1137,7 @@ func corsMiddleware(next http.Handler, allowedOrigins []string) http.Handler {
 			}
 		}
 
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		w.Header().Set("Vary", "Origin")
 

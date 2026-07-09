@@ -92,3 +92,72 @@ export async function fetchExportCsv(
 
   return response.blob();
 }
+
+async function fetchDelete(
+  token: string | null,
+  path: string,
+  body?: object,
+): Promise<{ success: boolean; deleted: number }> {
+  if (!token) {
+    throw new Error("Not authenticated");
+  }
+
+  const init: RequestInit = {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+  if (body) {
+    init.headers = {
+      ...init.headers,
+      "Content-Type": "application/json",
+    };
+    init.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(`${getBaseUrl()}${path}`, init);
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    const message =
+      typeof data.error === "string"
+        ? data.error
+        : `Request failed (${response.status})`;
+    const error = new Error(message) as Error & { status: number };
+    error.status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<{ success: boolean; deleted: number }>;
+}
+
+export function deleteSubmission(
+  token: string | null,
+  slug: string,
+  id: number,
+): Promise<{ success: boolean; deleted: number }> {
+  return fetchDelete(
+    token,
+    `/surveys/${encodeURIComponent(slug)}/submissions/${id}`,
+  );
+}
+
+export function deleteSubmissions(
+  token: string | null,
+  slug: string,
+  ids: number[],
+): Promise<{ success: boolean; deleted: number }> {
+  return fetchDelete(
+    token,
+    `/surveys/${encodeURIComponent(slug)}/submissions`,
+    { ids },
+  );
+}
+
+export function deleteAllSurveySubmissions(
+  token: string | null,
+  slug: string,
+): Promise<{ success: boolean; deleted: number }> {
+  return fetchDelete(token, `/surveys/${encodeURIComponent(slug)}`);
+}

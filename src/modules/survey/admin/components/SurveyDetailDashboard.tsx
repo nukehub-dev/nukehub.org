@@ -1,12 +1,12 @@
 import * as React from "react";
-import { ArrowLeft, BarChart3, Download, List } from "lucide-react";
+import { ArrowLeft, BarChart3, Download, List, Trash2 } from "lucide-react";
 import { useMaybeAuth } from "@lib/auth/NukeAuthProvider";
 import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
-import { cn } from "@lib/utils";
+import { ConfirmDialog } from "@components/ui/Dialog";
 import type { Survey } from "../../types";
 import { useSubmissions, useStats } from "../hooks/useSurveyAdmin";
-import { fetchExportCsv } from "../lib/admin-api";
+import { deleteAllSurveySubmissions, fetchExportCsv } from "../lib/admin-api";
 import { buildQuestionMap } from "../lib/survey-metadata";
 import { SubmissionsTable } from "./SubmissionsTable";
 import { StatsPanel } from "./StatsPanel";
@@ -31,16 +31,20 @@ export function SurveyDetailDashboard({
   );
   const [exporting, setExporting] = React.useState(false);
   const [exportError, setExportError] = React.useState<string | null>(null);
+  const [clearing, setClearing] = React.useState(false);
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
   const questionMap = React.useMemo(() => buildQuestionMap(survey), [survey]);
   const {
     data: submissionsData,
     error: submissionsError,
     isLoading: submissionsLoading,
+    refresh: refreshSubmissions,
   } = useSubmissions(token, slug, page, limit);
   const {
     data: stats,
     error: statsError,
     isLoading: statsLoading,
+    refresh: refreshStats,
   } = useStats(token, slug);
 
   if (!auth || auth.isLoading) {
@@ -72,6 +76,24 @@ export function SurveyDetailDashboard({
     );
   }
 
+  const totalResponses = submissionsData?.total ?? 0;
+
+  const handleClearAll = async () => {
+    if (!token) return;
+
+    setClearing(true);
+    try {
+      await deleteAllSurveySubmissions(token, slug);
+      refreshSubmissions();
+      refreshStats();
+      setPage(1);
+    } catch (err) {
+      console.error("Failed to clear responses:", err);
+    } finally {
+      setClearing(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -88,36 +110,47 @@ export function SurveyDetailDashboard({
           </h1>
           <p className="text-sm text-muted-foreground">Slug: {slug}</p>
         </div>
-        <div className="flex flex-col items-start gap-2">
-          <Button
-            variant="outline"
-            loading={exporting}
-            onClick={async () => {
-              if (!token) return;
-              setExporting(true);
-              setExportError(null);
-              try {
-                const blob = await fetchExportCsv(token, slug);
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${slug}-responses.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-              } catch (err) {
-                setExportError(
-                  err instanceof Error ? err.message : "Export failed",
-                );
-              } finally {
-                setExporting(false);
-              }
-            }}
-          >
-            <Download size={16} className="mr-1.5" />
-            Export CSV
-          </Button>
+        <div className="flex flex-col items-start gap-2 sm:items-end">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              loading={exporting}
+              onClick={async () => {
+                if (!token) return;
+                setExporting(true);
+                setExportError(null);
+                try {
+                  const blob = await fetchExportCsv(token, slug);
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `${slug}-responses.csv`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(url);
+                } catch (err) {
+                  setExportError(
+                    err instanceof Error ? err.message : "Export failed",
+                  );
+                } finally {
+                  setExporting(false);
+                }
+              }}
+            >
+              <Download size={16} className="mr-1.5" />
+              Export CSV
+            </Button>
+            <Button
+              variant="destructive"
+              loading={clearing}
+              onClick={() => setShowClearDialog(true)}
+              disabled={totalResponses === 0}
+            >
+              <Trash2 size={16} className="mr-1.5" />
+              Clear all
+            </Button>
+          </div>
           {exportError && (
             <p className="text-sm text-destructive">{exportError}</p>
           )}
@@ -149,6 +182,7 @@ export function SurveyDetailDashboard({
             )
           ) : (
             <SubmissionsTable
+              slug={slug}
               submissions={submissionsData?.submissions ?? []}
               page={submissionsData?.page ?? 1}
               limit={submissionsData?.limit ?? limit}
@@ -160,10 +194,26 @@ export function SurveyDetailDashboard({
                 setLimit(newLimit);
                 setPage(1);
               }}
+              token={token}
+              onDeleted={() => {
+                refreshSubmissions();
+                refreshStats();
+              }}
             />
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showClearDialog}
+        onOpenChange={setShowClearDialog}
+        title="Clear all responses?"
+        description={`Delete all ${totalResponses.toLocaleString()} responses for "${title}". This action cannot be undone.`}
+        confirmLabel="Clear all"
+        variant="destructive"
+        loading={clearing}
+        onConfirm={handleClearAll}
+      />
     </div>
   );
 }
@@ -202,12 +252,11 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={cn(
-        "flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
+      className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
         active
           ? "border-primary text-foreground"
-          : "border-transparent text-muted-foreground hover:text-foreground",
-      )}
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      }`}
     >
       {icon}
       {label}
