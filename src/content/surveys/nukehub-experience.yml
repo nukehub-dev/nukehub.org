@@ -99,10 +99,11 @@ pages:
         label: Which editor or notebook environment do you prefer today?
         required: false
         options:
-          - VS Code / Theia
+          - VS Code / Eclipse Theia
           - Zed
           - JupyterLab
           - PyCharm
+          - RStudio
           - Vim / Emacs / neovim
           - Plain terminal
           - Other

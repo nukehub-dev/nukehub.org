@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Star,
   Check,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
@@ -128,6 +129,25 @@ export function SurveyForm({ survey }: SurveyFormProps) {
 
   const isMultiPage = pages.length > 1;
   const progress = Math.round(((currentPage + 1) / pages.length) * 100);
+
+  const hasDraft = React.useMemo(() => {
+    return Object.values(values).some((v) => {
+      if (Array.isArray(v)) return v.length > 0;
+      return v !== undefined && v !== "";
+    });
+  }, [values]);
+
+  const clearDraft = () => {
+    setValues({});
+    setCurrentPage(0);
+    setErrors({});
+    setLastSavedAt(null);
+    try {
+      localStorage.removeItem(storageKey);
+    } catch {
+      // Ignore storage errors
+    }
+  };
 
   const setValue = (id: string, value: string | string[]) => {
     setValues((prev) => ({ ...prev, [id]: value }));
@@ -373,10 +393,21 @@ export function SurveyForm({ survey }: SurveyFormProps) {
         </div>
       )}
 
-      {lastSavedAt && (
-        <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-          <Check className="h-3 w-3 text-primary" />
-          Draft saved
+      {hasDraft && lastSavedAt && (
+        <div className="flex items-center justify-end gap-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <Check className="h-3 w-3 text-primary" />
+            Draft saved
+          </span>
+          <button
+            type="button"
+            onClick={clearDraft}
+            className="inline-flex items-center gap-1 text-destructive transition-colors hover:text-destructive/80"
+            aria-label="Clear all draft answers"
+          >
+            <X className="h-3 w-3" />
+            Clear all
+          </button>
         </div>
       )}
 
@@ -457,7 +488,10 @@ export function SurveyForm({ survey }: SurveyFormProps) {
                   turnstile: "CAPTCHA failed to load",
                 }))
               }
-              className="flex justify-center"
+              options={{
+                theme: "dark",
+                size: "flexible",
+              }}
             />
             {errors.turnstile && (
               <p className="text-center text-sm text-destructive">
