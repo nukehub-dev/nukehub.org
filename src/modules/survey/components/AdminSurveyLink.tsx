@@ -20,9 +20,16 @@ export function AdminSurveyLink({
   );
 }
 
+const ADMIN_ROLE = "survey-admin";
+
 function AdminSurveyLinkInner() {
   const auth = useMaybeAuth();
-  if (!auth || auth.isLoading || !auth.isAuthenticated) {
+  if (
+    !auth ||
+    auth.isLoading ||
+    !auth.isAuthenticated ||
+    !auth.hasRole(ADMIN_ROLE)
+  ) {
     return null;
   }
 

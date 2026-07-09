@@ -44,13 +44,14 @@ const (
 	statsDistributionLimit = 50
 )
 
+const adminRoleName = "survey-admin"
+
 // Database and auth globals
 var (
-	db          *sql.DB
-	dbInit      sync.Once
-	dbInitErr   error
-	adminEmails map[string]struct{}
-	jwksCache   *keycloakJWKS
+	db        *sql.DB
+	dbInit    sync.Once
+	dbInitErr error
+	jwksCache *keycloakJWKS
 )
 
 func main() {
@@ -66,18 +67,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Initialize admin authorization
-	adminEmails = parseAdminEmails(getEnv("ADMIN_EMAILS", ""))
-	if len(adminEmails) > 0 {
-		authURL := strings.TrimSuffix(getEnv("AUTH_URL", ""), "/")
-		authRealm := getEnv("AUTH_REALM", "")
-		if authURL != "" && authRealm != "" {
-			jwksCache = newKeycloakJWKS(authURL, authRealm)
-			if err := jwksCache.refresh(); err != nil {
-				fmt.Fprintf(os.Stderr, "JWKS fetch failed: %v\n", err)
-			}
-			go jwksCache.autoRefresh(10 * time.Minute)
+	// Initialize Keycloak JWKS for admin token verification
+	authURL := strings.TrimSuffix(getEnv("AUTH_URL", ""), "/")
+	authRealm := getEnv("AUTH_REALM", "")
+	if authURL != "" && authRealm != "" {
+		jwksCache = newKeycloakJWKS(authURL, authRealm)
+		if err := jwksCache.refresh(); err != nil {
+			fmt.Fprintf(os.Stderr, "JWKS fetch failed: %v\n", err)
 		}
+		go jwksCache.autoRefresh(10 * time.Minute)
 	}
 
 	// Cleanup old rate limit entries
@@ -156,17 +154,6 @@ CREATE INDEX IF NOT EXISTS idx_responses_submission_id ON responses(submission_i
 func lastSegment(path string) string {
 	parts := strings.Split(path, "/")
 	return parts[len(parts)-1]
-}
-
-func parseAdminEmails(raw string) map[string]struct{} {
-	result := make(map[string]struct{})
-	for _, part := range strings.Split(raw, ",") {
-		email := strings.TrimSpace(strings.ToLower(part))
-		if emailRegex.MatchString(email) {
-			result[email] = struct{}{}
-		}
-	}
-	return result
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -934,8 +921,9 @@ func handleDeleteSurveySubmissions(w http.ResponseWriter, r *http.Request, slug 
 
 func requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if len(adminEmails) == 0 {
-			jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Admin access not configured"})
+		authClientID := getEnv("AUTH_CLIENT_ID", "")
+		if authClientID == "" {
+			jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Auth client ID not configured"})
 			return
 		}
 		if jwksCache == nil {
@@ -950,19 +938,40 @@ func requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 		}
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 
-		email, err := jwksCache.verifyToken(token)
+		claims, err := jwksCache.verifyToken(token)
 		if err != nil {
 			jsonResponse(w, http.StatusUnauthorized, map[string]interface{}{"error": err.Error()})
 			return
 		}
 
-		if _, ok := adminEmails[strings.ToLower(email)]; !ok {
+		if !hasClientRole(claims, authClientID, adminRoleName) {
 			jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Admin access denied"})
 			return
 		}
 
 		next(w, r)
 	}
+}
+
+func hasClientRole(claims jwt.MapClaims, clientID, role string) bool {
+	resourceAccess, ok := claims["resource_access"].(map[string]interface{})
+	if !ok {
+		return false
+	}
+	clientAccess, ok := resourceAccess[clientID].(map[string]interface{})
+	if !ok {
+		return false
+	}
+	roles, ok := clientAccess["roles"].([]interface{})
+	if !ok {
+		return false
+	}
+	for _, r := range roles {
+		if s, ok := r.(string); ok && s == role {
+			return true
+		}
+	}
+	return false
 }
 
 func sendEmail(to, replyTo, subject, htmlBody, textBody string) error {
@@ -1260,7 +1269,7 @@ func (k *keycloakJWKS) getKey(kid string) interface{} {
 	return k.keys[kid]
 }
 
-func (k *keycloakJWKS) verifyToken(tokenString string) (string, error) {
+func (k *keycloakJWKS) verifyToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -1279,7 +1288,7 @@ func (k *keycloakJWKS) verifyToken(tokenString string) (string, error) {
 		// If key is missing, try refreshing JWKS once
 		if strings.Contains(err.Error(), "key not found") {
 			if refreshErr := k.refresh(); refreshErr != nil {
-				return "", err
+				return nil, err
 			}
 			token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
@@ -1289,20 +1298,20 @@ func (k *keycloakJWKS) verifyToken(tokenString string) (string, error) {
 				return k.getKey(kid), nil
 			}, jwt.WithIssuer(k.expectedIssuer()), jwt.WithValidMethods([]string{"RS256"}))
 			if err != nil {
-				return "", err
+				return nil, err
 			}
 		} else {
-			return "", err
+			return nil, err
 		}
 	}
 
 	if !token.Valid {
-		return "", fmt.Errorf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", fmt.Errorf("invalid token claims")
+		return nil, fmt.Errorf("invalid token claims")
 	}
 
 	// Verify azp (authorized party) matches our client if configured
@@ -1310,15 +1319,11 @@ func (k *keycloakJWKS) verifyToken(tokenString string) (string, error) {
 	if authClientID != "" {
 		azp, _ := claims["azp"].(string)
 		if azp != "" && subtle.ConstantTimeCompare([]byte(azp), []byte(authClientID)) != 1 {
-			return "", fmt.Errorf("unauthorized client")
+			return nil, fmt.Errorf("unauthorized client")
 		}
 	}
 
-	email, _ := claims["email"].(string)
-	if email == "" {
-		return "", fmt.Errorf("token missing email claim")
-	}
-	return email, nil
+	return claims, nil
 }
 
 func parseRSAPublicKey(nB64, eB64 string) (interface{}, error) {

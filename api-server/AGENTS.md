@@ -59,11 +59,11 @@ Secrets live in `api-server/.env` (gitignored). Required:
   `CONTACT_TO_EMAIL` if unset.
   Set to `survey@nukehub.org` to route surveys separately.
 - `DATABASE_PATH` — SQLite database file path. Defaults to `./data/nukehub.db`.
-- `ADMIN_EMAILS` — comma-separated list of NukeAuth user emails allowed to
-  access `/admin/*` endpoints.
 - `AUTH_URL`, `AUTH_REALM`, `AUTH_CLIENT_ID` — NukeAuth (Keycloak-backed)
   config used to verify admin bearer tokens. Must match the static site's
   `PUBLIC_AUTH_*` values.
+- **Admin access** is granted by the `survey-admin` client role under
+  `AUTH_CLIENT_ID` (e.g. `nukehub-web`).
 
 Do **not** copy these into the static-site `.env` (root NAD "Environment
 variables" lists that file's contents).
@@ -107,9 +107,10 @@ variables" lists that file's contents).
 - **Turnstile site key vs secret.** The site key is `PUBLIC_*` and bundled
   into the static bundle; the secret is server-only here. They must match
   the same Turnstile widget or verification will fail.
-- **Admin auth uses Keycloak + email allow-list.** `ADMIN_EMAILS` must be set
-  and `AUTH_URL`/`AUTH_REALM`/`AUTH_CLIENT_ID` must match the static site's
-  Keycloak config, or all `/admin/*` endpoints will reject requests.
+- **Admin auth uses NukeAuth + client role.** `/admin/*` endpoints require the
+  `survey-admin` role under the `AUTH_CLIENT_ID` client. `AUTH_URL`,
+  `AUTH_REALM`, and `AUTH_CLIENT_ID` must match the static site's Keycloak
+  config, or all admin endpoints will reject requests.
 - **Back up the SQLite database.** `DATABASE_PATH` defaults to
   `./data/nukehub.db` and is mounted as a Docker volume. The WAL files
   (`*.db-wal`, `*.db-shm`) must be backed up together with the main file.

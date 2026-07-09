@@ -11,6 +11,8 @@ import { buildQuestionMap } from "../lib/survey-metadata";
 import { SubmissionsTable } from "./SubmissionsTable";
 import { StatsPanel } from "./StatsPanel";
 
+const ADMIN_ROLE = "survey-admin";
+
 interface SurveyDetailDashboardProps {
   slug: string;
   title: string;
@@ -63,6 +65,17 @@ export function SurveyDetailDashboard({
         <Button onClick={auth.login} className="mt-6">
           Sign in
         </Button>
+      </Card>
+    );
+  }
+
+  if (!auth.hasRole(ADMIN_ROLE)) {
+    return (
+      <Card variant="bubble" className="p-8 text-center">
+        <h2 className="text-xl font-semibold text-foreground">Access denied</h2>
+        <p className="mt-2 text-muted-foreground">
+          Your account does not have the survey admin role.
+        </p>
       </Card>
     );
   }

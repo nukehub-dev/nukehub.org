@@ -16,7 +16,6 @@ services:
       - SMTP_SECURE=${SMTP_SECURE:-false}
       - CONTACT_TO_EMAIL=${CONTACT_TO_EMAIL:-contact@nukehub.org}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://nukehub.org}
-      - ADMIN_EMAILS=${ADMIN_EMAILS}
       - AUTH_URL=${AUTH_URL}
       - AUTH_REALM=${AUTH_REALM}
       - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}

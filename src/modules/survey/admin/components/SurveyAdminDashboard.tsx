@@ -12,6 +12,8 @@ import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
 import { useSurveys } from "../hooks/useSurveyAdmin";
 
+const ADMIN_ROLE = "survey-admin";
+
 export function SurveyAdminDashboard() {
   const auth = useMaybeAuth();
   const token = auth?.token ?? null;
@@ -50,6 +52,22 @@ export function SurveyAdminDashboard() {
         <Button onClick={auth.login} className="mt-6">
           Sign in
         </Button>
+      </Card>
+    );
+  }
+
+  if (!auth.hasRole(ADMIN_ROLE)) {
+    return (
+      <Card variant="bubble" className="p-8 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
+          <ClipboardList className="h-7 w-7 text-destructive" />
+        </div>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">
+          Access denied
+        </h2>
+        <p className="mt-2 text-muted-foreground">
+          Your account does not have the survey admin role.
+        </p>
       </Card>
     );
   }

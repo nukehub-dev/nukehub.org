@@ -86,8 +86,7 @@ Copy `.env.example` to `.env` and configure. Key variables:
   when running locally or `/app/data/nukehub.db` in the container.
 - `CONTACT_TO_EMAIL` — recipient for contact form submissions.
 - `SURVEY_TO_EMAIL` — recipient for survey submissions (defaults to `CONTACT_TO_EMAIL`).
-- `ADMIN_EMAILS` — comma-separated NukeAuth user emails allowed to access admin endpoints.
-- `AUTH_URL`, `AUTH_REALM`, `AUTH_CLIENT_ID` — NukeAuth (Keycloak-backed) config for admin token verification.
+- `AUTH_URL`, `AUTH_REALM`, `AUTH_CLIENT_ID` — NukeAuth config for admin token verification. Admin access requires the `survey-admin` client role under `AUTH_CLIENT_ID`.
 
 ## API Endpoints
 
