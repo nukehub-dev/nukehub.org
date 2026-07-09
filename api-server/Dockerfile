@@ -2,7 +2,7 @@
 FROM golang:1.25-alpine AS builder
 
 WORKDIR /build
-COPY go.mod main.go ./
+COPY go.mod go.sum main.go ./
 RUN go build -o api-server main.go
 
 # Runtime stage
