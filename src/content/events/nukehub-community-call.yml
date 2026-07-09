@@ -2,17 +2,17 @@ title: NukeHub Community Call
 description: |
   Monthly open call for the NukeHub community. Share updates,
   ask questions, and collaborate on open-source nuclear technology projects.
-start: "2026-06-19T15:00:00Z"
-end: "2026-06-19T16:00:00Z"
+start: "2026-06-25T15:00:00Z"
+end: "2026-06-25T16:00:00Z"
 venue: Online (link shared with registered participants)
 organizer:
   - name: NukeHub Team
     email: hello@nukehub.org
-url: https://nukehub.org/events
-meetingUrl: https://nukehub.org/events
+url: https://meet.jit.si/nukehub-community-call
+meetingUrl: https://meet.jit.si/nukehub-community-call
 backgroundColor: "#f37524"
 textColor: "#ffffff"
 recurrence:
   type: monthly-weekday
-  weekday: 5
-  occurrence: 3
+  weekday: 4
+  occurrence: -1
