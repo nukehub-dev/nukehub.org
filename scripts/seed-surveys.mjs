@@ -2,8 +2,12 @@
 /**
  * Seed the NukeHub API server SQLite database with demo survey submissions.
  *
+ * By default this creates a synthetic "demo" survey so it does not pollute
+ * real data. Use --survey to seed a real survey slug explicitly.
+ *
  * Usage:
  *   node scripts/seed-surveys.mjs
+ *   node scripts/seed-surveys.mjs --count 1000
  *   node scripts/seed-surveys.mjs --count 1000 --survey nukehub-experience
  *   node scripts/seed-surveys.mjs --clean
  */
@@ -306,9 +310,20 @@ function seed() {
   `);
 
   const surveys = loadSurveys();
-  const targets = surveyArg
-    ? surveys.filter((s) => s.slug === surveyArg)
-    : surveys;
+
+  let targets;
+  if (surveyArg) {
+    targets = surveys.filter((s) => s.slug === surveyArg);
+  } else {
+    // Default to a synthetic demo survey so local seeding does not pollute
+    // real survey data.
+    const template = surveys[0];
+    if (!template) {
+      console.error("No survey YAMLs found to use as a demo template.");
+      process.exit(1);
+    }
+    targets = [{ ...template, slug: "demo", title: "Demo Survey" }];
+  }
 
   if (targets.length === 0) {
     console.error(`No surveys matched "${surveyArg}"`);

@@ -45,11 +45,14 @@ All files under `scripts/**`.
   demo survey submissions for local UI/UX testing. Reads survey YAMLs from
   `src/content/surveys/`, generates responses matching each question type, and
   inserts them into `api-server/data/nukehub.db`.
-  - `npm run seed:surveys` seeds 200 submissions per survey.
+  - `npm run seed:surveys` seeds 200 submissions for a synthetic `demo` survey
+    (so real survey data is never polluted by default).
+  - `npm run seed:surveys -- --survey nukehub-experience` seeds 200 submissions
+    for a real survey slug.
   - `npm run seed:surveys -- --count 1000 --survey nukehub-experience` seeds
     1000 submissions for a single survey.
   - `npm run seed:surveys -- --clean` removes existing submissions for the
-    targeted surveys before seeding.
+    targeted survey before seeding.
 
 ### Adding a script
 
