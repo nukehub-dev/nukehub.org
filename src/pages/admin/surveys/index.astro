@@ -2,8 +2,9 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { SurveyAdminPage } from "@modules/survey/admin/components/SurveyAdminPage";
 
-const title = "Survey Admin";
-const description = "Browse and manage NukeHub survey responses.";
+const title = "Survey responses";
+const description =
+  "Browse submissions, view statistics, and export survey data.";
 const permalink = "/admin/surveys";
 ---
 
@@ -14,10 +15,10 @@ const permalink = "/admin/surveys";
         <h1
           class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
         >
-          Survey Admin
+          Survey responses
         </h1>
         <p class="mt-2 text-muted-foreground">
-          View response counts, browse submissions, and export survey data.
+          Browse submissions, view statistics, and export data for each survey.
         </p>
       </div>
       <SurveyAdminPage
