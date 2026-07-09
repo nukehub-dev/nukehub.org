@@ -4,8 +4,8 @@
 
 Astro content collections: the mdx/yaml source of truth for projects,
 roadmap, changelog, manual pages, people, sponsors, events, integrations,
-testimonials, people-categories, incidents, and surveys. Each collection has
-a Zod schema enforced by `src/content.config.ts`.
+testimonials, incidents, and surveys. Each collection has a Zod schema
+enforced by `src/content.config.ts`.
 
 ## Ownership
 
@@ -29,38 +29,34 @@ additions/edits belong here.
 - `projects` (mdx) — featured project pages. Enumerated by
   `src/pages/projects.astro` (index) and `src/pages/[...slug].astro` (entry).
   `customPage: true` entries are skipped by the catch-all. `showStats`,
-  `githubRepo`, `tags`, `order`, `icon`, `image`/`imageDark` drive the
-  cards. See `src/modules/AGENTS.md` for the rendering islands.
+  `githubRepo`, `tags`, `order`, `icon`, `image`/`imageDark` drive the cards.
+  See `src/modules/AGENTS.md` for rendering islands.
 - `roadmap` (mdx/md) — roadmap entries. `status` is one of
   `planned | in-progress | shipped | parked`; `relatedProject` links back to a
   project slug; `ghIssueUrl` is the optional tracking issue.
 - `changelog` (mdx/md) — release notes. `version`, `date`, optional
-  `highlights[]` / `breaking[]`, `project` (which project it ships with),
-  optional `githubReleaseUrl`.
+  `highlights[]` / `breaking[]`, `project`, optional `githubReleaseUrl`.
 - `manual` (mdx) — legal/policy pages: `terms`, `privacy`,
   `code-of-conduct`, `acknowledgment`. Rendered by the matching
-  `src/pages/<name>.astro` files that pull the entry by id.
+  `src/pages/<name>.astro` files.
 - `people` (yaml) — team/community profiles. Rich social links (linkedin,
   github, scholar, orcid, mastodon, bluesky, etc.). Each entry has a
   `category` referencing one of `peopleCategories`.
 - `peopleCategories` (yaml) — titles and ordering for the people page groups.
 - `sponsors` (yaml) — `tier` is `platinum | gold | silver | bronze` (default
   `bronze`). `acknowledgment` text is shown on the sponsors page.
-- `events` (yaml) — calendar entries with optional `recurrence` (monthly-date,
-  monthly-weekday, weekly, biweekly). Rendered by FullCalendar in
-  `src/modules/events/`.
+- `events` (yaml) — calendar entries with optional `recurrence`
+  (monthly-date, monthly-weekday, weekly, biweekly). Rendered by FullCalendar
+  in `src/modules/events/`.
 - `integrations` (yaml) — third-party tools surfaced on the projects page.
   `category` is `Simulation | Geometry | Data Processing | Plasma Physics |
 Fusion`.
 - `testimonials` (yaml) — quotes for the home testimonials carousel.
-- `incidents` (yaml) — currently empty placeholder; reserved for status-page
-  style records.
-- `surveys` (yaml) — YAML-driven survey definitions. Each file describes a
-  survey page rendered at `/surveys/<slug>` with a dynamic form. Question types:
-  `text`, `textarea`, `email`, `number`, `url`, `select`, `radio`, `checkbox`,
-  `rating`. `rating` questions may optionally set `minLabel` and `maxLabel` to
-  label the low and high ends of the scale. Submissions are sent to the Go
-  contact server at `/survey`.
+- `incidents` (yaml) — reserved for status-page style records.
+- `surveys` (yaml) — survey definitions. Each file describes a survey page at
+  `/surveys/<slug>` with a dynamic form. Question types: `text`, `textarea`,
+  `email`, `number`, `url`, `select`, `radio`, `checkbox`, `rating`. See
+  `src/modules/survey/AGENTS.md` for rendering and submission details.
 
 ### Adding a new collection
 
@@ -68,34 +64,33 @@ Fusion`.
    `collections`.
 2. Add the matching directory under `src/content/<name>/`.
 3. Render it from a route in `src/pages/` and/or React islands under
-   `src/modules/`; update those NADs if the rendering lifecycle is non-trivial.
-4. If the collection should ship as markdown via the negotiation layer,
-   nothing extra is needed — the integration sweeps every `.html` under
-   `dist/`.
+   `src/modules/`.
+4. The negotiation integration sweeps every `.html` under `dist/`; no extra
+   wiring is needed for `.md` output.
 
 ### Schema edits
 
 - Backward-compatible additions can land directly. Removing or renaming a
-  field requires updating every entry that sets it (lint + build will fail
-  otherwise).
-- Discriminated unions: add the new variant shape alongside the existing ones;
-  do not change the discriminator key (`type`).
+  field requires updating every entry that sets it.
+- Discriminated unions: add the new variant shape alongside existing ones; do
+  not change the discriminator key (`type`).
 - Optional fields should stay optional; defaults belong in `.default(...)` on
   the schema, not at consumption sites.
 
 ### Common pitfalls
 
-- **`testimonials` collection may be empty.** The build log warns
+- **`testimonials` may be empty.** The build warns
   `[The collection "testimonials" does not exist or is empty. ...]` — this is
-  benign; the home page handles the empty case. Do not silence it by removing
-  the collection.
-- **Do not edit `github-stats.json` here.** That file lives under `src/data/`
-  and is generated by `scripts/sync-github-stats.mjs`.
+  benign. Do not silence it by removing the collection.
+- **Do not edit `github-stats.json` here.** It lives under `src/data/` and is
+  generated by `scripts/sync-github-stats.mjs`.
 - **Entry id vs slug.** Astro's `entry.id` is the filename without extension;
   the catch-all uses it directly. If you rename a project mdx file, add a
-  redirect or accept the URL change (no per-collection redirect layer exists).
+  redirect or accept the URL change.
 
 ## Verification
+
+See the root NAD "Before committing" for the canonical checks:
 
 ```bash
 npm run build   # schema errors fail the build

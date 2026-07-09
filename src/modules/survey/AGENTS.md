@@ -24,8 +24,7 @@ All files under `src/modules/survey/**` and the routes
 - Surveys support paging via a `pages` array. Each page has its own `title`,
   optional `description`, optional `image`, and `questions`. Single-page surveys
   can still use a flat `questions` list for backward compatibility.
-- `src/pages/surveys/index.astro` lists every survey as a card grid and is linked
-  from the header Community dropdown and the Community footer column.
+- `src/pages/surveys/index.astro` lists every survey as a card grid.
 - `src/modules/survey/admin/` holds the admin dashboard islands and API client
   used by `src/pages/admin/surveys/`. Admin pages require authentication via
   `NukeAuthProvider` and are authorized server-side by email allow-list.
@@ -53,8 +52,7 @@ All files under `src/modules/survey/**` and the routes
   string or `{ label, value }`. For `checkbox`, add `maxSelections` to limit
   how many options can be chosen.
 - `rating` — numeric buttons from `min` to `max` (defaults to 1–5). Optional
-  `minLabel` and `maxLabel` strings render under the scale (e.g., “Very
-  dissatisfied” / “Very satisfied”).
+  `minLabel` and `maxLabel` strings render under the scale.
 
 ### Paging
 
@@ -72,9 +70,8 @@ All files under `src/modules/survey/**` and the routes
 - Draft answers and the current page are saved to `localStorage` while the user
   fills the form, and cleared after a successful submission.
 - The Go server verifies Turnstile, enforces a per-value length limit, persists
-  the submission and responses to SQLite, and emails the responses to
-  `SURVEY_TO_EMAIL` (falling back to `CONTACT_TO_EMAIL`). If the responses
-  include a valid `email` field, it is used as the email's `Reply-To` address.
+  the submission and responses to SQLite, and emails the responses. See
+  `api-server/AGENTS.md` for server-side details.
 
 ### Admin dashboard
 
@@ -83,30 +80,26 @@ All files under `src/modules/survey/**` and the routes
   bearer token to `{PUBLIC_API_URL}/admin/surveys/*` endpoints.
 - Access is controlled by NukeAuth client roles under `AUTH_CLIENT_ID`:
   - `survey-admin` — full access (list, view, stats, export, delete).
-  - `survey-viewer` — read-only access (list, view, stats, export). Delete
-    buttons and clear-all actions are hidden in the UI, and the backend rejects
-    `DELETE` requests from viewers.
+  - `survey-viewer` — read-only access (list, view, stats, export). The UI
+    hides delete actions and the backend rejects `DELETE` requests from
+    viewers.
 - Lists every survey with response counts, shows paginated submissions,
   displays per-question distributions, and offers CSV export.
 - The detail page maps raw question IDs back to the human-readable labels
   defined in the survey YAML.
 - The submissions table is built with `@tanstack/react-table` and supports
   searching, sorting, toggling column visibility, and choosing the page size.
-  It also has a compact mobile card view inspired by the NukeLab admin data
-  table; each card and table row opens a modal with the full response rendered
-  as question/answer pairs (rating values shown as stars, checkbox answers as
-  badges).
+  Each card and table row opens a modal with the full response rendered as
+  question/answer pairs.
 - The stats panel renders an interactive daily-response bar chart with
   `recharts` and shows per-question distributions as labeled cards.
-- Free-text questions (`text`, `textarea`, `email`, `url`) are excluded from
-  distributions because their values are mostly unique.
-- Distribution cards list every value returned by the API (capped to the top
-  50 per question server-side) inside a scrollable container with a reserved
-  scrollbar gutter so the bars never overlap the scrollbar.
+- Free-text questions are excluded from distributions.
 - Generate realistic demo submissions for local testing with
   `npm run seed:surveys` (see `scripts/AGENTS.md`).
 
 ## Verification
+
+See the root NAD "Before committing" for the canonical checks:
 
 ```bash
 npm run build

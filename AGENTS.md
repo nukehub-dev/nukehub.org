@@ -169,7 +169,7 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `api-server/` — NukeHub API server: contact form and survey endpoints,
   SMTP relay. See `api-server/AGENTS.md`.
 - `api-server/api.nukehub.org.conf` — reverse-proxy vhost for
-  `api.nukehub.org/health`, `/contact`, and `/survey`.
+  `api.nukehub.org/health`, `/contact` and `/survey`.
 - `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
 - `.github/workflows/sync-github-stats.yml` — scheduled GitHub stats refresh.
 
@@ -257,18 +257,10 @@ Secrets for the API server (`SMTP_*`, `TURNSTILE_SECRET_KEY`,
   `styles/`, `data/`, `types/`, `integrations/`, plus Astro config and project
   path aliases.
 - `src/content/AGENTS.md` — Astro content collections and `content.config.ts`
-  schemas (projects, people, sponsors, events, integrations, roadmap,
-  changelog, manual, testimonials, incidents, people/categories, surveys).
-- `src/modules/AGENTS.md` — React islands grouped by feature area
-  (`home/`, `projects/<name>/`, `about/`, `roadmap/`, `changelog/`, `people/`,
-  `events/`, `support/`, `contact/`, `sponsors/`, `acknowledgment/`,
-  `manual/`, `survey/`).
-- `src/lib/AGENTS.md` — TypeScript utilities, hooks, and the Keycloak auth
-  provider.
-- `public/AGENTS.md` — Static assets copied verbatim into `dist/` (the
-  Cloudflare Pages Worker, `_headers`, fonts, images, manifest,
-  `silent-check-sso.html`).
-- `scripts/AGENTS.md` — Node.js maintenance scripts
-  (`debug-pages.js`, `sync-github-stats.mjs`, `optimize-images.js`).
-- `api-server/AGENTS.md` — NukeHub API server (contact/survey endpoints and
-  SMTP relay behind `api.nukehub.org`).
+  schemas.
+- `src/modules/AGENTS.md` — React islands grouped by feature area.
+- `src/modules/survey/AGENTS.md` — YAML-driven surveys and admin dashboard.
+- `src/lib/AGENTS.md` — TypeScript utilities, hooks, and auth.
+- `public/AGENTS.md` — static assets and the Cloudflare Pages Worker.
+- `scripts/AGENTS.md` — Node.js maintenance scripts.
+- `api-server/AGENTS.md` — NukeHub API server.
