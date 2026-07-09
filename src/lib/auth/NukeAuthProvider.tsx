@@ -1,10 +1,8 @@
 import {
   createContext,
   useContext,
-  useEffect,
-  useState,
   useCallback,
-  useRef,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import Keycloak from "keycloak-js";
@@ -100,6 +98,457 @@ function clearTokens() {
   }
 }
 
+interface ControllerConfig {
+  url: string;
+  realm: string;
+  clientId: string;
+}
+
+const controllers = new Map<string, AuthController>();
+
+function getController(config: ControllerConfig): AuthController {
+  const key = `${config.url}|${config.realm}|${config.clientId}`;
+  let controller = controllers.get(key);
+  if (!controller) {
+    controller = new AuthController(config);
+    controllers.set(key, controller);
+  }
+  return controller;
+}
+
+// Cap Keycloak init so a slow/unreachable auth server doesn't delay page
+// interactivity or skew local Lighthouse scores.
+function withInitTimeout(
+  initPromise: Promise<boolean>,
+  ms = 5000,
+): Promise<boolean> {
+  let timeoutId = 0;
+  const timeoutPromise = new Promise<boolean>((_, reject) => {
+    timeoutId = window.setTimeout(
+      () => reject(new Error("Keycloak init timeout")),
+      ms,
+    );
+  });
+  initPromise
+    .then(() => window.clearTimeout(timeoutId))
+    .catch(() => window.clearTimeout(timeoutId));
+  return Promise.race([initPromise, timeoutPromise]);
+}
+
+class AuthController {
+  private keycloak: Keycloak;
+  private state: AuthContextValue;
+  private listeners = new Set<() => void>();
+  private initPromise: Promise<boolean> | null = null;
+  private config: ControllerConfig;
+  private lastRefreshRef = { current: 0 };
+  private refreshTimerRef: number | null = null;
+  private pendingLoginRef = { current: false };
+  private readyRef = { current: false };
+  private activityHandler: (() => void) | null = null;
+  private boundStorageHandler: ((event: StorageEvent) => void) | null = null;
+
+  constructor(config: ControllerConfig) {
+    this.config = config;
+    this.keycloak = new Keycloak({
+      url: config.url,
+      realm: config.realm,
+      clientId: config.clientId,
+    });
+    this.state = {
+      isAuthenticated: false,
+      isLoading: true,
+      user: null,
+      token: null,
+      hasRole: (role) => this.hasRole(role),
+      login: () => this.login(),
+      logout: () => this.logout(),
+      accountUrl: `${config.url}/realms/${config.realm}/account`,
+    };
+    this.setupCallbacks();
+    this.setupStorageSync();
+  }
+
+  destroy() {
+    this.stopRefreshTimer();
+    this.stopActivityListeners();
+    this.teardownStorageSync();
+    this.listeners.clear();
+  }
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    if (!this.initPromise) {
+      void this.init();
+    }
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  getState(): AuthContextValue {
+    return this.state;
+  }
+
+  private notify() {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  }
+
+  private setState(partial: Partial<AuthContextValue>) {
+    const wasAuthenticated = this.state.isAuthenticated;
+    this.state = { ...this.state, ...partial };
+    this.notify();
+
+    if (this.state.isAuthenticated && !wasAuthenticated) {
+      this.startRefreshTimer();
+      this.startActivityListeners();
+    } else if (!this.state.isAuthenticated && wasAuthenticated) {
+      this.stopRefreshTimer();
+      this.stopActivityListeners();
+    }
+  }
+
+  private setupCallbacks() {
+    this.keycloak.onAuthSuccess = () => {
+      this.handleAuth(true);
+    };
+
+    this.keycloak.onAuthRefreshSuccess = () => {
+      saveTokens(this.keycloak);
+      this.lastRefreshRef.current = Date.now();
+    };
+
+    this.keycloak.onAuthRefreshError = () => {
+      console.error("Keycloak refresh error");
+      this.clearAuthState();
+    };
+
+    this.keycloak.onAuthLogout = () => {
+      this.clearAuthState();
+    };
+
+    this.keycloak.onTokenExpired = () => {
+      void this.refreshTokens();
+    };
+  }
+
+  private clearAuthState() {
+    this.setState({
+      isAuthenticated: false,
+      isLoading: false,
+      user: null,
+      token: null,
+    });
+    clearTokens();
+    // Once we reach a terminal signed-out state the adapter is ready for
+    // login() calls. This matters on localhost where we skip silent SSO and
+    // go straight to signed-out after logout or when no tokens are stored.
+    this.readyRef.current = true;
+    this.flushPendingLogin();
+  }
+
+  private handleAuth(authenticated: boolean) {
+    const isAuth = authenticated || this.keycloak.authenticated || false;
+    this.setState({
+      isAuthenticated: isAuth,
+      isLoading: false,
+      user: isAuth ? mapUser(this.keycloak) : null,
+      token: this.keycloak.token || null,
+    });
+    this.readyRef.current = true;
+    if (isAuth) {
+      saveTokens(this.keycloak);
+      this.lastRefreshRef.current = Date.now();
+    }
+    this.flushPendingLogin();
+  }
+
+  private flushPendingLogin() {
+    if (this.pendingLoginRef.current) {
+      this.pendingLoginRef.current = false;
+      this.keycloak.login({
+        redirectUri: window.location.origin + window.location.pathname,
+      });
+    }
+  }
+
+  private async init(): Promise<boolean> {
+    if (this.initPromise) return this.initPromise;
+    this.initPromise = this.doInit();
+    return this.initPromise;
+  }
+
+  private async doInit(): Promise<boolean> {
+    if (!this.config.url || !this.config.realm || !this.config.clientId) {
+      this.clearAuthState();
+      return false;
+    }
+
+    const isLoginCallback = hasAuthResponseInUrl();
+
+    // When the URL carries a fresh login callback (code/state), process it
+    // directly. Using "check-sso" here can race with or skip callback
+    // processing, leaving the UI showing the Sign In button until a refresh.
+    if (isLoginCallback) {
+      try {
+        const authenticated = await withInitTimeout(
+          this.keycloak.init({
+            pkceMethod: "S256",
+            checkLoginIframe: false,
+            enableLogging: process.env.NODE_ENV === "development",
+          }),
+        );
+        this.handleAuth(authenticated);
+        return authenticated;
+      } catch (error) {
+        console.error("Keycloak init failed:", error);
+
+        // The callback may have already been consumed by another island before
+        // this one initialized, or the init timed out. If we have stored tokens,
+        // try restoring them instead of leaving the user signed-out.
+        if (loadTokens()) {
+          return this.restoreTokensFromStorage();
+        }
+
+        this.handleAuth(false);
+        return false;
+      }
+    }
+
+    // No fresh callback: try restoring tokens from a previous login first.
+    // This avoids relying on third-party cookies for the silent SSO check on
+    // reload and works on localhost where the silent SSO iframe target differs
+    // from the production redirect domain.
+    if (loadTokens()) {
+      return this.restoreTokensFromStorage();
+    }
+
+    // No stored tokens: initialize the adapter anyway so login() works, then
+    // optionally run a silent SSO check. Skip the silent SSO iframe on
+    // localhost/127.0.0.1 because the auth redirect target is the production
+    // domain and will fail/timeout there.
+    const isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(
+      window.location.hostname,
+    );
+
+    try {
+      const authenticated = await withInitTimeout(
+        this.keycloak.init({
+          onLoad: isLocalhost ? undefined : "check-sso",
+          silentCheckSsoRedirectUri: isLocalhost
+            ? undefined
+            : window.location.origin + "/silent-check-sso.html",
+          pkceMethod: "S256",
+          checkLoginIframe: false,
+          enableLogging: process.env.NODE_ENV === "development",
+        }),
+      );
+      this.handleAuth(authenticated);
+      return authenticated;
+    } catch (error) {
+      console.error("Keycloak init failed:", error);
+      this.handleAuth(false);
+      return false;
+    }
+  }
+
+  private async restoreTokensFromStorage(): Promise<boolean> {
+    const tokens = loadTokens();
+    if (!tokens) {
+      this.clearAuthState();
+      return false;
+    }
+
+    try {
+      const authenticated = await withInitTimeout(
+        this.keycloak.init({
+          token: tokens.token,
+          refreshToken: tokens.refreshToken,
+          idToken: tokens.idToken,
+          timeSkew: tokens.timeSkew,
+          pkceMethod: "S256",
+          checkLoginIframe: false,
+          enableLogging: process.env.NODE_ENV === "development",
+        }),
+      );
+      if (authenticated) {
+        this.handleAuth(true);
+        return true;
+      }
+
+      // The stored access token may have expired while the refresh token
+      // is still valid. Try a refresh before falling back to silent SSO,
+      // which is more fragile in browsers with strict third-party cookie
+      // policies.
+      if (this.keycloak.refreshToken) {
+        const refreshed = await this.refreshTokens(false);
+        if (refreshed) {
+          this.handleAuth(true);
+          return true;
+        }
+      }
+
+      clearTokens();
+      this.clearAuthState();
+      this.readyRef.current = true;
+      return false;
+    } catch (error) {
+      console.error("Keycloak token restore failed:", error);
+      clearTokens();
+      this.clearAuthState();
+      this.readyRef.current = true;
+      return false;
+    }
+  }
+
+  private async refreshTokens(retry = true): Promise<boolean> {
+    // Only check for a refresh token. During init the access token may be
+    // expired and keycloak.authenticated false, but the refresh token can
+    // still recover the session.
+    if (!this.keycloak.refreshToken) return false;
+
+    try {
+      const refreshed = await this.keycloak.updateToken(
+        REFRESH_MIN_VALIDITY_SECONDS,
+      );
+      if (refreshed) {
+        saveTokens(this.keycloak);
+        this.lastRefreshRef.current = Date.now();
+      }
+      return true;
+    } catch (error) {
+      console.error("Keycloak token refresh failed:", error);
+      if (retry) {
+        // One retry after a short delay; transient network errors or a
+        // briefly overloaded Keycloak server can recover.
+        await new Promise((resolve) => window.setTimeout(resolve, 2000));
+        return this.refreshTokens(false);
+      }
+      this.clearAuthState();
+      return false;
+    }
+  }
+
+  private startRefreshTimer() {
+    this.stopRefreshTimer();
+    this.refreshTimerRef = window.setInterval(() => {
+      void this.refreshTokens();
+    }, REFRESH_INTERVAL_MS);
+  }
+
+  private stopRefreshTimer() {
+    if (this.refreshTimerRef) {
+      window.clearInterval(this.refreshTimerRef);
+      this.refreshTimerRef = null;
+    }
+  }
+
+  private startActivityListeners() {
+    this.stopActivityListeners();
+
+    const ACTIVITY_DEBOUNCE_MS = 30_000;
+
+    this.activityHandler = () => {
+      const tokenExp = this.keycloak.tokenParsed
+        ? (this.keycloak.tokenParsed as Record<string, unknown>).exp
+        : undefined;
+      if (typeof tokenExp !== "number") return;
+
+      const expiresInSeconds = tokenExp - Math.ceil(Date.now() / 1000);
+      const recentlyRefreshed =
+        Date.now() - this.lastRefreshRef.current < ACTIVITY_DEBOUNCE_MS;
+
+      if (
+        expiresInSeconds < REFRESH_MIN_VALIDITY_SECONDS &&
+        !recentlyRefreshed
+      ) {
+        void this.refreshTokens();
+      }
+    };
+
+    window.addEventListener("pointerdown", this.activityHandler, {
+      passive: true,
+    });
+    window.addEventListener("keydown", this.activityHandler, {
+      passive: true,
+    });
+  }
+
+  private stopActivityListeners() {
+    if (this.activityHandler) {
+      window.removeEventListener("pointerdown", this.activityHandler);
+      window.removeEventListener("keydown", this.activityHandler);
+      this.activityHandler = null;
+    }
+  }
+
+  private setupStorageSync() {
+    this.boundStorageHandler = (event: StorageEvent) => {
+      if (event.key !== TOKEN_KEY) return;
+
+      if (!event.newValue) {
+        // Tokens were removed in another tab (logout).
+        if (this.state.isAuthenticated) {
+          this.clearAuthState();
+        }
+        return;
+      }
+
+      // Tokens were added/updated in another tab (login). If this controller
+      // is not authenticated, restore the session without a page reload.
+      if (!this.state.isAuthenticated) {
+        void this.restoreTokensFromStorage();
+      }
+    };
+
+    window.addEventListener("storage", this.boundStorageHandler);
+  }
+
+  private teardownStorageSync() {
+    if (this.boundStorageHandler) {
+      window.removeEventListener("storage", this.boundStorageHandler);
+      this.boundStorageHandler = null;
+    }
+  }
+
+  private login() {
+    if (!this.config.url || !this.config.realm || !this.config.clientId) {
+      console.error(
+        "NukeAuth login failed: auth configuration is missing. " +
+          "Check PUBLIC_AUTH_URL, PUBLIC_AUTH_REALM, and PUBLIC_AUTH_CLIENT_ID.",
+      );
+      return;
+    }
+    if (!this.readyRef.current) {
+      // User clicked Sign In before the silent init finished. Queue the login
+      // so it runs as soon as Keycloak is ready; calling keycloak.login() too
+      // early crashes because the adapter has not been initialized yet.
+      this.pendingLoginRef.current = true;
+      return;
+    }
+    this.keycloak.login({
+      redirectUri: window.location.origin + window.location.pathname,
+    });
+  }
+
+  private logout() {
+    this.clearAuthState();
+    if (this.config.url && this.config.realm) {
+      this.keycloak.logout({ redirectUri: window.location.origin });
+    }
+  }
+
+  private hasRole(role: string): boolean {
+    if (!this.keycloak.tokenParsed) return false;
+    const roles = extractRoles(
+      this.keycloak.tokenParsed as Record<string, unknown>,
+    );
+    return roles.includes(role);
+  }
+}
+
 export function NukeAuthProvider({
   children,
   url,
@@ -107,6 +556,7 @@ export function NukeAuthProvider({
   clientId,
 }: NukeAuthProviderProps) {
   const configValid = Boolean(url && realm && clientId);
+
   if (!configValid && process.env.NODE_ENV === "development") {
     console.error(
       "NukeAuthProvider: missing auth configuration. " +
@@ -114,408 +564,42 @@ export function NukeAuthProvider({
     );
   }
 
-  const [keycloak] = useState(
-    () =>
-      new Keycloak({
-        url: url || "",
-        realm: realm || "",
-        clientId: clientId || "",
-      }),
-  );
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // Start in loading state so the sign-in button is not clickable until
-  // Keycloak init has run. Calling keycloak.login() before init() completes
-  // crashes because keycloak-js initializes its internal adapter in init().
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const controller = configValid
+    ? getController({ url, realm, clientId })
+    : null;
 
-  // Track the last time we successfully refreshed so user-activity refreshes
-  // do not hammer the Keycloak server.
-  const lastRefreshRef = useRef<number>(0);
-  const refreshTimerRef = useRef<number | null>(null);
-  // Guard against concurrent init attempts from the mount effect and
-  // cross-tab storage sync.
-  const initInFlightRef = useRef<boolean>(false);
-  // True once the first init attempt has finished (success or failure).
-  // keycloak.login() crashes if called before init completes, so we queue
-  // early clicks and run them as soon as init is done.
-  const readyRef = useRef<boolean>(false);
-  const pendingLoginRef = useRef<boolean>(false);
-
-  const accountUrl = configValid ? `${url}/realms/${realm}/account` : "";
-
-  const clearAuthState = useCallback(() => {
-    setIsAuthenticated(false);
-    setUser(null);
-    setIsLoading(false);
-    clearTokens();
-  }, []);
-
-  const setReady = useCallback(() => {
-    readyRef.current = true;
-  }, []);
-
-  const flushPendingLogin = useCallback(() => {
-    if (pendingLoginRef.current) {
-      pendingLoginRef.current = false;
-      keycloak.login({ redirectUri: window.location.href });
-    }
-  }, [keycloak]);
-
-  const handleAuth = useCallback(
-    (authenticated: boolean) => {
-      setIsAuthenticated(authenticated);
-      setUser(authenticated ? mapUser(keycloak) : null);
-      setIsLoading(false);
-      if (authenticated) {
-        saveTokens(keycloak);
-        lastRefreshRef.current = Date.now();
-      }
-      setReady();
-      flushPendingLogin();
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      if (!controller) return () => {};
+      return controller.subscribe(onStoreChange);
     },
-    [keycloak, setReady, flushPendingLogin],
+    [controller],
   );
 
-  const refreshTokens = useCallback(
-    async (retry = true): Promise<boolean> => {
-      // Only check for a refresh token. During init the access token may be
-      // expired and keycloak.authenticated false, but the refresh token can
-      // still recover the session.
-      if (!keycloak.refreshToken) return false;
-
-      try {
-        const refreshed = await keycloak.updateToken(
-          REFRESH_MIN_VALIDITY_SECONDS,
-        );
-        if (refreshed) {
-          saveTokens(keycloak);
-          lastRefreshRef.current = Date.now();
-        }
-        return true;
-      } catch (error) {
-        console.error("Keycloak token refresh failed:", error);
-        if (retry) {
-          // One retry after a short delay; transient network errors or a
-          // briefly overloaded Keycloak server can recover.
-          await new Promise((resolve) => window.setTimeout(resolve, 2000));
-          return refreshTokens(false);
-        }
-        clearAuthState();
-        return false;
-      }
-    },
-    [keycloak, clearAuthState],
+  const state = useSyncExternalStore(
+    subscribe,
+    () => (controller ? controller.getState() : defaultState),
+    () => (controller ? controller.getState() : defaultState),
   );
 
-  // Cap Keycloak init so a slow/unreachable auth server doesn't delay page
-  // interactivity or skew local Lighthouse scores.
-  const withInitTimeout = useCallback(
-    (initPromise: Promise<boolean>, ms = 5000): Promise<boolean> => {
-      let timeoutId = 0;
-      const timeoutPromise = new Promise<boolean>((_, reject) => {
-        timeoutId = window.setTimeout(
-          () => reject(new Error("Keycloak init timeout")),
-          ms,
-        );
-      });
-      initPromise
-        .then(() => window.clearTimeout(timeoutId))
-        .catch(() => window.clearTimeout(timeoutId));
-      return Promise.race([initPromise, timeoutPromise]);
-    },
-    [],
-  );
-
-  const initWithCheckSso = useCallback(() => {
-    if (!configValid) {
-      clearAuthState();
-      return;
-    }
-
-    // Skip silent SSO iframe on localhost/127.0.0.1 because the auth
-    // redirect target is the production domain and will fail/timeout.
-    const isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(
-      window.location.hostname,
-    );
-    const initPromise = keycloak.init({
-      onLoad: isLocalhost ? undefined : "check-sso",
-      silentCheckSsoRedirectUri: isLocalhost
-        ? undefined
-        : window.location.origin + "/silent-check-sso.html",
-      pkceMethod: "S256",
-      enableLogging: process.env.NODE_ENV === "development",
-    });
-
-    withInitTimeout(initPromise)
-      .then((authenticated) => {
-        handleAuth(authenticated);
-      })
-      .catch((error) => {
-        console.error("Keycloak init failed:", error);
-        handleAuth(false);
-      });
-  }, [keycloak, handleAuth, clearAuthState, configValid, withInitTimeout]);
-
-  const restoreTokensFromStorage = useCallback(() => {
-    if (initInFlightRef.current) return;
-
-    const tokens = loadTokens();
-    if (!tokens) {
-      // Anonymous visitor: no need to talk to Keycloak at all.
-      clearAuthState();
-      return;
-    }
-
-    if (!configValid) {
-      clearTokens();
-      clearAuthState();
-      return;
-    }
-
-    initInFlightRef.current = true;
-
-    const initPromise = keycloak.init({
-      token: tokens.token,
-      refreshToken: tokens.refreshToken,
-      idToken: tokens.idToken,
-      timeSkew: tokens.timeSkew,
-      pkceMethod: "S256",
-      checkLoginIframe: false,
-      enableLogging: process.env.NODE_ENV === "development",
-    });
-
-    withInitTimeout(initPromise)
-      .then(async (authenticated) => {
-        if (authenticated) {
-          handleAuth(true);
-          return;
-        }
-
-        // The stored access token may have expired while the refresh token
-        // is still valid. Try a refresh before falling back to silent SSO,
-        // which is more fragile in browsers with strict third-party cookie
-        // policies.
-        if (keycloak.refreshToken) {
-          const refreshed = await refreshTokens(false);
-          if (refreshed) {
-            handleAuth(true);
-            return;
-          }
-        }
-
-        clearTokens();
-        clearAuthState();
-        setReady();
-      })
-      .catch((error) => {
-        console.error("Keycloak token restore failed:", error);
-        clearTokens();
-        clearAuthState();
-        setReady();
-      })
-      .finally(() => {
-        initInFlightRef.current = false;
-      });
-  }, [
-    keycloak,
-    handleAuth,
-    clearAuthState,
-    refreshTokens,
-    configValid,
-    withInitTimeout,
-    setReady,
-  ]);
-
-  // Initial mount: restore tokens or run silent SSO.
-  useEffect(() => {
-    keycloak.onAuthSuccess = () => {
-      setIsAuthenticated(true);
-      setUser(mapUser(keycloak));
-      saveTokens(keycloak);
-      lastRefreshRef.current = Date.now();
-    };
-
-    keycloak.onAuthRefreshSuccess = () => {
-      saveTokens(keycloak);
-      lastRefreshRef.current = Date.now();
-    };
-
-    keycloak.onAuthRefreshError = () => {
-      console.error("Keycloak refresh error");
-      clearAuthState();
-    };
-
-    keycloak.onAuthLogout = () => {
-      clearAuthState();
-    };
-
-    keycloak.onTokenExpired = () => {
-      refreshTokens();
-    };
-
-    const init = () => {
-      // If the URL carries a fresh auth response (e.g. after login redirect),
-      // or the user is anonymous (no stored tokens), run the standard
-      // Keycloak init. This initializes the adapter so login() works and
-      // checks for an existing SSO session when appropriate.
-      if (hasAuthResponseInUrl() || !loadTokens()) {
-        initWithCheckSso();
-        return;
-      }
-
-      // Try restoring tokens from a previous login first. This avoids
-      // relying on third-party cookies for the silent SSO check on reload.
-      restoreTokensFromStorage();
-    };
-
-    // Run init immediately. Keycloak's init is async and non-blocking; waiting
-    // for window.load risks missing the event if the island hydrates late.
-    init();
-
-    return () => {
-      keycloak.onAuthSuccess = undefined;
-      keycloak.onAuthRefreshSuccess = undefined;
-      keycloak.onAuthRefreshError = undefined;
-      keycloak.onAuthLogout = undefined;
-      keycloak.onTokenExpired = undefined;
-    };
-  }, [
-    keycloak,
-    clearAuthState,
-    refreshTokens,
-    initWithCheckSso,
-    restoreTokensFromStorage,
-  ]);
-
-  // Cross-tab sync: when another tab logs in or out, follow its state.
-  useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== TOKEN_KEY) return;
-
-      if (!event.newValue) {
-        // Tokens were removed in another tab (logout).
-        if (isAuthenticated) {
-          clearAuthState();
-        }
-        return;
-      }
-
-      // Tokens were added/updated in another tab (login). If this tab is not
-      // authenticated, restore the session without a page reload.
-      if (!isAuthenticated) {
-        restoreTokensFromStorage();
-      }
-    };
-
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, [isAuthenticated, clearAuthState, restoreTokensFromStorage]);
-
-  // Periodic proactive refresh: keeps the access token from expiring even
-  // when onTokenExpired events are throttled or missed (e.g., background tabs).
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    refreshTimerRef.current = window.setInterval(() => {
-      refreshTokens();
-    }, REFRESH_INTERVAL_MS);
-
-    return () => {
-      if (refreshTimerRef.current) {
-        window.clearInterval(refreshTimerRef.current);
-        refreshTimerRef.current = null;
-      }
-    };
-  }, [isAuthenticated, refreshTokens]);
-
-  // Refresh on user activity when the token is near expiry, but rate-limit
-  // so frequent clicks don't flood the Keycloak server.
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const ACTIVITY_DEBOUNCE_MS = 30_000;
-
-    const handleActivity = () => {
-      const tokenExp = keycloak.tokenParsed
-        ? (keycloak.tokenParsed as Record<string, unknown>).exp
-        : undefined;
-      if (typeof tokenExp !== "number") return;
-
-      const expiresInSeconds = tokenExp - Math.ceil(Date.now() / 1000);
-      const recentlyRefreshed =
-        Date.now() - lastRefreshRef.current < ACTIVITY_DEBOUNCE_MS;
-
-      if (
-        expiresInSeconds < REFRESH_MIN_VALIDITY_SECONDS &&
-        !recentlyRefreshed
-      ) {
-        refreshTokens();
-      }
-    };
-
-    window.addEventListener("pointerdown", handleActivity, { passive: true });
-    window.addEventListener("keydown", handleActivity, { passive: true });
-
-    return () => {
-      window.removeEventListener("pointerdown", handleActivity);
-      window.removeEventListener("keydown", handleActivity);
-    };
-  }, [isAuthenticated, keycloak, refreshTokens]);
-
-  const login = useCallback(() => {
-    if (!configValid) {
-      console.error(
-        "NukeAuth login failed: auth configuration is missing. " +
-          "Check PUBLIC_AUTH_URL, PUBLIC_AUTH_REALM, and PUBLIC_AUTH_CLIENT_ID.",
-      );
-      return;
-    }
-    if (!readyRef.current) {
-      // User clicked Sign In before the silent init finished. Queue the login
-      // so it runs as soon as Keycloak is ready; calling keycloak.login() too
-      // early crashes because the adapter has not been initialized yet.
-      pendingLoginRef.current = true;
-      return;
-    }
-    keycloak.login({ redirectUri: window.location.href });
-  }, [configValid, keycloak]);
-
-  const logout = useCallback(() => {
-    clearAuthState();
-    if (configValid) {
-      keycloak.logout({ redirectUri: window.location.origin });
-    }
-  }, [keycloak, clearAuthState, configValid]);
-
-  const hasRole = useCallback(
-    (role: string) => {
-      if (!keycloak.tokenParsed) return false;
-      const roles = extractRoles(
-        keycloak.tokenParsed as Record<string, unknown>,
-      );
-      return roles.includes(role);
-    },
-    [keycloak],
-  );
-
-  return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        isLoading,
-        user,
-        token: keycloak.token || null,
-        hasRole,
-        login,
-        logout,
-        accountUrl,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
+
+const defaultState: AuthContextValue = {
+  isAuthenticated: false,
+  isLoading: false,
+  user: null,
+  token: null,
+  hasRole: () => false,
+  login: () => {
+    console.error(
+      "NukeAuth login failed: auth configuration is missing. " +
+        "Check PUBLIC_AUTH_URL, PUBLIC_AUTH_REALM, and PUBLIC_AUTH_CLIENT_ID.",
+    );
+  },
+  logout: () => {},
+  accountUrl: "",
+};
 
 function mapUser(keycloak: Keycloak): AuthUser | null {
   const profile = keycloak.tokenParsed as Record<string, unknown> | undefined;
@@ -573,4 +657,15 @@ export function useAuth(): AuthContextValue {
 
 export function useMaybeAuth(): AuthContextValue | undefined {
   return useContext(AuthContext);
+}
+
+// HMR safety: when this module is replaced during development, clean up the
+// old controller so stale Keycloak instances and timers don't accumulate.
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    for (const [, controller] of controllers) {
+      controller.destroy();
+    }
+    controllers.clear();
+  });
 }
