@@ -50,8 +50,8 @@ All files under `api-server/**`: `main.go`, `go.mod`, `Dockerfile`,
   `api-server/.env` (not committed).
 - `README.md` — operator quick-start, env-var list, and security feature list.
 - `api.nukehub.org.conf` — top-level nginx vhost that redirects HTTP → HTTPS,
-  proxies `/health`, `/contact`, and `/survey` to `127.0.0.1:3000`, and applies
-  security headers. This vhost is unrelated to the static site's
+  proxies `/health`, `/contact`, `/survey`, and `/admin` to `127.0.0.1:3000`,
+  and applies security headers. This vhost is unrelated to the static site's
   `public/_headers` (served by Cloudflare Pages).
 
 ### Environment variables

@@ -30,7 +30,6 @@ const enabled = Boolean(cfToken);
       script.id = SCRIPT_ID;
       script.defer = true;
       script.src = BEACON_SRC;
-      script.crossOrigin = "anonymous";
       script.setAttribute("data-cf-beacon", JSON.stringify({ token: token }));
       document.head.appendChild(script);
     }
