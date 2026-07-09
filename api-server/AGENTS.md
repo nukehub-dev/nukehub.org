@@ -26,9 +26,24 @@ All files under `api-server/**`: `main.go`, `go.mod`, `Dockerfile`,
 
 - `main.go` — entire service. Endpoints: `GET /health`, `POST /contact`,
   `POST /survey`, and admin endpoints under `/admin/surveys`. Includes SQLite
-  persistence, in-process rate limiter, Turnstile verification, JWT validation
-  against the Keycloak JWKS endpoint, input sanitization, HTML escaping, and
-  email header-injection prevention.
+  persistence, rate limiting, Turnstile verification, JWT validation against
+  the Keycloak JWKS endpoint, input sanitization, HTML escaping, and email
+  header-injection prevention.
+
+### Abuse protection
+
+- **Per-IP rate limiting** — `POST /contact` and `POST /survey` allow 5
+  submissions per IP per hour. The store is mutex-protected and stale entries
+  are cleaned up every 10 minutes.
+- **Trusted proxy IP extraction** — `X-Real-IP` / `X-Forwarded-For` are only
+  trusted when the direct connection comes from a loopback or private address
+  (i.e. the nginx reverse proxy). Otherwise `RemoteAddr` is used, so clients
+  cannot spoof their IP to bypass the rate limiter.
+- **Global concurrency limit** — at most 100 in-flight requests are accepted
+  at once. Excess requests receive `503 Service Unavailable` with a
+  `Retry-After: 10` header.
+- **Request body cap** — JSON bodies for `/contact` and `/survey` are limited
+  to 2 MiB via `http.MaxBytesReader`.
 - `Dockerfile` — builds the static Go binary inside a build stage and copies
   it into a minimal runtime image.
 - `compose.yml` — local + production container composition. Reads secrets from

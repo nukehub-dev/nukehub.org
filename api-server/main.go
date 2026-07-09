@@ -35,14 +35,22 @@ type rateLimitEntry struct {
 	resetTime time.Time
 }
 
-var rateLimitStore = make(map[string]*rateLimitEntry)
+var (
+	rateLimitStore = make(map[string]*rateLimitEntry)
+	rateLimitMu    sync.Mutex
+)
+
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 const (
 	rateLimitWindow        = time.Hour
 	rateLimitMax           = 5
 	statsDistributionLimit = 50
+	maxConcurrentRequests  = 100
+	maxRequestBodyBytes    = 2 << 20 // 2 MiB
 )
+
+var requestSemaphore = make(chan struct{}, maxConcurrentRequests)
 
 const (
 	adminRoleName  = "survey-admin"
@@ -94,7 +102,7 @@ func main() {
 	mux.HandleFunc("/admin/surveys", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminSurveys))
 	mux.HandleFunc("/admin/surveys/", requireSurveyAccess(handleAdminSurveyDetail))
 
-	handler := securityHeadersMiddleware(corsMiddleware(mux, allowedOrigins))
+	handler := securityHeadersMiddleware(corsMiddleware(concurrencyLimitMiddleware(mux), allowedOrigins))
 
 	fmt.Printf("NukeHub API server listening on port %s\n", port)
 	fmt.Printf("Health check: http://localhost:%s/health\n", port)
@@ -192,7 +200,7 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 		AdditionalFields map[string]string `json:"additionalFields"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxRequestBodyBytes)).Decode(&req); err != nil {
 		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
 			"success": false,
 			"message": "Invalid request body",
@@ -324,7 +332,7 @@ func handleSurvey(w http.ResponseWriter, r *http.Request) {
 		TurnstileToken string                 `json:"turnstileToken"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxRequestBodyBytes)).Decode(&req); err != nil {
 		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
 			"success": false,
 			"message": "Invalid request body",
@@ -489,14 +497,28 @@ func storeSurveySubmission(surveySlug, surveyTitle, ipHash, email string, respon
 }
 
 func clientIP(r *http.Request) string {
-	ip := r.Header.Get("X-Real-IP")
-	if ip == "" {
-		ip = r.Header.Get("X-Forwarded-For")
-		if ip != "" {
-			ip = strings.Split(ip, ",")[0]
-			ip = strings.TrimSpace(ip)
+	// Only trust proxy headers when the direct connection is from a trusted
+	// source (loopback or private network). Otherwise a client can spoof
+	// X-Forwarded-For and bypass per-IP rate limits.
+	trustedProxy := false
+	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		if addr := net.ParseIP(host); addr != nil {
+			trustedProxy = addr.IsLoopback() || addr.IsPrivate()
 		}
 	}
+
+	ip := ""
+	if trustedProxy {
+		ip = r.Header.Get("X-Real-IP")
+		if ip == "" {
+			ip = r.Header.Get("X-Forwarded-For")
+			if ip != "" {
+				ip = strings.Split(ip, ",")[0]
+				ip = strings.TrimSpace(ip)
+			}
+		}
+	}
+
 	if ip == "" {
 		var err error
 		ip, _, err = net.SplitHostPort(r.RemoteAddr)
@@ -1109,8 +1131,11 @@ func verifyTurnstile(token string) bool {
 
 func checkRateLimit(ip string) bool {
 	now := time.Now()
-	entry, exists := rateLimitStore[ip]
 
+	rateLimitMu.Lock()
+	defer rateLimitMu.Unlock()
+
+	entry, exists := rateLimitStore[ip]
 	if !exists || now.After(entry.resetTime) {
 		rateLimitStore[ip] = &rateLimitEntry{
 			count:     1,
@@ -1131,11 +1156,14 @@ func cleanupRateLimits() {
 	ticker := time.NewTicker(10 * time.Minute)
 	for range ticker.C {
 		now := time.Now()
+
+		rateLimitMu.Lock()
 		for ip, entry := range rateLimitStore {
 			if now.After(entry.resetTime) {
 				delete(rateLimitStore, ip)
 			}
 		}
+		rateLimitMu.Unlock()
 	}
 }
 
@@ -1157,6 +1185,22 @@ func sanitizeHeader(input string) string {
 	input = strings.ReplaceAll(input, "\r", "")
 	input = strings.ReplaceAll(input, "\n", "")
 	return input
+}
+
+func concurrencyLimitMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		select {
+		case requestSemaphore <- struct{}{}:
+			defer func() { <-requestSemaphore }()
+			next.ServeHTTP(w, r)
+		default:
+			w.Header().Set("Retry-After", "10")
+			jsonResponse(w, http.StatusServiceUnavailable, map[string]interface{}{
+				"success": false,
+				"message": "Server is busy. Please try again in a moment.",
+			})
+		}
+	})
 }
 
 func corsMiddleware(next http.Handler, allowedOrigins []string) http.Handler {
