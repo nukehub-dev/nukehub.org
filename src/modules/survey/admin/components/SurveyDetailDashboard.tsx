@@ -3,14 +3,12 @@ import {
   ArrowLeft,
   BarChart3,
   Download,
-  Eye,
   List,
   Trash2,
 } from "lucide-react";
 import { useMaybeAuth } from "@lib/auth/NukeAuthProvider";
 import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
-import { Badge } from "@components/ui/Badge";
 import { ConfirmDialog } from "@components/ui/Dialog";
 import type { Survey } from "../../types";
 import { useSubmissions, useStats } from "../hooks/useSurveyAdmin";
@@ -36,8 +34,7 @@ export function SurveyDetailDashboard({
   const auth = useMaybeAuth();
   const token = auth?.token ?? null;
   const isAdmin = auth?.hasRole(ADMIN_ROLE) ?? false;
-  const isViewer = auth?.hasRole(VIEWER_ROLE) ?? false;
-  const canAccess = isAdmin || isViewer;
+  const canAccess = isAdmin || auth?.hasRole(VIEWER_ROLE) === true;
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(50);
   const [activeTab, setActiveTab] = React.useState<"stats" | "responses">(
@@ -130,17 +127,9 @@ export function SurveyDetailDashboard({
             <ArrowLeft size={16} />
             Back to surveys
           </a>
-          <div className="flex items-center gap-3">
-            <h1 className="mt-2 text-2xl font-semibold text-foreground">
-              {title}
-            </h1>
-            {isViewer && !isAdmin && (
-              <Badge variant="outline" className="gap-1">
-                <Eye size={14} />
-                Viewer
-              </Badge>
-            )}
-          </div>
+          <h1 className="mt-2 text-2xl font-semibold text-foreground">
+            {title}
+          </h1>
           <p className="text-sm text-muted-foreground">Slug: {slug}</p>
         </div>
         <div className="flex flex-col items-start gap-2 sm:items-end">
