@@ -1,7 +1,6 @@
 import * as React from "react";
-import { BarChart3 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { NukeAuthProvider, useMaybeAuth } from "@lib/auth/NukeAuthProvider";
-import { Button } from "@components/ui/Button";
 
 interface AdminSurveyLinkProps {
   url: string;
@@ -28,11 +27,15 @@ function AdminSurveyLinkInner() {
   }
 
   return (
-    <a href="/admin/surveys">
-      <Button variant="outline" size="sm">
-        <BarChart3 size={16} />
-        Admin
-      </Button>
+    <a
+      href="/admin/surveys"
+      className="group inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80"
+    >
+      View responses
+      <ArrowRight
+        size={14}
+        className="transition-transform group-hover:translate-x-0.5"
+      />
     </a>
   );
 }

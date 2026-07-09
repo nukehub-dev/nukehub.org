@@ -68,21 +68,22 @@ const permalink = "/surveys";
 
     <div class="relative z-10 px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-4xl">
-        <div
-          class="mb-6 flex flex-col items-center justify-center gap-3 sm:flex-row"
-        >
+        <div class="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+          <div></div>
           <div
             class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary"
           >
             <ClipboardList size={16} />
             Surveys
           </div>
-          <AdminSurveyLink
-            url={import.meta.env.PUBLIC_AUTH_URL}
-            realm={import.meta.env.PUBLIC_AUTH_REALM}
-            clientId={import.meta.env.PUBLIC_AUTH_CLIENT_ID}
-            client:only="react"
-          />
+          <div class="flex justify-end">
+            <AdminSurveyLink
+              url={import.meta.env.PUBLIC_AUTH_URL}
+              realm={import.meta.env.PUBLIC_AUTH_REALM}
+              clientId={import.meta.env.PUBLIC_AUTH_CLIENT_ID}
+              client:only="react"
+            />
+          </div>
         </div>
         <h1
           class="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
