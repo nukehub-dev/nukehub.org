@@ -48,6 +48,7 @@ interface SubmissionsTableProps {
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   token: string | null;
+  canDelete?: boolean;
   onDeleted?: () => void;
 }
 
@@ -64,6 +65,7 @@ export function SubmissionsTable({
   onPageChange,
   onLimitChange,
   token,
+  canDelete = false,
   onDeleted,
 }: SubmissionsTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -384,7 +386,7 @@ export function SubmissionsTable({
           )}
 
           {/* Bulk delete */}
-          {selectedIds.length > 0 && (
+          {canDelete && selectedIds.length > 0 && (
             <Button
               variant="destructive"
               size="sm"
@@ -505,7 +507,9 @@ export function SubmissionsTable({
                 questionMap={questionMap}
                 index={i}
                 onView={() => handleRowClick(row)}
-                onDelete={() => handleDeleteSingle(row.original.id)}
+                onDelete={
+                  canDelete ? () => handleDeleteSingle(row.original.id) : undefined
+                }
                 isDeleting={deletingIds.has(row.original.id)}
               />
             ))}
@@ -666,7 +670,7 @@ export function SubmissionsTable({
         submission={selectedSubmission}
         questionMap={questionMap}
         onClose={() => setSelectedSubmission(null)}
-        onDelete={handleDeleteSingle}
+        onDelete={canDelete ? handleDeleteSingle : undefined}
         isDeleting={
           selectedSubmission ? deletingIds.has(selectedSubmission.id) : false
         }

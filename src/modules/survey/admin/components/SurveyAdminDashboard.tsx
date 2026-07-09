@@ -5,17 +5,27 @@ import {
   ClipboardList,
   Clock,
   Inbox,
+  Eye,
 } from "lucide-react";
 
 import { useMaybeAuth } from "@lib/auth/NukeAuthProvider";
 import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
+import { Badge } from "@components/ui/Badge";
 import { useSurveys } from "../hooks/useSurveyAdmin";
 
 const ADMIN_ROLE = "survey-admin";
+const VIEWER_ROLE = "survey-viewer";
+
+function useCanAccessSurveyAdmin() {
+  const auth = useMaybeAuth();
+  const isAdmin = auth?.hasRole(ADMIN_ROLE) ?? false;
+  const isViewer = auth?.hasRole(VIEWER_ROLE) ?? false;
+  return { auth, isAdmin, isViewer, canAccess: isAdmin || isViewer };
+}
 
 export function SurveyAdminDashboard() {
-  const auth = useMaybeAuth();
+  const { auth, isAdmin, isViewer, canAccess } = useCanAccessSurveyAdmin();
   const token = auth?.token ?? null;
   const { data: surveys, error, isLoading } = useSurveys(token);
 
@@ -56,7 +66,7 @@ export function SurveyAdminDashboard() {
     );
   }
 
-  if (!auth.hasRole(ADMIN_ROLE)) {
+  if (!canAccess) {
     return (
       <Card variant="bubble" className="p-8 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
@@ -66,7 +76,7 @@ export function SurveyAdminDashboard() {
           Access denied
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Your account does not have the survey admin role.
+          Your account does not have the survey admin or viewer role.
         </p>
       </Card>
     );
@@ -102,6 +112,16 @@ export function SurveyAdminDashboard() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold text-foreground">Surveys</h1>
+        {isViewer && !isAdmin && (
+          <Badge variant="outline" className="gap-1">
+            <Eye size={14} />
+            Viewer
+          </Badge>
+        )}
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-3">
         <SummaryCard
           icon={<ClipboardList size={20} />}

@@ -21,14 +21,17 @@ export function AdminSurveyLink({
 }
 
 const ADMIN_ROLE = "survey-admin";
+const VIEWER_ROLE = "survey-viewer";
 
 function AdminSurveyLinkInner() {
   const auth = useMaybeAuth();
+  const canAccess =
+    auth?.hasRole(ADMIN_ROLE) || auth?.hasRole(VIEWER_ROLE);
   if (
     !auth ||
     auth.isLoading ||
     !auth.isAuthenticated ||
-    !auth.hasRole(ADMIN_ROLE)
+    !canAccess
   ) {
     return null;
   }

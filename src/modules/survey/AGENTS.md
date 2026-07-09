@@ -81,6 +81,11 @@ All files under `src/modules/survey/**` and the routes
 - Available at `/admin/surveys` and `/admin/surveys/<slug>`.
 - Uses `NukeAuthProvider` to obtain a NukeAuth access token and sends it as a
   bearer token to `{PUBLIC_API_URL}/admin/surveys/*` endpoints.
+- Access is controlled by NukeAuth client roles under `AUTH_CLIENT_ID`:
+  - `survey-admin` — full access (list, view, stats, export, delete).
+  - `survey-viewer` — read-only access (list, view, stats, export). Delete
+    buttons and clear-all actions are hidden in the UI, and the backend rejects
+    `DELETE` requests from viewers.
 - Lists every survey with response counts, shows paginated submissions,
   displays per-question distributions, and offers CSV export.
 - The detail page maps raw question IDs back to the human-readable labels

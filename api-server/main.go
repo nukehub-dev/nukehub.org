@@ -44,7 +44,10 @@ const (
 	statsDistributionLimit = 50
 )
 
-const adminRoleName = "survey-admin"
+const (
+	adminRoleName  = "survey-admin"
+	viewerRoleName = "survey-viewer"
+)
 
 // Database and auth globals
 var (
@@ -82,19 +85,19 @@ func main() {
 	go cleanupRateLimits()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/contact/health", handleHealth)
+	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)
 	mux.HandleFunc("/survey", handleSurvey)
 
 	// Admin endpoints
-	mux.HandleFunc("/admin/health/db", requireAdmin(handleAdminHealthDB))
-	mux.HandleFunc("/admin/surveys", requireAdmin(handleAdminSurveys))
-	mux.HandleFunc("/admin/surveys/", requireAdmin(handleAdminSurveyDetail))
+	mux.HandleFunc("/admin/health/db", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminHealthDB))
+	mux.HandleFunc("/admin/surveys", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminSurveys))
+	mux.HandleFunc("/admin/surveys/", requireSurveyAccess(handleAdminSurveyDetail))
 
 	handler := securityHeadersMiddleware(corsMiddleware(mux, allowedOrigins))
 
 	fmt.Printf("NukeHub API server listening on port %s\n", port)
-	fmt.Printf("Health check: http://localhost:%s/contact/health\n", port)
+	fmt.Printf("Health check: http://localhost:%s/health\n", port)
 	fmt.Printf("Allowed origins: %s\n", strings.Join(allowedOrigins, ", "))
 
 	if err := http.ListenAndServe(":"+port, handler); err != nil {
@@ -919,37 +922,57 @@ func handleDeleteSurveySubmissions(w http.ResponseWriter, r *http.Request, slug 
 	jsonResponse(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
 }
 
-func requireAdmin(next http.HandlerFunc) http.HandlerFunc {
+func requireRole(role string) func(http.HandlerFunc) http.HandlerFunc {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return requireAnyRole(role)(next)
+	}
+}
+
+func requireAnyRole(roles ...string) func(http.HandlerFunc) http.HandlerFunc {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			authClientID := getEnv("AUTH_CLIENT_ID", "")
+			if authClientID == "" {
+				jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Auth client ID not configured"})
+				return
+			}
+			if jwksCache == nil {
+				jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Auth not configured"})
+				return
+			}
+
+			authHeader := r.Header.Get("Authorization")
+			if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+				jsonResponse(w, http.StatusUnauthorized, map[string]interface{}{"error": "Authorization required"})
+				return
+			}
+			token := strings.TrimPrefix(authHeader, "Bearer ")
+
+			claims, err := jwksCache.verifyToken(token)
+			if err != nil {
+				jsonResponse(w, http.StatusUnauthorized, map[string]interface{}{"error": err.Error()})
+				return
+			}
+
+			for _, role := range roles {
+				if hasClientRole(claims, authClientID, role) {
+					next(w, r)
+					return
+				}
+			}
+
+			jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Access denied"})
+		}
+	}
+}
+
+func requireSurveyAccess(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authClientID := getEnv("AUTH_CLIENT_ID", "")
-		if authClientID == "" {
-			jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Auth client ID not configured"})
+		if r.Method == http.MethodDelete {
+			requireRole(adminRoleName)(next)(w, r)
 			return
 		}
-		if jwksCache == nil {
-			jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Auth not configured"})
-			return
-		}
-
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-			jsonResponse(w, http.StatusUnauthorized, map[string]interface{}{"error": "Authorization required"})
-			return
-		}
-		token := strings.TrimPrefix(authHeader, "Bearer ")
-
-		claims, err := jwksCache.verifyToken(token)
-		if err != nil {
-			jsonResponse(w, http.StatusUnauthorized, map[string]interface{}{"error": err.Error()})
-			return
-		}
-
-		if !hasClientRole(claims, authClientID, adminRoleName) {
-			jsonResponse(w, http.StatusForbidden, map[string]interface{}{"error": "Admin access denied"})
-			return
-		}
-
-		next(w, r)
+		requireAnyRole(adminRoleName, viewerRoleName)(next)(w, r)
 	}
 }
 

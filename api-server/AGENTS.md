@@ -5,13 +5,12 @@
 Small Go HTTP service behind `api.nukehub.org`. Receives the static site's
 contact-form submissions and YAML-driven survey submissions, persists survey
 responses to SQLite, and forwards submissions via SMTP. Reverse proxied by
-`nginx/api.nukehub.org.conf`.
+`api-server/api.nukehub.org.conf`.
 
 ## Ownership
 
 All files under `api-server/**`: `main.go`, `go.mod`, `Dockerfile`,
-`compose.yml`, `README.md`. Plus the proxy vhost under `nginx/` only insofar
-as the `/contact` route is concerned.
+`compose.yml`, `README.md`, and `api.nukehub.org.conf` (nginx vhost).
 
 ## Local Contracts
 
@@ -25,22 +24,22 @@ as the `/contact` route is concerned.
 
 ### Files
 
-- `main.go` — entire service. Endpoints: `GET /contact/health` (health
-  check), `POST /contact` (submit form), `POST /survey` (submit YAML-driven
-  survey responses), and admin endpoints under `/admin/surveys`. Also includes
-  SQLite persistence, in-process rate limiter, Turnstile CAPTCHA verification,
-  JWT validation against the Keycloak JWKS endpoint, input sanitization, HTML
+- `main.go` — entire service. Endpoints: `GET /health` (health check),
+  `POST /contact` (submit form), `POST /survey` (submit YAML-driven survey
+  responses), and admin endpoints under `/admin/surveys`. Also includes SQLite
+  persistence, in-process rate limiter, Turnstile CAPTCHA verification, JWT
+  validation against the Keycloak JWKS endpoint, input sanitization, HTML
   escaping, and email header-injection prevention.
 - `Dockerfile` — builds the static Go binary inside a build stage and copies
   it into a minimal runtime image. The `docker ./compose.yml` mirrors this.
 - `compose.yml` — local + production container composition. Reads secrets
   from `api-server/.env` (not committed).
 - `README.md` — operator quick-start, env-var list, and security feature list.
-- `nginx/api.nukehub.org.conf` — top-level nginx vhost that:
+- `api.nukehub.org.conf` — top-level nginx vhost that:
   - Redirects HTTP → HTTPS.
-  - Serves `/contact` and `/survey` (proxy_pass to `127.0.0.1:3000`) and
-    applies the security headers (X-Frame-Options, X-Content-Type-Options,
-    X-XSS-Protection, Referrer-Policy).
+  - Serves `/health`, `/contact` and `/survey` (proxy_pass to
+    `127.0.0.1:3000`) and applies the security headers (X-Frame-Options,
+    X-Content-Type-Options, X-XSS-Protection, Referrer-Policy).
   - This vhost is unrelated to the static site's `_headers` (which lives at
     `public/_headers` and is served by Cloudflare Pages).
 
@@ -64,13 +63,16 @@ Secrets live in `api-server/.env` (gitignored). Required:
   `PUBLIC_AUTH_*` values.
 - **Admin access** is granted by the `survey-admin` client role under
   `AUTH_CLIENT_ID` (e.g. `nukehub-web`).
+- **Read-only access** is granted by the `survey-viewer` client role under the
+  same `AUTH_CLIENT_ID`. Viewers can list surveys, view submissions, see stats,
+  and export CSV, but cannot delete data.
 
 Do **not** copy these into the static-site `.env` (root NAD "Environment
 variables" lists that file's contents).
 
 ### Endpoints
 
-- `GET /contact/health` — 200 `"ok"` (used by the nginx readiness probe).
+- `GET /health` — 200 `"ok"` (used by the nginx readiness probe).
 - `POST /contact` — accepts the contact-form payload (Turnstile token,
   name/email/message), verifies the token with Cloudflare, sanitizes/escapes
   inputs, and sends the email via SMTP. Returns JSON status.
@@ -80,21 +82,24 @@ variables" lists that file's contents).
   response value, and emails them to `SURVEY_TO_EMAIL` (falling back to
   `CONTACT_TO_EMAIL`). If the responses contain a valid `email` field, it is
   used as the email's `Reply-To` header. Returns JSON status.
-- `GET /admin/health/db` — DB connectivity check (requires admin auth).
-- `GET /admin/surveys` — list surveys with submission counts (requires admin
-  auth).
+- `GET /admin/health/db` — DB connectivity check (requires `survey-admin` or
+  `survey-viewer`).
+- `GET /admin/surveys` — list surveys with submission counts (requires
+  `survey-admin` or `survey-viewer`).
 - `GET /admin/surveys/{slug}` — paginated submissions for a survey (requires
-  admin auth). Pagination is applied in SQL, so it stays fast even with tens of
-  thousands of responses.
-- `GET /admin/surveys/{slug}/stats` — aggregate statistics (requires admin
-  auth).
-- `GET /admin/surveys/{slug}/export.csv` — CSV export (requires admin auth).
+  `survey-admin` or `survey-viewer`). Pagination is applied in SQL, so it stays
+  fast even with tens of thousands of responses.
+- `GET /admin/surveys/{slug}/stats` — aggregate statistics (requires
+  `survey-admin` or `survey-viewer`).
+- `GET /admin/surveys/{slug}/export.csv` — CSV export (requires `survey-admin`
+  or `survey-viewer`).
 - `DELETE /admin/surveys/{slug}` — delete every response for a survey (requires
-  admin auth). Returns `{success, deleted}`.
+  `survey-admin`). Returns `{success, deleted}`.
 - `DELETE /admin/surveys/{slug}/submissions` — bulk delete responses by IDs
-  (requires admin auth). Body: `{"ids": [1, 2, 3]}`. Returns `{success, deleted}`.
+  (requires `survey-admin`). Body: `{"ids": [1, 2, 3]}`. Returns
+  `{success, deleted}`.
 - `DELETE /admin/surveys/{slug}/submissions/{id}` — delete a single response
-  (requires admin auth). Returns `{success, deleted}`.
+  (requires `survey-admin`). Returns `{success, deleted}`.
 
 ### Common pitfalls
 
@@ -107,8 +112,9 @@ variables" lists that file's contents).
 - **Turnstile site key vs secret.** The site key is `PUBLIC_*` and bundled
   into the static bundle; the secret is server-only here. They must match
   the same Turnstile widget or verification will fail.
-- **Admin auth uses NukeAuth + client role.** `/admin/*` endpoints require the
-  `survey-admin` role under the `AUTH_CLIENT_ID` client. `AUTH_URL`,
+- **Admin auth uses NukeAuth + client roles.** `/admin/*` endpoints accept
+  either the `survey-admin` role (full access) or the `survey-viewer` role
+  (read-only). `DELETE` endpoints require `survey-admin`. `AUTH_URL`,
   `AUTH_REALM`, and `AUTH_CLIENT_ID` must match the static site's Keycloak
   config, or all admin endpoints will reject requests.
 - **Back up the SQLite database.** `DATABASE_PATH` defaults to
@@ -127,7 +133,7 @@ cd api-server
 set -a && source .env && set +a
 go build -o api-server main.go
 ./api-server &            # listens on 127.0.0.1:3000
-curl http://127.0.0.1:3000/contact/health
+curl http://127.0.0.1:3000/health
 
 # Submit a test survey (will fail Turnstile without a real token, but exercises routing)
 curl -s -X POST http://127.0.0.1:3000/survey \

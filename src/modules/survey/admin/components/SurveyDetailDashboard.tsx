@@ -1,8 +1,16 @@
 import * as React from "react";
-import { ArrowLeft, BarChart3, Download, List, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  BarChart3,
+  Download,
+  Eye,
+  List,
+  Trash2,
+} from "lucide-react";
 import { useMaybeAuth } from "@lib/auth/NukeAuthProvider";
 import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
+import { Badge } from "@components/ui/Badge";
 import { ConfirmDialog } from "@components/ui/Dialog";
 import type { Survey } from "../../types";
 import { useSubmissions, useStats } from "../hooks/useSurveyAdmin";
@@ -12,6 +20,7 @@ import { SubmissionsTable } from "./SubmissionsTable";
 import { StatsPanel } from "./StatsPanel";
 
 const ADMIN_ROLE = "survey-admin";
+const VIEWER_ROLE = "survey-viewer";
 
 interface SurveyDetailDashboardProps {
   slug: string;
@@ -26,6 +35,9 @@ export function SurveyDetailDashboard({
 }: SurveyDetailDashboardProps) {
   const auth = useMaybeAuth();
   const token = auth?.token ?? null;
+  const isAdmin = auth?.hasRole(ADMIN_ROLE) ?? false;
+  const isViewer = auth?.hasRole(VIEWER_ROLE) ?? false;
+  const canAccess = isAdmin || isViewer;
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(50);
   const [activeTab, setActiveTab] = React.useState<"stats" | "responses">(
@@ -69,12 +81,12 @@ export function SurveyDetailDashboard({
     );
   }
 
-  if (!auth.hasRole(ADMIN_ROLE)) {
+  if (!canAccess) {
     return (
       <Card variant="bubble" className="p-8 text-center">
         <h2 className="text-xl font-semibold text-foreground">Access denied</h2>
         <p className="mt-2 text-muted-foreground">
-          Your account does not have the survey admin role.
+          Your account does not have the survey admin or viewer role.
         </p>
       </Card>
     );
@@ -118,9 +130,17 @@ export function SurveyDetailDashboard({
             <ArrowLeft size={16} />
             Back to surveys
           </a>
-          <h1 className="mt-2 text-2xl font-semibold text-foreground">
-            {title}
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="mt-2 text-2xl font-semibold text-foreground">
+              {title}
+            </h1>
+            {isViewer && !isAdmin && (
+              <Badge variant="outline" className="gap-1">
+                <Eye size={14} />
+                Viewer
+              </Badge>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">Slug: {slug}</p>
         </div>
         <div className="flex flex-col items-start gap-2 sm:items-end">
@@ -154,15 +174,17 @@ export function SurveyDetailDashboard({
               <Download size={16} className="mr-1.5" />
               Export CSV
             </Button>
-            <Button
-              variant="destructive"
-              loading={clearing}
-              onClick={() => setShowClearDialog(true)}
-              disabled={totalResponses === 0}
-            >
-              <Trash2 size={16} className="mr-1.5" />
-              Clear all
-            </Button>
+            {isAdmin && (
+              <Button
+                variant="destructive"
+                loading={clearing}
+                onClick={() => setShowClearDialog(true)}
+                disabled={totalResponses === 0}
+              >
+                <Trash2 size={16} className="mr-1.5" />
+                Clear all
+              </Button>
+            )}
           </div>
           {exportError && (
             <p className="text-sm text-destructive">{exportError}</p>
@@ -208,6 +230,7 @@ export function SurveyDetailDashboard({
                 setPage(1);
               }}
               token={token}
+              canDelete={isAdmin}
               onDeleted={() => {
                 refreshSubmissions();
                 refreshStats();

@@ -168,8 +168,8 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `scripts/` — Node.js maintenance scripts. See `scripts/AGENTS.md`.
 - `api-server/` — NukeHub API server: contact form and survey endpoints,
   SMTP relay. See `api-server/AGENTS.md`.
-- `nginx/` — reverse-proxy vhost for `api.nukehub.org/contact` and
-  `api.nukehub.org/survey`.
+- `api-server/api.nukehub.org.conf` — reverse-proxy vhost for
+  `api.nukehub.org/health`, `/contact`, and `/survey`.
 - `.github/workflows/ci.yml` — PR/push CI: lint, format:check, typecheck, build.
 - `.github/workflows/sync-github-stats.yml` — scheduled GitHub stats refresh.
 
