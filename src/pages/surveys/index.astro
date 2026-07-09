@@ -9,6 +9,7 @@ import {
   Layers,
   ShieldCheck,
 } from "lucide-react";
+import { AdminSurveyLink } from "@modules/survey/components/AdminSurveyLink";
 import { SurveyAuroraBackground } from "@modules/survey/components/decorations/SurveyAuroraBackground";
 import { SurveyFloatingDots } from "@modules/survey/components/decorations/SurveyFloatingDots";
 import type { Survey } from "@modules/survey/types";
@@ -47,7 +48,7 @@ const averageMinutes =
 const title = "Surveys";
 const description = "Share your feedback and help shape the future of NukeHub.";
 const keywords = "nukehub, surveys, feedback, community, nuclear";
-const permalink = "/survey";
+const permalink = "/surveys";
 ---
 
 <BaseLayout
@@ -68,10 +69,20 @@ const permalink = "/survey";
     <div class="relative z-10 px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-4xl">
         <div
-          class="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary"
+          class="mb-6 flex flex-col items-center justify-center gap-3 sm:flex-row"
         >
-          <ClipboardList size={16} />
-          Surveys
+          <div
+            class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary"
+          >
+            <ClipboardList size={16} />
+            Surveys
+          </div>
+          <AdminSurveyLink
+            url={import.meta.env.PUBLIC_AUTH_URL}
+            realm={import.meta.env.PUBLIC_AUTH_REALM}
+            clientId={import.meta.env.PUBLIC_AUTH_CLIENT_ID}
+            client:only="react"
+          />
         </div>
         <h1
           class="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
@@ -151,7 +162,7 @@ const permalink = "/survey";
           <div class="grid gap-6 sm:grid-cols-2">
             {surveys.map((survey) => (
               <a
-                href={`/survey/${survey.slug}`}
+                href={`/surveys/${survey.slug}`}
                 class="group flex flex-col transition-all duration-200 hover:-translate-y-1"
               >
                 <div class="bubble flex flex-1 flex-col p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">

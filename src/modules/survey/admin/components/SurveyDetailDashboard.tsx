@@ -6,7 +6,7 @@ import { Card } from "@components/ui/Card";
 import { cn } from "@lib/utils";
 import type { Survey } from "../../types";
 import { useSubmissions, useStats } from "../hooks/useSurveyAdmin";
-import { getExportUrl } from "../lib/admin-api";
+import { fetchExportCsv } from "../lib/admin-api";
 import { buildQuestionMap } from "../lib/survey-metadata";
 import { SubmissionsTable } from "./SubmissionsTable";
 import { StatsPanel } from "./StatsPanel";
@@ -29,6 +29,8 @@ export function SurveyDetailDashboard({
   const [activeTab, setActiveTab] = React.useState<"stats" | "responses">(
     "stats",
   );
+  const [exporting, setExporting] = React.useState(false);
+  const [exportError, setExportError] = React.useState<string | null>(null);
   const questionMap = React.useMemo(() => buildQuestionMap(survey), [survey]);
   const {
     data: submissionsData,
@@ -86,12 +88,40 @@ export function SurveyDetailDashboard({
           </h1>
           <p className="text-sm text-muted-foreground">Slug: {slug}</p>
         </div>
-        <a href={getExportUrl(slug)} download>
-          <Button variant="outline">
+        <div className="flex flex-col items-start gap-2">
+          <Button
+            variant="outline"
+            loading={exporting}
+            onClick={async () => {
+              if (!token) return;
+              setExporting(true);
+              setExportError(null);
+              try {
+                const blob = await fetchExportCsv(token, slug);
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${slug}-responses.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+              } catch (err) {
+                setExportError(
+                  err instanceof Error ? err.message : "Export failed",
+                );
+              } finally {
+                setExporting(false);
+              }
+            }}
+          >
             <Download size={16} className="mr-1.5" />
             Export CSV
           </Button>
-        </a>
+          {exportError && (
+            <p className="text-sm text-destructive">{exportError}</p>
+          )}
+        </div>
       </div>
 
       <div>

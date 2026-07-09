@@ -299,7 +299,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
             {survey.successMessage || "Your response has been recorded."}
           </p>
           <a
-            href="/survey"
+            href="/surveys"
             className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
             <ChevronLeft size={16} />

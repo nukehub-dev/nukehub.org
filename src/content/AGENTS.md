@@ -56,7 +56,7 @@ Fusion`.
 - `incidents` (yaml) — currently empty placeholder; reserved for status-page
   style records.
 - `surveys` (yaml) — YAML-driven survey definitions. Each file describes a
-  survey page rendered at `/survey/<slug>` with a dynamic form. Question types:
+  survey page rendered at `/surveys/<slug>` with a dynamic form. Question types:
   `text`, `textarea`, `email`, `number`, `url`, `select`, `radio`, `checkbox`,
   `rating`. `rating` questions may optionally set `minLabel` and `maxLabel` to
   label the low and high ends of the scale. Submissions are sent to the Go

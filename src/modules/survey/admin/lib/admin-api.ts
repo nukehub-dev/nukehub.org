@@ -63,3 +63,32 @@ export function fetchStats(
 export function getExportUrl(slug: string): string {
   return `${getBaseUrl()}/surveys/${encodeURIComponent(slug)}/export.csv`;
 }
+
+export async function fetchExportCsv(
+  token: string | null,
+  slug: string,
+): Promise<Blob> {
+  if (!token) {
+    throw new Error("Not authenticated");
+  }
+
+  const response = await fetch(getExportUrl(slug), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "text/csv",
+    },
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    const message =
+      typeof data.error === "string"
+        ? data.error
+        : `Export failed (${response.status})`;
+    const error = new Error(message) as Error & { status: number };
+    error.status = response.status;
+    throw error;
+  }
+
+  return response.blob();
+}

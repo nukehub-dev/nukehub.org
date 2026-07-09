@@ -86,7 +86,7 @@ const staticNavItems: NavItem[] = [
     children: [
       { title: "People", icon: User, url: "/people" },
       { title: "Events", icon: Calendar, url: "/events" },
-      { title: "Surveys", icon: ClipboardList, url: "/survey" },
+      { title: "Surveys", icon: ClipboardList, url: "/surveys" },
       { title: "Contact", icon: Mail, url: "/contact" },
       {
         title: "NukeTalk",

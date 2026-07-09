@@ -33,7 +33,7 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
   catch-all that renders non-`customPage` entries from the `projects`
   collection. Filename → URL (e.g. `nuke-lab.astro` → `/nuke-lab`,
   `about.astro` → `/about`).
-- `src/pages/survey/[slug].astro` and `src/pages/survey/index.astro` — survey
+- `src/pages/surveys/[slug].astro` and `src/pages/surveys/index.astro` — survey
   routes. See `src/modules/survey/AGENTS.md`.
 - `src/pages/og/` — Dynamic OpenGraph PNG endpoints (`.png.ts`). They use
   Satori + ResVG to render OG cards. `@resvg/resvg-js` is `optimizeDeps.exclude`

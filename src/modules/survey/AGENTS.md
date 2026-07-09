@@ -3,14 +3,14 @@
 ## Purpose
 
 Reusable, content-managed survey forms rendered from `src/content/surveys/*.yml`.
-Each survey becomes a standalone page at `/survey/<slug>` and submits responses
+Each survey becomes a standalone page at `/surveys/<slug>` and submits responses
 back to the NukeHub API server at `/survey`. Responses are persisted to SQLite
 and an admin dashboard is available at `/admin/surveys`.
 
 ## Ownership
 
 All files under `src/modules/survey/**` and the routes
-`src/pages/survey/[slug].astro`, `src/pages/survey/index.astro`,
+`src/pages/surveys/[slug].astro`, `src/pages/surveys/index.astro`,
 `src/pages/admin/surveys/index.astro`, and
 `src/pages/admin/surveys/[slug].astro`.
 
@@ -24,7 +24,7 @@ All files under `src/modules/survey/**` and the routes
 - Surveys support paging via a `pages` array. Each page has its own `title`,
   optional `description`, optional `image`, and `questions`. Single-page surveys
   can still use a flat `questions` list for backward compatibility.
-- `src/pages/survey/index.astro` lists every survey as a card grid and is linked
+- `src/pages/surveys/index.astro` lists every survey as a card grid and is linked
   from the header Community dropdown and the Community footer column.
 - `src/modules/survey/admin/` holds the admin dashboard islands and API client
   used by `src/pages/admin/surveys/`. Admin pages require authentication via
@@ -39,8 +39,8 @@ All files under `src/modules/survey/**` and the routes
 1. Create `src/content/surveys/<name>.yml`.
 2. Provide `title` and either `pages` (multi-page) or `questions` (single-page).
    Use `slug` to override the URL.
-3. The build will generate `/survey/<slug>` automatically.
-4. The new survey appears on `/survey` and in the command palette without extra
+3. The build will generate `/surveys/<slug>` automatically.
+4. The new survey appears on `/surveys` and in the command palette without extra
    code changes.
 
 ### Question types

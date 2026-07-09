@@ -34,7 +34,7 @@ const estimatedMinutes = Math.max(1, Math.round(questionCount * 0.6));
 
 const title = survey.title;
 const description = survey.description || `Take the ${survey.title} survey`;
-const permalink = `/survey/${slug}`;
+const permalink = `/surveys/${slug}`;
 ---
 
 <BaseLayout title={title} description={description} permalink={permalink}>
@@ -55,7 +55,7 @@ const permalink = `/survey/${slug}`;
       {/* Header */}
       <div class="relative mb-8 text-center">
         <a
-          href="/survey"
+          href="/surveys"
           class="absolute left-0 top-0 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft size={16} />
