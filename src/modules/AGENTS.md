@@ -52,6 +52,8 @@ their own islands.
 - `manual/` — manual/legal pages emitted from the `manual` collection.
 - `survey/` — YAML-driven survey forms. See
   `src/modules/survey/AGENTS.md`.
+- `newsletter/` — newsletter subscriber admin dashboard. See
+  `src/modules/newsletter/AGENTS.md`.
 - `debug/` — debug-only islands for local development; source pages live under
   `src/debug-pages/` until `scripts/debug-pages.js --enable` copies them into
   `src/pages/debug/`. Never ship debug code to production.
@@ -104,3 +106,4 @@ npm run build
 ## Child NAD Index
 
 - `src/modules/survey/AGENTS.md` — YAML-driven surveys and admin dashboard.
+- `src/modules/newsletter/AGENTS.md` — newsletter subscriber admin dashboard.

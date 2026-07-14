@@ -1,0 +1,31 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { NewsletterAdminPage } from "@modules/newsletter/admin/components/NewsletterAdminPage";
+
+const title = "Newsletter subscribers";
+const description = "View, export, and remove newsletter subscribers.";
+const permalink = "/admin/newsletter";
+---
+
+<BaseLayout title={title} description={description} permalink={permalink}>
+  <section class="relative min-h-[calc(100vh-4rem)] px-4 py-16">
+    <div class="relative z-10 mx-auto max-w-6xl">
+      <div class="mb-8">
+        <h1
+          class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+        >
+          Newsletter subscribers
+        </h1>
+        <p class="mt-2 text-muted-foreground">
+          View, export, and remove newsletter subscribers.
+        </p>
+      </div>
+      <NewsletterAdminPage
+        url={import.meta.env.PUBLIC_AUTH_URL}
+        realm={import.meta.env.PUBLIC_AUTH_REALM}
+        clientId={import.meta.env.PUBLIC_AUTH_CLIENT_ID}
+        client:only="react"
+      />
+    </div>
+  </section>
+</BaseLayout>
