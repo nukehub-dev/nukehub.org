@@ -4,6 +4,7 @@ FROM golang:1.25-alpine AS builder
 WORKDIR /build
 COPY go.mod go.sum ./
 COPY *.go ./
+COPY internal/ ./internal/
 RUN go build -o api-server .
 
 # Runtime stage

@@ -1,4 +1,4 @@
-package main
+package newsletter
 
 import (
 	"encoding/xml"
@@ -11,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"nukehub-api/internal/config"
+	"nukehub-api/internal/store"
 )
 
 // Blog watcher: polls the blog's RSS feed and auto-sends a campaign from
@@ -33,15 +36,15 @@ const (
 )
 
 func blogAutoSendEnabled() bool {
-	return getEnv("BLOG_AUTO_SEND", "false") == "true"
+	return config.Getenv("BLOG_AUTO_SEND", "false") == "true"
 }
 
 func blogRSSURL() string {
-	return getEnv("BLOG_RSS_URL", defaultBlogRSSURL)
+	return config.Getenv("BLOG_RSS_URL", defaultBlogRSSURL)
 }
 
 func blogPollInterval() time.Duration {
-	ms, err := strconv.Atoi(getEnv("BLOG_RSS_POLL_INTERVAL_MS", ""))
+	ms, err := strconv.Atoi(config.Getenv("BLOG_RSS_POLL_INTERVAL_MS", ""))
 	if err != nil || ms < 60_000 {
 		return defaultPollInterval
 	}
@@ -132,12 +135,12 @@ func stripHTML(s string) string {
 
 func getSetting(key string) (string, error) {
 	var value string
-	err := db.QueryRow("SELECT value FROM settings WHERE key = ?", key).Scan(&value)
+	err := store.DB.QueryRow("SELECT value FROM settings WHERE key = ?", key).Scan(&value)
 	return value, err
 }
 
 func setSetting(key, value string) error {
-	_, err := db.Exec(
+	_, err := store.DB.Exec(
 		"INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
 		key, value,
 	)
@@ -223,7 +226,7 @@ func checkFeedOnce() error {
 	}
 
 	var subscriberCount int
-	if err := db.QueryRow("SELECT COUNT(*) FROM subscribers").Scan(&subscriberCount); err != nil {
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM subscribers").Scan(&subscriberCount); err != nil {
 		return fmt.Errorf("count subscribers: %w", err)
 	}
 
@@ -257,10 +260,10 @@ func sendPostCampaign(item feedItem) error {
 	}
 
 	body := fmt.Sprintf("A new post is up on the [NukeHub blog](%s):\n\n## %s\n\n%s\n\n[Read the full post](%s)",
-		strings.TrimSuffix(getEnv("BLOG_URL", "https://blog.nukehub.org"), "/"),
+		strings.TrimSuffix(config.Getenv("BLOG_URL", "https://blog.nukehub.org"), "/"),
 		item.Title, item.Description, item.Link)
 
-	res, err := db.Exec(
+	res, err := store.DB.Exec(
 		"INSERT INTO campaigns (title, subject, from_email, body_markdown, status, source, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		title, subject, blogFromEmail(), body, campaignStatusDraft, campaignSourceBlogRSS,
 		time.Now().UTC().Format(time.RFC3339), time.Now().UTC().Format(time.RFC3339),

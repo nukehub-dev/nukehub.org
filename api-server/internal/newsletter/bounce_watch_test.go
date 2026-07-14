@@ -1,8 +1,11 @@
-package main
+package newsletter
 
 import (
 	"strings"
 	"testing"
+
+	"nukehub-api/internal/store"
+	"nukehub-api/internal/testutil"
 )
 
 func TestParseBounceMultiRecipient(t *testing.T) {
@@ -78,11 +81,16 @@ const notABounce = "From: someone@example.com\r\n" +
 	"Just a regular email, not a bounce.\r\n"
 
 func TestBounceWatcherEndToEnd(t *testing.T) {
-	setupTestDB(t)
-	imap := startFakeIMAP(t, [][]byte{[]byte(hardBounceDSN), []byte(softBounceDSN), []byte(notABounce)})
+	testutil.TempDB(t)
+	imap := testutil.FakeIMAP(t, [][]byte{[]byte(hardBounceDSN), []byte(softBounceDSN), []byte(notABounce)})
+
+	// Swap the TLS dialer for a plaintext connection to the fake server.
+	previousDial := DialIMAP
+	DialIMAP = testutil.PlaintextDialIMAP
+	t.Cleanup(func() { DialIMAP = previousDial })
 
 	for _, email := range []string{"dead@test.dev", "flaky@test.dev", "keep@test.dev"} {
-		if _, err := db.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES (?, '2026-01-01', 'test')", email); err != nil {
+		if _, err := store.DB.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES (?, '2026-01-01', 'test')", email); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -93,7 +101,7 @@ func TestBounceWatcherEndToEnd(t *testing.T) {
 
 	exists := func(email string) bool {
 		var n int
-		if err := db.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = ?", email).Scan(&n); err != nil {
+		if err := store.DB.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = ?", email).Scan(&n); err != nil {
 			t.Fatal(err)
 		}
 		return n > 0
@@ -110,7 +118,7 @@ func TestBounceWatcherEndToEnd(t *testing.T) {
 
 	// Only the two DSN messages may be marked seen; the non-DSN message
 	// stays unread for a human.
-	stores := imap.storeCommands()
+	stores := imap.StoreCommands()
 	if len(stores) != 1 {
 		t.Fatalf("got %d STORE commands, want 1: %v", len(stores), stores)
 	}

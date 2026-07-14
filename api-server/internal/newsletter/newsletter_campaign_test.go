@@ -1,4 +1,4 @@
-package main
+package newsletter
 
 import (
 	"encoding/json"
@@ -7,7 +7,19 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"nukehub-api/internal/store"
+	"nukehub-api/internal/testutil"
 )
+
+// newMux builds a mux with only this package's routes. (server.NewMux
+// cannot be used here: server imports newsletter, so that would be an
+// import cycle.)
+func newMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	Register(mux)
+	return mux
+}
 
 func TestUnsubTokenRoundTrip(t *testing.T) {
 	t.Setenv("NEWSLETTER_TOKEN_SECRET", "testsecret")
@@ -29,11 +41,11 @@ func TestUnsubTokenRoundTrip(t *testing.T) {
 }
 
 func TestUnsubscribeConfirmHandler(t *testing.T) {
-	setupTestDB(t)
+	testutil.TempDB(t)
 	t.Setenv("NEWSLETTER_TOKEN_SECRET", "testsecret")
 	mux := newMux()
 
-	if _, err := db.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('gone@test.dev', '2026-01-01', 'test')"); err != nil {
+	if _, err := store.DB.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('gone@test.dev', '2026-01-01', 'test')"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -53,7 +65,7 @@ func TestUnsubscribeConfirmHandler(t *testing.T) {
 		t.Fatalf("bad token = %d, want 400", rec.Code)
 	}
 	var count int
-	if err := db.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = 'gone@test.dev'").Scan(&count); err != nil {
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = 'gone@test.dev'").Scan(&count); err != nil {
 		t.Fatal(err)
 	}
 	if count != 1 {
@@ -70,7 +82,7 @@ func TestUnsubscribeConfirmHandler(t *testing.T) {
 			t.Fatalf("confirm (attempt %d) = %d, want 200", i+1, rec.Code)
 		}
 	}
-	if err := db.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = 'gone@test.dev'").Scan(&count); err != nil {
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = 'gone@test.dev'").Scan(&count); err != nil {
 		t.Fatal(err)
 	}
 	if count != 0 {
@@ -78,7 +90,7 @@ func TestUnsubscribeConfirmHandler(t *testing.T) {
 	}
 
 	// RFC 8058 one-click: token in query, form body.
-	if _, err := db.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('one@test.dev', '2026-01-01', 'test')"); err != nil {
+	if _, err := store.DB.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('one@test.dev', '2026-01-01', 'test')"); err != nil {
 		t.Fatal(err)
 	}
 	rec = httptest.NewRecorder()
@@ -88,7 +100,7 @@ func TestUnsubscribeConfirmHandler(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("one-click = %d, want 200", rec.Code)
 	}
-	if err := db.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = 'one@test.dev'").Scan(&count); err != nil {
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM subscribers WHERE email = 'one@test.dev'").Scan(&count); err != nil {
 		t.Fatal(err)
 	}
 	if count != 0 {
@@ -97,38 +109,38 @@ func TestUnsubscribeConfirmHandler(t *testing.T) {
 }
 
 func TestCampaignAdminAuthorization(t *testing.T) {
-	setupTestDB(t)
-	auth := setupAuthStub(t)
-	startFakeSMTP(t)
+	testutil.TempDB(t)
+	auth := testutil.AuthStub(t)
+	testutil.FakeSMTP(t)
 	t.Setenv("NEWSLETTER_TOKEN_SECRET", "testsecret")
 	mux := newMux()
 
-	staff := auth.token(t, "newsletter-staff")
-	admin := auth.token(t, "newsletter-admin")
+	staff := auth.Token(t, "newsletter-staff")
+	admin := auth.Token(t, "newsletter-admin")
 
 	// Unauthenticated requests are rejected.
 	rec := httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodGet, "/admin/newsletter/campaigns", "", ""))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodGet, "/admin/newsletter/campaigns", "", ""))
 	if rec.Code != http.StatusUnauthorized {
 		t.Fatalf("no token = %d, want 401", rec.Code)
 	}
 
 	// A token without newsletter roles is forbidden.
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodGet, "/admin/newsletter/campaigns", "", auth.token(t, "survey-admin")))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodGet, "/admin/newsletter/campaigns", "", auth.Token(t, "survey-admin")))
 	if rec.Code != http.StatusForbidden {
 		t.Fatalf("wrong role = %d, want 403", rec.Code)
 	}
 
 	// Staff can list and create campaigns.
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodGet, "/admin/newsletter/campaigns", "", staff))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodGet, "/admin/newsletter/campaigns", "", staff))
 	if rec.Code != http.StatusOK {
 		t.Fatalf("staff list = %d, want 200", rec.Code)
 	}
 
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns",
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns",
 		`{"title":"T","subject":"S","fromEmail":"news@nukehub.org","bodyMarkdown":"**Hi**"}`, staff))
 	if rec.Code != http.StatusCreated {
 		t.Fatalf("staff create = %d, want 201: %s", rec.Code, rec.Body.String())
@@ -143,13 +155,13 @@ func TestCampaignAdminAuthorization(t *testing.T) {
 
 	// Validation: disallowed From address and missing fields are rejected.
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns",
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns",
 		`{"title":"T","subject":"S","fromEmail":"spam@evil.example","bodyMarkdown":"x"}`, admin))
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("bad from = %d, want 400", rec.Code)
 	}
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns",
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns",
 		`{"title":"T","subject":"","fromEmail":"news@nukehub.org","bodyMarkdown":"x"}`, admin))
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("empty subject = %d, want 400", rec.Code)
@@ -158,62 +170,62 @@ func TestCampaignAdminAuthorization(t *testing.T) {
 	// Staff can edit drafts and send test emails, but cannot send the
 	// campaign or delete it.
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPut, "/admin/newsletter/campaigns/1",
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPut, "/admin/newsletter/campaigns/1",
 		`{"title":"T2","subject":"S2","fromEmail":"blog@nukehub.org","bodyMarkdown":"x"}`, staff))
 	if rec.Code != http.StatusOK {
 		t.Fatalf("staff edit = %d, want 200: %s", rec.Code, rec.Body.String())
 	}
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns/1/test",
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns/1/test",
 		`{"email":"staff@test.dev"}`, staff))
 	if rec.Code != http.StatusOK {
 		t.Fatalf("staff test send = %d, want 200: %s", rec.Code, rec.Body.String())
 	}
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", staff))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", staff))
 	if rec.Code != http.StatusForbidden {
 		t.Fatalf("staff send = %d, want 403", rec.Code)
 	}
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodDelete, "/admin/newsletter/campaigns/1", "", staff))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodDelete, "/admin/newsletter/campaigns/1", "", staff))
 	if rec.Code != http.StatusForbidden {
 		t.Fatalf("staff delete = %d, want 403", rec.Code)
 	}
 
 	// Sending with zero subscribers is a conflict, even for admins.
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", admin))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", admin))
 	if rec.Code != http.StatusConflict {
 		t.Fatalf("send without subscribers = %d, want 409", rec.Code)
 	}
 
 	// Admin can send and delete.
-	if _, err := db.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('sub@test.dev', '2026-01-01', 'test')"); err != nil {
+	if _, err := store.DB.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('sub@test.dev', '2026-01-01', 'test')"); err != nil {
 		t.Fatal(err)
 	}
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", admin))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", admin))
 	if rec.Code != http.StatusOK {
 		t.Fatalf("admin send = %d, want 200: %s", rec.Code, rec.Body.String())
 	}
 	// A second send is rejected: the campaign is no longer a draft.
 	rec = httptest.NewRecorder()
-	mux.ServeHTTP(rec, authRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", admin))
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/campaigns/1/send", "", admin))
 	if rec.Code != http.StatusConflict {
 		t.Fatalf("double send = %d, want 409", rec.Code)
 	}
 }
 
 func TestSendCampaignEndToEnd(t *testing.T) {
-	setupTestDB(t)
-	smtp := startFakeSMTP(t)
+	testutil.TempDB(t)
+	smtp := testutil.FakeSMTP(t)
 	t.Setenv("NEWSLETTER_TOKEN_SECRET", "testsecret")
 	t.Setenv("NEWSLETTER_SEND_DELAY_MS", "0")
 
-	if _, err := db.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('a@test.dev', '2026-01-01', 'test')"); err != nil {
+	if _, err := store.DB.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('a@test.dev', '2026-01-01', 'test')"); err != nil {
 		t.Fatal(err)
 	}
-	res, err := db.Exec("INSERT INTO campaigns (title, subject, from_email, body_markdown, status, source) VALUES ('T', 'Hello there', 'news@nukehub.org', '# Hi\n\nBody **text**', 'draft', 'manual')")
+	res, err := store.DB.Exec("INSERT INTO campaigns (title, subject, from_email, body_markdown, status, source) VALUES ('T', 'Hello there', 'news@nukehub.org', '# Hi\n\nBody **text**', 'draft', 'manual')")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -229,21 +241,21 @@ func TestSendCampaignEndToEnd(t *testing.T) {
 	sendCampaign(id)
 
 	var status string
-	if err := db.QueryRow("SELECT status FROM campaigns WHERE id = ?", id).Scan(&status); err != nil {
+	if err := store.DB.QueryRow("SELECT status FROM campaigns WHERE id = ?", id).Scan(&status); err != nil {
 		t.Fatal(err)
 	}
 	if status != campaignStatusSent {
 		t.Fatalf("campaign status = %q, want sent", status)
 	}
 	var dstatus string
-	if err := db.QueryRow("SELECT status FROM deliveries WHERE campaign_id = ?", id).Scan(&dstatus); err != nil {
+	if err := store.DB.QueryRow("SELECT status FROM deliveries WHERE campaign_id = ?", id).Scan(&dstatus); err != nil {
 		t.Fatal(err)
 	}
 	if dstatus != deliveryStatusSent {
 		t.Fatalf("delivery status = %q, want sent", dstatus)
 	}
 
-	msgs := smtp.captured()
+	msgs := smtp.Captured()
 	if len(msgs) != 1 {
 		t.Fatalf("captured %d messages, want 1", len(msgs))
 	}
@@ -279,17 +291,17 @@ func TestSendCampaignEndToEnd(t *testing.T) {
 }
 
 func TestListCampaignsReturnsStats(t *testing.T) {
-	setupTestDB(t)
-	auth := setupAuthStub(t)
+	testutil.TempDB(t)
+	auth := testutil.AuthStub(t)
 	mux := newMux()
-	staff := auth.token(t, "newsletter-staff")
+	staff := auth.Token(t, "newsletter-staff")
 
-	res, err := db.Exec("INSERT INTO campaigns (title, subject, from_email, body_markdown, status, source) VALUES ('T', 'S', 'news@nukehub.org', 'x', 'sent', 'manual')")
+	res, err := store.DB.Exec("INSERT INTO campaigns (title, subject, from_email, body_markdown, status, source) VALUES ('T', 'S', 'news@nukehub.org', 'x', 'sent', 'manual')")
 	if err != nil {
 		t.Fatal(err)
 	}
 	id, _ := res.LastInsertId()
-	if _, err := db.Exec("INSERT INTO deliveries (campaign_id, email, status) VALUES (?, 'ok@test.dev', 'sent'), (?, 'bad@test.dev', 'failed')", id, id); err != nil {
+	if _, err := store.DB.Exec("INSERT INTO deliveries (campaign_id, email, status) VALUES (?, 'ok@test.dev', 'sent'), (?, 'bad@test.dev', 'failed')", id, id); err != nil {
 		t.Fatal(err)
 	}
 
@@ -298,7 +310,7 @@ func TestListCampaignsReturnsStats(t *testing.T) {
 	done := make(chan *httptest.ResponseRecorder, 1)
 	go func() {
 		rec := httptest.NewRecorder()
-		mux.ServeHTTP(rec, authRequest(http.MethodGet, "/admin/newsletter/campaigns", "", staff))
+		mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodGet, "/admin/newsletter/campaigns", "", staff))
 		done <- rec
 	}()
 	select {

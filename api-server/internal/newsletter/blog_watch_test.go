@@ -1,4 +1,4 @@
-package main
+package newsletter
 
 import (
 	"fmt"
@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"nukehub-api/internal/store"
+	"nukehub-api/internal/testutil"
 )
 
 func feedXML(items ...string) string {
@@ -21,8 +24,8 @@ func rssItemXML(title, slug, pubDate string) string {
 }
 
 func TestBlogWatcher(t *testing.T) {
-	setupTestDB(t)
-	smtp := startFakeSMTP(t)
+	testutil.TempDB(t)
+	smtp := testutil.FakeSMTP(t)
 	t.Setenv("NEWSLETTER_TOKEN_SECRET", "testsecret")
 	t.Setenv("NEWSLETTER_SEND_DELAY_MS", "0")
 
@@ -37,7 +40,7 @@ func TestBlogWatcher(t *testing.T) {
 	defer srv.Close()
 	t.Setenv("BLOG_RSS_URL", srv.URL)
 
-	if _, err := db.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('w@test.dev', '2026-01-01', 'test')"); err != nil {
+	if _, err := store.DB.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES ('w@test.dev', '2026-01-01', 'test')"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -46,7 +49,7 @@ func TestBlogWatcher(t *testing.T) {
 		t.Fatal(err)
 	}
 	var campaignCount int
-	if err := db.QueryRow("SELECT COUNT(*) FROM campaigns").Scan(&campaignCount); err != nil {
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM campaigns").Scan(&campaignCount); err != nil {
 		t.Fatal(err)
 	}
 	if campaignCount != 0 {
@@ -68,7 +71,7 @@ func TestBlogWatcher(t *testing.T) {
 	}
 	var id int64
 	var subject, fromEmail, source, status string
-	if err := db.QueryRow("SELECT id, subject, from_email, source, status FROM campaigns").Scan(&id, &subject, &fromEmail, &source, &status); err != nil {
+	if err := store.DB.QueryRow("SELECT id, subject, from_email, source, status FROM campaigns").Scan(&id, &subject, &fromEmail, &source, &status); err != nil {
 		t.Fatalf("expected one campaign: %v", err)
 	}
 	if subject != "New on the blog: Post Three" {
@@ -84,7 +87,7 @@ func TestBlogWatcher(t *testing.T) {
 
 	// Draining the send works and the email carries the post content.
 	sendCampaign(id)
-	msgs := smtp.captured()
+	msgs := smtp.Captured()
 	if len(msgs) != 1 {
 		t.Fatalf("captured %d messages, want 1", len(msgs))
 	}
@@ -99,7 +102,7 @@ func TestBlogWatcher(t *testing.T) {
 	if err := checkFeedOnce(); err != nil {
 		t.Fatal(err)
 	}
-	if err := db.QueryRow("SELECT COUNT(*) FROM campaigns").Scan(&campaignCount); err != nil {
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM campaigns").Scan(&campaignCount); err != nil {
 		t.Fatal(err)
 	}
 	if campaignCount != 1 {
@@ -107,7 +110,7 @@ func TestBlogWatcher(t *testing.T) {
 	}
 
 	// With zero subscribers the cursor advances without creating campaigns.
-	if _, err := db.Exec("DELETE FROM subscribers"); err != nil {
+	if _, err := store.DB.Exec("DELETE FROM subscribers"); err != nil {
 		t.Fatal(err)
 	}
 	feed = feedXML(
@@ -117,7 +120,7 @@ func TestBlogWatcher(t *testing.T) {
 	if err := checkFeedOnce(); err != nil {
 		t.Fatal(err)
 	}
-	if err := db.QueryRow("SELECT COUNT(*) FROM campaigns").Scan(&campaignCount); err != nil {
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM campaigns").Scan(&campaignCount); err != nil {
 		t.Fatal(err)
 	}
 	if campaignCount != 1 {

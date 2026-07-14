@@ -11,53 +11,93 @@ proxied by `api-server/api.nukehub.org.conf`.
 
 ## Ownership
 
-All files under `api-server/**`: `main.go`, `newsletter_campaign.go`,
-`blog_watch.go`, `bounce_watch.go`, `go.mod`, `Dockerfile`, `compose.yml`,
-`README.md`, and `api.nukehub.org.conf`.
+All files under `api-server/**`: `main.go`, the `internal/` package tree,
+`go.mod`, `Dockerfile`, `compose.yml`, `README.md`, and
+`api.nukehub.org.conf`.
 
 ## Local Contracts
 
-- Go 1.22+. Flat `package main` files — no internal packages.
+- Go 1.22+. `main.go` is process bootstrap only; all logic lives in
+  `internal/` packages. Domain packages (`contact`, `survey`, `newsletter`)
+  depend on the infra packages (`config`, `store`, `httpx`, `ratelimit`,
+  `turnstile`, `mail`, `auth`) and read env vars at call time; domains
+  never import each other. `internal/server` imports the domains;
+  `main.go` imports `server`. New features get a file in the owning
+  domain package.
 - Runtime footprint target: ~5-10MB RAM.
 - Deployed either directly (`go build -o api-server . && ./api-server`) or
   via `docker ./compose.yml` (the canonical production path). Listens on
   `127.0.0.1:3000` and is proxied by nginx.
 - Build the whole package (`go build .`), never `go build main.go` — the
-  newsletter campaign code lives in `newsletter_campaign.go`.
+  binary is the root package plus everything under `internal/`.
 
 ## Work Guidance
 
 ### Files
 
-- `main.go` — routing, schema, and the contact/survey/newsletter-subscription
-  endpoints. Endpoints: `GET /health`, `POST /contact`, `POST /survey`,
-  `POST /newsletter`, `POST /newsletter/unsubscribe`, and admin endpoints
-  under `/admin/surveys` and `/admin/newsletter`. Includes SQLite persistence,
-  rate limiting, Turnstile verification, JWT validation against the Keycloak
-  JWKS endpoint, input sanitization, HTML escaping, and email
-  header-injection prevention.
-- `newsletter_campaign.go` — newsletter campaigns: HMAC-signed one-click
-  unsubscribe tokens (`POST /newsletter/unsubscribe/confirm`, RFC 8058),
-  campaign CRUD/send/test/preview admin endpoints, the background sender
-  worker, goldmark markdown → HTML rendering, and the bulk mailer with
-  `List-Unsubscribe` headers. Campaigns flow `draft → sending → sent`;
-  deliveries are snapshotted from the subscriber list at send time and only
-  ever transition `pending → sent|failed`, so restarting the server mid-send
-  never double-sends.
-- `blog_watch.go` — opt-in (`BLOG_AUTO_SEND=true`) RSS watcher that polls
-  `BLOG_RSS_URL` and auto-sends a campaign from `BLOG_FROM_EMAIL` for every
-  new post. The newest-seen post GUID is kept in the `settings` table. First
-  run records the cursor without sending (no archive spam); if the cursor
-  ages out of the feed it resets silently; failed sends are retried next
-  tick. With zero subscribers the cursor still advances but no campaign is
-  created. Auto campaigns carry `source = 'blog-rss'` (an `ALTER TABLE`
-  migration adds the column to older databases).
-- `bounce_watch.go` — opt-in (`BOUNCE_CHECK_ENABLED=true`) IMAP poller for
-  the bounce mailbox. Campaign emails use `BOUNCE_EMAIL` as envelope sender
-  so async bounces land there. Parses RFC 3464 delivery-status blocks:
-  permanent 5xx failures delete the subscriber, transient 4xx are ignored.
-  Only DSN messages are marked `\Seen`; nothing is ever deleted from the
-  mailbox. Requires `github.com/emersion/go-imap/v2`.
+- `main.go` — process bootstrap only: env reads, DB open, JWKS init,
+  rate-limit cleanup, background workers, middleware chain, server start.
+- `internal/config` — `Getenv` env-var helper.
+- `internal/store` — the process-wide `*sql.DB`, schema, and the
+  `campaigns.source` migration.
+- `internal/httpx` — JSON responses, input sanitization, source
+  normalization, and the security-headers/CORS/concurrency middleware.
+- `internal/ratelimit` — per-key hourly buckets with cleanup, trusted-proxy
+  client-IP extraction, and IP hashing.
+- `internal/turnstile` — Cloudflare Turnstile verification.
+- `internal/mail` — the contact/survey notification mailer.
+- `internal/auth` — Keycloak JWKS cache, RS256 token verification, and the
+  role-gating middleware with the role-name constants.
+- `internal/server` — `NewMux`: `/health`, `/admin/health/db`, plus each
+  domain package's `Register`.
+- `internal/contact` — `POST /contact`.
+- `internal/survey` — `survey.go` has `POST /survey` and submission
+  storage; `admin.go` has the `/admin/surveys` endpoints and the
+  survey-access gate. Submissions persist to SQLite and are emailed to
+  `SURVEY_TO_EMAIL` (falling back to `CONTACT_TO_EMAIL`).
+- `internal/newsletter` — the newsletter domain:
+  - `newsletter.go` — `POST /newsletter` subscribe and
+    `POST /newsletter/unsubscribe` (Turnstile-verified), plus `Register`
+    and `StartBackground`.
+  - `confirm.go` — HMAC-signed one-click unsubscribe tokens and
+    `POST /newsletter/unsubscribe/confirm` (RFC 8058).
+  - `admin.go` — subscriber list/export/delete admin and
+    `/admin/newsletter/config`.
+  - `campaign.go` — campaign CRUD/send/test/preview admin endpoints and
+    goldmark markdown → HTML rendering.
+  - `sender.go` — the background sender worker and the bulk mailer with
+    `List-Unsubscribe` headers. Campaigns flow `draft → sending → sent`;
+    deliveries are snapshotted from the subscriber list at send time and
+    only ever transition `pending → sent|failed`, so restarting the server
+    mid-send never double-sends.
+  - `blog_watch.go` — opt-in (`BLOG_AUTO_SEND=true`) RSS watcher that polls
+    `BLOG_RSS_URL` and auto-sends a campaign from `BLOG_FROM_EMAIL` for
+    every new post. The newest-seen post GUID is kept in the `settings`
+    table. First run records the cursor without sending (no archive spam);
+    if the cursor ages out of the feed it resets silently; failed sends
+    are retried next tick. With zero subscribers the cursor still advances
+    but no campaign is created. Auto campaigns carry
+    `source = 'blog-rss'`.
+  - `bounce_watch.go` — opt-in (`BOUNCE_CHECK_ENABLED=true`) IMAP poller
+    for the bounce mailbox. Campaign emails use `BOUNCE_EMAIL` as envelope
+    sender so async bounces land there. Parses RFC 3464 delivery-status
+    blocks: permanent 5xx failures delete the subscriber, transient 4xx
+    are ignored. Only DSN messages are marked `\Seen`; nothing is ever
+    deleted from the mailbox. Requires `github.com/emersion/go-imap/v2`.
+    `DialIMAP` is the test seam for substituting a plaintext connection.
+- `internal/testutil` — shared test fixtures as importable helpers (see
+  the tests pitfall below).
+- `Dockerfile` — builds the static Go binary inside a build stage and
+  copies it into a minimal runtime image.
+- `compose.yml` — local + production container composition. Reads secrets
+  from `api-server/.env` (not committed).
+- `README.md` — operator quick-start, env-var list, and security feature
+  list.
+- `api.nukehub.org.conf` — top-level nginx vhost that redirects HTTP →
+  HTTPS, proxies `/health`, `/contact`, `/survey`, `/newsletter`,
+  `/newsletter/unsubscribe`, and `/admin` to `127.0.0.1:3000`, and applies
+  security headers. This vhost is unrelated to the static site's
+  `public/_headers` (served by Cloudflare Pages).
 
 ### Abuse protection
 
@@ -73,15 +113,6 @@ All files under `api-server/**`: `main.go`, `newsletter_campaign.go`,
   `Retry-After: 10` header.
 - **Request body cap** — JSON bodies for `/contact` and `/survey` are limited
   to 2 MiB via `http.MaxBytesReader`.
-- `Dockerfile` — builds the static Go binary inside a build stage and copies
-  it into a minimal runtime image.
-- `compose.yml` — local + production container composition. Reads secrets from
-  `api-server/.env` (not committed).
-- `README.md` — operator quick-start, env-var list, and security feature list.
-- `api.nukehub.org.conf` — top-level nginx vhost that redirects HTTP → HTTPS,
-  proxies `/health`, `/contact`, `/survey`, `/newsletter`, `/newsletter/unsubscribe`,
-  and `/admin` to `127.0.0.1:3000`, and applies security headers. This vhost is
-  unrelated to the static site's `public/_headers` (served by Cloudflare Pages).
 
 ### Environment variables
 
@@ -233,9 +264,11 @@ Do **not** copy these into the static-site `.env`. (See root NAD
 - **Local `npm run dev` / `npm run preview` requests are cross-origin.**
   Add `http://localhost:4321` to `ALLOWED_ORIGINS` in `api-server/.env` or the
   browser will block API calls.
-- **Tests live in `*_test.go` next to the code.** `helpers_test.go` provides
-  the shared fixtures (temp DB, fake SMTP/IMAP servers, Keycloak JWKS stub).
-  New behavior should come with a test; run `go test ./...` before building.
+- **Tests live in `*_test.go` files inside the package they exercise.**
+  Shared fixtures — temp DB, fake SMTP/IMAP servers, Keycloak JWKS stub,
+  auth request builder — are importable from `internal/testutil` (regular
+  `.go` files, so any package's tests can use them). New behavior should
+  come with a test; run `go test ./...` before building.
 
 ## Verification
 

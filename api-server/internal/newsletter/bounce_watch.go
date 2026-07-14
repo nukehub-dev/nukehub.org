@@ -1,4 +1,4 @@
-package main
+package newsletter
 
 import (
 	"crypto/tls"
@@ -13,6 +13,9 @@ import (
 
 	"github.com/emersion/go-imap/v2"
 	"github.com/emersion/go-imap/v2/imapclient"
+
+	"nukehub-api/internal/config"
+	"nukehub-api/internal/store"
 )
 
 // Bounce processing: polls the bounce mailbox over IMAP for Delivery
@@ -37,37 +40,37 @@ const (
 var bounceCheckMu sync.Mutex
 
 func bounceCheckEnabled() bool {
-	return getEnv("BOUNCE_CHECK_ENABLED", "false") == "true"
+	return config.Getenv("BOUNCE_CHECK_ENABLED", "false") == "true"
 }
 
 // bounceEnvelopeFrom is the envelope sender (MAIL FROM) for campaign
 // emails. Bounces are delivered here, not to the From header address.
 func bounceEnvelopeFrom() string {
-	return getEnv("BOUNCE_EMAIL", "bounces@nukehub.org")
+	return config.Getenv("BOUNCE_EMAIL", "bounces@nukehub.org")
 }
 
 func bounceIMAPHost() string {
-	return getEnv("BOUNCE_IMAP_HOST", getEnv("SMTP_HOST", ""))
+	return config.Getenv("BOUNCE_IMAP_HOST", config.Getenv("SMTP_HOST", ""))
 }
 
 func bounceIMAPPort() string {
-	return getEnv("BOUNCE_IMAP_PORT", "993")
+	return config.Getenv("BOUNCE_IMAP_PORT", "993")
 }
 
 func bounceIMAPUser() string {
-	return getEnv("BOUNCE_IMAP_USER", getEnv("SMTP_USER", ""))
+	return config.Getenv("BOUNCE_IMAP_USER", config.Getenv("SMTP_USER", ""))
 }
 
 func bounceIMAPPass() string {
-	return getEnv("BOUNCE_IMAP_PASS", getEnv("SMTP_PASS", ""))
+	return config.Getenv("BOUNCE_IMAP_PASS", config.Getenv("SMTP_PASS", ""))
 }
 
 func bounceIMAPFolder() string {
-	return getEnv("BOUNCE_IMAP_FOLDER", "INBOX")
+	return config.Getenv("BOUNCE_IMAP_FOLDER", "INBOX")
 }
 
 func bounceCheckInterval() time.Duration {
-	ms, err := strconv.Atoi(getEnv("BOUNCE_CHECK_INTERVAL_MS", ""))
+	ms, err := strconv.Atoi(config.Getenv("BOUNCE_CHECK_INTERVAL_MS", ""))
 	if err != nil || time.Duration(ms)*time.Millisecond < minBounceCheckInterval {
 		return defaultBounceCheckInterval
 	}
@@ -119,7 +122,7 @@ func processBounceResults(results []bounceResult) int {
 			fmt.Printf("Bounce watcher: transient failure for %s (status %s), keeping subscriber\n", r.Email, r.Status)
 			continue
 		}
-		res, err := db.Exec("DELETE FROM subscribers WHERE email = ?", r.Email)
+		res, err := store.DB.Exec("DELETE FROM subscribers WHERE email = ?", r.Email)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Bounce watcher: delete %s failed: %v\n", r.Email, err)
 			continue
@@ -166,9 +169,9 @@ func runBounceCheck() {
 	}
 }
 
-// dialIMAP dials the bounce mailbox. A variable so tests can substitute a
+// DialIMAP dials the bounce mailbox. A variable so tests can substitute a
 // plaintext connection; production always uses TLS.
-var dialIMAP = func(host, addr string) (*imapclient.Client, error) {
+var DialIMAP = func(host, addr string) (*imapclient.Client, error) {
 	return imapclient.DialTLS(addr, &imapclient.Options{
 		TLSConfig: &tls.Config{ServerName: host},
 	})
@@ -176,7 +179,7 @@ var dialIMAP = func(host, addr string) (*imapclient.Client, error) {
 
 func checkBouncesOnce() error {
 	addr := net.JoinHostPort(bounceIMAPHost(), bounceIMAPPort())
-	client, err := dialIMAP(bounceIMAPHost(), addr)
+	client, err := DialIMAP(bounceIMAPHost(), addr)
 	if err != nil {
 		return fmt.Errorf("imap dial: %w", err)
 	}
