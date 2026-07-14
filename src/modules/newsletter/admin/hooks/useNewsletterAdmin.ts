@@ -2,10 +2,15 @@ import * as React from "react";
 import {
   fetchCampaigns,
   fetchNewsletterConfig,
+  fetchNewsletterStats,
   fetchSubscribers,
   type NewsletterConfig,
 } from "../lib/admin-api";
-import type { CampaignsResponse, SubscribersResponse } from "../types";
+import type {
+  CampaignsResponse,
+  NewsletterStats,
+  SubscribersResponse,
+} from "../types";
 
 interface AsyncState<T> {
   data: T | null;
@@ -121,6 +126,20 @@ export function useNewsletterConfig(
     async (signal) => {
       if (!token) throw new Error("Not authenticated");
       const result = await fetchNewsletterConfig(token);
+      if (signal.aborted) return result;
+      return result;
+    },
+    [token],
+  );
+}
+
+export function useNewsletterStats(
+  token: string | null,
+): AsyncState<NewsletterStats> {
+  return useAsyncState(
+    async (signal) => {
+      if (!token) throw new Error("Not authenticated");
+      const result = await fetchNewsletterStats(token);
       if (signal.aborted) return result;
       return result;
     },

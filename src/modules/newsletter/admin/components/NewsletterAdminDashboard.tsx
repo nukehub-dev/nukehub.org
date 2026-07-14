@@ -3,10 +3,14 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Clock,
   Download,
   Eye,
   Inbox,
+  LayoutGrid,
+  List,
   Mail,
   Minus,
   SearchX,
@@ -23,7 +27,11 @@ import { ConfirmDialog } from "@components/ui/Dialog";
 import { SearchInput } from "@components/ui/SearchInput";
 import { Select } from "@components/ui/Select";
 import { CampaignManager } from "./CampaignManager";
-import { useSubscribers } from "../hooks/useNewsletterAdmin";
+import { StatsPanel } from "./StatsPanel";
+import {
+  useNewsletterStats,
+  useSubscribers,
+} from "../hooks/useNewsletterAdmin";
 import {
   bulkDeleteSubscribers,
   deleteSubscriber,
@@ -33,8 +41,11 @@ import type { Subscriber } from "../types";
 
 const ADMIN_ROLE = "newsletter-admin";
 const STAFF_ROLE = "newsletter-staff";
-const PAGE_SIZE = 50;
 const SEARCH_DEBOUNCE_MS = 300;
+const PAGE_SIZE_OPTIONS = [25, 50, 100].map((n) => ({
+  value: String(n),
+  label: `${n} / page`,
+}));
 
 function useCanAccessNewsletterAdmin() {
   const auth = useMaybeAuth();
@@ -46,10 +57,12 @@ function useCanAccessNewsletterAdmin() {
 export function NewsletterAdminDashboard() {
   const { auth, isAdmin, isStaff, canAccess } = useCanAccessNewsletterAdmin();
   const token = auth?.token ?? null;
-  const [tab, setTab] = React.useState<"subscribers" | "campaigns">(
-    "subscribers",
-  );
+  const [tab, setTab] = React.useState<
+    "subscribers" | "campaigns" | "statistics"
+  >("subscribers");
   const [page, setPage] = React.useState(1);
+  const [limit, setLimit] = React.useState(50);
+  const [viewMode, setViewMode] = React.useState<"table" | "cards">("table");
 
   // Search is debounced so each keystroke does not fire a request.
   const [searchInput, setSearchInput] = React.useState("");
@@ -71,7 +84,7 @@ export function NewsletterAdminDashboard() {
   const { data, error, isLoading, refresh } = useSubscribers(
     token,
     page,
-    PAGE_SIZE,
+    limit,
     query,
     sourceFilter,
   );
@@ -86,7 +99,7 @@ export function NewsletterAdminDashboard() {
   const [deleteError, setDeleteError] = React.useState<string | null>(null);
 
   const total = data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / limit));
   const subscribers = React.useMemo(
     () => data?.subscribers ?? [],
     [data?.subscribers],
@@ -108,6 +121,12 @@ export function NewsletterAdminDashboard() {
 
   const changePage = (next: number) => {
     setPage(next);
+    setSelected(new Set());
+  };
+
+  const changeLimit = (value: string) => {
+    setLimit(Number(value));
+    setPage(1);
     setSelected(new Set());
   };
 
@@ -263,7 +282,7 @@ export function NewsletterAdminDashboard() {
       </div>
 
       <div className="flex gap-2 border-b border-border/50">
-        {(["subscribers", "campaigns"] as const).map((name) => (
+        {(["subscribers", "campaigns", "statistics"] as const).map((name) => (
           <button
             key={name}
             type="button"
@@ -285,6 +304,8 @@ export function NewsletterAdminDashboard() {
           isAdmin={isAdmin}
           subscriberCount={total}
         />
+      ) : tab === "statistics" ? (
+        <StatisticsTab token={token} />
       ) : (
         <>
           {exportError && (
@@ -340,8 +361,32 @@ export function NewsletterAdminDashboard() {
                 { value: "", label: "All sources" },
                 ...sources.map((s) => ({ value: s, label: s })),
               ]}
-              className="w-44"
+              className="w-40"
             />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setViewMode((v) => (v === "table" ? "cards" : "table"))
+              }
+              className={cn(
+                "h-9",
+                viewMode === "cards" &&
+                  "border-primary/30 bg-primary/10 text-primary",
+              )}
+            >
+              {viewMode === "table" ? (
+                <>
+                  <LayoutGrid size={16} />
+                  Cards
+                </>
+              ) : (
+                <>
+                  <List size={16} />
+                  Table
+                </>
+              )}
+            </Button>
           </div>
 
           {selected.size > 0 && (
@@ -408,115 +453,163 @@ export function NewsletterAdminDashboard() {
               )}
             </Card>
           ) : (
-            <Card variant="bubble" className="overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                      {canManage && (
-                        <th className="w-12 px-5 py-3">
-                          <RowCheckbox
-                            checked={allOnPageSelected}
-                            indeterminate={someOnPageSelected}
-                            onChange={toggleSelectAllOnPage}
-                            label="Select all on this page"
-                          />
-                        </th>
-                      )}
-                      <th className="px-5 py-3 font-semibold">Email</th>
-                      <th className="px-5 py-3 font-semibold">Subscribed</th>
-                      <th className="px-5 py-3 font-semibold">Source</th>
-                      {canManage && (
-                        <th className="px-5 py-3 text-right font-semibold">
-                          Actions
-                        </th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {subscribers.map((subscriber) => {
-                      const isSelected = selected.has(subscriber.id);
-                      return (
-                        <tr
-                          key={subscriber.id}
-                          onClick={
-                            canManage
-                              ? () => toggleSelect(subscriber.id)
-                              : undefined
-                          }
-                          className={cn(
-                            "border-b border-border/30 last:border-0 hover:bg-accent/40",
-                            canManage && "cursor-pointer",
-                            isSelected && "bg-primary/5 hover:bg-primary/10",
-                          )}
-                        >
+            <>
+              {viewMode === "table" ? (
+                <Card variant="bubble" className="overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
                           {canManage && (
-                            <td className="px-5 py-3">
+                            <th className="w-12 px-5 py-3">
                               <RowCheckbox
-                                checked={isSelected}
-                                onChange={() => toggleSelect(subscriber.id)}
-                                label={`Select ${subscriber.email}`}
+                                checked={allOnPageSelected}
+                                indeterminate={someOnPageSelected}
+                                onChange={toggleSelectAllOnPage}
+                                label="Select all on this page"
                               />
-                            </td>
+                            </th>
                           )}
-                          <td className="px-5 py-3 text-foreground">
-                            {subscriber.email}
-                          </td>
-                          <td className="px-5 py-3 text-muted-foreground">
-                            {new Date(subscriber.subscribedAt).toLocaleString()}
-                          </td>
-                          <td className="px-5 py-3">
-                            <Badge variant="outline">{subscriber.source}</Badge>
-                          </td>
+                          <th className="px-5 py-3 font-semibold">Email</th>
+                          <th className="px-5 py-3 font-semibold">
+                            Subscribed
+                          </th>
+                          <th className="px-5 py-3 font-semibold">Source</th>
                           {canManage && (
-                            <td className="px-5 py-3 text-right">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setPendingDelete(subscriber);
-                                }}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                                aria-label={`Delete ${subscriber.email}`}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </td>
+                            <th className="px-5 py-3 text-right font-semibold">
+                              Actions
+                            </th>
                           )}
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-border/50 px-5 py-3">
-                <p className="text-xs text-muted-foreground">
-                  Page {page} of {totalPages} · {total.toLocaleString()}{" "}
-                  {filtersActive ? "matching" : "total"}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => changePage(Math.max(1, page - 1))}
-                    disabled={page <= 1}
-                  >
-                    <ChevronLeft size={14} />
-                    Prev
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => changePage(Math.min(totalPages, page + 1))}
-                    disabled={page >= totalPages}
-                  >
-                    Next
-                    <ChevronRight size={14} />
-                  </Button>
+                      </thead>
+                      <tbody>
+                        {subscribers.map((subscriber) => {
+                          const isSelected = selected.has(subscriber.id);
+                          return (
+                            <tr
+                              key={subscriber.id}
+                              onClick={
+                                canManage
+                                  ? () => toggleSelect(subscriber.id)
+                                  : undefined
+                              }
+                              className={cn(
+                                "border-b border-border/30 last:border-0 hover:bg-accent/40",
+                                canManage && "cursor-pointer",
+                                isSelected &&
+                                  "bg-primary/5 hover:bg-primary/10",
+                              )}
+                            >
+                              {canManage && (
+                                <td className="px-5 py-3">
+                                  <RowCheckbox
+                                    checked={isSelected}
+                                    onChange={() => toggleSelect(subscriber.id)}
+                                    label={`Select ${subscriber.email}`}
+                                  />
+                                </td>
+                              )}
+                              <td className="px-5 py-3 text-foreground">
+                                {subscriber.email}
+                              </td>
+                              <td className="px-5 py-3 text-muted-foreground">
+                                {new Date(
+                                  subscriber.subscribedAt,
+                                ).toLocaleString()}
+                              </td>
+                              <td className="px-5 py-3">
+                                <Badge variant="outline">
+                                  {subscriber.source}
+                                </Badge>
+                              </td>
+                              {canManage && (
+                                <td className="px-5 py-3 text-right">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setPendingDelete(subscriber);
+                                    }}
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                                    aria-label={`Delete ${subscriber.email}`}
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </td>
+                              )}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {subscribers.map((subscriber) => {
+                    const isSelected = selected.has(subscriber.id);
+                    return (
+                      <Card
+                        key={subscriber.id}
+                        variant="bubble"
+                        onClick={
+                          canManage
+                            ? () => toggleSelect(subscriber.id)
+                            : undefined
+                        }
+                        className={cn(
+                          "flex items-center gap-3 p-4",
+                          canManage && "cursor-pointer",
+                          isSelected && "border-primary/40 bg-primary/5",
+                        )}
+                      >
+                        {canManage && (
+                          <RowCheckbox
+                            checked={isSelected}
+                            onChange={() => toggleSelect(subscriber.id)}
+                            label={`Select ${subscriber.email}`}
+                          />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-foreground">
+                            {subscriber.email}
+                          </p>
+                          <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            {new Date(
+                              subscriber.subscribedAt,
+                            ).toLocaleDateString()}
+                            <Badge variant="outline">{subscriber.source}</Badge>
+                          </p>
+                        </div>
+                        {canManage && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPendingDelete(subscriber);
+                            }}
+                            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                            aria-label={`Delete ${subscriber.email}`}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </Card>
+                    );
+                  })}
                 </div>
-              </div>
-            </Card>
+              )}
+
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                limit={limit}
+                noun={filtersActive ? "matching subscribers" : "subscribers"}
+                onPageChange={changePage}
+                onLimitChange={changeLimit}
+              />
+            </>
           )}
         </>
       )}
@@ -547,6 +640,162 @@ export function NewsletterAdminDashboard() {
       />
     </div>
   );
+}
+
+function StatisticsTab({ token }: { token: string | null }) {
+  const { data, error, isLoading } = useNewsletterStats(token);
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+  if (error) {
+    return (
+      <Card variant="bubble" className="p-8 text-center text-destructive">
+        <p>{error}</p>
+      </Card>
+    );
+  }
+  if (!data) return null;
+  return <StatsPanel stats={data} />;
+}
+
+function Pagination({
+  page,
+  totalPages,
+  total,
+  limit,
+  noun,
+  onPageChange,
+  onLimitChange,
+}: {
+  page: number;
+  totalPages: number;
+  total: number;
+  limit: number;
+  noun: string;
+  onPageChange: (page: number) => void;
+  onLimitChange: (value: string) => void;
+}) {
+  const from = total === 0 ? 0 : (page - 1) * limit + 1;
+  const to = Math.min(page * limit, total);
+  return (
+    <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+      <p className="text-xs text-muted-foreground">
+        Showing{" "}
+        <span className="font-medium text-foreground">
+          {from.toLocaleString()}
+        </span>{" "}
+        to{" "}
+        <span className="font-medium text-foreground">
+          {to.toLocaleString()}
+        </span>{" "}
+        of{" "}
+        <span className="font-medium text-foreground">
+          {total.toLocaleString()}
+        </span>{" "}
+        {noun}
+      </p>
+
+      <div className="flex items-center gap-1">
+        <PaginationButton
+          onClick={() => onPageChange(1)}
+          disabled={page <= 1}
+          aria-label="First page"
+        >
+          <ChevronsLeft size={16} />
+        </PaginationButton>
+        <PaginationButton
+          onClick={() => onPageChange(page - 1)}
+          disabled={page <= 1}
+          aria-label="Previous page"
+        >
+          <ChevronLeft size={16} />
+        </PaginationButton>
+
+        <div className="flex items-center gap-1 px-1">
+          {getVisiblePages(page, totalPages).map((pageNum, idx) =>
+            pageNum === null ? (
+              <span
+                key={`ellipsis-${idx}`}
+                className="px-1 text-muted-foreground"
+              >
+                …
+              </span>
+            ) : (
+              <button
+                key={pageNum}
+                type="button"
+                onClick={() => onPageChange(pageNum)}
+                className={cn(
+                  "h-8 min-w-[2rem] rounded-lg px-2 text-sm font-medium transition-colors",
+                  page === pageNum
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-input/50 bg-input/80 hover:bg-accent",
+                )}
+              >
+                {pageNum}
+              </button>
+            ),
+          )}
+        </div>
+
+        <PaginationButton
+          onClick={() => onPageChange(page + 1)}
+          disabled={page >= totalPages}
+          aria-label="Next page"
+        >
+          <ChevronRight size={16} />
+        </PaginationButton>
+        <PaginationButton
+          onClick={() => onPageChange(totalPages)}
+          disabled={page >= totalPages}
+          aria-label="Last page"
+        >
+          <ChevronsRight size={16} />
+        </PaginationButton>
+      </div>
+
+      <Select
+        value={String(limit)}
+        onChange={onLimitChange}
+        options={PAGE_SIZE_OPTIONS}
+        className="w-32"
+      />
+    </div>
+  );
+}
+
+function PaginationButton({
+  children,
+  disabled,
+  onClick,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className="flex h-8 w-8 items-center justify-center rounded-lg border border-input/50 bg-input/80 transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+// getVisiblePages mirrors the survey admin pagination: first/last always
+// visible, a window around the current page, ellipses for the gaps.
+function getVisiblePages(current: number, total: number): (number | null)[] {
+  if (total <= 5) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 3) {
+    return [1, 2, 3, 4, null, total];
+  }
+  if (current >= total - 2) {
+    return [1, null, total - 3, total - 2, total - 1, total];
+  }
+  return [1, null, current - 1, current, current + 1, null, total];
 }
 
 // RowCheckbox is a compact checkbox for dense tables (the ui/Checkbox

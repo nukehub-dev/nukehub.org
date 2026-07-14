@@ -228,3 +228,106 @@ func handleAdminNewsletterSubscriberDetail(w http.ResponseWriter, r *http.Reques
 	rows, _ := res.RowsAffected()
 	httpx.JSON(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
 }
+
+// handleAdminNewsletterStats returns aggregate newsletter metrics: signup
+// counts per day (last 90 days), per-source counts, and campaign/delivery
+// totals. Powers the Statistics tab in the admin dashboard.
+func handleAdminNewsletterStats(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		httpx.JSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	var total int
+	if err := store.DB.QueryRow("SELECT COUNT(*) FROM subscribers").Scan(&total); err != nil {
+		httpx.JSON(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	daily := make(map[string]int)
+	rows, err := store.DB.Query(`
+		SELECT DATE(subscribed_at) AS day, COUNT(*)
+		FROM subscribers
+		WHERE subscribed_at >= DATE('now', '-90 days')
+		GROUP BY day
+		ORDER BY day ASC
+	`)
+	if err != nil {
+		httpx.JSON(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+	for rows.Next() {
+		var day string
+		var count int
+		if err := rows.Scan(&day, &count); err != nil {
+			rows.Close()
+			httpx.JSON(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+			return
+		}
+		daily[day] = count
+	}
+	rows.Close()
+
+	type sourceCount struct {
+		Value string `json:"value"`
+		Count int    `json:"count"`
+	}
+	sources := []sourceCount{}
+	srcRows, err := store.DB.Query(`
+		SELECT COALESCE(NULLIF(source, ''), 'newsletter') AS src, COUNT(*)
+		FROM subscribers
+		GROUP BY src
+		ORDER BY COUNT(*) DESC, src ASC
+	`)
+	if err != nil {
+		httpx.JSON(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+	for srcRows.Next() {
+		var s sourceCount
+		if err := srcRows.Scan(&s.Value, &s.Count); err == nil {
+			sources = append(sources, s)
+		}
+	}
+	srcRows.Close()
+
+	var campaignTotal, campaignDraft, campaignSending, campaignSent int
+	if err := store.DB.QueryRow(`
+		SELECT COUNT(*),
+			COALESCE(SUM(status = 'draft'), 0),
+			COALESCE(SUM(status = 'sending'), 0),
+			COALESCE(SUM(status = 'sent'), 0)
+		FROM campaigns
+	`).Scan(&campaignTotal, &campaignDraft, &campaignSending, &campaignSent); err != nil {
+		httpx.JSON(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	var deliveryTotal, deliverySent, deliveryFailed int
+	if err := store.DB.QueryRow(`
+		SELECT COUNT(*),
+			COALESCE(SUM(status = 'sent'), 0),
+			COALESCE(SUM(status = 'failed'), 0)
+		FROM deliveries
+	`).Scan(&deliveryTotal, &deliverySent, &deliveryFailed); err != nil {
+		httpx.JSON(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	httpx.JSON(w, http.StatusOK, map[string]interface{}{
+		"total":   total,
+		"daily":   daily,
+		"sources": sources,
+		"campaigns": map[string]int{
+			"total":   campaignTotal,
+			"draft":   campaignDraft,
+			"sending": campaignSending,
+			"sent":    campaignSent,
+		},
+		"deliveries": map[string]int{
+			"total":  deliveryTotal,
+			"sent":   deliverySent,
+			"failed": deliveryFailed,
+		},
+	})
+}

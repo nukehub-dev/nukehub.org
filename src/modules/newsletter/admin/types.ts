@@ -41,6 +41,14 @@ export interface CampaignsResponse {
   campaigns: Campaign[];
 }
 
+export interface NewsletterStats {
+  total: number;
+  daily: Record<string, number>;
+  sources: { value: string; count: number }[];
+  campaigns: { total: number; draft: number; sending: number; sent: number };
+  deliveries: { total: number; sent: number; failed: number };
+}
+
 export interface CampaignInput {
   title: string;
   subject: string;

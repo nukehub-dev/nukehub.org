@@ -16,6 +16,7 @@ import { Badge } from "@components/ui/Badge";
 import { ConfirmDialog } from "@components/ui/Dialog";
 import { Input } from "@components/ui/Input";
 import { Label } from "@components/ui/Label";
+import { SearchInput } from "@components/ui/SearchInput";
 import { Select } from "@components/ui/Select";
 import { Textarea } from "@components/ui/Textarea";
 import {
@@ -52,6 +53,22 @@ export function CampaignManager({
   const [sending, setSending] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
   const [actionError, setActionError] = React.useState<string | null>(null);
+  const [campaignSearch, setCampaignSearch] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState<
+    "all" | Campaign["status"]
+  >("all");
+
+  const campaigns = React.useMemo(() => data?.campaigns ?? [], [data]);
+  const filteredCampaigns = React.useMemo(() => {
+    const q = campaignSearch.trim().toLowerCase();
+    return campaigns.filter((c) => {
+      if (statusFilter !== "all" && c.status !== statusFilter) return false;
+      if (q && !`${c.title} ${c.subject}`.toLowerCase().includes(q)) {
+        return false;
+      }
+      return true;
+    });
+  }, [campaigns, campaignSearch, statusFilter]);
 
   if (composer.open) {
     return (
@@ -67,8 +84,6 @@ export function CampaignManager({
       />
     );
   }
-
-  const campaigns = data?.campaigns ?? [];
 
   const handleSend = async () => {
     if (!token || !pendingSend) return;
@@ -119,6 +134,34 @@ export function CampaignManager({
         </Card>
       )}
 
+      {!isLoading && !error && campaigns.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3">
+          <SearchInput
+            value={campaignSearch}
+            onChange={(e) => setCampaignSearch(e.target.value)}
+            onClear={() => setCampaignSearch("")}
+            placeholder="Search campaigns…"
+            className="min-w-[200px] flex-1"
+          />
+          <div className="flex items-center gap-1.5">
+            {(["all", "draft", "sending", "sent"] as const).map((status) => (
+              <button
+                key={status}
+                type="button"
+                onClick={() => setStatusFilter(status)}
+                className={`rounded-full border px-3 py-1 text-xs font-medium capitalize transition-colors ${
+                  statusFilter === status
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {isLoading ? (
         <Card variant="bubble" className="h-40 animate-pulse p-5">
           <div className="h-4 w-full rounded bg-muted" />
@@ -142,9 +185,26 @@ export function CampaignManager({
             {subscriberCount === 1 ? "" : "s"}.
           </p>
         </Card>
+      ) : filteredCampaigns.length === 0 ? (
+        <Card variant="bubble" className="p-8 text-center">
+          <h3 className="text-lg font-semibold text-foreground">No matches</h3>
+          <p className="mt-2 text-muted-foreground">
+            No campaigns match the current search or filter.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => {
+              setCampaignSearch("");
+              setStatusFilter("all");
+            }}
+          >
+            Clear search and filters
+          </Button>
+        </Card>
       ) : (
         <div className="space-y-3">
-          {campaigns.map((campaign) => (
+          {filteredCampaigns.map((campaign) => (
             <Card key={campaign.id} variant="bubble" className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">

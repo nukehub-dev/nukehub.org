@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"nukehub-api/internal/store"
 	"nukehub-api/internal/testutil"
@@ -133,4 +134,70 @@ func TestBulkDeleteSubscribers(t *testing.T) {
 func jsonNumber(id int64) string {
 	b, _ := json.Marshal(id)
 	return string(b)
+}
+
+func TestNewsletterStats(t *testing.T) {
+	testutil.TempDB(t)
+	auth := testutil.AuthStub(t)
+	mux := newMux()
+	staff := auth.Token(t, "newsletter-staff")
+
+	// Subscribers across sources and days (always inside the 90-day window).
+	for _, s := range []struct{ email, at, source string }{
+		{"a@test.dev", time.Now().UTC().Format(time.RFC3339), "footer"},
+		{"b@test.dev", time.Now().UTC().Add(-24 * time.Hour).Format(time.RFC3339), "footer"},
+		{"c@test.dev", time.Now().UTC().Add(-48 * time.Hour).Format(time.RFC3339), "blog"},
+	} {
+		if _, err := store.DB.Exec("INSERT INTO subscribers (email, subscribed_at, source) VALUES (?, ?, ?)", s.email, s.at, s.source); err != nil {
+			t.Fatal(err)
+		}
+	}
+	res, err := store.DB.Exec("INSERT INTO campaigns (title, subject, from_email, body_markdown, status, source) VALUES ('T', 'S', 'news@nukehub.org', 'x', 'sent', 'manual')")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cid, _ := res.LastInsertId()
+	if _, err := store.DB.Exec("INSERT INTO deliveries (campaign_id, email, status) VALUES (?, 'a@test.dev', 'sent'), (?, 'b@test.dev', 'failed')", cid, cid); err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodGet, "/admin/newsletter/stats", "", staff))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("stats = %d, want 200: %s", rec.Code, rec.Body.String())
+	}
+	var body struct {
+		Total   int            `json:"total"`
+		Daily   map[string]int `json:"daily"`
+		Sources []struct {
+			Value string `json:"value"`
+			Count int    `json:"count"`
+		} `json:"sources"`
+		Campaigns  map[string]int `json:"campaigns"`
+		Deliveries map[string]int `json:"deliveries"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if body.Total != 3 {
+		t.Fatalf("total = %d, want 3", body.Total)
+	}
+	if len(body.Daily) != 3 {
+		t.Fatalf("daily = %v, want 3 days", body.Daily)
+	}
+	if len(body.Sources) != 2 || body.Sources[0].Value != "footer" || body.Sources[0].Count != 2 {
+		t.Fatalf("sources = %+v, want footer:2 first", body.Sources)
+	}
+	if body.Campaigns["total"] != 1 || body.Campaigns["sent"] != 1 {
+		t.Fatalf("campaigns = %v", body.Campaigns)
+	}
+	if body.Deliveries["total"] != 2 || body.Deliveries["sent"] != 1 || body.Deliveries["failed"] != 1 {
+		t.Fatalf("deliveries = %v", body.Deliveries)
+	}
+
+	rec = httptest.NewRecorder()
+	mux.ServeHTTP(rec, testutil.AuthRequest(http.MethodPost, "/admin/newsletter/stats", "{}", staff))
+	if rec.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("POST stats = %d, want 405", rec.Code)
+	}
 }

@@ -2,6 +2,7 @@ import type {
   Campaign,
   CampaignInput,
   CampaignsResponse,
+  NewsletterStats,
   SubscribersResponse,
 } from "../types";
 
@@ -220,4 +221,10 @@ export function fetchNewsletterConfig(
   token: string | null,
 ): Promise<NewsletterConfig> {
   return fetchJson(token, "/config");
+}
+
+export function fetchNewsletterStats(
+  token: string | null,
+): Promise<NewsletterStats> {
+  return fetchJson(token, "/stats");
 }

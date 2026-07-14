@@ -29,6 +29,7 @@ func Register(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/newsletter/subscribers", auth.RequireAnyRole(auth.NewsletterAdminRole, auth.NewsletterStaffRole)(handleAdminNewsletterSubscribers))
 	mux.HandleFunc("/admin/newsletter/subscribers/export.csv", auth.RequireAnyRole(auth.NewsletterAdminRole, auth.NewsletterStaffRole)(handleAdminNewsletterExportCSV))
 	mux.HandleFunc("/admin/newsletter/subscribers/", auth.RequireAnyRole(auth.NewsletterAdminRole, auth.NewsletterStaffRole)(handleAdminNewsletterSubscriberDetail))
+	mux.HandleFunc("/admin/newsletter/stats", auth.RequireAnyRole(auth.NewsletterAdminRole, auth.NewsletterStaffRole)(handleAdminNewsletterStats))
 	mux.HandleFunc("/admin/newsletter/campaigns", auth.RequireAnyRole(auth.NewsletterAdminRole, auth.NewsletterStaffRole)(handleAdminCampaigns))
 	mux.HandleFunc("/admin/newsletter/campaigns/", requireCampaignAccess(handleAdminCampaignDetail))
 	mux.HandleFunc("/admin/newsletter/config", auth.RequireAnyRole(auth.NewsletterAdminRole, auth.NewsletterStaffRole)(handleAdminNewsletterConfig))

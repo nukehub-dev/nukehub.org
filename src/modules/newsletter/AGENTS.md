@@ -12,9 +12,13 @@ This NAD owns `src/modules/newsletter/**` and the routes
 `src/pages/admin/newsletter/index.astro` and
 `src/pages/newsletter/unsubscribe/index.astro`. Parent: `src/modules/AGENTS.md`.
 
-- `admin/` — subscriber dashboard (debounced email search, source filter,
-  multi-select with bulk delete, single delete, CSV export) and campaign
-  manager (compose, preview, test send, send, delete).
+- `admin/` — three tabs. Subscribers: debounced email search, source filter,
+  multi-select with bulk delete, single delete, CSV export, table/cards view
+  toggle, and survey-style pagination (numbered pages, page-size select).
+  Campaigns: compose, preview, test send, send, delete, plus title/subject
+  search and status filter chips. Statistics: `StatsPanel.tsx` renders
+  `GET /admin/newsletter/stats` (signup trend chart, per-source bars, campaign
+  delivery summary) and is only mounted while the tab is active.
 - `components/UnsubscribeConfirm.tsx` — confirm page island; posts the
   HMAC token from the URL to `{PUBLIC_API_URL}/newsletter/unsubscribe/confirm`.
   Both the island and its route are styled like the 404 page (ambient glow,

@@ -213,6 +213,10 @@ Do **not** copy these into the static-site `.env`. (See root NAD
   (`newsletter-admin` or `newsletter-staff`).
 - `GET /admin/newsletter/config` — configured sender name and allowed From
   addresses (`newsletter-admin` or `newsletter-staff`).
+- `GET /admin/newsletter/stats` — signup statistics for the dashboard
+  (`newsletter-admin` or `newsletter-staff`): total subscribers, per-day
+  signup counts for a 90-day window, per-source counts, campaign counts by
+  status, and delivery totals (sent/failed).
 - `GET /admin/newsletter/campaigns` — list campaigns with delivery stats
   (`newsletter-admin` or `newsletter-staff`).
 - `POST /admin/newsletter/campaigns` — create a draft campaign
