@@ -40,6 +40,11 @@ All files under `src/lib/**`.
 - `useWebGL.ts` — WebGL/Three.js lifecycle helper used by home hero.
 - `auth/NukeAuthProvider.tsx` — the single auth provider. Exposes the Keycloak
   access token via `useAuth().token` and a `hasRole(role)` helper.
+- `auth/roles.ts` — NukeAuth client role names for the admin areas
+  (`survey-admin`/`survey-viewer`, `newsletter-admin`/`newsletter-staff`) and
+  `hasAnyRole`. Mirrors the role constants in `api-server/internal/auth` —
+  keep both sides in sync. Access is always enforced server-side; these only
+  show or hide admin UI.
 
 ### NukeAuth provider
 

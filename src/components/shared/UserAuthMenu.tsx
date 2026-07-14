@@ -1,8 +1,22 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { User, LogOut, Settings, ChevronDown, Loader2 } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Settings,
+  ChevronDown,
+  Loader2,
+  LayoutDashboard,
+  ClipboardList,
+  Mail,
+} from "lucide-react";
 import { useAuth } from "@lib/auth/NukeAuthProvider";
+import {
+  hasAnyRole,
+  NEWSLETTER_ACCESS_ROLES,
+  SURVEY_ACCESS_ROLES,
+} from "@lib/auth/roles";
 import { cn } from "@lib/utils";
 
 function md5(inputString: string): string {
@@ -235,8 +249,15 @@ function getGravatarUrl(email: string): string {
 }
 
 export function UserAuthMenu() {
-  const { isAuthenticated, isLoading, user, login, logout, accountUrl } =
-    useAuth();
+  const {
+    isAuthenticated,
+    isLoading,
+    user,
+    login,
+    logout,
+    accountUrl,
+    hasRole,
+  } = useAuth();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -288,6 +309,10 @@ export function UserAuthMenu() {
   }
 
   const initials = getInitials(user?.fullName || user?.username || "U");
+
+  const canSurveys = hasAnyRole(hasRole, SURVEY_ACCESS_ROLES);
+  const canNewsletter = hasAnyRole(hasRole, NEWSLETTER_ACCESS_ROLES);
+  const hasAdminLinks = canSurveys || canNewsletter;
 
   return (
     <div ref={containerRef} className="relative">
@@ -345,6 +370,45 @@ export function UserAuthMenu() {
             <Settings className="h-4 w-4 text-muted-foreground" />
             Account Settings
           </a>
+
+          {hasAdminLinks && (
+            <>
+              <div className="my-1 h-px bg-border" />
+              <p className="px-3 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Administration
+              </p>
+              <a
+                href="/admin/"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+                Overview
+              </a>
+              {canSurveys && (
+                <a
+                  href="/admin/surveys/"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                  <ClipboardList className="h-4 w-4 text-muted-foreground" />
+                  Surveys
+                </a>
+              )}
+              {canNewsletter && (
+                <a
+                  href="/admin/newsletter/"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  Newsletter
+                </a>
+              )}
+            </>
+          )}
+
+          <div className="my-1 h-px bg-border" />
 
           <button
             onClick={() => {

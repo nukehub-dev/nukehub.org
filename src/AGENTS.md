@@ -32,6 +32,11 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
 
 - `src/pages/` — Astro routes. One `.astro` per URL; `[...slug].astro` renders
   non-`customPage` entries from the `projects` collection.
+- `src/pages/admin/` — admin area: `/admin/` is a role-filtered landing page
+  (`src/components/shared/AdminLanding.tsx`); `/admin/surveys/` and
+  `/admin/newsletter/` belong to their module NADs. The account menu
+  (`UserAuthMenu.tsx`) shows an "Administration" section with the same links
+  when the user has any admin role.
 - `src/pages/surveys/` — survey routes. See `src/modules/survey/AGENTS.md`.
 - `src/pages/og/` — dynamic OpenGraph PNG endpoints (`.png.ts`). They use
   Satori + ResVG. `@resvg/resvg-js` is `optimizeDeps.exclude` and
