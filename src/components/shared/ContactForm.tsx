@@ -592,9 +592,30 @@ export function ContactForm({
           onExpire={() => setTurnstileToken("")}
           options={{
             theme: "dark",
-            size: "flexible",
+            size: "invisible",
+            appearance: "interaction-only",
           }}
         />
+        <p className="text-center text-[11px] leading-snug text-muted-foreground/60">
+          Protected by Cloudflare Turnstile.{" "}
+          <a
+            href="https://www.cloudflare.com/privacypolicy/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-muted-foreground"
+          >
+            Privacy
+          </a>
+          {" · "}
+          <a
+            href="https://www.cloudflare.com/website-terms/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-muted-foreground"
+          >
+            Terms
+          </a>
+        </p>
         {errors.turnstile && (
           <p className="text-xs text-red-500">{errors.turnstile}</p>
         )}
