@@ -28,6 +28,7 @@ export interface Campaign {
   fromEmail: string;
   bodyMarkdown: string;
   status: CampaignStatus;
+  source: string;
   createdAt: string;
   updatedAt: string;
   startedAt: string | null;

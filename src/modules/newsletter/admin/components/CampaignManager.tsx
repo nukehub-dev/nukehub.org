@@ -5,6 +5,7 @@ import {
   Megaphone,
   Pencil,
   RefreshCw,
+  Rss,
   Send,
   Trash2,
 } from "lucide-react";
@@ -152,6 +153,12 @@ export function CampaignManager({
                       {campaign.title}
                     </h3>
                     <StatusBadge campaign={campaign} />
+                    {campaign.source === "blog-rss" && (
+                      <Badge variant="ghost" className="gap-1">
+                        <Rss size={12} />
+                        Auto
+                      </Badge>
+                    )}
                   </div>
                   <p className="mt-1 truncate text-sm text-muted-foreground">
                     {campaign.subject} · from {campaign.fromEmail}

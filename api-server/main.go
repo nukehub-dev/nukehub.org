@@ -105,6 +105,9 @@ func main() {
 	getTokenSecret()
 	startCampaignSender()
 
+	// Blog RSS → newsletter auto-send (only when BLOG_AUTO_SEND=true)
+	startBlogWatcher()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)
@@ -194,10 +197,16 @@ CREATE TABLE IF NOT EXISTS campaigns (
     from_email TEXT NOT NULL,
     body_markdown TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'draft',
+    source TEXT NOT NULL DEFAULT 'manual',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     started_at DATETIME,
     finished_at DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS deliveries (
@@ -215,6 +224,32 @@ CREATE INDEX IF NOT EXISTS idx_deliveries_campaign_status ON deliveries(campaign
 `
 	if _, err := db.Exec(schema); err != nil {
 		return fmt.Errorf("create schema: %w", err)
+	}
+
+	// Migration: campaigns.source was added after the table first shipped.
+	var hasSource bool
+	rows, err := db.Query("PRAGMA table_info(campaigns)")
+	if err != nil {
+		return fmt.Errorf("inspect campaigns table: %w", err)
+	}
+	for rows.Next() {
+		var cid int
+		var name, ctype string
+		var notNull, pk int
+		var dflt interface{}
+		if err := rows.Scan(&cid, &name, &ctype, &notNull, &dflt, &pk); err != nil {
+			rows.Close()
+			return fmt.Errorf("inspect campaigns table: %w", err)
+		}
+		if name == "source" {
+			hasSource = true
+		}
+	}
+	rows.Close()
+	if !hasSource {
+		if _, err := db.Exec("ALTER TABLE campaigns ADD COLUMN source TEXT NOT NULL DEFAULT 'manual'"); err != nil {
+			return fmt.Errorf("add campaigns.source column: %w", err)
+		}
 	}
 	return nil
 }

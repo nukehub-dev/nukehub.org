@@ -35,6 +35,9 @@ This NAD owns `src/modules/newsletter/**` and the routes
   `GET /admin/newsletter/config` — never hardcode them in the UI.
 - The dashboard polls campaign lists every 5s while any campaign is
   `sending`.
+- Campaigns created by the api-server's blog RSS watcher
+  (`source = "blog-rss"`) appear with an "Auto" badge and are sent from
+  `BLOG_FROM_EMAIL` without admin action.
 - Email unsubscribe links point at `/newsletter/unsubscribe/?token=...`
   (this site's confirm page). Mail clients also get an RFC 8058 one-click
   URL via the `List-Unsubscribe` header; neither requires a captcha — the

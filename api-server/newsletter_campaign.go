@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"mime"
 	"net/http"
@@ -35,6 +36,9 @@ const (
 	deliveryStatusPending = "pending"
 	deliveryStatusSent    = "sent"
 	deliveryStatusFailed  = "failed"
+
+	campaignSourceManual  = "manual"
+	campaignSourceBlogRSS = "blog-rss"
 
 	maxCampaignTitleLen   = 200
 	maxCampaignSubjectLen = 200
@@ -252,6 +256,7 @@ type campaign struct {
 	FromEmail    string        `json:"fromEmail"`
 	BodyMarkdown string        `json:"bodyMarkdown"`
 	Status       string        `json:"status"`
+	Source       string        `json:"source"`
 	CreatedAt    string        `json:"createdAt"`
 	UpdatedAt    string        `json:"updatedAt"`
 	StartedAt    *string       `json:"startedAt"`
@@ -289,7 +294,7 @@ func scanCampaign(sc interface{ Scan(...interface{}) error }) (*campaign, error)
 	var c campaign
 	var startedAt, finishedAt sql.NullString
 	err := sc.Scan(&c.ID, &c.Title, &c.Subject, &c.FromEmail, &c.BodyMarkdown,
-		&c.Status, &c.CreatedAt, &c.UpdatedAt, &startedAt, &finishedAt)
+		&c.Status, &c.Source, &c.CreatedAt, &c.UpdatedAt, &startedAt, &finishedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +308,7 @@ func scanCampaign(sc interface{ Scan(...interface{}) error }) (*campaign, error)
 	return &c, nil
 }
 
-const campaignColumns = "id, title, subject, from_email, body_markdown, status, created_at, updated_at, started_at, finished_at"
+const campaignColumns = "id, title, subject, from_email, body_markdown, status, source, created_at, updated_at, started_at, finished_at"
 
 func loadCampaign(id int64) (*campaign, error) {
 	return scanCampaign(db.QueryRow("SELECT "+campaignColumns+" FROM campaigns WHERE id = ?", id))
@@ -396,8 +401,8 @@ func createCampaign(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := db.Exec(
-		"INSERT INTO campaigns (title, subject, from_email, body_markdown, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		req.Title, req.Subject, req.FromEmail, req.BodyMarkdown, campaignStatusDraft,
+		"INSERT INTO campaigns (title, subject, from_email, body_markdown, status, source, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		req.Title, req.Subject, req.FromEmail, req.BodyMarkdown, campaignStatusDraft, campaignSourceManual,
 		time.Now().UTC().Format(time.RFC3339), time.Now().UTC().Format(time.RFC3339),
 	)
 	if err != nil {
@@ -527,6 +532,41 @@ func deleteCampaign(w http.ResponseWriter, _ *http.Request, id int64) {
 	jsonResponse(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
 }
 
+var errNoSubscribers = errors.New("no subscribers to send to")
+
+// launchCampaign snapshots all current subscribers into deliveries, marks
+// the draft campaign as sending, and queues it for the background sender.
+// Returns the number of recipients.
+func launchCampaign(c *campaign) (int, error) {
+	if c.Status != campaignStatusDraft {
+		return 0, fmt.Errorf("campaign %d is not a draft", c.ID)
+	}
+
+	var subscriberCount int
+	if err := db.QueryRow("SELECT COUNT(*) FROM subscribers").Scan(&subscriberCount); err != nil {
+		return 0, err
+	}
+	if subscriberCount == 0 {
+		return 0, errNoSubscribers
+	}
+
+	if _, err := db.Exec("INSERT OR IGNORE INTO deliveries (campaign_id, email) SELECT ?, email FROM subscribers", c.ID); err != nil {
+		return 0, err
+	}
+	if _, err := db.Exec("UPDATE campaigns SET status = ?, started_at = ?, updated_at = ? WHERE id = ?",
+		campaignStatusSending, time.Now().UTC().Format(time.RFC3339), time.Now().UTC().Format(time.RFC3339), c.ID); err != nil {
+		return 0, err
+	}
+
+	select {
+	case campaignQueue <- c.ID:
+	default:
+		// Queue full; the resume pass on next startup would miss it, so send inline.
+		go sendCampaign(c.ID)
+	}
+	return subscriberCount, nil
+}
+
 // sendCampaignNow snapshots all current subscribers into deliveries and
 // queues the campaign for the background sender.
 func sendCampaignNow(w http.ResponseWriter, _ *http.Request, id int64) {
@@ -539,42 +579,25 @@ func sendCampaignNow(w http.ResponseWriter, _ *http.Request, id int64) {
 		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 		return
 	}
-	if c.Status != campaignStatusDraft {
-		jsonResponse(w, http.StatusConflict, map[string]string{"error": "Campaign has already been sent"})
-		return
-	}
 
-	var subscriberCount int
-	if err := db.QueryRow("SELECT COUNT(*) FROM subscribers").Scan(&subscriberCount); err != nil {
-		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
-		return
-	}
-	if subscriberCount == 0 {
+	total, err := launchCampaign(c)
+	if err == errNoSubscribers {
 		jsonResponse(w, http.StatusConflict, map[string]string{"error": "No subscribers to send to"})
 		return
 	}
-
-	if _, err := db.Exec("INSERT OR IGNORE INTO deliveries (campaign_id, email) SELECT ?, email FROM subscribers", id); err != nil {
+	if err != nil {
+		if c.Status != campaignStatusDraft {
+			jsonResponse(w, http.StatusConflict, map[string]string{"error": "Campaign has already been sent"})
+			return
+		}
 		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 		return
-	}
-	if _, err := db.Exec("UPDATE campaigns SET status = ?, started_at = ?, updated_at = ? WHERE id = ?",
-		campaignStatusSending, time.Now().UTC().Format(time.RFC3339), time.Now().UTC().Format(time.RFC3339), id); err != nil {
-		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
-		return
-	}
-
-	select {
-	case campaignQueue <- id:
-	default:
-		// Queue full; the resume pass on next startup would miss it, so send inline.
-		go sendCampaign(id)
 	}
 
 	jsonResponse(w, http.StatusOK, map[string]interface{}{
 		"success": true,
 		"status":  campaignStatusSending,
-		"total":   subscriberCount,
+		"total":   total,
 	})
 }
 

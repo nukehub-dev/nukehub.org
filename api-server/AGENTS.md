@@ -44,6 +44,14 @@ All files under `api-server/**`: `main.go`, `newsletter_campaign.go`,
   deliveries are snapshotted from the subscriber list at send time and only
   ever transition `pending → sent|failed`, so restarting the server mid-send
   never double-sends.
+- `blog_watch.go` — opt-in (`BLOG_AUTO_SEND=true`) RSS watcher that polls
+  `BLOG_RSS_URL` and auto-sends a campaign from `BLOG_FROM_EMAIL` for every
+  new post. The newest-seen post GUID is kept in the `settings` table. First
+  run records the cursor without sending (no archive spam); if the cursor
+  ages out of the feed it resets silently; failed sends are retried next
+  tick. With zero subscribers the cursor still advances but no campaign is
+  created. Auto campaigns carry `source = 'blog-rss'` (an `ALTER TABLE`
+  migration adds the column to older databases).
 
 ### Abuse protection
 
@@ -100,6 +108,13 @@ Secrets live in `api-server/.env` (gitignored). Required:
 - `NEWSLETTER_SEND_DELAY_MS` — delay between campaign sends (default 1000).
 - `SITE_URL`, `API_PUBLIC_URL` — public origins used in email links
   (unsubscribe page and RFC 8058 one-click URL).
+- `BLOG_AUTO_SEND` — `true` enables the RSS watcher that auto-sends a
+  campaign from `BLOG_FROM_EMAIL` for every new blog post. Default `false`.
+- `BLOG_RSS_URL`, `BLOG_URL` — feed to poll (default
+  `https://blog.nukehub.org/rss.xml`) and the blog origin linked in the
+  auto-generated campaign body.
+- `BLOG_RSS_POLL_INTERVAL_MS` — poll interval, minimum 60000 (default
+  30 minutes).
 
 Do **not** copy these into the static-site `.env`. (See root NAD
 "Environment variables" for that file's contents.)
@@ -185,6 +200,10 @@ Do **not** copy these into the static-site `.env`. (See root NAD
   `failed`; later bounce mails land in the sending mailbox. Clean hard
   bounces manually via the admin dashboard (or Listmonk-style automation is
   a future phase).
+- **Enable `BLOG_AUTO_SEND` only after the From addresses work.** The first
+  poll with the flag on just records the newest post (no backlog is sent),
+  so the safe rollout is: deploy, verify a manual campaign delivers, then
+  flip the flag.
 - **Back up the SQLite database.** `DATABASE_PATH` defaults to
   `./data/nukehub.db` and is mounted as a Docker volume. The WAL files
   (`*.db-wal`, `*.db-shm`) must be backed up together with the main file.

@@ -98,6 +98,10 @@ Copy `.env.example` to `.env` and configure. Key variables:
   addresses. `SMTP_USER` must be permitted to send as them (e.g. mailcow aliases).
 - `NEWSLETTER_SEND_DELAY_MS` — delay between campaign sends (default 1000).
 - `SITE_URL`, `API_PUBLIC_URL` — public origins used in email links.
+- `BLOG_AUTO_SEND` — set to `true` to auto-send a campaign from `BLOG_FROM_EMAIL`
+  for every new post found in `BLOG_RSS_URL` (polls every
+  `BLOG_RSS_POLL_INTERVAL_MS`, default 30 min). The first poll only records the
+  newest post, never sends the backlog. Default `false`.
 
 ## API Endpoints
 
