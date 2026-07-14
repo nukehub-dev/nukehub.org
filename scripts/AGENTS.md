@@ -4,8 +4,8 @@
 
 Small Node.js scripts that automate repo maintenance: debug-pages toggle,
 GitHub stats refresh, image optimization, service-worker cache injection, and
-survey seeding. Run from the repo root via `npm run <task>` or directly with
-`node scripts/<file>`.
+survey/newsletter seeding. Run from the repo root via `npm run <task>` or
+directly with `node scripts/<file>`.
 
 ## Ownership
 
@@ -50,6 +50,15 @@ All files under `scripts/**`.
     overrides the count.
   - `npm run seed:surveys -- --clean` removes existing submissions before
     seeding.
+- `seed-newsletter.mjs` — Seeds the `api-server` SQLite database with demo
+  newsletter subscribers, campaigns, and deliveries for local admin-dashboard
+  testing. Creates the newsletter tables if missing (including the `source`
+  column on campaigns).
+  - `npm run seed:newsletter` seeds 150 subscribers and 4 campaigns (1 draft,
+    2 sent manual, 1 sent `blog-rss`) with deliveries, ~3% marked failed.
+  - `npm run seed:newsletter -- --count 500` overrides the subscriber count.
+  - `npm run seed:newsletter -- --clean` wipes all newsletter tables first.
+  - `npm run seed:newsletter -- --db /path/to.db` targets another database.
 
 ### Adding a script
 
@@ -81,6 +90,7 @@ GH_STATS_TOKEN=... node scripts/sync-github-stats.mjs
 node scripts/optimize-images.js
 node scripts/inject-sw-cache.js
 npm run seed:surveys
+npm run seed:newsletter
 ```
 
 ## Child NAD Index

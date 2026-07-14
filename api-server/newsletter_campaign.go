@@ -290,6 +290,9 @@ func loadCampaignStats(campaignID int64) campaignStats {
 	return stats
 }
 
+// scanCampaign only scans the row. Stats are loaded separately by callers
+// once the row source is done: the pool is capped at one connection, so a
+// nested query while rows are still open would deadlock.
 func scanCampaign(sc interface{ Scan(...interface{}) error }) (*campaign, error) {
 	var c campaign
 	var startedAt, finishedAt sql.NullString
@@ -304,14 +307,18 @@ func scanCampaign(sc interface{ Scan(...interface{}) error }) (*campaign, error)
 	if finishedAt.Valid {
 		c.FinishedAt = &finishedAt.String
 	}
-	c.Stats = loadCampaignStats(c.ID)
 	return &c, nil
 }
 
 const campaignColumns = "id, title, subject, from_email, body_markdown, status, source, created_at, updated_at, started_at, finished_at"
 
 func loadCampaign(id int64) (*campaign, error) {
-	return scanCampaign(db.QueryRow("SELECT "+campaignColumns+" FROM campaigns WHERE id = ?", id))
+	c, err := scanCampaign(db.QueryRow("SELECT "+campaignColumns+" FROM campaigns WHERE id = ?", id))
+	if err != nil {
+		return nil, err
+	}
+	c.Stats = loadCampaignStats(c.ID)
+	return c, nil
 }
 
 // --- Admin campaign handlers ---
@@ -356,6 +363,13 @@ func listCampaigns(w http.ResponseWriter, _ *http.Request) {
 			return
 		}
 		campaigns = append(campaigns, *c)
+	}
+	rows.Close()
+
+	// Stats load after the list rows are closed: the pool is capped at one
+	// connection, so querying while iterating would deadlock the handler.
+	for i := range campaigns {
+		campaigns[i].Stats = loadCampaignStats(campaigns[i].ID)
 	}
 
 	jsonResponse(w, http.StatusOK, map[string]interface{}{"campaigns": campaigns})
@@ -431,7 +445,7 @@ func handleAdminCampaignDetail(w http.ResponseWriter, r *http.Request) {
 
 	var idStr, action string
 	if idx := strings.Index(rest, "/"); idx >= 0 {
-		idStr, action = rest[:idx], rest[idx:]
+		idStr, action = rest[:idx], rest[idx+1:]
 	} else {
 		idStr = rest
 	}

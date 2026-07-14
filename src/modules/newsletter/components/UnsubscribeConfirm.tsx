@@ -1,8 +1,7 @@
 import * as React from "react";
-import { MailX } from "lucide-react";
+import { MailCheck, MailX, Unlink } from "lucide-react";
 
 import { Button } from "@components/ui/Button";
-import { Card } from "@components/ui/Card";
 
 type Status = "confirm" | "working" | "done" | "error";
 
@@ -15,6 +14,42 @@ function decodeEmailFromToken(token: string): string | null {
   } catch {
     return null;
   }
+}
+
+function StateBadge({
+  icon: Icon,
+  label,
+  destructive = false,
+}: {
+  icon: React.ComponentType<{ size?: number }>;
+  label: string;
+  destructive?: boolean;
+}) {
+  return (
+    <div className="mb-6 animate-text-reveal animate-text-reveal-1">
+      <span
+        className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium ${
+          destructive
+            ? "border-destructive/20 bg-destructive/5 text-destructive"
+            : "border-primary/20 bg-primary/5 text-primary"
+        }`}
+      >
+        <Icon size={16} />
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function HomeCta({ label }: { label: string }) {
+  return (
+    <a
+      href="/"
+      className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+    >
+      {label}
+    </a>
+  );
 }
 
 export function UnsubscribeConfirm() {
@@ -36,18 +71,20 @@ export function UnsubscribeConfirm() {
 
   if (token === null) {
     return (
-      <Card variant="bubble" className="p-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
-          <MailX className="h-7 w-7 text-destructive" />
-        </div>
-        <h1 className="mt-4 text-xl font-semibold text-foreground">
-          Invalid unsubscribe link
+      <div className="flex flex-col items-center text-center">
+        <StateBadge icon={Unlink} label="Invalid link" destructive />
+        <h1 className="max-w-lg text-3xl font-semibold tracking-tight text-foreground animate-text-reveal animate-text-reveal-2 sm:text-5xl">
+          This link has decayed
         </h1>
-        <p className="mt-2 text-muted-foreground">
-          This link is missing its token. Use the unsubscribe link from one of
-          our emails, or unsubscribe from the footer of any page.
+        <p className="mt-3 max-w-md text-base text-muted-foreground animate-text-reveal animate-text-reveal-3 sm:text-lg">
+          It is missing its token — unsubscribe links have a short half-life
+          around here. Grab the link from a recent email, or unsubscribe from
+          the footer of any page.
         </p>
-      </Card>
+        <div className="mt-10 animate-text-reveal animate-text-reveal-3">
+          <HomeCta label="Return to safe orbit" />
+        </div>
+      </div>
     );
   }
 
@@ -83,45 +120,80 @@ export function UnsubscribeConfirm() {
 
   if (status === "done") {
     return (
-      <Card variant="bubble" className="p-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-          <MailX className="h-7 w-7 text-primary" />
-        </div>
-        <h1 className="mt-4 text-xl font-semibold text-foreground">
-          You have been unsubscribed
+      <div className="flex flex-col items-center text-center">
+        <StateBadge icon={MailCheck} label="Unsubscribed" />
+        <h1 className="max-w-lg text-3xl font-semibold tracking-tight text-foreground animate-text-reveal animate-text-reveal-2 sm:text-5xl">
+          Transmission ended
         </h1>
-        <p className="mt-2 text-muted-foreground">
-          {email
-            ? `${email} will no longer receive newsletter emails.`
-            : "You will no longer receive newsletter emails."}
+        <p className="mt-3 max-w-md text-base text-muted-foreground animate-text-reveal animate-text-reveal-3 sm:text-lg">
+          {email ? `${email} has left the mailing loop. ` : ""}
+          No hard feelings — you can still catch every post on the blog, just
+          without the inbox noise.
         </p>
-      </Card>
+        <div className="mt-6 animate-text-reveal animate-text-reveal-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+              aria-hidden="true"
+            ></span>
+            The airlock is always open if you want back in
+          </span>
+        </div>
+        <div className="mt-10 flex flex-col items-center gap-3 animate-text-reveal animate-text-reveal-3 sm:flex-row">
+          <HomeCta label="Return to safe orbit" />
+          <a
+            href="https://blog.nukehub.org"
+            className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            Visit the blog
+          </a>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card variant="bubble" className="p-8 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-        <MailX className="h-7 w-7 text-primary" />
-      </div>
-      <h1 className="mt-4 text-xl font-semibold text-foreground">
-        Unsubscribe from the newsletter
+    <div className="flex flex-col items-center text-center">
+      <StateBadge icon={MailX} label="Unsubscribe" />
+      <h1 className="max-w-lg text-3xl font-semibold tracking-tight text-foreground animate-text-reveal animate-text-reveal-2 sm:text-5xl">
+        Cutting the signal?
       </h1>
-      <p className="mt-2 text-muted-foreground">
+      <p className="mt-3 max-w-md text-base text-muted-foreground animate-text-reveal animate-text-reveal-3 sm:text-lg">
         {email
-          ? `Stop sending newsletter emails to ${email}?`
-          : "Stop receiving newsletter emails?"}
+          ? `We'll stop transmitting newsletter emails to ${email}. `
+          : "We'll stop transmitting newsletter emails. "}
+        The reactor will run a little quieter without you.
       </p>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-medium text-muted-foreground animate-text-reveal animate-text-reveal-3">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1">
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+            aria-hidden="true"
+          ></span>
+          No captcha, no questions
+        </span>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1">
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+            aria-hidden="true"
+          ></span>
+          Instant effect
+        </span>
+      </div>
       {status === "error" && errorMessage && (
         <p className="mt-4 text-sm text-destructive">{errorMessage}</p>
       )}
-      <Button
-        onClick={handleConfirm}
-        loading={status === "working"}
-        className="mt-6"
-      >
-        Confirm unsubscribe
-      </Button>
-    </Card>
+      <div className="mt-10 flex flex-col items-center gap-3 animate-text-reveal animate-text-reveal-3 sm:flex-row">
+        <Button onClick={handleConfirm} loading={status === "working"}>
+          Confirm unsubscribe
+        </Button>
+        <a
+          href="/"
+          className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+        >
+          Changed my mind
+        </a>
+      </div>
+    </div>
   );
 }

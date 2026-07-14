@@ -16,6 +16,7 @@
     "lint:fix": "eslint . --fix",
     "preview": "astro preview --host",
     "seed:surveys": "node scripts/seed-surveys.mjs",
+    "seed:newsletter": "node scripts/seed-newsletter.mjs",
     "astro": "astro"
   },
   "repository": {

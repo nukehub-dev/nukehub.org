@@ -198,8 +198,6 @@ Do **not** copy these into the static-site `.env`. (See root NAD
   VPS/VM behind `api.nukehub.org`. The static site only calls it cross-origin
   from `PUBLIC_API_URL`; CORS is the single trust boundary — keep
   `ALLOWED_ORIGINS` tight.
-- **No tests in this folder.** Bug fixes should add direct validation in
-  `main.go`; if/when a unit harness lands, document it in this NAD.
 - **Turnstile site key vs secret.** The site key is `PUBLIC_*` and bundled
   into the static bundle; the secret is server-only here. They must match the
   same Turnstile widget.
@@ -210,8 +208,11 @@ Do **not** copy these into the static-site `.env`. (See root NAD
 - **Always set `NEWSLETTER_TOKEN_SECRET` in production.** Without it,
   unsubscribe links in sent campaigns die on the next restart.
 - **Campaign From addresses must exist in mailcow.** Add `news@` and `blog@`
-  as aliases of the `SMTP_USER` mailbox (or grant send-as); otherwise the
-  SMTP session rejects the message and every delivery is marked failed.
+  (and `bounces@` for the bounce watcher) as aliases of the `SMTP_USER`
+  mailbox — an alias pointing to a mailbox automatically lets that mailbox
+  send as the alias address, no separate sender ACL needed. Without the
+  alias the SMTP session rejects the message and every delivery is marked
+  failed.
 - **Bounce processing is opt-in and needs a bounce mailbox.** Create
   `bounces@nukehub.org` in mailcow (mailbox or alias into the polled
   account), set `BOUNCE_EMAIL` to it so campaigns use it as envelope
@@ -222,17 +223,25 @@ Do **not** copy these into the static-site `.env`. (See root NAD
   poll with the flag on just records the newest post (no backlog is sent),
   so the safe rollout is: deploy, verify a manual campaign delivers, then
   flip the flag.
+- **The SQLite pool is capped at one connection** (`db.SetMaxOpenConns(1)`).
+  Never run a query while iterating an open `Rows` — the nested query waits
+  for the only connection and deadlocks the handler. Collect the rows, close,
+  then run further queries.
 - **Back up the SQLite database.** `DATABASE_PATH` defaults to
   `./data/nukehub.db` and is mounted as a Docker volume. The WAL files
   (`*.db-wal`, `*.db-shm`) must be backed up together with the main file.
 - **Local `npm run dev` / `npm run preview` requests are cross-origin.**
   Add `http://localhost:4321` to `ALLOWED_ORIGINS` in `api-server/.env` or the
   browser will block API calls.
+- **Tests live in `*_test.go` next to the code.** `helpers_test.go` provides
+  the shared fixtures (temp DB, fake SMTP/IMAP servers, Keycloak JWKS stub).
+  New behavior should come with a test; run `go test ./...` before building.
 
 ## Verification
 
 ```bash
 cd api-server
+go test ./...           # unit + integration tests (temp DB, fake SMTP/IMAP/JWKS)
 # The Go binary does not auto-load .env; source it first or use docker compose.
 set -a && source .env && set +a
 go build -o api-server .

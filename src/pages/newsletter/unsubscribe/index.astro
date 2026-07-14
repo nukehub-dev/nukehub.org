@@ -2,15 +2,57 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { UnsubscribeConfirm } from "@modules/newsletter/components/UnsubscribeConfirm";
 
-const title = "Unsubscribe";
-const description = "Unsubscribe from the NukeHub newsletter.";
+const title = "Unsubscribe — Leaving the loop";
+const description =
+  "Stop the newsletter transmissions. No hard feelings — the airlock is always open.";
 const permalink = "/newsletter/unsubscribe";
 ---
 
-<BaseLayout title={title} description={description} permalink={permalink}>
-  <section class="relative min-h-[calc(100vh-4rem)] px-4 py-16">
-    <div class="relative z-10 mx-auto max-w-md">
+<BaseLayout
+  title={title}
+  description={description}
+  permalink={permalink}
+  showFooter={false}
+>
+  <section
+    class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 py-16"
+  >
+    {/* Ambient reactor glow */}
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.07]"
+      aria-hidden="true"
+      style="background: radial-gradient(circle at 50% 48%, var(--primary) 0%, transparent 55%);"
+    >
+    </div>
+
+    <div class="relative z-10 mx-auto w-full max-w-lg">
       <UnsubscribeConfirm client:only="react" />
+    </div>
+
+    {/* Decorative particles */}
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        Array.from({ length: 24 }).map((_, i) => {
+          const left = 10 + ((i * 37) % 80);
+          const top = 15 + ((i * 53) % 70);
+          const delay = (i * 0.12) % 3;
+          const duration = 2 + ((i * 0.23) % 3);
+          return (
+            <span
+              class="absolute h-1 w-1 rounded-full bg-primary/30"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                animation: `pulse-slow ${duration}s ease-in-out infinite`,
+                animationDelay: `${delay}s`,
+              }}
+            />
+          );
+        })
+      }
     </div>
   </section>
 </BaseLayout>

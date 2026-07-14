@@ -111,6 +111,19 @@ func main() {
 	// Bounce mailbox processing (only when BOUNCE_CHECK_ENABLED=true)
 	startBounceWatcher()
 
+	handler := securityHeadersMiddleware(corsMiddleware(concurrencyLimitMiddleware(newMux()), allowedOrigins))
+
+	fmt.Printf("NukeHub API server listening on port %s\n", port)
+	fmt.Printf("Health check: http://localhost:%s/health\n", port)
+	fmt.Printf("Allowed origins: %s\n", strings.Join(allowedOrigins, ", "))
+
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
+		fmt.Fprintf(os.Stderr, "Server error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func newMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)
@@ -129,17 +142,7 @@ func main() {
 	mux.HandleFunc("/admin/newsletter/campaigns", requireAnyRole(newsletterAdminRoleName, newsletterStaffRoleName)(handleAdminCampaigns))
 	mux.HandleFunc("/admin/newsletter/campaigns/", requireCampaignAccess(handleAdminCampaignDetail))
 	mux.HandleFunc("/admin/newsletter/config", requireAnyRole(newsletterAdminRoleName, newsletterStaffRoleName)(handleAdminNewsletterConfig))
-
-	handler := securityHeadersMiddleware(corsMiddleware(concurrencyLimitMiddleware(mux), allowedOrigins))
-
-	fmt.Printf("NukeHub API server listening on port %s\n", port)
-	fmt.Printf("Health check: http://localhost:%s/health\n", port)
-	fmt.Printf("Allowed origins: %s\n", strings.Join(allowedOrigins, ", "))
-
-	if err := http.ListenAndServe(":"+port, handler); err != nil {
-		fmt.Fprintf(os.Stderr, "Server error: %v\n", err)
-		os.Exit(1)
-	}
+	return mux
 }
 
 func initDB() error {

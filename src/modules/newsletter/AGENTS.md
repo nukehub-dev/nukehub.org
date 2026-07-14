@@ -16,6 +16,9 @@ This NAD owns `src/modules/newsletter/**` and the routes
   manager (compose, preview, test send, send, delete).
 - `components/UnsubscribeConfirm.tsx` — confirm page island; posts the
   HMAC token from the URL to `{PUBLIC_API_URL}/newsletter/unsubscribe/confirm`.
+  Both the island and its route are styled like the 404 page (ambient glow,
+  staggered text reveal, floating particles, `showFooter={false}`) with
+  reactor-themed copy for the confirm/done/invalid-token states.
 - The public signup island lives at `src/components/shared/NewsletterSignup.tsx`
   (owned by `src/AGENTS.md`); it posts to `{PUBLIC_API_URL}/newsletter` with
   Turnstile, `source` tracking, and an unsubscribe toggle.
