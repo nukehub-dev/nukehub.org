@@ -40,12 +40,31 @@ async function fetchJson<T>(token: string | null, path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+export interface SubscriberFilters {
+  q?: string;
+  source?: string;
+}
+
 export function fetchSubscribers(
   token: string | null,
   page = 1,
   limit = 50,
+  filters: SubscriberFilters = {},
 ): Promise<SubscribersResponse> {
-  return fetchJson(token, `/subscribers?page=${page}&limit=${limit}`);
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+  if (filters.q) params.set("q", filters.q);
+  if (filters.source) params.set("source", filters.source);
+  return fetchJson(token, `/subscribers?${params.toString()}`);
+}
+
+export function bulkDeleteSubscribers(
+  token: string | null,
+  ids: number[],
+): Promise<{ success: boolean; deleted: number }> {
+  return mutateJson(token, "/subscribers", "DELETE", { ids });
 }
 
 export function getExportUrl(): string {

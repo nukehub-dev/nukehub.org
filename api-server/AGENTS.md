@@ -200,7 +200,13 @@ Do **not** copy these into the static-site `.env`. (See root NAD
 - `DELETE /admin/surveys/{slug}/submissions/{id}` — delete a single response
   (`survey-admin` only).
 - `GET /admin/newsletter/subscribers` — paginated subscriber list
-  (`newsletter-admin` or `newsletter-staff`).
+  (`newsletter-admin` or `newsletter-staff`). Optional `?q=` (case-insensitive
+  email substring, LIKE wildcards escaped) and `?source=` (exact match)
+  filters; the response also carries the distinct `sources` list for filter
+  dropdowns.
+- `DELETE /admin/newsletter/subscribers` — bulk delete by IDs
+  (`newsletter-admin` or `newsletter-staff`). Body: `{"ids": [1, 2, 3]}`,
+  1-1000 entries.
 - `GET /admin/newsletter/subscribers/export.csv` — subscriber CSV export
   (`newsletter-admin` or `newsletter-staff`).
 - `DELETE /admin/newsletter/subscribers/{id}` — delete a single subscriber

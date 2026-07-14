@@ -12,7 +12,8 @@ This NAD owns `src/modules/newsletter/**` and the routes
 `src/pages/admin/newsletter/index.astro` and
 `src/pages/newsletter/unsubscribe/index.astro`. Parent: `src/modules/AGENTS.md`.
 
-- `admin/` — subscriber dashboard (list, CSV export, delete) and campaign
+- `admin/` — subscriber dashboard (debounced email search, source filter,
+  multi-select with bulk delete, single delete, CSV export) and campaign
   manager (compose, preview, test send, send, delete).
 - `components/UnsubscribeConfirm.tsx` — confirm page island; posts the
   HMAC token from the URL to `{PUBLIC_API_URL}/newsletter/unsubscribe/confirm`.

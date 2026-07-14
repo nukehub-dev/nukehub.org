@@ -10,6 +10,7 @@ export interface SubscribersResponse {
   limit: number;
   total: number;
   subscribers: Subscriber[];
+  sources: string[];
 }
 
 export type CampaignStatus = "draft" | "sending" | "sent";

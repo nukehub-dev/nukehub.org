@@ -75,15 +75,17 @@ export function useSubscribers(
   token: string | null,
   page = 1,
   limit = 50,
+  q = "",
+  source = "",
 ): AsyncState<SubscribersResponse> {
   return useAsyncState(
     async (signal) => {
       if (!token) throw new Error("Not authenticated");
-      const result = await fetchSubscribers(token, page, limit);
+      const result = await fetchSubscribers(token, page, limit, { q, source });
       if (signal.aborted) return result;
       return result;
     },
-    [token, page, limit],
+    [token, page, limit, q, source],
   );
 }
 
