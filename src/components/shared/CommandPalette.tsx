@@ -369,8 +369,10 @@ export function CommandPalette({
 
                   return (
                     <div key={category} className="mb-2">
-                      <div className="sticky top-0 z-10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground backdrop-blur-sm">
-                        {category}
+                      <div className="sticky top-0 z-10 px-3 py-1.5">
+                        <span className="inline-flex rounded-md bg-background/60 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground backdrop-blur-sm">
+                          {category}
+                        </span>
                       </div>
                       <div className="space-y-0.5">
                         {items.map((item) => {
