@@ -96,11 +96,14 @@ func main() {
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)
 	mux.HandleFunc("/survey", handleSurvey)
+	mux.HandleFunc("/newsletter", handleNewsletter)
 
 	// Admin endpoints
 	mux.HandleFunc("/admin/health/db", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminHealthDB))
 	mux.HandleFunc("/admin/surveys", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminSurveys))
 	mux.HandleFunc("/admin/surveys/", requireSurveyAccess(handleAdminSurveyDetail))
+	mux.HandleFunc("/admin/newsletter/subscribers", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminNewsletterSubscribers))
+	mux.HandleFunc("/admin/newsletter/subscribers/export.csv", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminNewsletterExportCSV))
 
 	handler := securityHeadersMiddleware(corsMiddleware(concurrencyLimitMiddleware(mux), allowedOrigins))
 
@@ -152,6 +155,15 @@ CREATE TABLE IF NOT EXISTS responses (
     FOREIGN KEY (submission_id) REFERENCES submissions(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS subscribers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    subscribed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ip_hash TEXT,
+    source TEXT DEFAULT 'newsletter'
+);
+
+CREATE INDEX IF NOT EXISTS idx_subscribers_email ON subscribers(email);
 CREATE INDEX IF NOT EXISTS idx_submissions_slug ON submissions(survey_slug);
 CREATE INDEX IF NOT EXISTS idx_submissions_submitted_at ON submissions(submitted_at);
 CREATE INDEX IF NOT EXISTS idx_responses_submission_id ON responses(submission_id);
@@ -459,6 +471,95 @@ func handleSurvey(w http.ResponseWriter, r *http.Request) {
 		"success": true,
 		"message": "Thank you for completing the survey!",
 	})
+}
+
+func handleNewsletter(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	ip := clientIP(r)
+
+	if !checkRateLimit(ip) {
+		jsonResponse(w, http.StatusTooManyRequests, map[string]interface{}{
+			"success": false,
+			"message": "Too many requests. Please try again later.",
+		})
+		return
+	}
+
+	var req struct {
+		Email          string `json:"email"`
+		TurnstileToken string `json:"turnstileToken"`
+		Source         string `json:"source"`
+	}
+
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxRequestBodyBytes)).Decode(&req); err != nil {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "Invalid request body",
+		})
+		return
+	}
+
+	email := sanitizeInput(req.Email)
+	if !emailRegex.MatchString(email) {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"errors":  map[string]string{"email": "Please enter a valid email address"},
+		})
+		return
+	}
+
+	if req.TurnstileToken == "" {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"errors":  map[string]string{"turnstile": "Please complete the CAPTCHA verification"},
+		})
+		return
+	}
+	if !verifyTurnstile(req.TurnstileToken) {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"errors":  map[string]string{"turnstile": "CAPTCHA verification failed. Please try again."},
+		})
+		return
+	}
+
+	source := sanitizeInput(req.Source)
+	if source == "" {
+		source = "newsletter"
+	}
+
+	if err := storeNewsletterSubscriber(email, hashIP(ip), source); err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
+			jsonResponse(w, http.StatusConflict, map[string]interface{}{
+				"success": false,
+				"message": "This email is already subscribed.",
+			})
+			return
+		}
+		fmt.Fprintf(os.Stderr, "Database error: %v\n", err)
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{
+			"success": false,
+			"message": "Failed to subscribe. Please try again.",
+		})
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"message": "Thanks for subscribing!",
+	})
+}
+
+func storeNewsletterSubscriber(email, ipHash, source string) error {
+	_, err := db.Exec(
+		"INSERT INTO subscribers (email, subscribed_at, ip_hash, source) VALUES (?, ?, ?, ?)",
+		email, time.Now().UTC().Format(time.RFC3339), ipHash, source,
+	)
+	return err
 }
 
 func storeSurveySubmission(surveySlug, surveyTitle, ipHash, email string, responses map[string]string) error {
@@ -942,6 +1043,104 @@ func handleDeleteSurveySubmissions(w http.ResponseWriter, r *http.Request, slug 
 
 	rows, _ := res.RowsAffected()
 	jsonResponse(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
+}
+
+func handleAdminNewsletterSubscribers(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	if limit < 1 || limit > 500 {
+		limit = 50
+	}
+	offset := (page - 1) * limit
+
+	var total int
+	if err := db.QueryRow("SELECT COUNT(*) FROM subscribers").Scan(&total); err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	rows, err := db.Query(`
+		SELECT id, email, subscribed_at, source
+		FROM subscribers
+		ORDER BY subscribed_at DESC
+		LIMIT ? OFFSET ?
+	`, limit, offset)
+	if err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	type subscriber struct {
+		ID           int64  `json:"id"`
+		Email        string `json:"email"`
+		SubscribedAt string `json:"subscribedAt"`
+		Source       string `json:"source"`
+	}
+
+	var subscribers []subscriber
+	for rows.Next() {
+		var s subscriber
+		if err := rows.Scan(&s.ID, &s.Email, &s.SubscribedAt, &s.Source); err != nil {
+			jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+			return
+		}
+		subscribers = append(subscribers, s)
+	}
+	if subscribers == nil {
+		subscribers = []subscriber{}
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"page":        page,
+		"limit":       limit,
+		"total":       total,
+		"subscribers": subscribers,
+	})
+}
+
+func handleAdminNewsletterExportCSV(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	rows, err := db.Query(`
+		SELECT email, subscribed_at, source
+		FROM subscribers
+		ORDER BY subscribed_at DESC
+	`)
+	if err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"newsletter-subscribers.csv\"")
+	cw := csv.NewWriter(w)
+	if err := cw.Write([]string{"email", "subscribed_at", "source"}); err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var email, subscribedAt, source string
+		if err := rows.Scan(&email, &subscribedAt, &source); err != nil {
+			return
+		}
+		if err := cw.Write([]string{email, subscribedAt, source}); err != nil {
+			return
+		}
+	}
+	cw.Flush()
 }
 
 func requireRole(role string) func(http.HandlerFunc) http.HandlerFunc {
