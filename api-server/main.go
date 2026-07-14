@@ -42,6 +42,10 @@ var (
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
+// sourceRegex restricts the optional subscription source to lowercase
+// alphanumeric, hyphens, and underscores (1-50 chars).
+var sourceRegex = regexp.MustCompile(`^[a-z0-9_-]{1,50}$`)
+
 const (
 	rateLimitWindow        = time.Hour
 	rateLimitMax           = 5
@@ -97,6 +101,7 @@ func main() {
 	mux.HandleFunc("/contact", handleContact)
 	mux.HandleFunc("/survey", handleSurvey)
 	mux.HandleFunc("/newsletter", handleNewsletter)
+	mux.HandleFunc("/newsletter/unsubscribe", handleNewsletterUnsubscribe)
 
 	// Admin endpoints
 	mux.HandleFunc("/admin/health/db", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminHealthDB))
@@ -104,6 +109,7 @@ func main() {
 	mux.HandleFunc("/admin/surveys/", requireSurveyAccess(handleAdminSurveyDetail))
 	mux.HandleFunc("/admin/newsletter/subscribers", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminNewsletterSubscribers))
 	mux.HandleFunc("/admin/newsletter/subscribers/export.csv", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminNewsletterExportCSV))
+	mux.HandleFunc("/admin/newsletter/subscribers/", requireRole(adminRoleName)(handleAdminNewsletterSubscriberDetail))
 
 	handler := securityHeadersMiddleware(corsMiddleware(concurrencyLimitMiddleware(mux), allowedOrigins))
 
@@ -194,7 +200,7 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 
 	ip := clientIP(r)
 
-	if !checkRateLimit(ip) {
+	if !checkRateLimit("contact:" + ip) {
 		jsonResponse(w, http.StatusTooManyRequests, map[string]interface{}{
 			"success": false,
 			"message": "Too many requests. Please try again later.",
@@ -253,7 +259,7 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	if req.TurnstileToken == "" {
 		errors["turnstile"] = "Please complete the CAPTCHA verification"
 	} else {
-		if !verifyTurnstile(req.TurnstileToken) {
+		if !verifyTurnstile(req.TurnstileToken, ip) {
 			errors["turnstile"] = "CAPTCHA verification failed. Please try again."
 		}
 	}
@@ -329,7 +335,7 @@ func handleSurvey(w http.ResponseWriter, r *http.Request) {
 
 	ip := clientIP(r)
 
-	if !checkRateLimit(ip) {
+	if !checkRateLimit("survey:" + ip) {
 		jsonResponse(w, http.StatusTooManyRequests, map[string]interface{}{
 			"success": false,
 			"message": "Too many requests. Please try again later.",
@@ -369,7 +375,7 @@ func handleSurvey(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if !verifyTurnstile(req.TurnstileToken) {
+	if !verifyTurnstile(req.TurnstileToken, ip) {
 		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
 			"success": false,
 			"message": "CAPTCHA verification failed. Please try again.",
@@ -481,7 +487,7 @@ func handleNewsletter(w http.ResponseWriter, r *http.Request) {
 
 	ip := clientIP(r)
 
-	if !checkRateLimit(ip) {
+	if !checkRateLimit("newsletter:" + ip) {
 		jsonResponse(w, http.StatusTooManyRequests, map[string]interface{}{
 			"success": false,
 			"message": "Too many requests. Please try again later.",
@@ -503,7 +509,7 @@ func handleNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := sanitizeInput(req.Email)
+	email := strings.ToLower(sanitizeInput(req.Email))
 	if !emailRegex.MatchString(email) {
 		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
 			"success": false,
@@ -519,7 +525,7 @@ func handleNewsletter(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if !verifyTurnstile(req.TurnstileToken) {
+	if !verifyTurnstile(req.TurnstileToken, ip) {
 		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
 			"success": false,
 			"errors":  map[string]string{"turnstile": "CAPTCHA verification failed. Please try again."},
@@ -527,10 +533,7 @@ func handleNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	source := sanitizeInput(req.Source)
-	if source == "" {
-		source = "newsletter"
-	}
+	source := normalizeSource(req.Source)
 
 	if err := storeNewsletterSubscriber(email, hashIP(ip), source); err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
@@ -551,6 +554,74 @@ func handleNewsletter(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, http.StatusOK, map[string]interface{}{
 		"success": true,
 		"message": "Thanks for subscribing!",
+	})
+}
+
+func handleNewsletterUnsubscribe(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	ip := clientIP(r)
+
+	if !checkRateLimit("newsletter:" + ip) {
+		jsonResponse(w, http.StatusTooManyRequests, map[string]interface{}{
+			"success": false,
+			"message": "Too many requests. Please try again later.",
+		})
+		return
+	}
+
+	var req struct {
+		Email          string `json:"email"`
+		TurnstileToken string `json:"turnstileToken"`
+	}
+
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxRequestBodyBytes)).Decode(&req); err != nil {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"message": "Invalid request body",
+		})
+		return
+	}
+
+	email := strings.ToLower(sanitizeInput(req.Email))
+	if !emailRegex.MatchString(email) {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"errors":  map[string]string{"email": "Please enter a valid email address"},
+		})
+		return
+	}
+
+	if req.TurnstileToken == "" {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"errors":  map[string]string{"turnstile": "Please complete the CAPTCHA verification"},
+		})
+		return
+	}
+	if !verifyTurnstile(req.TurnstileToken, ip) {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{
+			"success": false,
+			"errors":  map[string]string{"turnstile": "CAPTCHA verification failed. Please try again."},
+		})
+		return
+	}
+
+	if _, err := db.Exec("DELETE FROM subscribers WHERE email = ?", email); err != nil {
+		fmt.Fprintf(os.Stderr, "Database error: %v\n", err)
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{
+			"success": false,
+			"message": "Failed to unsubscribe. Please try again.",
+		})
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"message": "You have been unsubscribed.",
 	})
 }
 
@@ -1143,6 +1214,35 @@ func handleAdminNewsletterExportCSV(w http.ResponseWriter, r *http.Request) {
 	cw.Flush()
 }
 
+func handleAdminNewsletterSubscriberDetail(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		jsonResponse(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/admin/newsletter/subscribers/")
+	idStr := strings.TrimSpace(path)
+	if idStr == "" {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{"error": "Subscriber ID is required"})
+		return
+	}
+
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		jsonResponse(w, http.StatusBadRequest, map[string]interface{}{"error": "Invalid subscriber ID"})
+		return
+	}
+
+	res, err := db.Exec("DELETE FROM subscribers WHERE id = ?", id)
+	if err != nil {
+		jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return
+	}
+
+	rows, _ := res.RowsAffected()
+	jsonResponse(w, http.StatusOK, map[string]interface{}{"success": true, "deleted": rows})
+}
+
 func requireRole(role string) func(http.HandlerFunc) http.HandlerFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return requireAnyRole(role)(next)
@@ -1295,17 +1395,21 @@ func sendEmail(to, replyTo, subject, htmlBody, textBody string) error {
 	return smtp.SendMail(addr, auth, smtpUser, []string{to}, msg.Bytes())
 }
 
-func verifyTurnstile(token string) bool {
+func verifyTurnstile(token, remoteIP string) bool {
 	secretKey := os.Getenv("TURNSTILE_SECRET_KEY")
 	if secretKey == "" {
 		fmt.Fprintf(os.Stderr, "Turnstile secret key not configured\n")
 		return false
 	}
 
-	payload, _ := json.Marshal(map[string]string{
+	payloadMap := map[string]string{
 		"secret":   secretKey,
 		"response": token,
-	})
+	}
+	if remoteIP != "" {
+		payloadMap["remoteip"] = remoteIP
+	}
+	payload, _ := json.Marshal(payloadMap)
 
 	resp, err := http.Post(
 		"https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -1328,15 +1432,15 @@ func verifyTurnstile(token string) bool {
 	return result.Success
 }
 
-func checkRateLimit(ip string) bool {
+func checkRateLimit(key string) bool {
 	now := time.Now()
 
 	rateLimitMu.Lock()
 	defer rateLimitMu.Unlock()
 
-	entry, exists := rateLimitStore[ip]
+	entry, exists := rateLimitStore[key]
 	if !exists || now.After(entry.resetTime) {
-		rateLimitStore[ip] = &rateLimitEntry{
+		rateLimitStore[key] = &rateLimitEntry{
 			count:     1,
 			resetTime: now.Add(rateLimitWindow),
 		}
@@ -1384,6 +1488,16 @@ func sanitizeHeader(input string) string {
 	input = strings.ReplaceAll(input, "\r", "")
 	input = strings.ReplaceAll(input, "\n", "")
 	return input
+}
+
+// normalizeSource coerces an optional subscription source into a safe,
+// lowercase token. Unusable values fall back to "newsletter".
+func normalizeSource(source string) string {
+	source = strings.ToLower(sanitizeInput(source))
+	if sourceRegex.MatchString(source) {
+		return source
+	}
+	return "newsletter"
 }
 
 func concurrencyLimitMiddleware(next http.Handler) http.Handler {

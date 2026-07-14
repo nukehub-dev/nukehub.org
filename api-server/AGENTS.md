@@ -3,8 +3,9 @@
 ## Purpose
 
 Small Go HTTP service behind `api.nukehub.org`. Receives the static site's
-contact-form submissions and YAML-driven survey submissions, persists survey
-responses to SQLite, and forwards submissions via SMTP. Reverse proxied by
+contact-form submissions, YAML-driven survey submissions, and newsletter
+subscriptions, persists survey responses and subscribers to SQLite, and
+forwards submissions via SMTP. Reverse proxied by
 `api-server/api.nukehub.org.conf`.
 
 ## Ownership
@@ -25,16 +26,17 @@ All files under `api-server/**`: `main.go`, `go.mod`, `Dockerfile`,
 ### Files
 
 - `main.go` — entire service. Endpoints: `GET /health`, `POST /contact`,
-  `POST /survey`, and admin endpoints under `/admin/surveys`. Includes SQLite
-  persistence, rate limiting, Turnstile verification, JWT validation against
-  the Keycloak JWKS endpoint, input sanitization, HTML escaping, and email
-  header-injection prevention.
+  `POST /survey`, `POST /newsletter`, `POST /newsletter/unsubscribe`, and
+  admin endpoints under `/admin/surveys` and `/admin/newsletter`. Includes
+  SQLite persistence, rate limiting, Turnstile verification, JWT validation
+  against the Keycloak JWKS endpoint, input sanitization, HTML escaping, and
+  email header-injection prevention.
 
 ### Abuse protection
 
-- **Per-IP rate limiting** — `POST /contact` and `POST /survey` allow 5
-  submissions per IP per hour. The store is mutex-protected and stale entries
-  are cleaned up every 10 minutes.
+- **Per-IP rate limiting** — `POST /contact`, `POST /survey`, and
+  `POST /newsletter` each have their own 5-request-per-hour bucket. The store
+  is mutex-protected and stale entries are cleaned up every 10 minutes.
 - **Trusted proxy IP extraction** — `X-Real-IP` / `X-Forwarded-For` are only
   trusted when the direct connection comes from a loopback or private address
   (i.e. the nginx reverse proxy). Otherwise `RemoteAddr` is used, so clients
@@ -50,9 +52,9 @@ All files under `api-server/**`: `main.go`, `go.mod`, `Dockerfile`,
   `api-server/.env` (not committed).
 - `README.md` — operator quick-start, env-var list, and security feature list.
 - `api.nukehub.org.conf` — top-level nginx vhost that redirects HTTP → HTTPS,
-  proxies `/health`, `/contact`, `/survey`, and `/admin` to `127.0.0.1:3000`,
-  and applies security headers. This vhost is unrelated to the static site's
-  `public/_headers` (served by Cloudflare Pages).
+  proxies `/health`, `/contact`, `/survey`, `/newsletter`, `/newsletter/unsubscribe`,
+  and `/admin` to `127.0.0.1:3000`, and applies security headers. This vhost is
+  unrelated to the static site's `public/_headers` (served by Cloudflare Pages).
 
 ### Environment variables
 
@@ -87,6 +89,12 @@ Do **not** copy these into the static-site `.env`. (See root NAD
   cap per response value), and emails them to `SURVEY_TO_EMAIL` (falling back
   to `CONTACT_TO_EMAIL`). A valid `email` response field becomes the email's
   `Reply-To` header.
+- `POST /newsletter` — subscribe an email address. Emails are lowercased before
+  validation and storage; the optional `source` is normalized to lowercase
+  alphanumeric/hyphen/underscore (default `newsletter`). Returns `409 Conflict`
+  if the email already exists.
+- `POST /newsletter/unsubscribe` — remove an email address from the subscriber
+  list. Idempotent: succeeds even if the email is not subscribed.
 - `GET /admin/health/db` — DB connectivity check (`survey-admin` or
   `survey-viewer`).
 - `GET /admin/surveys` — list surveys with submission counts.
@@ -98,6 +106,12 @@ Do **not** copy these into the static-site `.env`. (See root NAD
 - `DELETE /admin/surveys/{slug}/submissions` — bulk delete by IDs
   (`survey-admin` only). Body: `{"ids": [1, 2, 3]}`.
 - `DELETE /admin/surveys/{slug}/submissions/{id}` — delete a single response
+  (`survey-admin` only).
+- `GET /admin/newsletter/subscribers` — paginated subscriber list
+  (`survey-admin` or `survey-viewer`).
+- `GET /admin/newsletter/subscribers/export.csv` — subscriber CSV export
+  (`survey-admin` or `survey-viewer`).
+- `DELETE /admin/newsletter/subscribers/{id}` — delete a single subscriber
   (`survey-admin` only).
 
 ### Common pitfalls
