@@ -189,14 +189,40 @@ export function NewsletterSignup({
           />
         </div>
         {TURNSTILE_SITE_KEY !== "" && (
-          <Turnstile
-            key={mode}
-            siteKey={TURNSTILE_SITE_KEY}
-            onSuccess={setTurnstileToken}
-            onError={() => setTurnstileToken("")}
-            onExpire={() => setTurnstileToken("")}
-            options={{ theme: "auto" }}
-          />
+          <>
+            <Turnstile
+              key={mode}
+              siteKey={TURNSTILE_SITE_KEY}
+              onSuccess={setTurnstileToken}
+              onError={() => setTurnstileToken("")}
+              onExpire={() => setTurnstileToken("")}
+              options={{
+                theme: "auto",
+                size: "invisible",
+                appearance: "interaction-only",
+              }}
+            />
+            <p className="text-[11px] leading-snug text-muted-foreground/60">
+              Protected by Cloudflare Turnstile.{" "}
+              <a
+                href="https://www.cloudflare.com/privacypolicy/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-muted-foreground"
+              >
+                Privacy
+              </a>
+              {" · "}
+              <a
+                href="https://www.cloudflare.com/website-terms/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-muted-foreground"
+              >
+                Terms
+              </a>
+            </p>
+          </>
         )}
       </div>
       <Button
