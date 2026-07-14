@@ -16,24 +16,28 @@ import { Button } from "@components/ui/Button";
 import { Card } from "@components/ui/Card";
 import { Badge } from "@components/ui/Badge";
 import { ConfirmDialog } from "@components/ui/Dialog";
+import { CampaignManager } from "./CampaignManager";
 import { useSubscribers } from "../hooks/useNewsletterAdmin";
 import { deleteSubscriber, fetchExportCsv } from "../lib/admin-api";
 import type { Subscriber } from "../types";
 
-const ADMIN_ROLE = "survey-admin";
-const VIEWER_ROLE = "survey-viewer";
+const ADMIN_ROLE = "newsletter-admin";
+const STAFF_ROLE = "newsletter-staff";
 const PAGE_SIZE = 50;
 
 function useCanAccessNewsletterAdmin() {
   const auth = useMaybeAuth();
   const isAdmin = auth?.hasRole(ADMIN_ROLE) ?? false;
-  const isViewer = auth?.hasRole(VIEWER_ROLE) ?? false;
-  return { auth, isAdmin, isViewer, canAccess: isAdmin || isViewer };
+  const isStaff = auth?.hasRole(STAFF_ROLE) ?? false;
+  return { auth, isAdmin, isStaff, canAccess: isAdmin || isStaff };
 }
 
 export function NewsletterAdminDashboard() {
-  const { auth, isAdmin, isViewer, canAccess } = useCanAccessNewsletterAdmin();
+  const { auth, isAdmin, isStaff, canAccess } = useCanAccessNewsletterAdmin();
   const token = auth?.token ?? null;
+  const [tab, setTab] = React.useState<"subscribers" | "campaigns">(
+    "subscribers",
+  );
   const [page, setPage] = React.useState(1);
   const { data, error, isLoading, refresh } = useSubscribers(
     token,
@@ -94,7 +98,7 @@ export function NewsletterAdminDashboard() {
           Access denied
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Your account does not have the survey admin or viewer role.
+          Your account does not have the newsletter admin or staff role.
         </p>
       </Card>
     );
@@ -141,153 +145,182 @@ export function NewsletterAdminDashboard() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold text-foreground">Newsletter</h1>
         <div className="flex items-center gap-3">
-          {isViewer && !isAdmin && (
+          {isStaff && !isAdmin && (
             <Badge variant="outline" className="gap-1">
               <Eye size={14} />
-              Viewer
+              Staff
             </Badge>
           )}
-          <Button
-            variant="outline"
-            onClick={handleExport}
-            loading={exporting}
-            disabled={total === 0}
-          >
-            <Download size={16} />
-            Export CSV
-          </Button>
+          {tab === "subscribers" && (
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              loading={exporting}
+              disabled={total === 0}
+            >
+              <Download size={16} />
+              Export CSV
+            </Button>
+          )}
         </div>
       </div>
 
-      {exportError && (
-        <Card variant="bubble" className="p-4 text-sm text-destructive">
-          {exportError}
-        </Card>
-      )}
-      {deleteError && (
-        <Card variant="bubble" className="p-4 text-sm text-destructive">
-          {deleteError}
-        </Card>
-      )}
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <SummaryCard
-          icon={<Users size={20} />}
-          label="Total subscribers"
-          value={total.toLocaleString()}
-        />
-        <SummaryCard
-          icon={<Clock size={20} />}
-          label="Latest signup"
-          value={
-            latestSignup ? new Date(latestSignup).toLocaleDateString() : "—"
-          }
-          subvalue={
-            latestSignup
-              ? new Date(latestSignup).toLocaleTimeString()
-              : undefined
-          }
-        />
-        <SummaryCard
-          icon={<Mail size={20} />}
-          label="Sources (this page)"
-          value={sourceCount}
-        />
+      <div className="flex gap-2 border-b border-border/50">
+        {(["subscribers", "campaigns"] as const).map((name) => (
+          <button
+            key={name}
+            type="button"
+            onClick={() => setTab(name)}
+            className={`-mb-px border-b-2 px-3 py-2 text-sm font-medium capitalize transition-colors ${
+              tab === name
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {name}
+          </button>
+        ))}
       </div>
 
-      {isLoading ? (
-        <DashboardSkeleton />
-      ) : error ? (
-        <Card variant="bubble" className="p-8 text-center text-destructive">
-          <p>{error}</p>
-        </Card>
-      ) : subscribers.length === 0 ? (
-        <Card variant="bubble" className="p-10 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-            <Inbox className="h-7 w-7 text-primary" />
-          </div>
-          <h2 className="mt-4 text-lg font-semibold text-foreground">
-            No subscribers yet
-          </h2>
-          <p className="mt-2 text-muted-foreground">
-            Subscribers will appear here once people sign up.
-          </p>
-        </Card>
+      {tab === "campaigns" ? (
+        <CampaignManager
+          token={token}
+          isAdmin={isAdmin}
+          subscriberCount={total}
+        />
       ) : (
-        <Card variant="bubble" className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                  <th className="px-5 py-3 font-semibold">Email</th>
-                  <th className="px-5 py-3 font-semibold">Subscribed</th>
-                  <th className="px-5 py-3 font-semibold">Source</th>
-                  {isAdmin && (
-                    <th className="px-5 py-3 text-right font-semibold">
-                      Actions
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {subscribers.map((subscriber) => (
-                  <tr
-                    key={subscriber.id}
-                    className="border-b border-border/30 last:border-0 hover:bg-accent/40"
-                  >
-                    <td className="px-5 py-3 text-foreground">
-                      {subscriber.email}
-                    </td>
-                    <td className="px-5 py-3 text-muted-foreground">
-                      {new Date(subscriber.subscribedAt).toLocaleString()}
-                    </td>
-                    <td className="px-5 py-3">
-                      <Badge variant="outline">{subscriber.source}</Badge>
-                    </td>
-                    {isAdmin && (
-                      <td className="px-5 py-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setPendingDelete(subscriber)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                          aria-label={`Delete ${subscriber.email}`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          {exportError && (
+            <Card variant="bubble" className="p-4 text-sm text-destructive">
+              {exportError}
+            </Card>
+          )}
+          {deleteError && (
+            <Card variant="bubble" className="p-4 text-sm text-destructive">
+              {deleteError}
+            </Card>
+          )}
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <SummaryCard
+              icon={<Users size={20} />}
+              label="Total subscribers"
+              value={total.toLocaleString()}
+            />
+            <SummaryCard
+              icon={<Clock size={20} />}
+              label="Latest signup"
+              value={
+                latestSignup ? new Date(latestSignup).toLocaleDateString() : "—"
+              }
+              subvalue={
+                latestSignup
+                  ? new Date(latestSignup).toLocaleTimeString()
+                  : undefined
+              }
+            />
+            <SummaryCard
+              icon={<Mail size={20} />}
+              label="Sources (this page)"
+              value={sourceCount}
+            />
           </div>
 
-          <div className="flex items-center justify-between border-t border-border/50 px-5 py-3">
-            <p className="text-xs text-muted-foreground">
-              Page {page} of {totalPages} · {total.toLocaleString()} total
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-              >
-                <ChevronLeft size={14} />
-                Prev
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-              >
-                Next
-                <ChevronRight size={14} />
-              </Button>
-            </div>
-          </div>
-        </Card>
+          {isLoading ? (
+            <DashboardSkeleton />
+          ) : error ? (
+            <Card variant="bubble" className="p-8 text-center text-destructive">
+              <p>{error}</p>
+            </Card>
+          ) : subscribers.length === 0 ? (
+            <Card variant="bubble" className="p-10 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                <Inbox className="h-7 w-7 text-primary" />
+              </div>
+              <h2 className="mt-4 text-lg font-semibold text-foreground">
+                No subscribers yet
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                Subscribers will appear here once people sign up.
+              </p>
+            </Card>
+          ) : (
+            <Card variant="bubble" className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
+                      <th className="px-5 py-3 font-semibold">Email</th>
+                      <th className="px-5 py-3 font-semibold">Subscribed</th>
+                      <th className="px-5 py-3 font-semibold">Source</th>
+                      {(isAdmin || isStaff) && (
+                        <th className="px-5 py-3 text-right font-semibold">
+                          Actions
+                        </th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {subscribers.map((subscriber) => (
+                      <tr
+                        key={subscriber.id}
+                        className="border-b border-border/30 last:border-0 hover:bg-accent/40"
+                      >
+                        <td className="px-5 py-3 text-foreground">
+                          {subscriber.email}
+                        </td>
+                        <td className="px-5 py-3 text-muted-foreground">
+                          {new Date(subscriber.subscribedAt).toLocaleString()}
+                        </td>
+                        <td className="px-5 py-3">
+                          <Badge variant="outline">{subscriber.source}</Badge>
+                        </td>
+                        {isAdmin || isStaff ? (
+                          <td className="px-5 py-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => setPendingDelete(subscriber)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                              aria-label={`Delete ${subscriber.email}`}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        ) : null}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex items-center justify-between border-t border-border/50 px-5 py-3">
+                <p className="text-xs text-muted-foreground">
+                  Page {page} of {totalPages} · {total.toLocaleString()} total
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                  >
+                    <ChevronLeft size={14} />
+                    Prev
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
+                  >
+                    Next
+                    <ChevronRight size={14} />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          )}
+        </>
       )}
 
       <ConfirmDialog

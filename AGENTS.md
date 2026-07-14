@@ -167,7 +167,8 @@ High-level layout; see the Child NAD Index below for domain-specific details.
 - `public/` — static assets and the Cloudflare Worker. See `public/AGENTS.md`.
 - `scripts/` — Node.js maintenance scripts. See `scripts/AGENTS.md`.
 - `api-server/` — NukeHub API server: contact form, survey, and newsletter
-  endpoints, SMTP relay. See `api-server/AGENTS.md`.
+  endpoints, newsletter campaign sending, SMTP relay. See
+  `api-server/AGENTS.md`.
 - `api-server/api.nukehub.org.conf` — reverse-proxy vhost for
   `api.nukehub.org/health`, `/contact`, `/survey`, `/newsletter`, and
   `/newsletter/unsubscribe`.

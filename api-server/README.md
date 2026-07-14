@@ -1,9 +1,11 @@
 # NukeHub API Server
 
 Small Go HTTP service behind `api.nukehub.org`. Receives contact form and
-survey submissions from the static site, persists survey responses to SQLite,
-and forwards submissions via SMTP. Also provides an admin API for browsing and
-exporting survey responses.
+survey submissions from the static site, persists survey responses and
+newsletter subscribers to SQLite, forwards submissions via SMTP, and sends
+newsletter campaigns with one-click unsubscribe links. Also provides an
+admin API for browsing and exporting survey responses and managing the
+newsletter.
 
 Written in Go for minimal resource usage (~5-10MB RAM).
 
@@ -87,8 +89,15 @@ Copy `.env.example` to `.env` and configure. Key variables:
 - `CONTACT_TO_EMAIL` — recipient for contact form submissions.
 - `SURVEY_TO_EMAIL` — recipient for survey submissions (defaults to `CONTACT_TO_EMAIL`).
 - `AUTH_URL`, `AUTH_REALM`, `AUTH_CLIENT_ID` — NukeAuth config for admin token verification.
-  - `survey-admin` — full access (read, export, delete).
-  - `survey-viewer` — read-only access (list surveys, view submissions, stats, CSV export).
+  - `survey-admin` — full survey access (read, export, delete).
+  - `survey-viewer` — read-only survey access (list surveys, view submissions, stats, CSV export).
+  - `newsletter-admin` — full newsletter access (subscribers + compose, send, delete campaigns).
+  - `newsletter-staff` — manage subscribers and create/edit/test campaigns, but not send or delete them.
+- `NEWSLETTER_TOKEN_SECRET` — HMAC secret signing unsubscribe links (required in production).
+- `NEWSLETTER_FROM_EMAIL`, `BLOG_FROM_EMAIL`, `NEWSLETTER_FROM_NAME` — campaign sender
+  addresses. `SMTP_USER` must be permitted to send as them (e.g. mailcow aliases).
+- `NEWSLETTER_SEND_DELAY_MS` — delay between campaign sends (default 1000).
+- `SITE_URL`, `API_PUBLIC_URL` — public origins used in email links.
 
 ## API Endpoints
 
@@ -97,14 +106,32 @@ Copy `.env.example` to `.env` and configure. Key variables:
 - `GET /health` - Health check
 - `POST /contact` - Submit contact form
 - `POST /survey` - Submit YAML-driven survey responses
+- `POST /newsletter` - Subscribe to the newsletter
+- `POST /newsletter/unsubscribe` - Unsubscribe (Turnstile-verified)
+- `POST /newsletter/unsubscribe/confirm` - Token-based unsubscribe from email links (RFC 8058 one-click)
 
-### Admin (requires bearer token + allowed admin email)
+### Admin (requires bearer token + role)
+
+Survey endpoints (`survey-admin` / `survey-viewer`):
 
 - `GET /admin/health/db` - Database connectivity check
 - `GET /admin/surveys` - List surveys with submission counts
 - `GET /admin/surveys/{slug}` - Paginated submissions
 - `GET /admin/surveys/{slug}/stats` - Aggregate statistics
 - `GET /admin/surveys/{slug}/export.csv` - CSV export
+
+Newsletter endpoints (`newsletter-admin` / `newsletter-staff`; send and
+campaign delete are `newsletter-admin` only):
+
+- `GET /admin/newsletter/subscribers` - Paginated subscriber list
+- `GET /admin/newsletter/subscribers/export.csv` - Subscriber CSV export
+- `DELETE /admin/newsletter/subscribers/{id}` - Delete a subscriber
+- `GET /admin/newsletter/config` - Allowed campaign sender addresses
+- `GET|POST /admin/newsletter/campaigns` - List campaigns / create draft
+- `GET|PUT|DELETE /admin/newsletter/campaigns/{id}` - Detail / edit draft / delete
+- `POST /admin/newsletter/campaigns/{id}/send` - Send to all subscribers
+- `POST /admin/newsletter/campaigns/{id}/test` - Send a test email
+- `POST /admin/newsletter/campaigns/preview` - Render markdown to email HTML
 
 ## Security Features
 

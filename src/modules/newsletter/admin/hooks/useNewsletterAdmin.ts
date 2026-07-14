@@ -1,6 +1,11 @@
 import * as React from "react";
-import { fetchSubscribers } from "../lib/admin-api";
-import type { SubscribersResponse } from "../types";
+import {
+  fetchCampaigns,
+  fetchNewsletterConfig,
+  fetchSubscribers,
+  type NewsletterConfig,
+} from "../lib/admin-api";
+import type { CampaignsResponse, SubscribersResponse } from "../types";
 
 interface AsyncState<T> {
   data: T | null;
@@ -79,5 +84,44 @@ export function useSubscribers(
       return result;
     },
     [token, page, limit],
+  );
+}
+
+export function useCampaigns(
+  token: string | null,
+  pollWhileSending = false,
+): AsyncState<CampaignsResponse> {
+  const state = useAsyncState(
+    async (signal) => {
+      if (!token) throw new Error("Not authenticated");
+      const result = await fetchCampaigns(token);
+      if (signal.aborted) return result;
+      return result;
+    },
+    [token],
+  );
+
+  // Re-fetch while any campaign is mid-send so progress updates live.
+  const hasSending = state.data?.campaigns.some((c) => c.status === "sending");
+  React.useEffect(() => {
+    if (!pollWhileSending || !hasSending) return;
+    const interval = setInterval(state.refresh, 5000);
+    return () => clearInterval(interval);
+  }, [pollWhileSending, hasSending, state.refresh]);
+
+  return state;
+}
+
+export function useNewsletterConfig(
+  token: string | null,
+): AsyncState<NewsletterConfig> {
+  return useAsyncState(
+    async (signal) => {
+      if (!token) throw new Error("Not authenticated");
+      const result = await fetchNewsletterConfig(token);
+      if (signal.aborted) return result;
+      return result;
+    },
+    [token],
   );
 }

@@ -61,6 +61,11 @@ const (
 	viewerRoleName = "survey-viewer"
 )
 
+const (
+	newsletterAdminRoleName = "newsletter-admin"
+	newsletterStaffRoleName = "newsletter-staff"
+)
+
 // Database and auth globals
 var (
 	db        *sql.DB
@@ -96,20 +101,28 @@ func main() {
 	// Cleanup old rate limit entries
 	go cleanupRateLimits()
 
+	// Newsletter campaign sender (resumes interrupted sends)
+	getTokenSecret()
+	startCampaignSender()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)
 	mux.HandleFunc("/survey", handleSurvey)
 	mux.HandleFunc("/newsletter", handleNewsletter)
 	mux.HandleFunc("/newsletter/unsubscribe", handleNewsletterUnsubscribe)
+	mux.HandleFunc("/newsletter/unsubscribe/confirm", handleNewsletterUnsubscribeConfirm)
 
 	// Admin endpoints
 	mux.HandleFunc("/admin/health/db", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminHealthDB))
 	mux.HandleFunc("/admin/surveys", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminSurveys))
 	mux.HandleFunc("/admin/surveys/", requireSurveyAccess(handleAdminSurveyDetail))
-	mux.HandleFunc("/admin/newsletter/subscribers", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminNewsletterSubscribers))
-	mux.HandleFunc("/admin/newsletter/subscribers/export.csv", requireAnyRole(adminRoleName, viewerRoleName)(handleAdminNewsletterExportCSV))
-	mux.HandleFunc("/admin/newsletter/subscribers/", requireRole(adminRoleName)(handleAdminNewsletterSubscriberDetail))
+	mux.HandleFunc("/admin/newsletter/subscribers", requireAnyRole(newsletterAdminRoleName, newsletterStaffRoleName)(handleAdminNewsletterSubscribers))
+	mux.HandleFunc("/admin/newsletter/subscribers/export.csv", requireAnyRole(newsletterAdminRoleName, newsletterStaffRoleName)(handleAdminNewsletterExportCSV))
+	mux.HandleFunc("/admin/newsletter/subscribers/", requireAnyRole(newsletterAdminRoleName, newsletterStaffRoleName)(handleAdminNewsletterSubscriberDetail))
+	mux.HandleFunc("/admin/newsletter/campaigns", requireAnyRole(newsletterAdminRoleName, newsletterStaffRoleName)(handleAdminCampaigns))
+	mux.HandleFunc("/admin/newsletter/campaigns/", requireCampaignAccess(handleAdminCampaignDetail))
+	mux.HandleFunc("/admin/newsletter/config", requireAnyRole(newsletterAdminRoleName, newsletterStaffRoleName)(handleAdminNewsletterConfig))
 
 	handler := securityHeadersMiddleware(corsMiddleware(concurrencyLimitMiddleware(mux), allowedOrigins))
 
@@ -173,6 +186,32 @@ CREATE INDEX IF NOT EXISTS idx_subscribers_email ON subscribers(email);
 CREATE INDEX IF NOT EXISTS idx_submissions_slug ON submissions(survey_slug);
 CREATE INDEX IF NOT EXISTS idx_submissions_submitted_at ON submissions(submitted_at);
 CREATE INDEX IF NOT EXISTS idx_responses_submission_id ON responses(submission_id);
+
+CREATE TABLE IF NOT EXISTS campaigns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    from_email TEXT NOT NULL,
+    body_markdown TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'draft',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    started_at DATETIME,
+    finished_at DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS deliveries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    campaign_id INTEGER NOT NULL,
+    email TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    error TEXT,
+    sent_at DATETIME,
+    UNIQUE (campaign_id, email),
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_deliveries_campaign_status ON deliveries(campaign_id, status);
 `
 	if _, err := db.Exec(schema); err != nil {
 		return fmt.Errorf("create schema: %w", err)

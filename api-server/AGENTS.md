@@ -4,33 +4,46 @@
 
 Small Go HTTP service behind `api.nukehub.org`. Receives the static site's
 contact-form submissions, YAML-driven survey submissions, and newsletter
-subscriptions, persists survey responses and subscribers to SQLite, and
-forwards submissions via SMTP. Reverse proxied by
-`api-server/api.nukehub.org.conf`.
+subscriptions, persists survey responses and subscribers to SQLite, forwards
+submissions via SMTP, and sends newsletter campaigns to subscribers
+(background worker, per-recipient tracking, one-click unsubscribe). Reverse
+proxied by `api-server/api.nukehub.org.conf`.
 
 ## Ownership
 
-All files under `api-server/**`: `main.go`, `go.mod`, `Dockerfile`,
-`compose.yml`, `README.md`, and `api.nukehub.org.conf`.
+All files under `api-server/**`: `main.go`, `newsletter_campaign.go`,
+`go.mod`, `Dockerfile`, `compose.yml`, `README.md`, and
+`api.nukehub.org.conf`.
 
 ## Local Contracts
 
-- Go 1.22+. Single-file `main.go` + `go.mod` — no internal packages.
+- Go 1.22+. Flat `package main` files — no internal packages.
 - Runtime footprint target: ~5-10MB RAM.
-- Deployed either directly (`go build -o api-server main.go && ./api-server`)
-  or via `docker ./compose.yml` (the canonical production path). Listens on
+- Deployed either directly (`go build -o api-server . && ./api-server`) or
+  via `docker ./compose.yml` (the canonical production path). Listens on
   `127.0.0.1:3000` and is proxied by nginx.
+- Build the whole package (`go build .`), never `go build main.go` — the
+  newsletter campaign code lives in `newsletter_campaign.go`.
 
 ## Work Guidance
 
 ### Files
 
-- `main.go` — entire service. Endpoints: `GET /health`, `POST /contact`,
-  `POST /survey`, `POST /newsletter`, `POST /newsletter/unsubscribe`, and
-  admin endpoints under `/admin/surveys` and `/admin/newsletter`. Includes
-  SQLite persistence, rate limiting, Turnstile verification, JWT validation
-  against the Keycloak JWKS endpoint, input sanitization, HTML escaping, and
-  email header-injection prevention.
+- `main.go` — routing, schema, and the contact/survey/newsletter-subscription
+  endpoints. Endpoints: `GET /health`, `POST /contact`, `POST /survey`,
+  `POST /newsletter`, `POST /newsletter/unsubscribe`, and admin endpoints
+  under `/admin/surveys` and `/admin/newsletter`. Includes SQLite persistence,
+  rate limiting, Turnstile verification, JWT validation against the Keycloak
+  JWKS endpoint, input sanitization, HTML escaping, and email
+  header-injection prevention.
+- `newsletter_campaign.go` — newsletter campaigns: HMAC-signed one-click
+  unsubscribe tokens (`POST /newsletter/unsubscribe/confirm`, RFC 8058),
+  campaign CRUD/send/test/preview admin endpoints, the background sender
+  worker, goldmark markdown → HTML rendering, and the bulk mailer with
+  `List-Unsubscribe` headers. Campaigns flow `draft → sending → sent`;
+  deliveries are snapshotted from the subscriber list at send time and only
+  ever transition `pending → sent|failed`, so restarting the server mid-send
+  never double-sends.
 
 ### Abuse protection
 
@@ -71,10 +84,22 @@ Secrets live in `api-server/.env` (gitignored). Required:
 - `DATABASE_PATH` — SQLite database file path. Defaults to `./data/nukehub.db`.
 - `AUTH_URL`, `AUTH_REALM`, `AUTH_CLIENT_ID` — NukeAuth config used to verify
   admin bearer tokens. Must match the static site's `PUBLIC_AUTH_*` values.
-- **Admin access** is granted by the `survey-admin` client role under
-  `AUTH_CLIENT_ID`.
-- **Read-only access** is granted by the `survey-viewer` client role under the
-  same `AUTH_CLIENT_ID`.
+- **Survey admin access** is granted by the `survey-admin` client role;
+  read-only survey access by `survey-viewer` (both under `AUTH_CLIENT_ID`).
+- **Newsletter access** is granted by the `newsletter-admin` and
+  `newsletter-staff` client roles under the same `AUTH_CLIENT_ID`. Staff can
+  view/export/delete subscribers and create/edit/test campaigns; only
+  `newsletter-admin` can send or delete campaigns.
+- `NEWSLETTER_TOKEN_SECRET` — HMAC key signing unsubscribe tokens. Required
+  in production; unset means an ephemeral key per boot, which invalidates
+  unsubscribe links already sent out.
+- `NEWSLETTER_FROM_EMAIL`, `BLOG_FROM_EMAIL`, `NEWSLETTER_FROM_NAME` —
+  allowed campaign sender addresses (defaults `news@nukehub.org`,
+  `blog@nukehub.org`, `NukeHub`). `SMTP_USER` must be allowed to send as
+  them (mailcow alias / sender ACL on the SMTP_USER mailbox).
+- `NEWSLETTER_SEND_DELAY_MS` — delay between campaign sends (default 1000).
+- `SITE_URL`, `API_PUBLIC_URL` — public origins used in email links
+  (unsubscribe page and RFC 8058 one-click URL).
 
 Do **not** copy these into the static-site `.env`. (See root NAD
 "Environment variables" for that file's contents.)
@@ -94,7 +119,12 @@ Do **not** copy these into the static-site `.env`. (See root NAD
   alphanumeric/hyphen/underscore (default `newsletter`). Returns `409 Conflict`
   if the email already exists.
 - `POST /newsletter/unsubscribe` — remove an email address from the subscriber
-  list. Idempotent: succeeds even if the email is not subscribed.
+  list (Turnstile-verified). Idempotent: succeeds even if the email is not
+  subscribed.
+- `POST /newsletter/unsubscribe/confirm` — token-based unsubscribe used by
+  email links. Accepts the site confirm page's JSON `{"token"}` and RFC 8058
+  one-click POSTs from mail clients (token in query). Never acts on GET, so
+  link-scanner prefetches cannot unsubscribe anyone.
 - `GET /admin/health/db` — DB connectivity check (`survey-admin` or
   `survey-viewer`).
 - `GET /admin/surveys` — list surveys with submission counts.
@@ -108,11 +138,28 @@ Do **not** copy these into the static-site `.env`. (See root NAD
 - `DELETE /admin/surveys/{slug}/submissions/{id}` — delete a single response
   (`survey-admin` only).
 - `GET /admin/newsletter/subscribers` — paginated subscriber list
-  (`survey-admin` or `survey-viewer`).
+  (`newsletter-admin` or `newsletter-staff`).
 - `GET /admin/newsletter/subscribers/export.csv` — subscriber CSV export
-  (`survey-admin` or `survey-viewer`).
+  (`newsletter-admin` or `newsletter-staff`).
 - `DELETE /admin/newsletter/subscribers/{id}` — delete a single subscriber
-  (`survey-admin` only).
+  (`newsletter-admin` or `newsletter-staff`).
+- `GET /admin/newsletter/config` — configured sender name and allowed From
+  addresses (`newsletter-admin` or `newsletter-staff`).
+- `GET /admin/newsletter/campaigns` — list campaigns with delivery stats
+  (`newsletter-admin` or `newsletter-staff`).
+- `POST /admin/newsletter/campaigns` — create a draft campaign
+  (`newsletter-admin` or `newsletter-staff`). Body:
+  `{"title","subject","fromEmail","bodyMarkdown"}`.
+- `GET /admin/newsletter/campaigns/{id}` — campaign detail with stats.
+- `PUT /admin/newsletter/campaigns/{id}` — edit a draft campaign.
+- `DELETE /admin/newsletter/campaigns/{id}` — delete a non-sending campaign
+  (`newsletter-admin` only).
+- `POST /admin/newsletter/campaigns/{id}/send` — snapshot subscribers and
+  start sending (`newsletter-admin` only).
+- `POST /admin/newsletter/campaigns/{id}/test` — send a test email. Body:
+  `{"email"}`.
+- `POST /admin/newsletter/campaigns/preview` — render markdown to the email
+  body HTML. Body: `{"bodyMarkdown"}`.
 
 ### Common pitfalls
 
@@ -126,7 +173,18 @@ Do **not** copy these into the static-site `.env`. (See root NAD
   into the static bundle; the secret is server-only here. They must match the
   same Turnstile widget.
 - **Admin auth uses NukeAuth + client roles.** `AUTH_URL`, `AUTH_REALM`, and
-  `AUTH_CLIENT_ID` must match the static site's Keycloak config.
+  `AUTH_CLIENT_ID` must match the static site's Keycloak config. Survey
+  (`survey-admin`, `survey-viewer`) and newsletter (`newsletter-admin`,
+  `newsletter-staff`) roles are separate; assign both sets in Keycloak.
+- **Always set `NEWSLETTER_TOKEN_SECRET` in production.** Without it,
+  unsubscribe links in sent campaigns die on the next restart.
+- **Campaign From addresses must exist in mailcow.** Add `news@` and `blog@`
+  as aliases of the `SMTP_USER` mailbox (or grant send-as); otherwise the
+  SMTP session rejects the message and every delivery is marked failed.
+- **Bounces are not parsed.** SMTP rejections at send time mark a delivery
+  `failed`; later bounce mails land in the sending mailbox. Clean hard
+  bounces manually via the admin dashboard (or Listmonk-style automation is
+  a future phase).
 - **Back up the SQLite database.** `DATABASE_PATH` defaults to
   `./data/nukehub.db` and is mounted as a Docker volume. The WAL files
   (`*.db-wal`, `*.db-shm`) must be backed up together with the main file.
@@ -140,7 +198,7 @@ Do **not** copy these into the static-site `.env`. (See root NAD
 cd api-server
 # The Go binary does not auto-load .env; source it first or use docker compose.
 set -a && source .env && set +a
-go build -o api-server main.go
+go build -o api-server .
 ./api-server &            # listens on 127.0.0.1:3000
 curl http://127.0.0.1:3000/health
 

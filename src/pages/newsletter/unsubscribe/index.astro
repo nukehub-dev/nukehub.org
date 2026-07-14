@@ -1,0 +1,16 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { UnsubscribeConfirm } from "@modules/newsletter/components/UnsubscribeConfirm";
+
+const title = "Unsubscribe";
+const description = "Unsubscribe from the NukeHub newsletter.";
+const permalink = "/newsletter/unsubscribe";
+---
+
+<BaseLayout title={title} description={description} permalink={permalink}>
+  <section class="relative min-h-[calc(100vh-4rem)] px-4 py-16">
+    <div class="relative z-10 mx-auto max-w-md">
+      <UnsubscribeConfirm client:only="react" />
+    </div>
+  </section>
+</BaseLayout>

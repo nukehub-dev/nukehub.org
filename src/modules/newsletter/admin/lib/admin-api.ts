@@ -1,4 +1,9 @@
-import type { SubscribersResponse } from "../types";
+import type {
+  Campaign,
+  CampaignInput,
+  CampaignsResponse,
+  SubscribersResponse,
+} from "../types";
 
 const API_BASE = import.meta.env.PUBLIC_API_URL || "/api";
 
@@ -101,4 +106,99 @@ export async function deleteSubscriber(
   }
 
   return response.json() as Promise<{ success: boolean; deleted: number }>;
+}
+
+async function mutateJson<T>(
+  token: string | null,
+  path: string,
+  method: "POST" | "PUT" | "DELETE",
+  body?: unknown,
+): Promise<T> {
+  if (!token) {
+    throw new Error("Not authenticated");
+  }
+
+  const response = await fetch(`${getBaseUrl()}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+    },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    const message =
+      typeof data.error === "string"
+        ? data.error
+        : `Request failed (${response.status})`;
+    const error = new Error(message) as Error & { status: number };
+    error.status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<T>;
+}
+
+export function fetchCampaigns(
+  token: string | null,
+): Promise<CampaignsResponse> {
+  return fetchJson(token, "/campaigns");
+}
+
+export function createCampaign(
+  token: string | null,
+  input: CampaignInput,
+): Promise<Campaign> {
+  return mutateJson(token, "/campaigns", "POST", input);
+}
+
+export function updateCampaign(
+  token: string | null,
+  id: number,
+  input: CampaignInput,
+): Promise<Campaign> {
+  return mutateJson(token, `/campaigns/${id}`, "PUT", input);
+}
+
+export function deleteCampaign(
+  token: string | null,
+  id: number,
+): Promise<{ success: boolean; deleted: number }> {
+  return mutateJson(token, `/campaigns/${id}`, "DELETE");
+}
+
+export function sendCampaign(
+  token: string | null,
+  id: number,
+): Promise<{ success: boolean; status: string; total: number }> {
+  return mutateJson(token, `/campaigns/${id}/send`, "POST");
+}
+
+export function testCampaign(
+  token: string | null,
+  id: number,
+  email: string,
+): Promise<{ success: boolean; message: string }> {
+  return mutateJson(token, `/campaigns/${id}/test`, "POST", { email });
+}
+
+export function previewCampaign(
+  token: string | null,
+  bodyMarkdown: string,
+): Promise<{ html: string }> {
+  return mutateJson(token, "/campaigns/preview", "POST", { bodyMarkdown });
+}
+
+export interface NewsletterConfig {
+  fromName: string;
+  fromAddresses: string[];
+}
+
+export function fetchNewsletterConfig(
+  token: string | null,
+): Promise<NewsletterConfig> {
+  return fetchJson(token, "/config");
 }
