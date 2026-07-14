@@ -108,6 +108,9 @@ func main() {
 	// Blog RSS → newsletter auto-send (only when BLOG_AUTO_SEND=true)
 	startBlogWatcher()
 
+	// Bounce mailbox processing (only when BOUNCE_CHECK_ENABLED=true)
+	startBounceWatcher()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/contact", handleContact)

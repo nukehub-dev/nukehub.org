@@ -12,8 +12,8 @@ proxied by `api-server/api.nukehub.org.conf`.
 ## Ownership
 
 All files under `api-server/**`: `main.go`, `newsletter_campaign.go`,
-`go.mod`, `Dockerfile`, `compose.yml`, `README.md`, and
-`api.nukehub.org.conf`.
+`blog_watch.go`, `bounce_watch.go`, `go.mod`, `Dockerfile`, `compose.yml`,
+`README.md`, and `api.nukehub.org.conf`.
 
 ## Local Contracts
 
@@ -52,6 +52,12 @@ All files under `api-server/**`: `main.go`, `newsletter_campaign.go`,
   tick. With zero subscribers the cursor still advances but no campaign is
   created. Auto campaigns carry `source = 'blog-rss'` (an `ALTER TABLE`
   migration adds the column to older databases).
+- `bounce_watch.go` — opt-in (`BOUNCE_CHECK_ENABLED=true`) IMAP poller for
+  the bounce mailbox. Campaign emails use `BOUNCE_EMAIL` as envelope sender
+  so async bounces land there. Parses RFC 3464 delivery-status blocks:
+  permanent 5xx failures delete the subscriber, transient 4xx are ignored.
+  Only DSN messages are marked `\Seen`; nothing is ever deleted from the
+  mailbox. Requires `github.com/emersion/go-imap/v2`.
 
 ### Abuse protection
 
@@ -115,6 +121,16 @@ Secrets live in `api-server/.env` (gitignored). Required:
   auto-generated campaign body.
 - `BLOG_RSS_POLL_INTERVAL_MS` — poll interval, minimum 60000 (default
   30 minutes).
+- `BOUNCE_EMAIL` — envelope sender for campaign emails; async bounces land
+  here. Must be a real mailcow mailbox or an alias delivering to the polled
+  mailbox.
+- `BOUNCE_CHECK_ENABLED` — `true` enables the bounce watcher. Default
+  `false`.
+- `BOUNCE_IMAP_HOST`/`PORT`/`USER`/`PASS`/`FOLDER` — IMAP connection for the
+  bounce mailbox; each defaults to the `SMTP_*` equivalent (host, user,
+  pass), `993`, and `INBOX`.
+- `BOUNCE_CHECK_INTERVAL_MS` — poll interval, minimum 300000 (default
+  1 hour).
 
 Do **not** copy these into the static-site `.env`. (See root NAD
 "Environment variables" for that file's contents.)
@@ -196,10 +212,12 @@ Do **not** copy these into the static-site `.env`. (See root NAD
 - **Campaign From addresses must exist in mailcow.** Add `news@` and `blog@`
   as aliases of the `SMTP_USER` mailbox (or grant send-as); otherwise the
   SMTP session rejects the message and every delivery is marked failed.
-- **Bounces are not parsed.** SMTP rejections at send time mark a delivery
-  `failed`; later bounce mails land in the sending mailbox. Clean hard
-  bounces manually via the admin dashboard (or Listmonk-style automation is
-  a future phase).
+- **Bounce processing is opt-in and needs a bounce mailbox.** Create
+  `bounces@nukehub.org` in mailcow (mailbox or alias into the polled
+  account), set `BOUNCE_EMAIL` to it so campaigns use it as envelope
+  sender, then enable `BOUNCE_CHECK_ENABLED`. Without it, async bounces
+  just pile up in the `SMTP_USER` inbox and dead addresses stay on the
+  list — clean them manually via the admin dashboard.
 - **Enable `BLOG_AUTO_SEND` only after the From addresses work.** The first
   poll with the flag on just records the newest post (no backlog is sent),
   so the safe rollout is: deploy, verify a manual campaign delivers, then

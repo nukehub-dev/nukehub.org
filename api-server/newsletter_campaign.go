@@ -750,6 +750,10 @@ func sendBulkEmail(fromEmail, fromName, to, subject, htmlBody, textBody, oneClic
 	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
 	auth := smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
 
+	// Bounces go to the envelope sender, not the From header — use the
+	// dedicated bounce mailbox so the watcher can process them.
+	envelopeFrom := bounceEnvelopeFrom()
+
 	if smtpSecure {
 		tlsConfig := &tls.Config{ServerName: smtpHost}
 		conn, err := tls.Dial("tcp", addr, tlsConfig)
@@ -767,7 +771,7 @@ func sendBulkEmail(fromEmail, fromName, to, subject, htmlBody, textBody, oneClic
 		if err := client.Auth(auth); err != nil {
 			return fmt.Errorf("SMTP auth failed: %w", err)
 		}
-		if err := client.Mail(smtpUser); err != nil {
+		if err := client.Mail(envelopeFrom); err != nil {
 			return fmt.Errorf("SMTP mail failed: %w", err)
 		}
 		if err := client.Rcpt(to); err != nil {
@@ -786,7 +790,7 @@ func sendBulkEmail(fromEmail, fromName, to, subject, htmlBody, textBody, oneClic
 		return client.Quit()
 	}
 
-	return smtp.SendMail(addr, auth, smtpUser, []string{to}, msg.Bytes())
+	return smtp.SendMail(addr, auth, envelopeFrom, []string{to}, msg.Bytes())
 }
 
 // --- Background sender ---

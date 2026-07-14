@@ -25,11 +25,11 @@ import (
 //     cursor.
 
 const (
-	blogCursorKey        = "blog_rss_last_guid"
-	defaultBlogRSSURL    = "https://blog.nukehub.org/rss.xml"
-	defaultPollInterval  = 30 * time.Minute
-	feedFetchTimeout     = 15 * time.Second
-	maxExcerptLen        = 500
+	blogCursorKey       = "blog_rss_last_guid"
+	defaultBlogRSSURL   = "https://blog.nukehub.org/rss.xml"
+	defaultPollInterval = 30 * time.Minute
+	feedFetchTimeout    = 15 * time.Second
+	maxExcerptLen       = 500
 )
 
 func blogAutoSendEnabled() bool {

@@ -102,6 +102,11 @@ Copy `.env.example` to `.env` and configure. Key variables:
   for every new post found in `BLOG_RSS_URL` (polls every
   `BLOG_RSS_POLL_INTERVAL_MS`, default 30 min). The first poll only records the
   newest post, never sends the backlog. Default `false`.
+- `BOUNCE_EMAIL` — envelope sender for campaign emails; async bounces land here
+  (must be a real mailcow mailbox or alias). With `BOUNCE_CHECK_ENABLED=true`
+  the server polls it over IMAP (defaults to the `SMTP_*` host/credentials,
+  overridable via `BOUNCE_IMAP_*`, every `BOUNCE_CHECK_INTERVAL_MS`, default
+  1 hour) and removes hard-bounced subscribers. Default `false`.
 
 ## API Endpoints
 
