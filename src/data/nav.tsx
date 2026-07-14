@@ -53,6 +53,12 @@ const GithubIcon = (props: { className?: string }) => (
 const LinkedinIcon = (props: { className?: string }) => (
   <BrandIcon name="linkedin" size={16} {...props} />
 );
+const BlueskyIcon = (props: { className?: string }) => (
+  <BrandIcon name="bluesky" size={16} {...props} />
+);
+const MastodonIcon = (props: { className?: string }) => (
+  <BrandIcon name="mastodon" size={16} {...props} />
+);
 
 const staticNavItems: NavItem[] = [
   {
@@ -104,6 +110,18 @@ const staticNavItems: NavItem[] = [
         title: "LinkedIn",
         icon: LinkedinIcon,
         url: "https://www.linkedin.com/company/nukehub",
+        newpage: true,
+      },
+      {
+        title: "Bluesky",
+        icon: BlueskyIcon,
+        url: "https://bsky.app/profile/nukehub.org",
+        newpage: true,
+      },
+      {
+        title: "Mastodon",
+        icon: MastodonIcon,
+        url: "https://mastodon.social/@nukehub",
         newpage: true,
       },
     ],

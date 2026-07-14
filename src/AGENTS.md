@@ -44,8 +44,9 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
 - `src/components/layout/` — site frame: `Header`, `Footer`, `AuthHeader`,
   `Container`.
 - `src/components/shared/` — global UI/islands: cursor, scroll progress,
-  command palette, contact modal/form, theme toggle, error boundary, page
-  loader, GitHub stats overlay, analytics, grain overlay, glass context menu.
+  command palette, contact modal/form, newsletter signup, theme toggle, error
+  boundary, page loader, GitHub stats overlay, analytics, grain overlay, glass
+  context menu.
 - `src/components/ui/` — visual primitives: `Button`, `Card`, `Badge`,
   `Tooltip`, `Logo`, `Image`, `SearchInput`, `BrandIcon`, `Input`, `Textarea`,
   `Select`, `Label`, `Checkbox`, `RadioGroup`, `CharacterCount`.

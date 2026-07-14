@@ -8,6 +8,7 @@ import {
 import { Logo } from "@components/ui/Logo";
 import { BrandIcon } from "@components/ui/BrandIcon";
 import { CookieSettingsLink } from "@components/shared/CookieSettingsLink";
+import { NewsletterSignup } from "@components/shared/NewsletterSignup";
 import { ArrowUpRight } from "lucide-react";
 
 interface FooterProps {
@@ -38,6 +39,17 @@ export function Footer({ projectEntries }: FooterProps) {
               Empowering Nuclear Innovation through open-source collaboration,
               education, and community.
             </p>
+
+            {/* Newsletter */}
+            <div className="mt-6">
+              <NewsletterSignup
+                title="Subscribe to newsletter"
+                description="Weekly roundups of new posts and community updates."
+                variant="compact"
+                layout="button"
+                source="main-footer"
+              />
+            </div>
 
             {/* Social icons */}
             <div className="mt-6 flex items-center gap-3">

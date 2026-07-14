@@ -15,9 +15,10 @@ import {
   Monitor,
   Cpu,
   Server,
-  ExternalLink,
+  Newspaper,
   Mail,
   ClipboardList,
+  Rss,
 } from "lucide-react";
 
 export interface FooterLink {
@@ -60,16 +61,16 @@ const staticFooterColumns: FooterColumn[] = [
     links: [
       { title: "Contact", url: "/contact", icon: Mail },
       {
-        title: "GitHub",
-        url: "https://github.com/nukehub-dev/",
+        title: "Blog",
+        url: "https://blog.nukehub.org",
         newpage: true,
-        icon: ExternalLink,
+        icon: Newspaper,
       },
       {
-        title: "LinkedIn",
-        url: "https://www.linkedin.com/company/nukehub",
+        title: "RSS Feed",
+        url: "https://blog.nukehub.org/rss.xml",
         newpage: true,
-        icon: ExternalLink,
+        icon: Rss,
       },
     ],
   },
@@ -136,4 +137,6 @@ export const footerLegal = [
 export const socialLinks = [
   { name: "github", url: "https://github.com/nukehub-dev" },
   { name: "linkedin", url: "https://www.linkedin.com/company/nukehub" },
+  { name: "bluesky", url: "https://bsky.app/profile/nukehub.org" },
+  { name: "mastodon", url: "https://mastodon.social/@nukehub" },
 ] as const;
