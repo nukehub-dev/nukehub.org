@@ -246,6 +246,10 @@ browser. They are defined in `.env` (local dev) and Cloudflare Pages env vars
   `{PUBLIC_API_URL}/survey`, and the admin dashboard reads from
   `{PUBLIC_API_URL}/admin`.
 - `PUBLIC_CF_ANALYTICS_TOKEN` — Cloudflare Web Analytics token (optional).
+- `PUBLIC_BLOG_URL` — NukeBlog origin (optional; defaults to
+  `https://blog.nukehub.org`). The homepage `BlogSection` fetches
+  `{PUBLIC_BLOG_URL}/rss.xml` client-side (see `src/lib/blog.ts`); the blog
+  must send `Access-Control-Allow-Origin` for the site origin.
 - `PUBLIC_AUTH_URL` / `PUBLIC_AUTH_REALM` / `PUBLIC_AUTH_CLIENT_ID`
   — NukeAuth IdP config for `src/lib/auth/NukeAuthProvider.tsx`.
 

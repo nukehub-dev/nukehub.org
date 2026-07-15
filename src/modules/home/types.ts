@@ -56,6 +56,12 @@ export interface TestimonialsSectionData {
   badge: string;
 }
 
+export interface BlogData {
+  sectionTitle: string;
+  sectionSubtitle: string;
+  badge: string;
+}
+
 export interface TrustData {
   sectionTitle: string;
   institutions: string[];

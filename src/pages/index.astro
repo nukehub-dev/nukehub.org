@@ -8,6 +8,7 @@ import { IntegrationsSection } from "@modules/home/components/IntegrationsSectio
 import { EnhancedCTA } from "@modules/home/components/EnhancedCTA";
 
 import { TestimonialsSection } from "@modules/home/components/TestimonialsSection";
+import { BlogSection } from "@modules/home/components/BlogSection";
 import { InstitutionsSection } from "@modules/home/components/InstitutionsSection";
 import { Footer } from "@components/layout/Footer";
 
@@ -19,6 +20,7 @@ import type {
   MissionData,
   IntegrationsData,
   TestimonialsSectionData,
+  BlogData,
   CTAData,
 } from "@modules/home/types";
 import type { Sponsor } from "@modules/home/types/sponsor";
@@ -50,6 +52,7 @@ const integrationsData = loadYaml<IntegrationsData>(
 const testimonialsSectionData = loadYaml<TestimonialsSectionData>(
   "home/data/testimonials.yml",
 );
+const blogData = loadYaml<BlogData>("home/data/blog.yml");
 const trustData = loadYaml<{
   badge: { text: string; showLiveDot?: boolean };
   sectionTitle: string;
@@ -149,6 +152,8 @@ const sponsors: Sponsor[] = sponsorEntries.map((entry) => ({
     totalCount={allIntegrations.length}
     viewAllHref="/projects"
   />
+
+  <BlogSection client:visible data={blogData} />
 
   <TestimonialsSection
     client:visible

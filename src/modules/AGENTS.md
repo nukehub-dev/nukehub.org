@@ -27,8 +27,13 @@ their own islands.
 ### Module map
 
 - `home/` — landing page islands: hero, stats, projects grid, integrations,
+  blog posts (NukeBlog RSS, fetched client-side on view; renders skeletons
+  while loading and hides entirely when the feed is unreachable),
   testimonials carousel, mission strip, CTA. `components/three/` holds the
-  WebGL hero background. `data/` holds page-local data; `types/` local types.
+  per-section WebGL backgrounds: each `*Canvas.tsx` is a lazy-loading wrapper
+  (visibility anchor, delayed unmount, reduced-motion/WebGL static fallback)
+  around a scene; BlogSection's is `BlogCanvas`/`BlogScene` (signal-waves
+  shader). `data/` holds page-local data; `types/` local types.
 - `projects/` — per-project submodules render the marketing page for each
   flagship product:
   - `nuke-lab/components/NukelabPage.tsx`

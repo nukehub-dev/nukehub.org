@@ -27,12 +27,19 @@ All files under `src/lib/**`.
   `--background` and renders a data-URI SVG tab icon.
 - `icons.ts` — icon-name → lucide component map for dynamic icons.
 - `loadYaml.ts` — YAML loader helper used by data layers.
+- `blog.ts` — NukeBlog RSS helpers: `BLOG_URL` (from `PUBLIC_BLOG_URL`,
+  default `https://blog.nukehub.org`) and `fetchLatestBlogPosts(limit)`,
+  a browser-only fetch of `{BLOG_URL}/rss.xml` parsed with `DOMParser`.
+  Requires the blog to send `Access-Control-Allow-Origin`; any failure
+  (offline, CORS, timeout, malformed feed) resolves to `[]`.
 - `github.ts` — GitHub API helpers (used by `scripts/sync-github-stats.mjs`
   and the GitHub stats overlay path).
 - `projects.ts` — project collection helpers and derived data.
 - `og.tsx` — Satori JSX factory used by `src/pages/og/*.png.ts` to compose
   OG cards. Keep it side-effect free and synchronous per Satori's contract.
 - `useCommandPalette.ts` — command palette state/hook.
+- `useBlogPosts.ts` — hook wrapping `fetchLatestBlogPosts` with
+  `{ posts, loading }` state for the home BlogSection island.
 - `useCountUp.ts` — animated number counting hook.
 - `usePrefersReducedMotion.ts` — `prefers-reduced-motion` reader; all motion
   islands must respect it.
