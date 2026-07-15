@@ -24,6 +24,7 @@ import {
   Cpu,
   Server,
   Rocket,
+  Rss,
   Kanban,
   GitCommit,
   ArrowRight,
@@ -98,6 +99,12 @@ const staticNavItems: NavItem[] = [
         title: "NukeTalk",
         icon: MessageSquare,
         url: "https://talk.nukehub.org",
+        newpage: true,
+      },
+      {
+        title: "NukeBlog",
+        icon: Rss,
+        url: "https://blog.nukehub.org",
         newpage: true,
       },
       {
