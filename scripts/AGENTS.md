@@ -36,6 +36,13 @@ All files under `scripts/**`.
     Override by deleting `github-stats.json`.
 - `optimize-images.js` — Image compression pass over `public/assets/images/`
   using `sharp` + `glob` (dev dependencies). Run manually; not wired into CI.
+- `generate-icons.mjs` — Regenerates the PWA PNG icons (`public/icon-*.png`,
+  `apple-touch-icon.png`) from the SVG masters in `public/` using `sharp`.
+  Artwork is scaled to 76% of the canvas to stay inside the maskable safe
+  zone (80% diameter circle) so Android launcher masks don't crop the logo.
+  Output is palette PNG (`quality: 100, dither: 0`) — lossless for the
+  flat-color artwork, so `optimize-images.js` (lossy q80) must not be run on
+  the icons. Run `node scripts/generate-icons.mjs` after any logo change.
 - `inject-sw-cache.js` — Generates `public/sw.js` from `public/sw.js.tpl`,
   injecting a per-build cache name. Wired as `npm run prebuild` so every
   production build gets a fresh service-worker cache key. The generated

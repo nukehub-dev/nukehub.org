@@ -52,8 +52,10 @@ they are byte-for-byte copied into `dist/`.
   `src/lib/favicon.ts`.
 - `manifest.json` — PWA manifest (paired with `apple-touch-icon.png`,
   `icon-192.png`, `icon-512.png`, and `icon-monochrome-{192,512}.png`).
-- `icon-monochrome.svg` — white silhouette of the logo used to generate the
+- `icon-monochrome.svg` — white silhouette of the logo; master for the
   `purpose: "monochrome"` PNGs.
+- PNG icons (`icon-*.png`, `apple-touch-icon.png`) are **generated** from
+  `favicon.svg` / `icon-monochrome.svg` by `scripts/generate-icons.mjs`.
 - `robots.txt` — crawl directives.
 - `fonts/Geist-Variable.woff2` — the Geist variable font, preloaded in
   BaseLayout.
