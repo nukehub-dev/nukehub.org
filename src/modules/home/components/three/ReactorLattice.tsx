@@ -31,8 +31,9 @@ function getCladdingTexture(): THREE.CanvasTexture {
   ctx.fillStyle = "#808080";
   ctx.fillRect(0, 0, 128, 1024);
 
+  const rand = mulberry32(31337);
   for (let x = 0; x < 128; x += 2) {
-    const variation = Math.sin(x * 0.35) * 28 + (Math.random() - 0.5) * 14;
+    const variation = Math.sin(x * 0.35) * 28 + (rand() - 0.5) * 14;
     const v = Math.round(128 + variation);
     ctx.fillStyle = `rgb(${v},${v},${v})`;
     ctx.fillRect(x, 0, 2, 1024);
