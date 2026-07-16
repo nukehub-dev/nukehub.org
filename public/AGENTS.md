@@ -40,8 +40,9 @@ they are byte-for-byte copied into `dist/`.
     annotates the response with `Vary: Accept`.
   - Local preview: `npm run build && npx wrangler pages dev dist`.
 - `_headers` — security header set. CSP allow-lists Turnstile, Keycloak, the
-  contact API, Gravatar, and the Cloudflare Analytics beacon. If you add a new
-  third-party service, add its origin to the matching `*-src` directive.
+  contact API, the NukeBlog RSS origin (`connect-src`), Gravatar, and the
+  Cloudflare Analytics beacon. If you add a new third-party service, add its
+  origin to the matching `*-src` directive.
 - `silent-check-sso.html` — raw Keycloak iframe target. **Exempt from the
   markdown-negotiation integration** (added to `EXACT_SKIP` there). Do not
   wrap in BaseLayout. `_headers` sets `X-Frame-Options: SAMEORIGIN` for this
