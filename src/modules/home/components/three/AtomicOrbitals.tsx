@@ -3,6 +3,18 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { getPrimaryColor } from "@lib/themeColors";
 
+// Deterministic PRNG — keeps particle layouts pure and render-safe
+function mulberry32(seed: number) {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /* ------------------------------------------------------------------ */
 // Drifting particle field
 /* ------------------------------------------------------------------ */
@@ -14,28 +26,37 @@ function ParticleField({
   isLight: boolean;
 }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
+  const simRef = useRef<{
+    positions: Float32Array;
+    velocities: Float32Array;
+    phases: Float32Array;
+  } | null>(null);
   const count = 80;
 
-  const { positions, velocities, phases } = useMemo(() => {
+  // Per-frame simulation state is mutable, so it lives in a ref, not a memo
+  useEffect(() => {
+    const rand = mulberry32(0x9e3779b9);
     const pos = new Float32Array(count * 3);
     const vel = new Float32Array(count * 3);
     const ph = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 14;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 8;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 4;
-      vel[i * 3] = (Math.random() - 0.5) * 0.004;
-      vel[i * 3 + 1] = (Math.random() - 0.5) * 0.003;
-      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.001;
-      ph[i] = Math.random() * Math.PI * 2;
+      pos[i * 3] = (rand() - 0.5) * 14;
+      pos[i * 3 + 1] = (rand() - 0.5) * 8;
+      pos[i * 3 + 2] = (rand() - 0.5) * 4;
+      vel[i * 3] = (rand() - 0.5) * 0.004;
+      vel[i * 3 + 1] = (rand() - 0.5) * 0.003;
+      vel[i * 3 + 2] = (rand() - 0.5) * 0.001;
+      ph[i] = rand() * Math.PI * 2;
     }
-    return { positions: pos, velocities: vel, phases: ph };
+    simRef.current = { positions: pos, velocities: vel, phases: ph };
   }, []);
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    const sim = simRef.current;
+    if (!meshRef.current || !sim) return;
+    const { positions, velocities, phases } = sim;
     const t = state.clock.elapsedTime;
 
     for (let i = 0; i < count; i++) {

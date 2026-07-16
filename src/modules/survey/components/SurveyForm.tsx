@@ -43,6 +43,57 @@ function normalizeOption(
   return typeof option === "string" ? { label: option, value: option } : option;
 }
 
+interface SurveyDraft {
+  surveyTitle?: unknown;
+  values?: unknown;
+  currentPage?: unknown;
+}
+
+interface DraftSnapshot {
+  draft: SurveyDraft | null;
+  writable: boolean;
+}
+
+// Draft snapshots are frozen on first read so the persist effect (which
+// rewrites storage on mount) cannot clobber the draft being restored.
+const draftSnapshots = new Map<string, DraftSnapshot>();
+
+function getDraftSnapshot(storageKey: string): DraftSnapshot {
+  const cached = draftSnapshots.get(storageKey);
+  if (cached) return cached;
+  let draft: SurveyDraft | null = null;
+  let writable = false;
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (raw) {
+      const parsed: unknown = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        draft = parsed as SurveyDraft;
+      }
+    }
+    // Probe writability without touching the stored draft
+    localStorage.setItem("nukehub-storage-probe", "1");
+    localStorage.removeItem("nukehub-storage-probe");
+    writable = true;
+  } catch {
+    // Ignore corrupt or unavailable storage
+  }
+  const snapshot: DraftSnapshot = { draft, writable };
+  draftSnapshots.set(storageKey, snapshot);
+  return snapshot;
+}
+
+function subscribeToDraft() {
+  // Drafts are written by this tab only; nothing external to subscribe to.
+  return () => {};
+}
+
+const SERVER_DRAFT_SNAPSHOT: DraftSnapshot = { draft: null, writable: false };
+
+function getServerDraftSnapshot(): DraftSnapshot {
+  return SERVER_DRAFT_SNAPSHOT;
+}
+
 export function SurveyForm({ survey }: SurveyFormProps) {
   const pages = React.useMemo<SurveyPage[]>(() => {
     if (survey.pages && survey.pages.length > 0) return survey.pages;
@@ -70,34 +121,39 @@ export function SurveyForm({ survey }: SurveyFormProps) {
   const [status, setStatus] = React.useState<"idle" | "submitting" | "success">(
     "idle",
   );
-  const [lastSavedAt, setLastSavedAt] = React.useState<Date | null>(null);
 
   const storageKey = React.useMemo(
     () => `nukehub-survey-${survey.slug || survey.title}`,
     [survey.slug, survey.title],
   );
 
-  // Restore saved draft on mount
-  React.useEffect(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (parsed.surveyTitle !== survey.title) return;
-      if (parsed.values && typeof parsed.values === "object") {
-        setValues(parsed.values);
-      }
-      if (
-        typeof parsed.currentPage === "number" &&
-        parsed.currentPage >= 0 &&
-        parsed.currentPage < pages.length
-      ) {
-        setCurrentPage(parsed.currentPage);
-      }
-    } catch {
-      // Ignore corrupt or unavailable storage
+  // Restore the saved draft after hydration: the server snapshot keeps the
+  // prerendered HTML consistent, then the draft applies during render.
+  const { draft, writable } = React.useSyncExternalStore(
+    subscribeToDraft,
+    () => getDraftSnapshot(storageKey),
+    getServerDraftSnapshot,
+  );
+  const [restoredDraftKey, setRestoredDraftKey] = React.useState<string | null>(
+    null,
+  );
+  if (
+    draft &&
+    restoredDraftKey !== storageKey &&
+    draft.surveyTitle === survey.title
+  ) {
+    setRestoredDraftKey(storageKey);
+    if (draft.values && typeof draft.values === "object") {
+      setValues(draft.values as SurveyResponse);
     }
-  }, [storageKey, survey.title, pages.length]);
+    if (
+      typeof draft.currentPage === "number" &&
+      draft.currentPage >= 0 &&
+      draft.currentPage < pages.length
+    ) {
+      setCurrentPage(draft.currentPage);
+    }
+  }
 
   // Persist draft as the user answers / navigates
   React.useEffect(() => {
@@ -111,7 +167,6 @@ export function SurveyForm({ survey }: SurveyFormProps) {
           savedAt: new Date().toISOString(),
         }),
       );
-      setLastSavedAt(new Date());
     } catch {
       // Ignore storage errors (e.g. quota exceeded, private mode)
     }
@@ -141,7 +196,6 @@ export function SurveyForm({ survey }: SurveyFormProps) {
     setValues({});
     setCurrentPage(0);
     setErrors({});
-    setLastSavedAt(null);
     try {
       localStorage.removeItem(storageKey);
     } catch {
@@ -393,7 +447,7 @@ export function SurveyForm({ survey }: SurveyFormProps) {
         </div>
       )}
 
-      {hasDraft && lastSavedAt && (
+      {hasDraft && writable && (
         <div className="flex items-center justify-end gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <Check className="h-3 w-3 text-primary" />

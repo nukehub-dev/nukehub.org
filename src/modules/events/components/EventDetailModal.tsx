@@ -44,9 +44,19 @@ interface EventDetailModalProps {
   onClose: () => void;
 }
 
+// "Mounted" detection without setState-in-effect: false while server-rendering
+// and during hydration, true once client-side. The portal into document.body
+// must wait for the client.
+const noopSubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const mounted = React.useSyncExternalStore(
+    noopSubscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
 
   React.useEffect(() => {
     if (!mounted || !event) return;

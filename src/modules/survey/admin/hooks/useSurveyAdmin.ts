@@ -9,59 +9,68 @@ interface AsyncState<T> {
   refresh: () => void;
 }
 
+function areDepsEqual(
+  a: React.DependencyList,
+  b: React.DependencyList,
+): boolean {
+  return a.length === b.length && a.every((value, i) => Object.is(value, b[i]));
+}
+
 function useAsyncState<T>(
   fetcher: (signal: AbortSignal) => Promise<T>,
   deps: React.DependencyList,
 ): AsyncState<T> {
+  const [refreshKey, setRefreshKey] = React.useState(0);
   const [state, setState] = React.useState<{
     data: T | null;
     error: string | null;
-    isLoading: boolean;
-    refreshKey: number;
+    settledFor: { deps: React.DependencyList; refreshKey: number } | null;
   }>({
     data: null,
     error: null,
-    isLoading: true,
-    refreshKey: 0,
+    settledFor: null,
   });
+
+  // A request is in flight until it settles for the current deps + refreshKey.
+  const isLoading =
+    state.settledFor === null ||
+    state.settledFor.refreshKey !== refreshKey ||
+    !areDepsEqual(state.settledFor.deps, deps);
 
   React.useEffect(() => {
     const controller = new AbortController();
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     fetcher(controller.signal)
       .then((result) => {
         if (controller.signal.aborted) return;
-        setState((prev) => ({
-          ...prev,
+        setState({
           data: result,
           error: null,
-          isLoading: false,
-        }));
+          settledFor: { deps, refreshKey },
+        });
       })
       .catch((err) => {
         if (controller.signal.aborted) return;
-        setState((prev) => ({
-          ...prev,
+        setState({
           data: null,
           error: err instanceof Error ? err.message : String(err),
-          isLoading: false,
-        }));
+          settledFor: { deps, refreshKey },
+        });
       });
 
     return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, state.refreshKey]);
+  }, [...deps, refreshKey]);
 
   const refresh = React.useCallback(
-    () => setState((prev) => ({ ...prev, refreshKey: prev.refreshKey + 1 })),
+    () => setRefreshKey((prev) => prev + 1),
     [],
   );
 
   return {
     data: state.data,
-    error: state.error,
-    isLoading: state.isLoading,
+    error: isLoading ? null : state.error,
+    isLoading,
     refresh,
   };
 }

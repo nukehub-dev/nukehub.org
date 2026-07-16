@@ -21,6 +21,16 @@ function createHexGeometry(radius: number) {
 
 const sharedHexGeo = createHexGeometry(0.22);
 
+// Deterministic PRNG so the hex grid is stable across renders and hydration.
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /* ------------------------------------------------------------------ */
 // Hex grid — single useFrame updates all cells
 /* ------------------------------------------------------------------ */
@@ -54,6 +64,7 @@ function HexGrid({
     const h = radius * 2;
     const rows = 8;
     const cols = 10;
+    const rand = mulberry32(2024);
 
     for (let row = -rows; row <= rows; row++) {
       for (let col = -cols; col <= cols; col++) {
@@ -67,7 +78,7 @@ function HexGrid({
         if (Math.abs(x) > 3.5 && Math.abs(y) > 2.0) continue;
 
         const distFade = 1 - smoothstep(2, 5, dist);
-        const isActive = Math.random() > 0.92;
+        const isActive = rand() > 0.92;
 
         const baseOpacity = isActive
           ? (isLight ? 0.06 : 0.03) * distFade
@@ -77,7 +88,7 @@ function HexGrid({
           position: [x, y, 0],
           distFromCenter: dist,
           baseOpacity: Math.max(baseOpacity, isLight ? 0.015 : 0.008),
-          pulsePhase: Math.random() * Math.PI * 2,
+          pulsePhase: rand() * Math.PI * 2,
           isActive,
         });
       }

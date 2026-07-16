@@ -26,14 +26,16 @@ export function StatsPanel({ stats }: StatsPanelProps) {
     [stats.daily],
   );
 
+  // Read the clock once on mount so the 7-day window stays stable across
+  // re-renders instead of drifting on every render pass.
+  const [now] = React.useState(() => Date.now());
+
   const newLast7Days = React.useMemo(() => {
-    const cutoff = new Date(Date.now() - 7 * 86400000)
-      .toISOString()
-      .slice(0, 10);
+    const cutoff = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
     return Object.entries(stats.daily)
       .filter(([day]) => day >= cutoff)
       .reduce((sum, [, count]) => sum + count, 0);
-  }, [stats.daily]);
+  }, [stats.daily, now]);
 
   const bestDay = React.useMemo(
     () => dailyData.reduce((max, d) => Math.max(max, d.count), 0),

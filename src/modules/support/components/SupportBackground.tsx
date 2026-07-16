@@ -1,6 +1,12 @@
 "use client";
 
-import { useRef, useMemo, useEffect, useState } from "react";
+import {
+  useRef,
+  useMemo,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { getPrimaryColor } from "@lib/themeColors";
@@ -249,12 +255,35 @@ function AuroraPlane({
 }
 
 /* ======================================================================== */
+// Reduced-motion media query (SSR-safe via server snapshot)
+/* ======================================================================== */
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeReducedMotion(callback: () => void) {
+  const mq = window.matchMedia(REDUCED_MOTION_QUERY);
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+
+function getReducedMotionSnapshot() {
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
+
+function getReducedMotionServerSnapshot() {
+  return false;
+}
+
+/* ======================================================================== */
 // Main export
 /* ======================================================================== */
 export function SupportBackground() {
   const [color, setColor] = useState(() => getPrimaryColor());
   const [isLight, setIsLight] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot,
+  );
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const webglSupported = useWebGL();
@@ -273,12 +302,6 @@ export function SupportBackground() {
       attributes: true,
       attributeFilter: ["data-accent", "data-theme"],
     });
-
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-    const handleMotion = (e: MediaQueryListEvent) =>
-      setReducedMotion(e.matches);
-    mq.addEventListener("change", handleMotion);
 
     // IntersectionObserver: pause rendering when not in viewport
     const io = new IntersectionObserver(
@@ -304,7 +327,6 @@ export function SupportBackground() {
 
     return () => {
       observer.disconnect();
-      mq.removeEventListener("change", handleMotion);
       io.disconnect();
       document.removeEventListener("visibilitychange", handleVisibility);
     };

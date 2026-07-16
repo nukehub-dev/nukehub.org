@@ -1,7 +1,20 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useAccentColor } from "./useAccentColor";
+
+/* -------------------------------------------------------------------------- */
+/*  Deterministic PRNG — seeded so scene data stays pure and SSR-stable       */
+/* -------------------------------------------------------------------------- */
+
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 /* -------------------------------------------------------------------------- */
 /*  Procedural cladding texture — subtle axial ridges for zircaloy realism    */
@@ -543,22 +556,23 @@ function HeatShimmer({
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const particles = useMemo(() => {
+    const rand = mulberry32(4242);
     return Array.from({ length: count }, () => {
-      const base =
-        hotPositions[Math.floor(Math.random() * hotPositions.length)];
+      const base = hotPositions[Math.floor(rand() * hotPositions.length)];
       return {
         baseX: base[0],
         baseZ: base[2],
-        offsetX: (Math.random() - 0.5) * 0.4,
-        offsetZ: (Math.random() - 0.5) * 0.4,
-        speed: 0.3 + Math.random() * 0.5,
-        phase: Math.random() * Math.PI * 2,
-        maxAge: 1.5 + Math.random() * 1.5,
+        offsetX: (rand() - 0.5) * 0.4,
+        offsetZ: (rand() - 0.5) * 0.4,
+        speed: 0.3 + rand() * 0.5,
+        phase: rand() * Math.PI * 2,
+        maxAge: 1.5 + rand() * 1.5,
+        initialAge: rand() * 2,
       };
     });
   }, [count, hotPositions]);
 
-  const ages = useRef<number[]>(particles.map(() => Math.random() * 2));
+  const ages = useRef<number[]>(particles.map((p) => p.initialAge));
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
@@ -753,9 +767,17 @@ interface NeutronProps {
 function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
   const meshRef = useRef<THREE.Mesh>(null);
 
+  const initialTo = useMemo(
+    () =>
+      adj[startIdx][
+        Math.floor(mulberry32(startIdx + 1)() * adj[startIdx].length)
+      ],
+    [adj, startIdx],
+  );
+
   const stateRef = useRef({
     from: startIdx,
-    to: adj[startIdx][Math.floor(Math.random() * adj[startIdx].length)],
+    to: initialTo,
     progress: 0,
   });
 
@@ -764,13 +786,8 @@ function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
     [cells, startIdx],
   );
   const toPos = useMemo(
-    () =>
-      new THREE.Vector3(
-        cells[stateRef.current.to].x,
-        0,
-        cells[stateRef.current.to].z,
-      ),
-    [cells],
+    () => new THREE.Vector3(cells[initialTo].x, 0, cells[initialTo].z),
+    [cells, initialTo],
   );
 
   const currentFrom = useRef(fromPos.clone());
@@ -793,11 +810,17 @@ function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
     });
     return new THREE.Line(geo, mat);
   }, [accent]);
-  const trailGeo = trailLine.geometry as THREE.BufferGeometry;
   const trailPoints = useRef<THREE.Vector3[]>([]);
+  const trailLineRef = useRef<THREE.Line | null>(null);
+
+  // Mirror the memoized line into a ref so useFrame may mutate its geometry
+  useEffect(() => {
+    trailLineRef.current = trailLine;
+  }, [trailLine]);
 
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
+    const line = trailLineRef.current;
+    if (!meshRef.current || !line) return;
 
     stateRef.current.progress += delta * speed * 1.8;
 
@@ -832,6 +855,7 @@ function Neutron({ cells, adj, startIdx, accent, speed }: NeutronProps) {
     trailPoints.current.push(pos.clone());
     if (trailPoints.current.length > maxTrail) trailPoints.current.shift();
 
+    const trailGeo = line.geometry;
     const arr = trailGeo.attributes.position.array as Float32Array;
     for (let i = 0; i < maxTrail; i++) {
       const tp = trailPoints.current[i];
@@ -882,13 +906,15 @@ function NeutronFlux({
   accent: string;
 }) {
   const neutrons = useMemo(() => {
+    const rand = mulberry32(9001);
     const centerIdx = cells.findIndex((c) => c.dist === 0);
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       idx:
         centerIdx >= 0 && i === 0
           ? centerIdx
-          : Math.floor(Math.random() * cells.length),
+          : Math.floor(rand() * cells.length),
+      speed: 0.3 + rand() * 0.2,
     }));
   }, [cells, count]);
 
@@ -901,7 +927,7 @@ function NeutronFlux({
           adj={adj}
           startIdx={n.idx}
           accent={accent}
-          speed={0.3 + Math.random() * 0.2}
+          speed={n.speed}
         />
       ))}
     </group>
@@ -926,7 +952,7 @@ function FissionSparks({ accent }: { accent: string }) {
   const matRef = useRef<THREE.MeshBasicMaterial | null>(null);
 
   // Shared geometry & material to avoid recreating per spark
-  useMemo(() => {
+  useEffect(() => {
     geoRef.current = new THREE.SphereGeometry(1, 6, 6);
     matRef.current = new THREE.MeshBasicMaterial({
       color: "#ffffff",
@@ -1000,12 +1026,13 @@ function CoolantFlow({ count }: { count: number }) {
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const particles = useMemo(() => {
+    const rand = mulberry32(555);
     return Array.from({ length: count }, () => ({
-      angle: Math.random() * Math.PI * 2,
-      radius: 0.2 + Math.random() * 1.2,
-      speed: 0.4 + Math.random() * 0.6,
-      offset: Math.random() * 2,
-      size: 0.006 + Math.random() * 0.01,
+      angle: rand() * Math.PI * 2,
+      radius: 0.2 + rand() * 1.2,
+      speed: 0.4 + rand() * 0.6,
+      offset: rand() * 2,
+      size: 0.006 + rand() * 0.01,
     }));
   }, [count]);
 
@@ -1058,12 +1085,13 @@ function AmbientParticles({
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const particles = useMemo(() => {
+    const rand = mulberry32(2024);
     return Array.from({ length: count }, () => ({
-      x: 1.5 + (Math.random() - 0.5) * 5,
-      y: Math.random() * 4 - 0.3,
-      z: (Math.random() - 0.5) * 5,
-      speed: 0.03 + Math.random() * 0.06,
-      phase: Math.random() * Math.PI * 2,
+      x: 1.5 + (rand() - 0.5) * 5,
+      y: rand() * 4 - 0.3,
+      z: (rand() - 0.5) * 5,
+      speed: 0.03 + rand() * 0.06,
+      phase: rand() * Math.PI * 2,
     }));
   }, [count]);
 
@@ -1372,13 +1400,14 @@ function CoolantBubbles({
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const particles = useMemo(() => {
+    const rand = mulberry32(808);
     return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * (assemblyRadius + 0.5) * 2,
-      z: (Math.random() - 0.5) * (assemblyRadius + 0.5) * 2,
-      speed: 0.2 + Math.random() * 0.4,
-      offset: Math.random() * 3,
-      size: 0.006 + Math.random() * 0.014,
-      wobble: Math.random() * Math.PI * 2,
+      x: (rand() - 0.5) * (assemblyRadius + 0.5) * 2,
+      z: (rand() - 0.5) * (assemblyRadius + 0.5) * 2,
+      speed: 0.2 + rand() * 0.4,
+      offset: rand() * 3,
+      size: 0.006 + rand() * 0.014,
+      wobble: rand() * Math.PI * 2,
     }));
   }, [count, assemblyRadius]);
 

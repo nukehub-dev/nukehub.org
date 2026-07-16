@@ -1,4 +1,10 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { getPrimaryColor } from "@lib/themeColors";
 import { useWebGL } from "@lib/useWebGL";
 import { useCanvasVisibility, useDelayedUnmount } from "./useCanvasVisibility";
@@ -7,21 +13,33 @@ const NucleusScene = lazy(() =>
   import("./NucleusScene").then((mod) => ({ default: mod.NucleusScene })),
 );
 
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
+function subscribePrimaryColor(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-accent", "data-theme"],
+  });
+  return () => observer.disconnect();
+}
+
+function subscribeReducedMotion(onStoreChange: () => void) {
+  const mq = window.matchMedia(reducedMotionQuery);
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getReducedMotion() {
+  return window.matchMedia(reducedMotionQuery).matches;
+}
+
 export function StaticFallback() {
-  const [primary, setPrimary] = useState("#f37524");
-
-  useEffect(() => {
-    setPrimary(getPrimaryColor());
-
-    const observer = new MutationObserver(() => {
-      setPrimary(getPrimaryColor());
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-accent", "data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
+  const primary = useSyncExternalStore(
+    subscribePrimaryColor,
+    getPrimaryColor,
+    () => "#f37524",
+  );
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -50,7 +68,11 @@ export function StaticFallback() {
 }
 
 export function HeroCanvas() {
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    () => false,
+  );
   // Default to mobile so the heavy Three.js chunk is not requested on phones.
   // The check is confirmed client-side after hydration.
   const [isMobile, setIsMobile] = useState(true);
@@ -61,14 +83,6 @@ export function HeroCanvas() {
   const webglSupported = useWebGL();
 
   useEffect(() => {
-    // Check prefers-reduced-motion
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-
-    const handleChange = (e: MediaQueryListEvent) =>
-      setReducedMotion(e.matches);
-    mq.addEventListener("change", handleChange);
-
     // Check mobile (reduce particles)
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
@@ -77,7 +91,6 @@ export function HeroCanvas() {
     window.addEventListener("resize", checkMobile, { passive: true });
 
     return () => {
-      mq.removeEventListener("change", handleChange);
       window.removeEventListener("resize", checkMobile);
     };
   }, []);

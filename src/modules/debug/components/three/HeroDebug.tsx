@@ -1,4 +1,10 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { getPrimaryColor } from "@lib/themeColors";
 import { DebugCanvasShell } from "../DebugCanvasShell";
 
@@ -8,10 +14,27 @@ const NucleusScene = lazy(() =>
   })),
 );
 
+// Notify React when the theme/accent attributes on <html> change so the
+// primary color snapshot is re-read.
+function subscribePrimaryColor(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-accent", "data-theme"],
+  });
+  return () => observer.disconnect();
+}
+
+const getServerPrimaryColor = () => "#f37524";
+
 export function HeroDebug() {
   const [isMobile, setIsMobile] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [primary, setPrimary] = useState("#f37524");
+  const primary = useSyncExternalStore(
+    subscribePrimaryColor,
+    getPrimaryColor,
+    getServerPrimaryColor,
+  );
 
   useEffect(() => {
     const checkMobile = () => {
@@ -20,18 +43,8 @@ export function HeroDebug() {
     checkMobile();
     window.addEventListener("resize", checkMobile, { passive: true });
 
-    setPrimary(getPrimaryColor());
-    const observer = new MutationObserver(() => {
-      setPrimary(getPrimaryColor());
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-accent", "data-theme"],
-    });
-
     return () => {
       window.removeEventListener("resize", checkMobile);
-      observer.disconnect();
     };
   }, []);
 

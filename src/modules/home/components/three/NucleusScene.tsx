@@ -53,6 +53,7 @@ function CameraController({
     const orbitZ = 5.0 + Math.sin(t * 0.018 + 1.0) * 0.7; // 4.3 to 5.7
     const orbitY = 0.35 + Math.sin(t * 0.015) * 0.25; // 0.1 to 0.6
 
+    const { camera } = state;
     const lerpFactor = 1 - Math.exp(-delta * 0.8);
     camera.position.x += (orbitX - camera.position.x) * lerpFactor;
     camera.position.z += (orbitZ - camera.position.z) * lerpFactor;

@@ -24,8 +24,8 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
 - ESLint flat config (`eslint.config.js`); `.wrangler/**` and `dist/**` are
   ignored. `no-undef` is off for `.ts/.tsx/.astro` because TS already covers it.
   The eslint-plugin-react-hooks v7 compiler-powered rules (`purity`,
-  `set-state-in-effect`, `immutability`, `refs`, `static-components`) are off
-  pending a dedicated cleanup pass.
+  `set-state-in-effect`, `immutability`, `refs`, `static-components`) are
+  enabled and clean — keep new code compliant.
 - Prettier with `prettier-plugin-astro`; formats
   `src/**/*.{ts,tsx,astro,css,scss,json,md,yml,yaml}` and root configs.
 

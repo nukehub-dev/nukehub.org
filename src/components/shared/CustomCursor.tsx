@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 const R = 0.5;
 
+function getCursorSupportSnapshot() {
+  return (
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 export function CustomCursor() {
-  const [visible, setVisible] = useState(false);
+  const visible = useSyncExternalStore(
+    () => () => {},
+    getCursorSupportSnapshot,
+    () => false,
+  );
   const [hovering, setHovering] = useState(false);
   const [clicking, setClicking] = useState(false);
   const [inViewport, setInViewport] = useState(true);
@@ -20,16 +31,8 @@ export function CustomCursor() {
   const rafRef = useRef(0);
 
   useEffect(() => {
-    const hasFinePointer = window.matchMedia(
-      "(hover: hover) and (pointer: fine)",
-    ).matches;
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    if (!visible) return;
 
-    if (!hasFinePointer || prefersReducedMotion) return;
-
-    setVisible(true);
     document.body.classList.add("custom-cursor-active");
 
     let active = true;
@@ -109,7 +112,7 @@ export function CustomCursor() {
       );
       document.body.classList.remove("custom-cursor-active");
     };
-  }, []);
+  }, [visible]);
 
   if (!visible) return null;
 

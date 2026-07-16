@@ -8,6 +8,18 @@ import {
 } from "@lib/theme";
 import { Tooltip } from "@components/ui/Tooltip";
 
+/* Same-tab change notification; `storage` events only fire across tabs */
+const ACCENT_CHANGE_EVENT = "accent-change";
+
+function subscribeAccent(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(ACCENT_CHANGE_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(ACCENT_CHANGE_EVENT, callback);
+  };
+}
+
 export interface ColorPickerProps {
   className?: string;
   showLabels?: boolean;
@@ -22,27 +34,17 @@ export function ColorPicker({
   className,
   showLabels = false,
 }: ColorPickerProps) {
-  const [accent, setAccentState] = React.useState<AccentColor>("orange");
-
-  // Initialise from DOM / localStorage on mount
-  React.useEffect(() => {
-    setAccentState(getAccentColor());
-  }, []);
-
-  // Sync across browser tabs
-  React.useEffect(() => {
-    const handler = (e: StorageEvent) => {
-      if (e.key === "accent") {
-        setAccentState(getAccentColor());
-      }
-    };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
+  // Server snapshot matches the SSR default; the stored value is picked up
+  // after hydration.
+  const accent = React.useSyncExternalStore<AccentColor>(
+    subscribeAccent,
+    getAccentColor,
+    () => "orange",
+  );
 
   const handleSelect = (color: AccentColor) => {
-    setAccentState(color);
     setAccentColor(color);
+    window.dispatchEvent(new Event(ACCENT_CHANGE_EVENT));
   };
 
   return (

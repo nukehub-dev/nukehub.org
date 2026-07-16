@@ -1,24 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
+
+function getReadySnapshot() {
+  return (
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    document.readyState === "complete"
+  );
+}
 
 export function PageLoader() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isFading, setIsFading] = useState(false);
+  const [loadFaded, setLoadFaded] = useState(false);
+  const readyImmediately = useSyncExternalStore(
+    () => () => {},
+    getReadySnapshot,
+    () => false,
+  );
+  const isFading = loadFaded || readyImmediately;
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (prefersReducedMotion || document.readyState === "complete") {
-      setIsFading(true);
-      setTimeout(() => setIsLoading(false), 300);
-      return;
+    if (readyImmediately) {
+      const timer = setTimeout(() => setIsLoading(false), 300);
+      return () => clearTimeout(timer);
     }
 
     const onLoad = () => {
       setTimeout(() => {
-        setIsFading(true);
+        setLoadFaded(true);
         setTimeout(() => setIsLoading(false), 300);
       }, 150);
     };
@@ -29,7 +38,7 @@ export function PageLoader() {
       window.removeEventListener("load", onLoad);
       clearTimeout(timer);
     };
-  }, []);
+  }, [readyImmediately]);
 
   if (!isLoading) return null;
 

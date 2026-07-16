@@ -211,17 +211,27 @@ export function ContactForm({
   });
   const [additionalFieldValues, setAdditionalFieldValues] = React.useState<
     Record<string, string>
-  >({});
+  >(defaultAdditionalValues);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [status, setStatus] = React.useState<
     "idle" | "submitting" | "success" | "error"
   >("idle");
   const [turnstileToken, setTurnstileToken] = React.useState("");
 
-  React.useEffect(() => {
+  // Adjust form state during render when the default props change (e.g. the
+  // modal reopens with a different inquiry type).
+  const [prevDefaults, setPrevDefaults] = React.useState({
+    defaultInquiryType,
+    defaultAdditionalValues,
+  });
+  if (
+    prevDefaults.defaultInquiryType !== defaultInquiryType ||
+    prevDefaults.defaultAdditionalValues !== defaultAdditionalValues
+  ) {
+    setPrevDefaults({ defaultInquiryType, defaultAdditionalValues });
     setFormData((prev) => ({ ...prev, inquiryType: defaultInquiryType }));
     setAdditionalFieldValues(defaultAdditionalValues);
-  }, [defaultInquiryType, defaultAdditionalValues]);
+  }
 
   const currentAdditionalFields =
     getAdditionalFields(tierOptions)[formData.inquiryType] || [];

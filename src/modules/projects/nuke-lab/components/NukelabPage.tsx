@@ -100,16 +100,14 @@ function resolveIcon(name: string) {
 }
 
 function AnimatedCounter({ value, label }: { value: string; label: string }) {
-  const [displayValue, setDisplayValue] = useState("0");
+  const [animatedValue, setAnimatedValue] = useState("0");
   const numericPart = parseInt(value.replace(/\D/g, ""), 10);
   const suffix = value.replace(/[0-9]/g, "");
   const shouldReduceMotion = useReducedMotion();
+  const displayValue = shouldReduceMotion ? value : animatedValue;
 
   useEffect(() => {
-    if (shouldReduceMotion) {
-      setDisplayValue(value);
-      return;
-    }
+    if (shouldReduceMotion) return;
     let start = 0;
     const duration = 1500;
     const startTime = Date.now();
@@ -119,7 +117,7 @@ function AnimatedCounter({ value, label }: { value: string; label: string }) {
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       start = Math.floor(eased * numericPart);
-      setDisplayValue(start + suffix);
+      setAnimatedValue(start + suffix);
       if (progress < 1) requestAnimationFrame(animate);
     };
 
@@ -137,7 +135,7 @@ function AnimatedCounter({ value, label }: { value: string; label: string }) {
     if (el) observer.observe(el);
 
     return () => observer.disconnect();
-  }, [numericPart, suffix, label, shouldReduceMotion, value]);
+  }, [numericPart, suffix, label, shouldReduceMotion]);
 
   return (
     <motion.div
@@ -173,7 +171,7 @@ export function NukelabPage({
   description: string;
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const BadgeIcon = resolveIcon(data.hero.badge.icon);
+  const BadgeIcon = iconComponents[data.hero.badge.icon] || Server;
 
   return (
     <div className="relative">

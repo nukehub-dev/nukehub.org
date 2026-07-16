@@ -2,25 +2,23 @@
 
 import * as React from "react";
 
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribe(onStoreChange: () => void) {
+  const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
+  mediaQuery.addEventListener("change", onStoreChange);
+  return () => mediaQuery.removeEventListener("change", onStoreChange);
+}
+
+function getSnapshot() {
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
+
 /**
  * Detect the user's `prefers-reduced-motion` preference.
  *
  * Defaults to `false` during SSR to avoid hydration mismatches.
  */
 export function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = React.useState(false);
-
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mediaQuery.matches);
-
-    const handleChange = (event: MediaQueryListEvent) => {
-      setReduced(event.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return reduced;
+  return React.useSyncExternalStore(subscribe, getSnapshot, () => false);
 }

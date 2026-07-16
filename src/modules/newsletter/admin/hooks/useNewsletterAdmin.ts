@@ -27,46 +27,46 @@ function useAsyncState<T>(
     data: T | null;
     error: string | null;
     isLoading: boolean;
-    refreshKey: number;
   }>({
     data: null,
     error: null,
     isLoading: true,
-    refreshKey: 0,
   });
+  const [refreshKey, setRefreshKey] = React.useState(0);
+
+  // Identity of the current request; a new key means a fetch is needed.
+  const requestKey = JSON.stringify([...deps, refreshKey]);
+
+  // Mark the request as loading during render when its key changes, so the
+  // effect below only talks to the external system (the network).
+  const [prevRequestKey, setPrevRequestKey] = React.useState(requestKey);
+  if (prevRequestKey !== requestKey) {
+    setPrevRequestKey(requestKey);
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+  }
 
   React.useEffect(() => {
     const controller = new AbortController();
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     fetcher(controller.signal)
       .then((result) => {
         if (controller.signal.aborted) return;
-        setState((prev) => ({
-          ...prev,
-          data: result,
-          error: null,
-          isLoading: false,
-        }));
+        setState({ data: result, error: null, isLoading: false });
       })
       .catch((err) => {
         if (controller.signal.aborted) return;
-        setState((prev) => ({
-          ...prev,
+        setState({
           data: null,
           error: err instanceof Error ? err.message : String(err),
           isLoading: false,
-        }));
+        });
       });
 
     return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, state.refreshKey]);
+  }, [requestKey]);
 
-  const refresh = React.useCallback(
-    () => setState((prev) => ({ ...prev, refreshKey: prev.refreshKey + 1 })),
-    [],
-  );
+  const refresh = React.useCallback(() => setRefreshKey((key) => key + 1), []);
 
   return {
     data: state.data,

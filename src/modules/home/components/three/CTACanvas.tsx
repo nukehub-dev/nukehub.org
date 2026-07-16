@@ -1,4 +1,10 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { getPrimaryColor } from "@lib/themeColors";
 import { useWebGL } from "@lib/useWebGL";
 import { useCanvasVisibility, useDelayedUnmount } from "./useCanvasVisibility";
@@ -9,18 +15,33 @@ const AtomicOrbitalsScene = lazy(() =>
   })),
 );
 
-function StaticFallback() {
-  const [primary, setPrimary] = useState("#f37524");
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 
-  useEffect(() => {
-    setPrimary(getPrimaryColor());
-    const observer = new MutationObserver(() => setPrimary(getPrimaryColor()));
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-accent", "data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
+function subscribePrimaryColor(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-accent", "data-theme"],
+  });
+  return () => observer.disconnect();
+}
+
+function subscribeReducedMotion(onStoreChange: () => void) {
+  const mq = window.matchMedia(reducedMotionQuery);
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getReducedMotion() {
+  return window.matchMedia(reducedMotionQuery).matches;
+}
+
+function StaticFallback() {
+  const primary = useSyncExternalStore(
+    subscribePrimaryColor,
+    getPrimaryColor,
+    () => "#f37524",
+  );
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -36,18 +57,23 @@ function StaticFallback() {
 
 export function CTACanvas() {
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    () => false,
+  );
   const isVisible = useCanvasVisibility("cta-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 3000);
   const webglSupported = useWebGL();
+  const showFallback = reducedMotion || !webglSupported;
+
+  // Adjust during render: the fallback branch has no anchor to observe,
+  // so there is nothing to lazy-load.
+  if (showFallback && !hasLoaded) {
+    setHasLoaded(true);
+  }
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-    const handleChange = (e: MediaQueryListEvent) =>
-      setReducedMotion(e.matches);
-    mq.addEventListener("change", handleChange);
-
     const anchor = document.getElementById("cta-canvas-anchor");
     if (anchor) {
       const observer = new IntersectionObserver(
@@ -60,14 +86,10 @@ export function CTACanvas() {
         { rootMargin: "200px" },
       );
       observer.observe(anchor);
-    } else {
-      setHasLoaded(true);
     }
-
-    return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  if (reducedMotion || !webglSupported) return <StaticFallback />;
+  if (showFallback) return <StaticFallback />;
 
   return (
     <div className="absolute inset-0" id="cta-canvas-anchor">

@@ -81,10 +81,14 @@ export function EventList({ events, onEventClick }: EventListProps) {
     return filterEvents(base, query);
   }, [categorized, activeTab, query]);
 
-  // Reset page when tab or query changes
-  React.useEffect(() => {
+  // Reset page when tab or query changes (adjust-state-during-render so the
+  // reset is applied before paint, without an effect).
+  const filterKey = `${activeTab}\n${query}`;
+  const [prevFilterKey, setPrevFilterKey] = React.useState(filterKey);
+  if (prevFilterKey !== filterKey) {
+    setPrevFilterKey(filterKey);
     setPage(1);
-  }, [activeTab, query]);
+  }
 
   const paginated = React.useMemo(
     () => pool.slice(0, page * PAGE_SIZE),

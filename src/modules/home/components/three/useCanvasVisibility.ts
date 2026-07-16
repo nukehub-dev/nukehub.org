@@ -16,18 +16,17 @@ export function useCanvasVisibility(
   anchorId: string,
   options?: { rootMargin?: string; threshold?: number },
 ): boolean {
-  const [state, setState] = useState<VisibilityState>({
-    inViewport: false,
+  const [state, setState] = useState<VisibilityState>(() => ({
+    // No anchor in the DOM (e.g. reduced-motion fallback): treat as visible.
+    inViewport:
+      typeof document !== "undefined" && !document.getElementById(anchorId),
     tabActive: true,
-  });
+  }));
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     const el = document.getElementById(anchorId);
-    if (!el) {
-      setState((s) => ({ ...s, inViewport: true }));
-      return;
-    }
+    if (!el) return;
 
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
@@ -62,13 +61,17 @@ export function useDelayedUnmount(visible: boolean, delayMs = 3000): boolean {
   const [shouldRender, setShouldRender] = useState(visible);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Adjust during render: show immediately when `visible` flips back to true.
+  if (visible && !shouldRender) {
+    setShouldRender(true);
+  }
+
   useEffect(() => {
     if (visible) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      setShouldRender(true);
     } else {
       timerRef.current = setTimeout(() => {
         setShouldRender(false);

@@ -1,4 +1,10 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { getPrimaryColor } from "@lib/themeColors";
 import { useWebGL } from "@lib/useWebGL";
 import { useCanvasVisibility, useDelayedUnmount } from "./useCanvasVisibility";
@@ -6,6 +12,20 @@ import { useCanvasVisibility, useDelayedUnmount } from "./useCanvasVisibility";
 const MilkyWayScene = lazy(() =>
   import("./MilkyWayScene").then((mod) => ({ default: mod.MilkyWayScene })),
 );
+
+function subscribeReducedMotion(onStoreChange: () => void) {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getReducedMotionSnapshot() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getReducedMotionServerSnapshot() {
+  return false;
+}
 
 function StaticFallback() {
   const [primary, setPrimary] = useState("#f37524");
@@ -50,19 +70,22 @@ function StaticFallback() {
 }
 
 export function InstitutionsCanvas() {
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(
+    // No anchor in the DOM (e.g. reduced-motion fallback): load immediately.
+    () =>
+      typeof document !== "undefined" &&
+      !document.getElementById("institutions-canvas-anchor"),
+  );
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot,
+  );
   const isVisible = useCanvasVisibility("institutions-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 3000);
   const webglSupported = useWebGL();
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-    const handleChange = (e: MediaQueryListEvent) =>
-      setReducedMotion(e.matches);
-    mq.addEventListener("change", handleChange);
-
     const anchor = document.getElementById("institutions-canvas-anchor");
     if (anchor) {
       const observer = new IntersectionObserver(
@@ -75,11 +98,7 @@ export function InstitutionsCanvas() {
         { rootMargin: "200px" },
       );
       observer.observe(anchor);
-    } else {
-      setHasLoaded(true);
     }
-
-    return () => mq.removeEventListener("change", handleChange);
   }, []);
 
   if (reducedMotion || !webglSupported) return <StaticFallback />;

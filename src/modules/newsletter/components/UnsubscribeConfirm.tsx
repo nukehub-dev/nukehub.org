@@ -52,22 +52,16 @@ function HomeCta({ label }: { label: string }) {
   );
 }
 
+function readTokenFromUrl(): string | null {
+  return new URLSearchParams(window.location.search).get("token");
+}
+
 export function UnsubscribeConfirm() {
-  // undefined = not yet read from the URL, null = URL has no token.
-  const [token, setToken] = React.useState<string | null | undefined>(
-    undefined,
-  );
+  // Read once on mount; this island is client-only (`client:only="react"`),
+  // so `window` is always available during render.
+  const [token] = React.useState<string | null>(readTokenFromUrl);
   const [status, setStatus] = React.useState<Status>("confirm");
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    setToken(new URLSearchParams(window.location.search).get("token"));
-  }, []);
-
-  // Wait for the token to be read from the URL before rendering.
-  if (token === undefined) {
-    return null;
-  }
 
   if (token === null) {
     return (

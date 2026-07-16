@@ -34,6 +34,12 @@ function gridClasses(count: number): string {
 /* ------------------------------------------------------------------ */
 // Single pillar card
 /* ------------------------------------------------------------------ */
+function renderPillarIcon(iconName: string) {
+  const Icon = getIcon(iconName);
+  if (!Icon) return null;
+  return <Icon className="h-5 w-5" strokeWidth={1.5} />;
+}
+
 function PillarCard({
   pillar,
   index,
@@ -41,7 +47,6 @@ function PillarCard({
   pillar: MissionData["pillars"][0];
   index: number;
 }) {
-  const Icon = getIcon(pillar.icon);
   const step = String(index + 1).padStart(2, "0");
   const entrance = ENTRANCES[index % ENTRANCES.length];
 
@@ -76,7 +81,7 @@ function PillarCard({
 
         {/* Icon */}
         <div className="relative mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 text-primary ring-1 ring-primary/35 transition-all duration-500 group-hover:scale-110 group-hover:bg-primary/30 group-hover:ring-primary/55 dark:bg-primary/[0.08] dark:ring-primary/15 dark:group-hover:bg-primary/[0.14] dark:group-hover:ring-primary/25">
-          {Icon && <Icon className="h-5 w-5" strokeWidth={1.5} />}
+          {renderPillarIcon(pillar.icon)}
         </div>
 
         {/* Title */}

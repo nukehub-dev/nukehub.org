@@ -188,14 +188,16 @@ export function CommandPalette({
   integrations,
   pages,
 }: CommandPaletteProps) {
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [query, setQuery] = React.useState("");
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const resultsRef = React.useRef<HTMLDivElement>(null);
   const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
-
-  React.useEffect(() => setMounted(true), []);
 
   const allItems = React.useMemo(
     () => [...projects, ...pages, ...people, ...events, ...integrations],
@@ -220,10 +222,14 @@ export function CommandPalette({
     [filteredItems],
   );
 
-  // Reset selection when query or open state changes.
-  React.useEffect(() => {
+  // Reset selection when the open state changes, and clear the query on
+  // close. Adjusted during render to avoid cascading renders from an effect.
+  const [wasOpen, setWasOpen] = React.useState(isOpen);
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
     setSelectedIndex(0);
-  }, [query, isOpen]);
+    if (!isOpen) setQuery("");
+  }
 
   // Focus input when opened.
   React.useEffect(() => {
@@ -231,7 +237,6 @@ export function CommandPalette({
       const timer = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(timer);
     }
-    setQuery("");
   }, [isOpen]);
 
   // Lock body scroll while open.
@@ -325,7 +330,10 @@ export function CommandPalette({
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setSelectedIndex(0);
+                }}
                 placeholder="Search projects, people, events, integrations..."
                 className="flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
                 aria-label="Search"

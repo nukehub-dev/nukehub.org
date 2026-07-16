@@ -261,15 +261,7 @@ export function UserAuthMenu() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (user?.email) {
-      setAvatarUrl(getGravatarUrl(user.email));
-    } else {
-      setAvatarUrl(null);
-    }
-  }, [user?.email]);
+  const avatarUrl = user?.email ? getGravatarUrl(user.email) : null;
 
   useEffect(() => {
     if (!open) return;

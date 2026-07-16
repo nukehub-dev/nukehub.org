@@ -59,16 +59,17 @@ export function PerformanceMonitor() {
   const lastFpsUpdateRef = useRef<number>(0);
   const layoutShiftsRef = useRef(0);
 
-  const stateRef = useRef<MonitorState>(loadState());
+  const [initialState] = useState(loadState);
+  const stateRef = useRef<MonitorState>(initialState);
   const [pos, setPos] = useState({
-    x: stateRef.current.x,
-    y: stateRef.current.y,
+    x: initialState.x,
+    y: initialState.y,
   });
   const [size, setSize] = useState({
-    w: stateRef.current.w,
-    h: stateRef.current.h,
+    w: initialState.w,
+    h: initialState.h,
   });
-  const [minimized, setMinimized] = useState(stateRef.current.minimized);
+  const [minimized, setMinimized] = useState(initialState.minimized);
 
   const panelRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{

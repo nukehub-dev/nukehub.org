@@ -370,12 +370,12 @@ function CampaignComposer({
   const [sending, setSending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // Default the From address to the server's first configured address.
-  React.useEffect(() => {
-    if (!fromEmail && config.data?.fromAddresses.length) {
-      setFromEmail(config.data.fromAddresses[0]);
-    }
-  }, [config.data, fromEmail]);
+  // Default the From address to the server's first configured address
+  // (adjust-state-during-render; converges once fromEmail is non-empty).
+  const defaultFromEmail = config.data?.fromAddresses[0];
+  if (!fromEmail && defaultFromEmail) {
+    setFromEmail(defaultFromEmail);
+  }
 
   const fromOptions = React.useMemo(
     () =>

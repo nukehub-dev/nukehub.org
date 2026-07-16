@@ -9,6 +9,12 @@ interface HeroStatCardProps {
   index?: number;
 }
 
+function renderIcon(iconName: string) {
+  const Icon = getIcon(iconName);
+  if (!Icon) return null;
+  return <Icon className="h-4 w-4 sm:h-5 sm:w-5" />;
+}
+
 export function HeroStatCard({
   iconName,
   label,
@@ -16,7 +22,6 @@ export function HeroStatCard({
   numericValue,
   index = 0,
 }: HeroStatCardProps) {
-  const Icon = getIcon(iconName);
   const suffix =
     numericValue !== undefined ? value.replace(String(numericValue), "") : "";
   const { displayValue, ref } = useCountUp(numericValue || 0, 1.5, suffix);
@@ -29,7 +34,7 @@ export function HeroStatCard({
       style={{ animationDelay: `${index * 0.5}s` }}
     >
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15 group-hover:scale-110 sm:h-10 sm:w-10">
-        {Icon && <Icon className="h-4 w-4 sm:h-5 sm:w-5" />}
+        {renderIcon(iconName)}
       </div>
       <div className="min-w-0 text-center">
         <div className="text-base font-semibold tracking-tight text-foreground sm:text-lg">

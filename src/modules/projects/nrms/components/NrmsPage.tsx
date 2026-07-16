@@ -94,7 +94,7 @@ export function NrmsPage({
   description: string;
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const HeroIcon = resolveIcon(data.hero.badge.icon);
+  const HeroIcon = iconComponents[data.hero.badge.icon] || Globe;
 
   return (
     <div className="relative">

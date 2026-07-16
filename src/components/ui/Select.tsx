@@ -43,16 +43,16 @@ export function Select({
   const [dropdownStyle, setDropdownStyle] = React.useState<React.CSSProperties>(
     { position: "fixed", top: 0, left: 0, width: 0 },
   );
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const containerRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const listId = React.useId();
   const labelId = React.useId();
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const selectedOption = options.find((option) => option.value === value);
   const dropdownOptions = options.filter((option) => option.value !== "");

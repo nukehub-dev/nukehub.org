@@ -62,6 +62,20 @@ void main() {
 `;
 
 /* ------------------------------------------------------------------ */
+// Deterministic seeded PRNG — keeps star field generation render-safe
+/* ------------------------------------------------------------------ */
+function mulberry32(seed: number) {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ------------------------------------------------------------------ */
 // Galaxy star field
 /* ------------------------------------------------------------------ */
 function GalaxyStars({
@@ -81,6 +95,9 @@ function GalaxyStars({
     const sz = new Float32Array(count);
     const ph = new Float32Array(count);
 
+    // Seeded PRNG keeps the star field deterministic across renders
+    const rand = mulberry32(0x9e3779b9);
+
     const primary = new THREE.Color(primaryColor);
     // Vibrant accent palette — no pure white, everything stays in the primary family
     const cCore = primary.clone().offsetHSL(0.0, 0.15, 0.18);
@@ -95,28 +112,28 @@ function GalaxyStars({
     const bulgeRadius = 0.7;
 
     for (let i = 0; i < count; i++) {
-      const isBulge = Math.random() < 0.1;
+      const isBulge = rand() < 0.1;
       let x: number, y: number, z: number, r: number;
 
       if (isBulge) {
-        r = Math.pow(Math.random(), 2.5) * bulgeRadius;
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos(2 * Math.random() - 1);
+        r = Math.pow(rand(), 2.5) * bulgeRadius;
+        const theta = rand() * Math.PI * 2;
+        const phi = Math.acos(2 * rand() - 1);
         x = r * Math.sin(phi) * Math.cos(theta);
         y = r * Math.sin(phi) * Math.sin(theta) * 0.4;
         z = r * Math.cos(phi) * 0.4;
       } else {
-        const armIndex = Math.floor(Math.random() * armCount);
+        const armIndex = Math.floor(rand() * armCount);
         const armAngle = (armIndex / armCount) * Math.PI * 2;
-        r = Math.pow(Math.random(), 0.75) * galaxyRadius;
+        r = Math.pow(rand(), 0.75) * galaxyRadius;
         const spiralTightness = 2.6;
         const angle = armAngle + r * spiralTightness;
-        const spread = (Math.random() - 0.5) * armSpread * (1.0 + r * 0.25);
+        const spread = (rand() - 0.5) * armSpread * (1.0 + r * 0.25);
         const armOffset = angle + spread;
         const thickness = 0.06 + 0.2 * Math.exp(-r * 0.7);
         x = Math.cos(armOffset) * r;
         z = Math.sin(armOffset) * r;
-        y = (Math.random() - 0.5) * thickness * 2.0;
+        y = (rand() - 0.5) * thickness * 2.0;
       }
 
       pos[i * 3] = x;
@@ -126,10 +143,10 @@ function GalaxyStars({
       const distFromCenter = Math.sqrt(x * x + z * z);
       const sizeBase = isBulge ? 2.2 : 1.0;
       const sizeFalloff = Math.exp(-distFromCenter * 0.2);
-      sz[i] = sizeBase * sizeFalloff + Math.random() * 0.4;
+      sz[i] = sizeBase * sizeFalloff + rand() * 0.4;
 
       // Color: accent-palette driven (more saturated, no muddy grays)
-      const colorRoll = Math.random();
+      const colorRoll = rand();
       let starColor: THREE.Color;
       if (isBulge) {
         starColor = colorRoll < 0.5 ? cCore : cBright;
@@ -153,7 +170,7 @@ function GalaxyStars({
       col[i * 3 + 1] = starColor.g;
       col[i * 3 + 2] = starColor.b;
 
-      ph[i] = Math.random() * Math.PI * 2;
+      ph[i] = rand() * Math.PI * 2;
     }
 
     return { positions: pos, colors: col, sizes: sz, phases: ph };

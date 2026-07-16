@@ -14,36 +14,25 @@ function readStoredConsent(): ConsentValue {
   return stored === "granted" || stored === "denied" ? stored : null;
 }
 
+function subscribe(callback: () => void) {
+  window.addEventListener("cookie-consent-change", callback);
+  return () => window.removeEventListener("cookie-consent-change", callback);
+}
+
 export function useCookieConsent() {
-  const [consent, setConsent] = React.useState<ConsentValue>(null);
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-    setConsent(readStoredConsent());
-
-    const handleChange = (event: Event) => {
-      const detail = (event as CustomEvent<{ consent?: ConsentValue }>).detail;
-      if (
-        detail &&
-        (detail.consent === "granted" || detail.consent === "denied")
-      ) {
-        setConsent(detail.consent);
-      } else if (detail && detail.consent === null) {
-        setConsent(null);
-      } else {
-        setConsent(readStoredConsent());
-      }
-    };
-
-    window.addEventListener("cookie-consent-change", handleChange);
-    return () =>
-      window.removeEventListener("cookie-consent-change", handleChange);
-  }, []);
+  const consent = React.useSyncExternalStore(
+    subscribe,
+    readStoredConsent,
+    () => null,
+  );
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const grant = React.useCallback(() => {
     localStorage.setItem(CONSENT_KEY, "granted");
-    setConsent("granted");
     window.dispatchEvent(
       new CustomEvent("cookie-consent-change", {
         detail: { consent: "granted" },
@@ -53,7 +42,6 @@ export function useCookieConsent() {
 
   const deny = React.useCallback(() => {
     localStorage.setItem(CONSENT_KEY, "denied");
-    setConsent("denied");
     window.dispatchEvent(
       new CustomEvent("cookie-consent-change", {
         detail: { consent: "denied" },
@@ -66,25 +54,36 @@ export function useCookieConsent() {
 
 export function CookieConsent() {
   const { consent, grant, deny, mounted } = useCookieConsent();
-  const [visible, setVisible] = React.useState(false);
+  const [showAfterDelay, setShowAfterDelay] = React.useState(false);
+  const [dismissed, setDismissed] = React.useState(false);
+
+  // Adjust state during render: re-arm the banner when consent is cleared and
+  // reset the reveal delay once a choice is stored.
+  const [prevConsent, setPrevConsent] = React.useState(consent);
+  if (prevConsent !== consent) {
+    setPrevConsent(consent);
+    if (consent === null) {
+      setDismissed(false);
+    } else {
+      setShowAfterDelay(false);
+    }
+  }
 
   React.useEffect(() => {
-    if (mounted && consent === null) {
-      const timer = setTimeout(() => setVisible(true), 600);
-      return () => clearTimeout(timer);
-    }
-    if (consent !== null) {
-      setVisible(false);
-    }
+    if (!mounted || consent !== null) return;
+    const timer = setTimeout(() => setShowAfterDelay(true), 600);
+    return () => clearTimeout(timer);
   }, [mounted, consent]);
 
+  const visible = showAfterDelay && !dismissed;
+
   const handleGrant = React.useCallback(() => {
-    setVisible(false);
+    setDismissed(true);
     setTimeout(grant, 200);
   }, [grant]);
 
   const handleDeny = React.useCallback(() => {
-    setVisible(false);
+    setDismissed(true);
     setTimeout(deny, 200);
   }, [deny]);
 

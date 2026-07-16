@@ -17,10 +17,6 @@ interface Props {
   onContactClick: () => void;
 }
 
-function resolveIcon(name: string): LucideIcon {
-  return iconMap[name] || Circle;
-}
-
 export function ContactCTA({
   title,
   description,
@@ -30,8 +26,7 @@ export function ContactCTA({
   secondaryHref,
   onContactClick,
 }: Props) {
-  const Icon = resolveIcon(icon);
-  const PrimaryIcon = resolveIcon("ArrowRight");
+  const Icon = iconMap[icon] || Circle;
 
   return (
     <motion.div
@@ -67,7 +62,7 @@ export function ContactCTA({
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {primaryText}
-              <PrimaryIcon size={16} />
+              <ArrowRight size={16} />
             </button>
             <a
               href={secondaryHref}

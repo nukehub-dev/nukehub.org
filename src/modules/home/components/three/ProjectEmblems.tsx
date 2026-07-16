@@ -15,6 +15,18 @@ const IMAGE_URL = "/assets/images/nukehub.png";
 const THRESHOLD = 120;
 const MAX_TEXTURE_SIZE = 160;
 
+// Deterministic PRNG — keeps dust layouts pure and render-safe
+function mulberry32(seed: number) {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /* ------------------------------------------------------------------ */
 // Vertex Shader
 /* ------------------------------------------------------------------ */
@@ -579,20 +591,26 @@ function ParticleCloud() {
 function DustField() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
+  const simRef = useRef<{
+    positions: Float32Array;
+    velocities: Float32Array;
+  } | null>(null);
   const count = 500;
 
-  const { positions, velocities } = useMemo(() => {
+  // Per-frame simulation state is mutable, so it lives in a ref, not a memo
+  useEffect(() => {
+    const rand = mulberry32(0x85ebca6b);
     const pos = new Float32Array(count * 3);
     const vel = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 16;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 11;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 7;
-      vel[i * 3] = (Math.random() - 0.5) * 0.001;
-      vel[i * 3 + 1] = (Math.random() - 0.5) * 0.001;
-      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.0005;
+      pos[i * 3] = (rand() - 0.5) * 16;
+      pos[i * 3 + 1] = (rand() - 0.5) * 11;
+      pos[i * 3 + 2] = (rand() - 0.5) * 7;
+      vel[i * 3] = (rand() - 0.5) * 0.001;
+      vel[i * 3 + 1] = (rand() - 0.5) * 0.001;
+      vel[i * 3 + 2] = (rand() - 0.5) * 0.0005;
     }
-    return { positions: pos, velocities: vel };
+    simRef.current = { positions: pos, velocities: vel };
   }, []);
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -622,7 +640,9 @@ function DustField() {
   }, []);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    const sim = simRef.current;
+    if (!meshRef.current || !sim) return;
+    const { positions, velocities } = sim;
     const t = state.clock.elapsedTime;
     for (let i = 0; i < count; i++) {
       const ix = i * 3;

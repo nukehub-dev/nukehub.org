@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 
 let cached: boolean | null = null;
 
 function detectWebGL(): boolean {
-  if (typeof window === "undefined") return true; // SSR: assume supported, will degrade client-side
   if (cached !== null) return cached;
   try {
     const canvas = document.createElement("canvas");
@@ -16,14 +15,10 @@ function detectWebGL(): boolean {
   return cached;
 }
 
+const subscribe = () => () => {};
+
 export function useWebGL(): boolean {
-  // Start false so SSR and initial client render match. After hydration,
-  // detect actual WebGL support and switch to canvas if available.
-  const [supported, setSupported] = useState(false);
-
-  useEffect(() => {
-    setSupported(detectWebGL());
-  }, []);
-
-  return supported;
+  // SSR and the first client render report `false` so hydration matches; real
+  // WebGL support is detected once after hydration and never changes again.
+  return useSyncExternalStore(subscribe, detectWebGL, () => false);
 }

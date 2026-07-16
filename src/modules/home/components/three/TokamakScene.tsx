@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useMemo } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { getPrimaryColor } from "@lib/themeColors";
@@ -28,7 +28,6 @@ function CameraRig({
   orbitControls?: boolean;
   reducedMotion?: boolean;
 }) {
-  const { camera } = useThree();
   const phaseRef = useRef<"ready" | "entry" | "idle" | "paused">("ready");
   const entryTimeRef = useRef(0);
   const idleTimeRef = useRef(0);
@@ -38,8 +37,9 @@ function CameraRig({
   const endPos = useMemo(() => new THREE.Vector3(0.5, 0.3, 5.0), []);
   const lookTarget = useMemo(() => new THREE.Vector3(0, 0, 0), []);
 
-  useFrame((_state, delta) => {
+  useFrame((state, delta) => {
     if (orbitControls || reducedMotion) return;
+    const { camera } = state;
 
     // Trigger entry once when section first scrolls into view
     if (phaseRef.current === "ready" && isVisible) {
@@ -187,37 +187,60 @@ function CoreGlow({ accent }: { accent: string }) {
 }
 
 /* ------------------------------------------------------------------ */
+// Deterministic seeded PRNG — particle init must stay render-safe
+/* ------------------------------------------------------------------ */
+function mulberry32(seed: number) {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ------------------------------------------------------------------ */
 // Floating particles around reactor
 /* ------------------------------------------------------------------ */
 function ReactorParticles({ accent }: { accent: string }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
+  // Mutable simulation buffers — created on the first frame, advanced per-frame
+  const buffersRef = useRef<{
+    positions: Float32Array;
+    velocities: Float32Array;
+    scales: number[];
+  } | null>(null);
   const count = 80;
-
-  const { positions, velocities } = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    const vel = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const radius = 1.2 + Math.random() * 2.5;
-      const y = (Math.random() - 0.5) * 3;
-      pos[i * 3] = Math.cos(angle) * radius;
-      pos[i * 3 + 1] = y;
-      pos[i * 3 + 2] = Math.sin(angle) * radius;
-      vel[i * 3] = (Math.random() - 0.5) * 0.002;
-      vel[i * 3 + 1] = (Math.random() - 0.5) * 0.001;
-      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.002;
-    }
-    return { positions: pos, velocities: vel };
-  }, []);
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
-  const scales = useMemo(() => {
-    return Array.from({ length: count }, () => 0.012 + Math.random() * 0.008);
-  }, [count]);
-
   useFrame(() => {
     if (!meshRef.current) return;
+
+    let buffers = buffersRef.current;
+    if (!buffers) {
+      const rand = mulberry32(0x85ebca6b);
+      const positions = new Float32Array(count * 3);
+      const velocities = new Float32Array(count * 3);
+      const scales: number[] = [];
+      for (let i = 0; i < count; i++) {
+        const angle = rand() * Math.PI * 2;
+        const radius = 1.2 + rand() * 2.5;
+        const y = (rand() - 0.5) * 3;
+        positions[i * 3] = Math.cos(angle) * radius;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = Math.sin(angle) * radius;
+        velocities[i * 3] = (rand() - 0.5) * 0.002;
+        velocities[i * 3 + 1] = (rand() - 0.5) * 0.001;
+        velocities[i * 3 + 2] = (rand() - 0.5) * 0.002;
+        scales.push(0.012 + rand() * 0.008);
+      }
+      buffers = { positions, velocities, scales };
+      buffersRef.current = buffers;
+    }
+    const { positions, velocities, scales } = buffers;
+
     for (let i = 0; i < count; i++) {
       const ix = i * 3;
       positions[ix] += velocities[ix];

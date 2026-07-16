@@ -1,4 +1,10 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { getPrimaryColor } from "@lib/themeColors";
 import { useWebGL } from "@lib/useWebGL";
 import { useCanvasVisibility, useDelayedUnmount } from "./useCanvasVisibility";
@@ -7,18 +13,33 @@ const ProjectsScene = lazy(() =>
   import("./ProjectsScene").then((mod) => ({ default: mod.ProjectsScene })),
 );
 
-export function StaticFallback() {
-  const [primary, setPrimary] = useState("#f37524");
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 
-  useEffect(() => {
-    setPrimary(getPrimaryColor());
-    const observer = new MutationObserver(() => setPrimary(getPrimaryColor()));
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-accent", "data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
+function subscribePrimaryColor(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-accent", "data-theme"],
+  });
+  return () => observer.disconnect();
+}
+
+function subscribeReducedMotion(onStoreChange: () => void) {
+  const mq = window.matchMedia(reducedMotionQuery);
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getReducedMotion() {
+  return window.matchMedia(reducedMotionQuery).matches;
+}
+
+export function StaticFallback() {
+  const primary = useSyncExternalStore(
+    subscribePrimaryColor,
+    getPrimaryColor,
+    () => "#f37524",
+  );
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -34,20 +55,25 @@ export function StaticFallback() {
 
 export function ProjectsCanvas() {
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    () => false,
+  );
   // Default to mobile so the heavy Three.js chunk is not requested on phones.
   const [isMobile, setIsMobile] = useState(true);
   const isVisible = useCanvasVisibility("projects-canvas-anchor");
   const shouldRender = useDelayedUnmount(isVisible, 3000);
   const webglSupported = useWebGL();
+  const showFallback = reducedMotion || !webglSupported || isMobile;
+
+  // Adjust during render: the fallback branch has no anchor to observe,
+  // so there is nothing to lazy-load.
+  if (showFallback && !hasLoaded) {
+    setHasLoaded(true);
+  }
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-    const handleChange = (e: MediaQueryListEvent) =>
-      setReducedMotion(e.matches);
-    mq.addEventListener("change", handleChange);
-
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
     };
@@ -66,17 +92,14 @@ export function ProjectsCanvas() {
         { rootMargin: "200px" },
       );
       observer.observe(anchor);
-    } else {
-      setHasLoaded(true);
     }
 
     return () => {
-      mq.removeEventListener("change", handleChange);
       window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
-  if (reducedMotion || !webglSupported || isMobile) return <StaticFallback />;
+  if (showFallback) return <StaticFallback />;
 
   return (
     <div

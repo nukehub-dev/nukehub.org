@@ -21,10 +21,12 @@ export function ContactModal({
   defaultAdditionalValues = {},
   tierOptions = [],
 }: ContactModalProps) {
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
-
-  React.useEffect(() => setMounted(true), []);
 
   React.useEffect(() => {
     if (!isOpen) return;
