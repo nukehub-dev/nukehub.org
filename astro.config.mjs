@@ -16,7 +16,15 @@ export default defineConfig({
   image: {
     domains: ["github.com", "avatars.githubusercontent.com"],
   },
-  integrations: [react(), mdx(), sitemap(), markdownNegotiation()],
+  integrations: [
+    react(),
+    mdx(),
+    sitemap({
+      // Keep the PWA offline fallback out of the sitemap — it should never be indexed.
+      filter: (page) => page !== "https://nukehub.org/offline/",
+    }),
+    markdownNegotiation(),
+  ],
   vite: {
     plugins: [tailwindcss()],
     build: {
