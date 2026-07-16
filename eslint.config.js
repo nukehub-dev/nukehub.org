@@ -50,6 +50,13 @@ export default [
       "jsx-a11y/heading-has-content": "warn",
       "react-hooks/rules-of-hooks": "warn",
       "react-hooks/exhaustive-deps": "warn",
+      // eslint-plugin-react-hooks v7 compiler-powered rules, off pending a
+      // dedicated cleanup pass (they flag pre-existing patterns repo-wide)
+      "react-hooks/purity": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/immutability": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/static-components": "off",
     },
   },
 

@@ -34,7 +34,7 @@ let githubStats: {
     totalStars?: number;
     totalContributors?: number;
   };
-} | null = null;
+} | null;
 try {
   githubStats = JSON.parse(
     await import("node:fs/promises").then((fs) =>

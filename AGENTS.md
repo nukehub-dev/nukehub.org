@@ -232,6 +232,12 @@ it is a build artifact and ignored by git.
   regenerated. Change source only.
 - **`silent-check-sso.html` is a Keycloak artifact.** See `public/AGENTS.md`
   for the static-file exemption rule.
+- **Root `.npmrc` sets `legacy-peer-deps=true`.** Some eslint plugins
+  (`eslint-plugin-jsx-a11y`, `eslint-plugin-react`) do not declare ESLint 10
+  peer support yet; the flag keeps `npm install` and CI's `npm ci` resolving.
+- **`typescript` is capped at 6.0.x.** `@typescript-eslint` requires
+  `typescript <6.1` and crashes on TS 7's native compiler. Do not bump to 7
+  until typescript-eslint adds support.
 
 ## Environment variables
 

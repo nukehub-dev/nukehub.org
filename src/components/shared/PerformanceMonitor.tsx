@@ -263,8 +263,7 @@ export function PerformanceMonitor() {
   useEffect(() => {
     const gather = () => {
       const nav = performance.getEntriesByType("navigation")[0] as
-        | PerformanceNavigationTiming
-        | undefined;
+        PerformanceNavigationTiming | undefined;
       const paint = performance.getEntriesByType("paint");
       const lcpEntry = performance
         .getEntriesByType("largest-contentful-paint")

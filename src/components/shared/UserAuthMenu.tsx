@@ -111,7 +111,7 @@ function md5(inputString: string): string {
       (lNumberOfWordsTemp1 - (lNumberOfWordsTemp1 % 64)) / 64;
     let lNumberOfWords = (lNumberOfWordsTemp2 + 1) * 16;
     let lWordArray = new Array(lNumberOfWords - 1);
-    let lBytePosition = 0;
+    let lBytePosition: number;
     let lByteCount = 0;
     while (lByteCount < lMessageLength) {
       lWordCount = (lByteCount - (lByteCount % 4)) / 4;
@@ -131,7 +131,7 @@ function md5(inputString: string): string {
   }
   function wordToHex(lValue: number) {
     let wordToHexValue = "",
-      wordToHexValueTemp = "",
+      wordToHexValueTemp: string,
       lByte;
     for (let lCount = 0; lCount <= 3; lCount++) {
       lByte = (lValue >>> (lCount * 8)) & 255;

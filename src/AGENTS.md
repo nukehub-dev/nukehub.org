@@ -13,7 +13,7 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
 
 ## Local Contracts
 
-- Astro 6 static output (`output: "static"`). Every route is prerendered to
+- Astro 7 static output (`output: "static"`). Every route is prerendered to
   `dist/**`.
 - React islands via `@astrojs/react`; MDX via `@astrojs/mdx`; sitemap via
   `@astrojs/sitemap`; Tailwind v4 via `@tailwindcss/vite`.
@@ -23,6 +23,9 @@ NAD), and `src/lib/` (own NAD). Also owns `astro.config.mjs`,
 - TypeScript ~6, strict; `tsconfig.json` references `astro.tsclient`.
 - ESLint flat config (`eslint.config.js`); `.wrangler/**` and `dist/**` are
   ignored. `no-undef` is off for `.ts/.tsx/.astro` because TS already covers it.
+  The eslint-plugin-react-hooks v7 compiler-powered rules (`purity`,
+  `set-state-in-effect`, `immutability`, `refs`, `static-components`) are off
+  pending a dedicated cleanup pass.
 - Prettier with `prettier-plugin-astro`; formats
   `src/**/*.{ts,tsx,astro,css,scss,json,md,yml,yaml}` and root configs.
 

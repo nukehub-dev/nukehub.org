@@ -623,8 +623,7 @@ function extractRoles(tokenParsed: Record<string, unknown>): string[] {
   const roles: string[] = [];
 
   const realmAccess = tokenParsed.realm_access as
-    | Record<string, unknown>
-    | undefined;
+    Record<string, unknown> | undefined;
   if (realmAccess && Array.isArray(realmAccess.roles)) {
     for (const role of realmAccess.roles) {
       if (typeof role === "string") roles.push(role);
@@ -632,8 +631,7 @@ function extractRoles(tokenParsed: Record<string, unknown>): string[] {
   }
 
   const resourceAccess = tokenParsed.resource_access as
-    | Record<string, Record<string, unknown>>
-    | undefined;
+    Record<string, Record<string, unknown>> | undefined;
   if (resourceAccess) {
     for (const client of Object.values(resourceAccess)) {
       if (client && Array.isArray(client.roles)) {
