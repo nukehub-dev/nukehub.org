@@ -14,7 +14,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import yaml from "js-yaml";
+import { load as loadYaml, dump as dumpYaml } from "js-yaml";
 
 const PROJECTS_DIR = "src/content/projects";
 const CHANGELOG_DIR = "src/content/changelog";
@@ -282,7 +282,7 @@ async function writeChangelogDrafts(repoStats) {
       githubReleaseUrl: release.url,
     };
 
-    const fileContent = `---\n${yaml.dump(frontmatter).trim()}\n---\n\n${release.body || `Release ${release.tag} for ${projectSlug}.`}\n`;
+    const fileContent = `---\n${dumpYaml(frontmatter).trim()}\n---\n\n${release.body || `Release ${release.tag} for ${projectSlug}.`}\n`;
 
     await fs.writeFile(filePath, fileContent);
     log(`Created changelog draft: ${filePath}`);
@@ -304,7 +304,7 @@ async function writeChangelogDrafts(repoStats) {
 function parseFrontmatter(content) {
   const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
   if (!match) return {};
-  return yaml.load(match[1]) || {};
+  return loadYaml(match[1]) || {};
 }
 
 /**
