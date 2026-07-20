@@ -1,14 +1,14 @@
 {
-  "lastUpdated": "2026-07-20T14:08:28.612Z",
+  "lastUpdated": "2026-07-20T19:44:47.716Z",
   "maxStaleHours": 24,
   "repos": {
     "nukehub-dev/nuke-ide": {
       "stars": 2,
       "forks": 0,
-      "openIssues": 14,
+      "openIssues": 9,
       "watchers": 2,
       "contributors": 1,
-      "lastCommitAt": "2026-07-19T09:26:40Z",
+      "lastCommitAt": "2026-07-20T19:06:39Z",
       "lastRelease": null,
       "defaultBranch": "main"
     },
@@ -46,6 +46,6 @@
     "totalStars": 13,
     "totalForks": 0,
     "totalContributors": 3,
-    "totalOpenIssues": 34
+    "totalOpenIssues": 29
   }
 }
