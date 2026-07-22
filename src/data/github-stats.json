@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-21T19:24:36.971Z",
+  "lastUpdated": "2026-07-22T02:44:10.229Z",
   "maxStaleHours": 24,
   "repos": {
     "nukehub-dev/nuke-ide": {
@@ -8,7 +8,7 @@
       "openIssues": 9,
       "watchers": 2,
       "contributors": 1,
-      "lastCommitAt": "2026-07-21T14:56:13Z",
+      "lastCommitAt": "2026-07-21T22:54:55Z",
       "lastRelease": null,
       "defaultBranch": "main"
     },
