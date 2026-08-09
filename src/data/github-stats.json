@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-09T12:52:00.108Z",
+  "lastUpdated": "2026-08-09T18:41:55.482Z",
   "maxStaleHours": 24,
   "repos": {
     "nukehub-dev/nuke-ide": {
@@ -47,11 +47,11 @@
   },
   "aggregate": {
     "totalRepos": 3,
-    "syncedRepos": 0,
-    "failedRepos": 3,
-    "totalStars": 0,
+    "syncedRepos": 3,
+    "failedRepos": 0,
+    "totalStars": 16,
     "totalForks": 0,
-    "totalContributors": 0,
-    "totalOpenIssues": 0
+    "totalContributors": 3,
+    "totalOpenIssues": 30
   }
 }
