@@ -36,6 +36,10 @@ additions/edits belong here.
   project slug; `ghIssueUrl` is the optional tracking issue.
 - `changelog` (mdx/md) — release notes. `version`, `date`, optional
   `highlights[]` / `breaking[]`, `project`, optional `githubReleaseUrl`.
+  Hub-timeline policy: one curated entry per significant release with 1-3
+  headline bullets, never a full copy of the repo changelog — full notes stay
+  in each project's repository and entries link out to them. Details belong to
+  the projects; drift is not duplicated here.
 - `manual` (mdx) — legal/policy pages: `terms`, `privacy`,
   `code-of-conduct`, `acknowledgment`. Rendered by the matching
   `src/pages/<name>.astro` files.

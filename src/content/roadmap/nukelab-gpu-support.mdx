@@ -1,10 +1,10 @@
 ---
 title: GPU Allocation & Metrics
 description: GPU scheduling for workspace containers and real-time GPU metrics for accelerated nuclear simulation workflows.
-status: planned
-targetQuarter: Q4 2026
+status: shipped
+targetQuarter: Q3 2026
 relatedProject: nuke-lab
 order: 11
 ---
 
-GPU support is deferred until the core CPU orchestration path is complete. When added, it will expose GPU allocation in plans and quotas, pass devices into user containers, and surface GPU utilization in the real-time monitoring dashboard.
+GPU support shipped in the NukeLab v2 cycle: plan-based GPU passthrough for workspace containers (Podman CDI / Docker DeviceRequests) with quota accounting, whole-GPU exclusive reservations with race-safe booking, GPU metrics in the monitoring stack, and a CUDA environment image (`docs/operations/GPU-SETUP.md`).

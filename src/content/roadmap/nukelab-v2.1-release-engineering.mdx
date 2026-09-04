@@ -1,0 +1,10 @@
+---
+title: NukeLab v2.1 Release Engineering
+description: Pull-based production deploys with version-pinned GHCR images, tag-driven versioning, automatic pre-migration backups, and a startup schema-compatibility guard.
+status: shipped
+targetQuarter: Q3 2026
+relatedProject: nuke-lab
+order: 4
+---
+
+NukeLab v2.1.0 (released 2026-08-22) makes deployments reproducible: git tags drive the release, CI builds and pushes tagged backend, frontend, and environment images to GHCR, production hosts pull pinned images instead of rebuilding from source, `nukelabctl db-migrate` snapshots the database before migrating, and a startup guard refuses to boot an old image against a newer schema.

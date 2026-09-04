@@ -1,0 +1,14 @@
+---
+version: "2.1.0"
+date: 2026-08-22
+summary: Release engineering for NukeLab — pull-based production deploys, tag-driven versioning, automatic pre-migration backups, and a startup schema guard.
+highlights:
+  - Pull-based production deploys — pin NUKELAB_VERSION or NUKELAB_IMAGE_TAG to run tagged GHCR images instead of rebuilding from source.
+  - Safer migrations — automatic pre-migration pg_dump snapshots and a startup guard that refuses old images on a newer database schema.
+  - Tag-driven releases — git tags as the version source of truth, with CI building and pushing all platform images (including workspace environments) and drafting the GitHub Release.
+breaking: []
+project: nuke-lab
+githubReleaseUrl: https://github.com/nukehub-dev/nukelab/releases/tag/v2.1.0
+---
+
+NukeLab v2.1.0 makes production deployments reproducible: version-pinned images pulled from GHCR, safe database migrations with automatic snapshots, and release metadata baked into every container.
