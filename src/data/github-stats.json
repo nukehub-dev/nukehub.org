@@ -1,7 +1,23 @@
 {
-  "lastUpdated": "2026-09-04T10:54:39.812Z",
+  "lastUpdated": "2026-09-04T12:10:04.026Z",
   "maxStaleHours": 24,
   "repos": {
+    "nukehub-dev/nucleide": {
+      "stars": 0,
+      "forks": 1,
+      "openIssues": 0,
+      "watchers": 0,
+      "contributors": 1,
+      "lastCommitAt": "2026-08-30T15:39:33Z",
+      "lastRelease": {
+        "tag": "v0.1.0",
+        "name": "v0.1.0",
+        "publishedAt": "2026-08-30T15:47:02Z",
+        "url": "https://github.com/nukehub-dev/nucleide/releases/tag/v0.1.0",
+        "body": "### Added\r\n\r\n- `depletion`: reaction `branching_ratio` support in chain XML (default 1.0),\r\n  with branched gains in the burnup matrix.\r\n- `depletion`: light-particle production in the burnup matrix — He-4/H-1 from\r\n  alpha/proton decays and from reaction secondaries such as (n,α) and (n,p),\r\n  when the product nuclide is in the chain.\r\n- `depletion`: decay branching ratios are renormalized to sum to 1 (largest\r\n  branch adjusted) for programmatically built chains, matching OpenMC's\r\n  chain-generation behavior.\r\n- `depletion`: CASL-style fission-yield borrowing in chain XML\r\n  (`<neutron_fission_yields parent=\"X\"/>` resolves X's yields, transitively),\r\n  matching OpenMC.\r\n- `nuclei`: `NuclideId::from_name` now accepts PyNE-normalized forms such as\r\n  `\"U-235\"`, `\"u235\"`, and uppercase-`M` metastable markers.\r\n- Python API: `Cascade.solve_multicomponent()` (M\\*-optimizing solve),\r\n  `DepletionSystem` builder and `solve_vec()` for repeated solves without\r\n  per-call overhead, and `MeshTally.total_rel_error`.\r\n- Python API: `nucleide.data` module (`fetch`, `fetch_compendium`,\r\n  `default_ref`) for downloading repo data files — the Materials Compendium,\r\n  sample depletion chains — pinned to the installed version's tag, since the\r\n  wheel bundles no data files.\r\n- Criterion benchmarks in `crates/*/benches/` (`cargo bench`).\r\n- `validation/`: runnable cross-code validation harness against PyNE 0.7.5 and\r\n  OpenMC 0.16.0 (containerized via `validation/Containerfile` +\r\n  `validation/run_container.sh`) with committed results\r\n  (`validation/results.md`).\r\n- `validation/`: full-chain depletion validation on the CASL/VERA simplified\r\n  chain (downloaded to the git-ignored `validation/.cache/`), parser\r\n  cross-validation against PyNE and serpentTools oracles\r\n  (`parsers_vs_refs.py`), and generated paper figures\r\n  (`validation/figures/`, via `make_figures.py`).\r\n- JOSS submission materials: `paper.md`, `paper.bib`, `CITATION.cff`,\r\n  `CONTRIBUTING.md`, and a draft-PDF workflow.\r\n- `bindings/wasm`: `wasm-bindgen` crate exposing a subset of the workspace to\r\n  the browser, including a `WasmMaterialsCompendium` API that parses the\r\n  DOE/PNNL Materials Compendium from its JSON text.\r\n- Documentation website (`website/`, Astro + `@nukehub/docs-kit`) with content\r\n  synced from `docs/`, theory pages, and interactive WASM tutorials (including\r\n  a compendium browser that fetches the staged `MaterialsCompendium.json` and\r\n  charts compositions with Plotly), deployed to GitHub Pages.\r\n- Interactive tutorials: MCNP meshtal z-slice heatmap with log colorscale and\r\n  relative-error toggle, xsdir table-count histogram by element, depletion\r\n  burnup-curve plot, material atom-vs-weight-fraction bar chart, enrichment\r\n  cascade stage-profile line chart, and MAGIC energy upper-bound step line.\r\n- `enrichment`: `Cascade::stage_profile()` returns per-stage assays of the\r\n  enriching key via the ideal-cascade recurrence, exposed through WASM as\r\n  `WasmCascade.stageProfile()`.\r\n- Release workflow: `vX.Y.Z` tags build and publish Python wheels for Linux,\r\n  macOS, and Windows to PyPI, publish workspace crates to crates.io, and draft\r\n  a GitHub release from the matching changelog section.\r\n\r\n### Changed\r\n\r\n- Documentation website moved from `https://nukehub-dev.github.io/nucleide` to\r\n  a custom domain, `https://nucleide.nukehub.org`, hosted on GitHub Pages with\r\n  Cloudflare DNS; the Astro `base` path changed from `/nucleide` to `/`.\r\n\r\n- Documentation theory pages (`depletion`, `enrichment`, `nuclear-data`,\r\n  `variance-reduction`) now use the citation support from `@nukehub/docs-kit`:\r\n  references are declared in frontmatter, cited inline with `<Citation />`, and\r\n  rendered as a linked bibliography with copy-to-clipboard export.\r\n\r\n- Python API reorganized into domain submodules (`nucleide.nuclei`,\r\n  `nucleide.material`, `nucleide.mcnp`, `nucleide.serpent`, `nucleide.fluka`,\r\n  `nucleide.vr`, `nucleide.enrichment`, `nucleide.depletion`) mirroring the\r\n  workspace crates; the top level re-exports the domain submodules alongside\r\n  `version()` and `__version__`.\r\n- `vr-tools`: `MeshSourceSampler` now rejects negative or non-finite tally /\r\n  user-density values with an error instead of silently absolutizing them.\r\n- `depletion`: reaction loss is subtracted once per reaction type per nuclide;\r\n  duplicate entries only add branched gains.\r\n- `depletion`: CRAM pole solves reuse scratch buffers across poles.\r\n- `nuclei`: FLUKA name lookups use lazily-built maps instead of linear scans.\r\n\r\n### Fixed\r\n\r\n- Documentation website \"Edit this page on GitHub\" links now point at real\r\n  repo files (docs-kit sync injects the source path as `editPath`\r\n  frontmatter); previously every link 404'd — all were missing the file\r\n  extension, and the changelog link pointed at `docs/changelog` instead of\r\n  the repo-root `CHANGELOG.md`.\r\n- Documentation website deployment now builds the `bindings/wasm` package in\r\n  CI, so the interactive tutorials can load `/wasm/nucleide_wasm.js` instead of\r\n  receiving the SPA fallback HTML response.\r\n\r\n- Interactive tutorials: file/text inputs now use the docs-kit `Textarea`\r\n  auto-resize (content-fitted height, no manual resize grip); kit bumped for a\r\n  `Select` dropdown fix so short lists flipped above the trigger no longer\r\n  float with a gap.\r\n- `depletion`: `Chain::from_xml` no longer renormalizes decay branching\r\n  ratios — file values are used verbatim, matching OpenMC's `Chain.from_xml`\r\n  (renormalization only happens at chain *generation*). Found by the CASL\r\n  full-chain validation (e.g. I-128 β⁻ branching ratio 0.931).\r\n- `depletion`: fission production now uses the yield set at the lowest\r\n  incident neutron energy, matching OpenMC's `get_default_fission_yields`.\r\n\r\n- `nuclei`: `NuclideId::new` rejects mass numbers above 999, fixing a debug\r\n  overflow panic from inputs like `\"U999999\"`.\r\n- `depletion`: zero/negative/non-finite half-lives and non-positive `dt` now\r\n  return errors instead of producing inf/NaN.\r\n- `linalg`: LU solve validates matrix/RHS dimensions and symbolic-pattern\r\n  identity instead of panicking inside faer.\r\n- `enrichment`: validates `alpha > 1`, assay ordering, and `M*` bounds; guards\r\n  secant divide-by-zero; golden-section M* polish no longer trusts unconverged\r\n  probe solves; `recompute_nm` reset path no longer uses stale right-hand sides.\r\n- `vr-tools`: `magic` no longer panics on tallies with empty energy bounds and\r\n  validates array lengths and finiteness.\r\n- `bindings/wasm`: fraction and result maps are now serialized as plain JS\r\n  objects instead of JS `Map`s, fixing empty tables in all interactive\r\n  tutorials.\r\n"
+      },
+      "defaultBranch": "main"
+    },
     "nukehub-dev/nuke-ide": {
       "stars": 4,
       "forks": 0,
@@ -52,12 +68,12 @@
     }
   },
   "aggregate": {
-    "totalRepos": 3,
-    "syncedRepos": 3,
+    "totalRepos": 4,
+    "syncedRepos": 4,
     "failedRepos": 0,
     "totalStars": 16,
-    "totalForks": 0,
-    "totalContributors": 3,
+    "totalForks": 1,
+    "totalContributors": 4,
     "totalOpenIssues": 32
   }
 }
