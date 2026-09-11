@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-11T16:01:07.378Z",
+  "lastUpdated": "2026-09-11T20:36:34.602Z",
   "maxStaleHours": 24,
   "repos": {
     "nukehub-dev/nucleide": {
@@ -69,11 +69,11 @@
   },
   "aggregate": {
     "totalRepos": 4,
-    "syncedRepos": 4,
-    "failedRepos": 0,
-    "totalStars": 16,
-    "totalForks": 1,
-    "totalContributors": 4,
-    "totalOpenIssues": 32
+    "syncedRepos": 0,
+    "failedRepos": 4,
+    "totalStars": 0,
+    "totalForks": 0,
+    "totalContributors": 0,
+    "totalOpenIssues": 0
   }
 }
