@@ -1,20 +1,20 @@
 {
-  "lastUpdated": "2026-11-16T15:03:58.470Z",
+  "lastUpdated": "2026-11-17T01:40:55.238Z",
   "maxStaleHours": 24,
   "repos": {
     "nukehub-dev/nucleide": {
       "stars": 3,
       "forks": 2,
-      "openIssues": 1,
+      "openIssues": 0,
       "watchers": 3,
       "contributors": 1,
-      "lastCommitAt": "2026-11-14T17:37:40Z",
+      "lastCommitAt": "2026-11-16T17:27:10Z",
       "lastRelease": {
-        "tag": "v0.18.1",
-        "name": "v0.18.1",
-        "publishedAt": "2026-11-14T17:51:41Z",
-        "url": "https://github.com/nukehub-dev/nucleide/releases/tag/v0.18.1",
-        "body": "### Fixed\r\n\r\n- Linux Python wheels build in a manylinux2014 container for glibc 2.17 or\r\n  newer, instead of requiring the release runner's glibc 2.39. Packaging\r\n  changes also build wheels on pull requests and check installed artifacts,\r\n  including Python 3.10 on the minimum Linux baseline, before publication.\r\n\r\n"
+        "tag": "v0.19.0",
+        "name": "v0.19.0",
+        "publishedAt": "2026-11-16T17:37:21Z",
+        "url": "https://github.com/nukehub-dev/nucleide/releases/tag/v0.19.0",
+        "body": "### Added\n\n- Activation-to-transport handoff. `nucleide.openmc.normalize_flux` converts\n  raw OpenMC tally arrays into physical group flux only after an explicit\n  normalization declaration. It distinguishes volume-integrated from\n  volume-averaged data and per-source-particle from source-rate-scaled data\n  (OpenMC 0.16 scales fixed-source tallies by the configured total source\n  strength), rejects double scaling, preserves relative errors and records\n  units, source rate and the input state. The CSV interchange moves to v2 with\n  normalization/units metadata while v1 files still read as `unknown`.\n- Regular-mesh photon-source contract in `nucleide-r2s`: ascending eV edges,\n  integrated photons/s per voxel and group, C-order voxel identity, density\n  conversion applying volume once, joint voxel/group probabilities, sparse\n  exported-group restoration with explicit dense indices, checked totals,\n  exact cooling-offset selection and a bounded structured validation report\n  with stable issue codes and explicit uniform-bin/uniform-voxel assumptions.\n- Optional OpenMC 0.16 `MeshSource` adapter (`nucleide.openmc.mesh_source`)\n  with explicit structured-mesh index mapping, per-element histogram energy\n  densities, absolute photons/s strengths, self-contained `settings.xml`\n  export and a real pinned-OpenMC validation probe.\n- Exact cooling-time batch export with deterministic collision-free names,\n  all-or-nothing prevalidation, atomic per-file replacement, zero-source skip\n  policy, partial-failure reporting and a batch manifest; compact\n  reproducibility manifests record measured input/output SHA-256 hashes, the\n  energy-grid identity, voxel order and validation summary. Verification is\n  offline and detects tampered or missing outputs.\n- Executable activation-to-transport tutorial covering normalization,\n  source validation, sparse grids, cooling batches, manifests and the\n  optional OpenMC export path.\n- FESTIM F6 trapped-plus-recombination validation leg with explicit\n  molar/atomic conversion, a checked two-identical-reactant surface factor,\n  mobile and trapped inventory histories, bracketed output sampling and\n  independent space/time refinement with a mobile-plus-trapped mass\n  balance; F1–F5 checks and pins are unchanged.\n- Pinned OpenMC 0.16.0 handoff probe (`validation/openmc_handoff_probe.py`)\n  recording the observed tally normalization, C-order/Fortran-order mesh\n  mapping, differential histogram density, XML roundtrip, seeded joint-source\n  sampling and a vacuum track-length tally at two source strengths that pins\n  the integrated/rate-scaled convention; no interacting transport. An optional\n  caller-data companion (`validation/openmc_transport_probe.py`) runs bounded\n  OpenMC 0.16 photon and neutron transport checks with caller-mounted NNDC\n  HDF5 files and verifies source-strength scaling, per-source vs rate-scaled\n  flux agreement and the package `normalize_flux` path.\n\n### Fixed\n\n- The OpenMC tally bridge documents and tests the observed 0.16 normalization\n  convention (per-source-particle denominator, source-strength tally scale,\n  volume-integrated track-length flux by default) instead of implying that a\n  field named `flux` is already physical.\n\n"
       },
       "defaultBranch": "main"
     },
@@ -74,6 +74,6 @@
     "totalStars": 19,
     "totalForks": 2,
     "totalContributors": 4,
-    "totalOpenIssues": 33
+    "totalOpenIssues": 32
   }
 }
