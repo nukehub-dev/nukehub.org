@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-22T05:31:58.194Z",
+  "lastUpdated": "2026-11-22T14:13:13.186Z",
   "maxStaleHours": 24,
   "repos": {
     "nukehub-dev/nucleide": {
@@ -19,10 +19,10 @@
       "defaultBranch": "main"
     },
     "nukehub-dev/nuke-ide": {
-      "stars": 5,
+      "stars": 6,
       "forks": 0,
       "openIssues": 12,
-      "watchers": 5,
+      "watchers": 6,
       "contributors": 1,
       "lastCommitAt": "2026-11-05T12:27:44Z",
       "lastRelease": {
@@ -71,7 +71,7 @@
     "totalRepos": 4,
     "syncedRepos": 4,
     "failedRepos": 0,
-    "totalStars": 20,
+    "totalStars": 21,
     "totalForks": 2,
     "totalContributors": 4,
     "totalOpenIssues": 32
