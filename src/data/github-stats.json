@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-27T07:09:51.192Z",
+  "lastUpdated": "2026-11-27T20:47:30.958Z",
   "maxStaleHours": 24,
   "repos": {
     "nukehub-dev/nucleide": {
@@ -56,7 +56,7 @@
       "openIssues": 20,
       "watchers": 2,
       "contributors": 1,
-      "lastCommitAt": "2026-11-24T09:28:23Z",
+      "lastCommitAt": "2026-11-27T14:42:50Z",
       "lastRelease": {
         "tag": "v2.3.0",
         "name": "v2.3.0",
